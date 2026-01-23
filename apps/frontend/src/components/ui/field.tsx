@@ -1,17 +1,14 @@
-import { cva, type VariantProps } from "class-variance-authority"
+import { cva, type VariantProps } from "class-variance-authority";
+import type { ComponentProps } from "react";
 import {
   FieldError as AriaFieldError,
-  FieldErrorProps as AriaFieldErrorProps,
   Group as AriaGroup,
-  GroupProps as AriaGroupProps,
   Label as AriaLabel,
-  LabelProps as AriaLabelProps,
   Text as AriaText,
-  TextProps as AriaTextProps,
   composeRenderProps,
-} from "react-aria-components"
+} from "react-aria-components";
 
-import { cn } from "@/lib/utils"
+import { cn } from "@/lib/utils";
 
 const labelVariants = cva([
   "text-sm font-medium leading-none",
@@ -19,29 +16,35 @@ const labelVariants = cva([
   "data-[disabled]:cursor-not-allowed data-[disabled]:opacity-70",
   /* Invalid */
   "group-data-[invalid]:text-destructive",
-])
+]);
 
-const Label = ({ className, ...props }: AriaLabelProps) => (
+type LabelProps = ComponentProps<typeof AriaLabel>;
+
+const Label = ({ className, ...props }: LabelProps) => (
   <AriaLabel className={cn(labelVariants(), className)} {...props} />
-)
+);
 
-function FormDescription({ className, ...props }: AriaTextProps) {
+type TextProps = ComponentProps<typeof AriaText>;
+
+function FormDescription({ className, ...props }: TextProps) {
   return (
     <AriaText
       className={cn("text-sm text-muted-foreground", className)}
       {...props}
       slot="description"
     />
-  )
+  );
 }
 
-function FieldError({ className, ...props }: AriaFieldErrorProps) {
+type FieldErrorProps = ComponentProps<typeof AriaFieldError>;
+
+function FieldError({ className, ...props }: FieldErrorProps) {
   return (
     <AriaFieldError
       className={cn("text-sm font-medium text-destructive", className)}
       {...props}
     />
-  )
+  );
 }
 
 const fieldGroupVariants = cva("", {
@@ -60,11 +63,10 @@ const fieldGroupVariants = cva("", {
   defaultVariants: {
     variant: "default",
   },
-})
+});
 
-interface GroupProps
-  extends AriaGroupProps,
-    VariantProps<typeof fieldGroupVariants> {}
+type GroupProps = ComponentProps<typeof AriaGroup> &
+  VariantProps<typeof fieldGroupVariants>;
 
 function FieldGroup({ className, variant, ...props }: GroupProps) {
   return (
@@ -74,7 +76,7 @@ function FieldGroup({ className, variant, ...props }: GroupProps) {
       )}
       {...props}
     />
-  )
+  );
 }
 
 export {
@@ -84,4 +86,4 @@ export {
   fieldGroupVariants,
   FieldError,
   FormDescription,
-}
+};

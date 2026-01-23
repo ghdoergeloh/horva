@@ -1,24 +1,24 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import { Check, Minus } from "lucide-react"
+import type { ComponentProps } from "react";
+import { Check, Minus } from "lucide-react";
 import {
   Checkbox as AriaCheckbox,
   CheckboxGroup as AriaCheckboxGroup,
-  CheckboxGroupProps as AriaCheckboxGroupProps,
-  ValidationResult as AriaValidationResult,
   composeRenderProps,
   Text,
-  type CheckboxProps as AriaCheckboxProps,
-} from "react-aria-components"
+} from "react-aria-components";
+import type { ValidationResult } from "react-aria-components";
 
-import { cn } from "@/lib/utils"
+import { cn } from "@/lib/utils";
 
-import { FieldError, Label, labelVariants } from "./field"
+import { FieldError, Label, labelVariants } from "./field";
 
-const CheckboxGroup = AriaCheckboxGroup
+const CheckboxGroup = AriaCheckboxGroup;
 
-const Checkbox = ({ className, children, ...props }: AriaCheckboxProps) => (
+type CheckboxProps = ComponentProps<typeof AriaCheckbox>;
+
+const Checkbox = ({ className, children, ...props }: CheckboxProps) => (
   <AriaCheckbox
     className={composeRenderProps(className, (className) =>
       cn(
@@ -58,13 +58,15 @@ const Checkbox = ({ className, children, ...props }: AriaCheckboxProps) => (
       </>
     ))}
   </AriaCheckbox>
-)
+);
 
-interface JollyCheckboxGroupProps extends AriaCheckboxGroupProps {
-  label?: string
-  description?: string
-  errorMessage?: string | ((validation: AriaValidationResult) => string)
-}
+type CheckboxGroupProps = ComponentProps<typeof AriaCheckboxGroup>;
+
+type JollyCheckboxGroupProps = CheckboxGroupProps & {
+  label?: string;
+  description?: string;
+  errorMessage?: string | ((validation: ValidationResult) => string);
+};
 
 function JollyCheckboxGroup({
   label,
@@ -94,8 +96,8 @@ function JollyCheckboxGroup({
         </>
       ))}
     </CheckboxGroup>
-  )
+  );
 }
 
-export { Checkbox, CheckboxGroup, JollyCheckboxGroup }
-export type { JollyCheckboxGroupProps }
+export { Checkbox, CheckboxGroup, JollyCheckboxGroup };
+export type { JollyCheckboxGroupProps };

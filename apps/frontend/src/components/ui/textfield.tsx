@@ -1,25 +1,24 @@
-"use client"
+"use client";
 
-import * as React from "react"
+import type { ComponentProps } from "react";
 import {
   Input as AriaInput,
-  InputProps as AriaInputProps,
   TextArea as AriaTextArea,
-  TextAreaProps as AriaTextAreaProps,
   TextField as AriaTextField,
-  TextFieldProps as AriaTextFieldProps,
-  ValidationResult as AriaValidationResult,
   composeRenderProps,
   Text,
-} from "react-aria-components"
+} from "react-aria-components";
+import type { ValidationResult } from "react-aria-components";
 
-import { cn } from "@/lib/utils"
+import { cn } from "@/lib/utils";
 
-import { FieldError, Label } from "./field"
+import { FieldError, Label } from "./field";
 
-const TextField = AriaTextField
+const TextField = AriaTextField;
 
-const Input = ({ className, ...props }: AriaInputProps) => {
+type InputProps = ComponentProps<typeof AriaInput>;
+
+const Input = ({ className, ...props }: InputProps) => {
   return (
     <AriaInput
       className={composeRenderProps(className, (className) =>
@@ -36,10 +35,12 @@ const Input = ({ className, ...props }: AriaInputProps) => {
       )}
       {...props}
     />
-  )
-}
+  );
+};
 
-const TextArea = ({ className, ...props }: AriaTextAreaProps) => {
+type TextAreaProps = ComponentProps<typeof AriaTextArea>;
+
+const TextArea = ({ className, ...props }: TextAreaProps) => {
   return (
     <AriaTextArea
       className={composeRenderProps(className, (className) =>
@@ -56,15 +57,17 @@ const TextArea = ({ className, ...props }: AriaTextAreaProps) => {
       )}
       {...props}
     />
-  )
-}
+  );
+};
 
-interface JollyTextFieldProps extends AriaTextFieldProps {
-  label?: string
-  description?: string
-  errorMessage?: string | ((validation: AriaValidationResult) => string)
-  textArea?: boolean
-}
+type TextFieldProps = ComponentProps<typeof AriaTextField>;
+
+type JollyTextFieldProps = TextFieldProps & {
+  label?: string;
+  description?: string;
+  errorMessage?: string | ((validation: ValidationResult) => string);
+  textArea?: boolean;
+};
 
 function JollyTextField({
   label,
@@ -90,8 +93,8 @@ function JollyTextField({
       )}
       <FieldError>{errorMessage}</FieldError>
     </TextField>
-  )
+  );
 }
 
-export { Input, TextField, JollyTextField, TextArea }
-export type { JollyTextFieldProps }
+export { Input, TextField, JollyTextField, TextArea };
+export type { JollyTextFieldProps };
