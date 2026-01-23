@@ -10,6 +10,10 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@orpc/client": "^1.13.4",
+    "@orpc/react-query": "^1.13.4",
+    "@repo/contract": "workspace:*",
+    "@tanstack/react-query": "^5.90.20",
     "@tanstack/react-router": "^1.154.13",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
