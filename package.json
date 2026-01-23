@@ -4,13 +4,19 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "pnpm run --parallel dev",
+    "dev": "pnpm run --parallel --filter=api --filter=frontend dev",
+    "dev:api": "pnpm run --filter=api dev",
+    "dev:frontend": "pnpm run --filter=frontend dev",
     "build": "pnpm run --recursive build",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "pnpm run --recursive typecheck",
+    "db:push": "pnpm run --filter=api db:push",
+    "db:generate": "pnpm run --filter=api db:generate",
+    "db:migrate": "pnpm run --filter=api db:migrate",
+    "db:studio": "pnpm run --filter=api db:studio"
   },
   "packageManager": "pnpm@9.15.0",
   "engines": {
