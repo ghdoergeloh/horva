@@ -2,6 +2,7 @@ import { serve } from "@hono/node-server";
 import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { logger } from "hono/logger";
+import { auth } from "./auth";
 
 const app = new Hono();
 
@@ -20,6 +21,10 @@ app.get("/", (c) => {
 
 app.get("/health", (c) => {
   return c.json({ status: "ok" });
+});
+
+app.on(["POST", "GET"], "/api/auth/**", (c) => {
+  return auth.handler(c.req.raw);
 });
 
 const port = Number(process.env["API_PORT"]) || 3000;
