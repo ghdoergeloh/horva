@@ -1,0 +1,32 @@
+{
+  "name": "@repo/auth",
+  "private": true,
+  "license": "MIT",
+  "type": "module",
+  "exports": {
+    "./auth": "./src/auth.ts",
+    "./client": "./src/client.ts"
+  },
+  "scripts": {
+    "clean": "git clean -xdf .cache .turbo dist node_modules",
+    "format": "prettier --check . --ignore-path ../../.gitignore",
+    "generate": "dotenv -e ../../.env -- pnpx @better-auth/cli generate --output ../db/src/schema/auth-schema.ts",
+    "lint": "eslint",
+    "typecheck": "tsc --noEmit"
+  },
+  "prettier": "@repo/prettier-config",
+  "dependencies": {
+    "@repo/db": "workspace:*",
+    "better-auth": "^1.4.18",
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "@better-auth/cli": "catalog:",
+    "@repo/eslint-config": "workspace:*",
+    "@repo/prettier-config": "workspace:*",
+    "@repo/tsconfig": "workspace:*",
+    "eslint": "catalog:",
+    "prettier": "catalog:",
+    "typescript": "catalog:"
+  }
+}

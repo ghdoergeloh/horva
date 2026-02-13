@@ -1,33 +1,41 @@
 {
   "name": "@repo/root",
-  "version": "0.0.0",
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "pnpm run --parallel --filter=api --filter=frontend dev",
-    "dev:api": "pnpm run --filter=api dev",
-    "dev:frontend": "pnpm run --filter=frontend dev",
-    "build": "pnpm run --recursive build",
-    "lint": "eslint .",
-    "lint:fix": "eslint . --fix",
-    "format": "prettier --write .",
-    "format:check": "prettier --check .",
-    "typecheck": "pnpm run --recursive typecheck",
-    "db:push": "pnpm run --filter=api db:push",
-    "db:generate": "pnpm run --filter=api db:generate",
-    "db:migrate": "pnpm run --filter=api db:migrate",
-    "db:studio": "pnpm run --filter=api db:studio"
+    "build": "turbo run build",
+    "clean": "git clean -xdf node_modules",
+    "clean:workspaces": "turbo run clean",
+    "db:generate": "turbo -F @repo/db generate",
+    "db:migrate": "turbo -F @repo/db migrate",
+    "db:push": "turbo -F @repo/db push",
+    "db:studio": "turbo -F @repo/db studio",
+    "dev": "turbo watch dev --continue",
+    "format": "turbo run format --continue -- --cache --cache-location .cache/.prettiercache",
+    "format:fix": "turbo run format --continue -- --write --cache --cache-location .cache/.prettiercache",
+    "postinstall": "pnpm lint:ws",
+    "lint": "turbo run lint --continue -- --cache --cache-location .cache/.eslintcache",
+    "lint:fix": "turbo run lint --continue -- --fix --cache --cache-location .cache/.eslintcache",
+    "lint:ws": "pnpm dlx sherif@latest",
+    "prepare": "husky",
+    "typecheck": "turbo run typecheck"
   },
-  "packageManager": "pnpm@9.15.0",
-  "engines": {
-    "node": ">=20"
-  },
+  "prettier": "@repo/prettier-config",
   "devDependencies": {
-    "@eslint/js": "^9.39.2",
-    "eslint": "^9.39.2",
-    "globals": "^17.1.0",
-    "prettier": "^3.8.1",
-    "typescript": "^5.9.3",
-    "typescript-eslint": "^8.53.1"
+    "@commitlint/cli": "^20.4.1",
+    "@commitlint/config-conventional": "^20.4.1",
+    "@repo/prettier-config": "workspace:*",
+    "@turbo/gen": "^2.8.3",
+    "dotenv-cli": "^11.0.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.2.7",
+    "prettier": "catalog:",
+    "turbo": "^2.8.3",
+    "typescript": "catalog:"
+  },
+  "packageManager": "pnpm@10.28.2",
+  "engines": {
+    "node": "^24.13.0",
+    "pnpm": "^10.28.2"
   }
 }

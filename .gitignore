@@ -1,35 +1,55 @@
-# Dependencies
-node_modules/
-.pnpm-store/
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
-# Build outputs
-dist/
-build/
+# dependencies
+node_modules
+.pnp
+.pnp.js
+
+# testing
+coverage
+
+# next.js
 .next/
 out/
+next-env.d.ts
 
-# Environment files
-.env
-.env.local
-.env.*.local
+# nitro
+.nitro/
+.output/
 
-# IDE
-.idea/
-.vscode/
-*.swp
-*.swo
+# expo
+.expo/
+expo-env.d.ts
+apps/expo/.gitignore
+apps/expo/ios
+apps/expo/android
+
+# production
+build
+
+# misc
 .DS_Store
+*.pem
 
-# Logs
-logs/
-*.log
+# debug
 npm-debug.log*
-pnpm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
 
-# Testing
-coverage/
-.nyc_output/
+# local env files
+.env
+.env*.local
 
-# Misc
-*.tsbuildinfo
-.turbo/
+# vercel
+.vercel
+
+# typescript
+dist/
+.cache
+
+# turbo
+.turbo
+
+# tanstack
+.tanstack

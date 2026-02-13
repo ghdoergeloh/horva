@@ -1,31 +1,32 @@
 {
-  "name": "api",
-  "version": "0.0.0",
+  "name": "@repo/api",
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "tsx watch src/index.ts",
     "build": "tsc",
+    "clean": "git clean -xdf .cache .turbo dist node_modules",
+    "dev": "tsx watch src/index.ts",
+    "format": "prettier --check . --ignore-path ../../.gitignore",
+    "lint": "eslint",
     "start": "node dist/index.js",
-    "typecheck": "tsc --noEmit",
-    "db:generate": "drizzle-kit generate",
-    "db:migrate": "drizzle-kit migrate",
-    "db:push": "drizzle-kit push",
-    "db:studio": "drizzle-kit studio"
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@hono/node-server": "^1.19.9",
     "@orpc/server": "^1.13.4",
+    "@repo/auth": "workspace:*",
     "@repo/contract": "workspace:*",
-    "better-auth": "^1.4.17",
-    "dotenv": "^17.2.3",
-    "drizzle-orm": "^0.45.1",
-    "hono": "^4.11.5",
-    "postgres": "^3.4.8"
+    "@repo/db": "workspace:*",
+    "hono": "^4.11.7"
   },
   "devDependencies": {
-    "@types/node": "^24.10.1",
-    "drizzle-kit": "^0.31.8",
-    "tsx": "^4.21.0"
+    "@repo/eslint-config": "workspace:*",
+    "@repo/prettier-config": "workspace:*",
+    "@repo/tsconfig": "workspace:*",
+    "@types/node": "catalog:",
+    "eslint": "catalog:",
+    "prettier": "catalog:",
+    "tsx": "catalog:",
+    "typescript": "catalog:"
   }
 }
