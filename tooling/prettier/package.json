@@ -12,10 +12,10 @@
   },
   "prettier": "@repo/prettier-config",
   "dependencies": {
-    "@ianvs/prettier-plugin-sort-imports": "^4.7.0",
+    "@ianvs/prettier-plugin-sort-imports": "^4.7.1",
     "prettier": "catalog:",
     "prettier-plugin-packagejson": "^3.0.0",
-    "prettier-plugin-tailwindcss": "^0.7.1"
+    "prettier-plugin-tailwindcss": "^0.7.2"
   },
   "devDependencies": {
     "@repo/tsconfig": "workspace:*",
