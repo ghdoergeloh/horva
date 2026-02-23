@@ -12,7 +12,8 @@ import {
   UNSTABLE_ToastRegion as ToastRegion,
 } from "react-aria-components";
 import { flushSync } from "react-dom";
-import { composeTailwindRenderProps } from "src/lib/react-aria-utils";
+
+import { composeTailwindRenderProps } from "@repo/ui";
 
 import "./Toast.css";
 

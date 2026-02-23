@@ -5,8 +5,9 @@ import {
   composeRenderProps,
   ToggleButton as RACToggleButton,
 } from "react-aria-components";
-import { focusRing } from "src/lib/react-aria-utils";
 import { tv } from "tailwind-variants";
+
+import { focusRing } from "@repo/ui";
 
 const styles = tv({
   extend: focusRing,

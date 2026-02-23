@@ -6,8 +6,9 @@ import {
   Checkbox as AriaCheckbox,
   composeRenderProps,
 } from "react-aria-components";
-import { focusRing } from "src/lib/react-aria-utils";
 import { tv } from "tailwind-variants";
+
+import { focusRing } from "@repo/ui";
 
 const checkboxStyles = tv({
   base: "flex gap-2 items-center group font-sans text-sm transition relative [-webkit-tap-highlight-color:transparent]",

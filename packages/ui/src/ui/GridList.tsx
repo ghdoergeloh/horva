@@ -9,13 +9,12 @@ import {
   Button,
   composeRenderProps,
 } from "react-aria-components";
-import {
-  composeTailwindRenderProps,
-  focusRing,
-} from "src/lib/react-aria-utils";
-import { Checkbox } from "src/ui/Checkbox";
 import { twMerge } from "tailwind-merge";
 import { tv } from "tailwind-variants";
+
+import { composeTailwindRenderProps, focusRing } from "@repo/ui";
+
+import { Checkbox } from "./Checkbox";
 
 export function GridList<T extends object>({
   children,

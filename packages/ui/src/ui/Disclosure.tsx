@@ -14,9 +14,11 @@ import {
   DisclosureStateContext,
   Heading,
 } from "react-aria-components";
-import { composeTailwindRenderProps } from "src/lib/react-aria-utils";
-import { Button } from "src/ui/Button";
 import { tv } from "tailwind-variants";
+
+import { composeTailwindRenderProps } from "@repo/ui";
+
+import { Button } from "./Button";
 
 const disclosure = tv({
   base: "group min-w-50 font-sans rounded-lg text-neutral-900 dark:text-neutral-200",

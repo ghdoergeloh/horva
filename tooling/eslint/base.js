@@ -2,7 +2,7 @@ import * as path from "node:path";
 import { includeIgnoreFile } from "@eslint/compat";
 import eslint from "@eslint/js";
 import importPlugin from "eslint-plugin-import";
-import turboPlugin from "eslint-plugin-turbo";
+import turbo from "eslint-plugin-turbo";
 import { defineConfig } from "eslint/config";
 import tseslint from "typescript-eslint";
 
@@ -42,11 +42,10 @@ export const baseConfig = defineConfig(
   { ignores: ["**/*.config.*"] },
   {
     files: ["**/*.js", "**/*.ts", "**/*.tsx"],
-    plugins: {
-      turbo: turboPlugin,
-    },
     extends: [
       eslint.configs.recommended,
+      // @ts-expect-error - turbo.configs is not typed correctly
+      turbo.configs["flat/recommended"],
       importPlugin.flatConfigs.recommended,
       importPlugin.flatConfigs.typescript,
       ...tseslint.configs.recommended,
@@ -54,7 +53,6 @@ export const baseConfig = defineConfig(
       ...tseslint.configs.stylisticTypeChecked,
     ],
     rules: {
-      ...turboPlugin.configs.recommended.rules,
       "@typescript-eslint/no-unused-vars": [
         "error",
         { argsIgnorePattern: "^_", varsIgnorePattern: "^_" },
@@ -76,8 +74,6 @@ export const baseConfig = defineConfig(
       "@typescript-eslint/no-non-null-assertion": "error",
       "import/consistent-type-specifier-style": ["error", "prefer-top-level"],
     },
-  },
-  {
     linterOptions: { reportUnusedDisableDirectives: true },
     languageOptions: {
       parserOptions: {

@@ -11,12 +11,11 @@ import {
   CalendarGridBody,
   Text,
 } from "react-aria-components";
-import {
-  composeTailwindRenderProps,
-  focusRing,
-} from "src/lib/react-aria-utils";
-import { CalendarGridHeader, CalendarHeader } from "src/ui/Calendar";
 import { tv } from "tailwind-variants";
+
+import { composeTailwindRenderProps, focusRing } from "@repo/ui";
+
+import { CalendarGridHeader, CalendarHeader } from "./Calendar";
 
 export interface RangeCalendarProps<T extends DateValue> extends Omit<
   AriaRangeCalendarProps<T>,

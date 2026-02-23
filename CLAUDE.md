@@ -80,3 +80,14 @@ When adding a new API endpoint:
 - Node.js ^24.13.0, pnpm ^10.28.2
 - `.env` at repo root (copy from `.env.example`): `DATABASE_URL`, `BETTER_AUTH_SECRET`, `BETTER_AUTH_URL`, `API_PORT`, `VITE_API_URL`
 - Docker Compose provides PostgreSQL 16 (port 5432) and Mailpit (SMTP 1025, web UI 8025)
+
+## Post-Change Quality Checks
+
+After making any code changes, always run the following checks on affected packages before considering the task done:
+
+1. **Format**: `pnpm format` — apply Prettier formatting across the workspace
+2. **Lint**: `pnpm --filter <package> lint` — run ESLint on each changed package
+3. **Typecheck**: `pnpm --filter <package> typecheck` — verify TypeScript types on each changed package
+4. **Unit tests**: `pnpm --filter <package> test:unit` — run unit tests on each changed package
+
+Use `pnpm lint`, `pnpm typecheck` and `pnpm build` for workspace-wide verification when changes span multiple packages. Fix any errors before marking the task complete.

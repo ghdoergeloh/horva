@@ -2,7 +2,8 @@
 
 import type { ColorSwatchProps } from "react-aria-components";
 import { ColorSwatch as AriaColorSwatch } from "react-aria-components";
-import { composeTailwindRenderProps } from "src/lib/react-aria-utils";
+
+import { composeTailwindRenderProps } from "@repo/ui";
 
 export function ColorSwatch(props: ColorSwatchProps) {
   return (

@@ -7,14 +7,16 @@ import {
   Button,
   DialogTrigger,
 } from "react-aria-components";
-import { focusRing } from "src/lib/react-aria-utils";
-import { ColorArea } from "src/ui/ColorArea";
-import { ColorField } from "src/ui/ColorField";
-import { ColorSlider } from "src/ui/ColorSlider";
-import { ColorSwatch } from "src/ui/ColorSwatch";
-import { Dialog } from "src/ui/Dialog";
-import { Popover } from "src/ui/Popover";
 import { tv } from "tailwind-variants";
+
+import { focusRing } from "@repo/ui";
+
+import { ColorArea } from "./ColorArea";
+import { ColorField } from "./ColorField";
+import { ColorSlider } from "./ColorSlider";
+import { ColorSwatch } from "./ColorSwatch";
+import { Dialog } from "./Dialog";
+import { Popover } from "./Popover";
 
 const buttonStyles = tv({
   extend: focusRing,

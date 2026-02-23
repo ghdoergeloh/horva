@@ -11,12 +11,11 @@ import {
   Radio as RACRadio,
   RadioGroup as RACRadioGroup,
 } from "react-aria-components";
-import {
-  composeTailwindRenderProps,
-  focusRing,
-} from "src/lib/react-aria-utils";
-import { Description, FieldError, Label } from "src/ui/Field";
 import { tv } from "tailwind-variants";
+
+import { composeTailwindRenderProps, focusRing } from "@repo/ui";
+
+import { Description, FieldError, Label } from "./Field";
 
 export interface RadioGroupProps extends Omit<RACRadioGroupProps, "children"> {
   label?: string;

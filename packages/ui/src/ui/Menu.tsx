@@ -8,7 +8,6 @@ import type {
   SeparatorProps,
   SubmenuTriggerProps,
 } from "react-aria-components";
-import type { PopoverProps } from "src/ui/Popover";
 import React from "react";
 import { Check, ChevronRight } from "lucide-react";
 import {
@@ -22,8 +21,10 @@ import {
   Header,
   Separator,
 } from "react-aria-components";
-import { dropdownItemStyles } from "src/ui/ListBox";
-import { Popover } from "src/ui/Popover";
+
+import type { PopoverProps } from "./Popover";
+import { dropdownItemStyles } from "./ListBox";
+import { Popover } from "./Popover";
 
 export function Menu<T extends object>(props: MenuProps<T>) {
   return (

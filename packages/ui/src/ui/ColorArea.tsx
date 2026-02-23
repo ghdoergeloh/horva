@@ -2,8 +2,10 @@
 
 import type { ColorAreaProps as AriaColorAreaProps } from "react-aria-components";
 import { ColorArea as AriaColorArea } from "react-aria-components";
-import { composeTailwindRenderProps } from "src/lib/react-aria-utils";
-import { ColorThumb } from "src/ui/ColorThumb";
+
+import { composeTailwindRenderProps } from "@repo/ui";
+
+import { ColorThumb } from "./ColorThumb";
 
 export interface ColorAreaProps extends AriaColorAreaProps {}
 

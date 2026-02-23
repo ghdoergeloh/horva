@@ -8,9 +8,9 @@ import globals from "globals";
 export const reactConfig = defineConfig({
   files: ["**/*.{ts,tsx}"],
   extends: [
-    reactPlugin.configs.flat["recommended"]!,
-    reactPlugin.configs.flat["jsx-runtime"]!,
-    reactHooks.configs.flat["recommended-latest"]!,
+    reactPlugin.configs.flat["recommended"],
+    reactPlugin.configs.flat["jsx-runtime"],
+    reactHooks.configs.flat["recommended-latest"],
     reactRefresh.configs.vite,
   ],
   settings: {

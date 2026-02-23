@@ -7,12 +7,11 @@ import {
   SliderThumb,
   SliderTrack,
 } from "react-aria-components";
-import {
-  composeTailwindRenderProps,
-  focusRing,
-} from "src/lib/react-aria-utils";
-import { Label } from "src/ui/Field";
 import { tv } from "tailwind-variants";
+
+import { composeTailwindRenderProps, focusRing } from "@repo/ui";
+
+import { Label } from "./Field";
 
 const trackStyles = tv({
   base: "rounded-full",

@@ -6,20 +6,16 @@ import type {
   ListBoxItemProps,
   ValidationResult,
 } from "react-aria-components";
-import type { DropdownSectionProps } from "src/ui/ListBox";
 import { ChevronDown } from "lucide-react";
 import { ComboBox as AriaComboBox, ListBox } from "react-aria-components";
-import { composeTailwindRenderProps } from "src/lib/react-aria-utils";
-import {
-  Description,
-  FieldError,
-  FieldGroup,
-  Input,
-  Label,
-} from "src/ui/Field";
-import { FieldButton } from "src/ui/FieldButton";
-import { DropdownItem, DropdownSection } from "src/ui/ListBox";
-import { Popover } from "src/ui/Popover";
+
+import { composeTailwindRenderProps } from "@repo/ui";
+
+import type { DropdownSectionProps } from "./ListBox";
+import { Description, FieldError, FieldGroup, Input, Label } from "./Field";
+import { FieldButton } from "./FieldButton";
+import { DropdownItem, DropdownSection } from "./ListBox";
+import { Popover } from "./Popover";
 
 export interface ComboBoxProps<T extends object> extends Omit<
   AriaComboBoxProps<T>,

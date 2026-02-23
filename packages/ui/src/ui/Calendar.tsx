@@ -16,12 +16,11 @@ import {
   Text,
   useLocale,
 } from "react-aria-components";
-import {
-  composeTailwindRenderProps,
-  focusRing,
-} from "src/lib/react-aria-utils";
-import { Button } from "src/ui/Button";
 import { tv } from "tailwind-variants";
+
+import { composeTailwindRenderProps, focusRing } from "@repo/ui";
+
+import { Button } from "./Button";
 
 const cellStyles = tv({
   extend: focusRing,

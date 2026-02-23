@@ -15,10 +15,12 @@ import {
   TagList,
   Text,
 } from "react-aria-components";
-import { focusRing } from "src/lib/react-aria-utils";
-import { Description, Label } from "src/ui/Field";
 import { twMerge } from "tailwind-merge";
 import { tv } from "tailwind-variants";
+
+import { focusRing } from "@repo/ui";
+
+import { Description, Label } from "./Field";
 
 const colors = {
   gray: "bg-white text-neutral-600 border-neutral-200 hover:border-neutral-300 dark:bg-neutral-900 dark:text-neutral-300 dark:border-neutral-600 dark:hover:border-neutral-500",

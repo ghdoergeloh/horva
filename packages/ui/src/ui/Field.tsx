@@ -15,12 +15,10 @@ import {
   Label as RACLabel,
   Text,
 } from "react-aria-components";
-import {
-  composeTailwindRenderProps,
-  focusRing,
-} from "src/lib/react-aria-utils";
 import { twMerge } from "tailwind-merge";
 import { tv } from "tailwind-variants";
+
+import { composeTailwindRenderProps, focusRing } from "@repo/ui";
 
 export function Label(props: LabelProps) {
   return (

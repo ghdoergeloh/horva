@@ -13,10 +13,10 @@
   "iconLibrary": "lucide",
   "aliases": {
     "components": "src",
-    "utils": "src/lib/react-aria-utils",
-    "ui": "src/ui",
-    "lib": "src/lib",
-    "hooks": "src/hooks"
+    "utils": "@repo/ui",
+    "ui": "src/ui/",
+    "lib": "src/lib/",
+    "hooks": "src/hooks/"
   },
   "registries": {
     "@react-aria": "https://react-aria.adobe.com/registry/{name}.json"

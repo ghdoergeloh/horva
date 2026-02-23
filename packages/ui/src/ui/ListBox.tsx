@@ -14,11 +14,9 @@ import {
   Header,
   ListBoxSection,
 } from "react-aria-components";
-import {
-  composeTailwindRenderProps,
-  focusRing,
-} from "src/lib/react-aria-utils";
 import { tv } from "tailwind-variants";
+
+import { composeTailwindRenderProps, focusRing } from "@repo/ui";
 
 interface ListBoxProps<T> extends Omit<
   AriaListBoxProps<T>,

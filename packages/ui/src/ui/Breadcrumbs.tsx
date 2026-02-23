@@ -10,9 +10,11 @@ import {
   Breadcrumb as AriaBreadcrumb,
   Breadcrumbs as AriaBreadcrumbs,
 } from "react-aria-components";
-import { composeTailwindRenderProps } from "src/lib/react-aria-utils";
-import { Link } from "src/ui/Link";
 import { twMerge } from "tailwind-merge";
+
+import { composeTailwindRenderProps } from "@repo/ui";
+
+import { Link } from "./Link";
 
 export function Breadcrumbs<T extends object>(props: BreadcrumbsProps<T>) {
   return (

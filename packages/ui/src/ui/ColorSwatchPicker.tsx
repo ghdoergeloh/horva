@@ -9,9 +9,11 @@ import {
   ColorSwatchPickerItem as AriaColorSwatchPickerItem,
   composeRenderProps,
 } from "react-aria-components";
-import { focusRing } from "src/lib/react-aria-utils";
-import { ColorSwatch } from "src/ui/ColorSwatch";
 import { tv } from "tailwind-variants";
+
+import { focusRing } from "@repo/ui";
+
+import { ColorSwatch } from "./ColorSwatch";
 
 const pickerStyles = tv({
   base: "flex gap-1",

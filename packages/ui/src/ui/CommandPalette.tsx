@@ -10,9 +10,10 @@ import {
   Dialog,
   useFilter,
 } from "react-aria-components";
-import { Menu } from "src/ui/Menu";
-import { Modal } from "src/ui/Modal";
-import { SearchField } from "src/ui/SearchField";
+
+import { Menu } from "./Menu";
+import { Modal } from "./Modal";
+import { SearchField } from "./SearchField";
 
 export interface CommandPaletteProps<T extends object>
   extends Omit<AriaAutocompleteProps, "children">, AriaMenuProps<T> {

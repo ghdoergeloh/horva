@@ -18,7 +18,7 @@ export const auth = betterAuth({
     sendOnSignUp: true,
     autoSignInAfterVerification: true,
     sendVerificationEmail: async ({ user, url }) => {
-      void sendVerificationEmail(user.email, url);
+      await sendVerificationEmail(user.email, url);
     },
   },
   trustedOrigins: ["http://localhost:5173"],
