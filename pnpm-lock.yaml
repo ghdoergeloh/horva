@@ -146,6 +146,9 @@ importers:
       "@repo/contract":
         specifier: workspace:*
         version: link:../../packages/contract
+      "@repo/core":
+        specifier: workspace:*
+        version: link:../../packages/core
       "@repo/db":
         specifier: workspace:*
         version: link:../../packages/db
@@ -357,6 +360,13 @@ importers:
         version: 5.9.3
 
   packages/core:
+    dependencies:
+      "@repo/db":
+        specifier: workspace:*
+        version: link:../db
+      zod:
+        specifier: "catalog:"
+        version: 4.3.6
     devDependencies:
       "@repo/eslint-config":
         specifier: workspace:*
@@ -404,6 +414,9 @@ importers:
       "@repo/tsconfig":
         specifier: workspace:*
         version: link:../../tooling/typescript
+      "@types/pg":
+        specifier: ^8.16.0
+        version: 8.16.0
       drizzle-kit:
         specifier: "catalog:"
         version: 0.31.9
