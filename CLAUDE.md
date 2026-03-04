@@ -21,7 +21,7 @@ pnpm lint:fix                     # Lint and auto-fix
 pnpm format                       # Check formatting
 pnpm format:fix                   # Fix formatting
 
-# Database (requires DATABASE_URL in .env)
+# Database (requires TT_DATABASE_URL in .env)
 pnpm db:push                      # Push schema to database
 pnpm db:generate                  # Generate migrations
 pnpm db:migrate                   # Run migrations

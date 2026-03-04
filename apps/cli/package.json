@@ -1,24 +1,39 @@
 {
   "name": "@repo/cli",
-  "private": true,
+  "version": "0.0.1",
   "type": "module",
+  "bin": {
+    "tt": "./dist/index.js"
+  },
+  "files": [
+    "dist"
+  ],
   "scripts": {
-    "build": "tsc",
+    "build": "node build.mjs",
     "clean": "git clean -xdf .cache .turbo dist node_modules",
-    "dev": "tsc",
+    "dev": "node build.mjs --watch",
     "format": "prettier --check . --ignore-path ../../.gitignore",
     "lint": "eslint",
-    "typecheck": "tsc --noEmit --emitDeclarationOnly false"
+    "pack": "node build.mjs && cd dist && pnpm pack --pack-destination ..",
+    "typecheck": "tsc"
   },
   "prettier": "@repo/prettier-config",
   "dependencies": {
-    "commander": "^14.0.3"
+    "@inquirer/prompts": "^7.5.0",
+    "@repo/core": "workspace:*",
+    "@repo/db": "workspace:*",
+    "chalk": "^5.4.1",
+    "commander": "^14.0.3",
+    "dotenv": "catalog:",
+    "pg": "^8.18.0"
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
     "@repo/prettier-config": "workspace:*",
     "@repo/tsconfig": "workspace:*",
     "@types/node": "catalog:",
+    "@types/pg": "^8.16.0",
+    "esbuild": "^0.25.0",
     "eslint": "catalog:",
     "prettier": "catalog:",
     "typescript": "catalog:"
