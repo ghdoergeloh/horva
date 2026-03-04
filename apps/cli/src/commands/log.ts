@@ -94,7 +94,7 @@ export function registerLogCommands(program: Command): void {
               if (gapMins > 0) {
                 console.log(
                   chalk.dim(
-                    `        - ${to.padEnd(6)} ${" ".repeat(8)} (break – ${formatDuration(gapMins)})`,
+                    `  ${formatTime(prevEnd).padEnd(7)} ${from.padEnd(7)} ${formatDuration(gapMins).padEnd(8)} (break)`,
                   ),
                 );
               }
@@ -134,7 +134,7 @@ export function registerLogCommands(program: Command): void {
                 if (gapMins > 0) {
                   console.log(
                     chalk.dim(
-                      `        - ${from.padEnd(6)} ${" ".repeat(8)} (break – ${formatDuration(gapMins)})`,
+                      `  ${formatTime(prevEnd).padEnd(7)} ${from.padEnd(7)} ${formatDuration(gapMins).padEnd(8)} (break)`,
                     ),
                   );
                 }
