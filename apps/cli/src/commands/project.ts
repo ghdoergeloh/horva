@@ -10,14 +10,15 @@ import {
   updateProject,
 } from "@repo/core";
 
-import { db } from "../lib/db";
+import { db } from "../lib/db.js";
 import {
   colorProject,
   padVisible,
   printError,
   printSuccess,
   sym,
-} from "../lib/display";
+} from "../lib/display.js";
+import { pickProject } from "../lib/pickers.js";
 
 function parseId(ref: string): number {
   const id = parseInt(ref.replace(/^#/, ""), 10);
@@ -112,23 +113,75 @@ export function registerProjectCommands(program: Command): void {
 
   // project edit
   projectCmd
-    .command("edit <id>")
+    .command("edit [id]")
     .description("Edit a project")
     .option("-n, --name <name>", "New name")
     .option("-c, --color <color>", "New color")
-    .action(async (idStr: string, opts: { name?: string; color?: string }) => {
-      try {
-        const id = parseId(idStr);
-        await updateProject(db, id, {
-          name: opts.name,
-          color: opts.color ? resolveColor(opts.color) : undefined,
-        });
-        printSuccess(`${sym.edited} Project #${id} updated`);
-      } catch (err) {
-        printError(String(err));
-        process.exit(1);
-      }
-    });
+    .action(
+      async (
+        idStr: string | undefined,
+        opts: { name?: string; color?: string },
+      ) => {
+        try {
+          const hasFlags = opts.name !== undefined || opts.color !== undefined;
+
+          // Resolve ID (interactively if not provided)
+          let id: number;
+          if (idStr !== undefined) {
+            id = parseId(idStr);
+          } else {
+            id = await pickProject(db, "Which project do you want to edit?");
+          }
+
+          if (hasFlags) {
+            // Non-interactive path
+            await updateProject(db, id, {
+              name: opts.name,
+              color: opts.color ? resolveColor(opts.color) : undefined,
+            });
+            printSuccess(`${sym.edited} Project #${id} updated`);
+            return;
+          }
+
+          // Interactive wizard
+          const projects = await listProjects(db, true);
+          const current = projects.find((p) => p.id === id);
+          if (!current) {
+            printError(`Project #${id} not found`);
+            process.exit(1);
+          }
+
+          const changes: { name?: string; color?: string } = {};
+
+          const newName = await input({
+            message: "Name:",
+            default: current.name,
+          });
+          if (newName !== current.name) changes.name = newName;
+
+          const colorHint = chalk.dim(
+            "(name: red/green/blue/yellow/orange/purple/pink/cyan/grey or hex)",
+          );
+          const newColorInput = await input({
+            message: `Color ${colorHint}:`,
+            default: current.color,
+          });
+          const newColor = resolveColor(newColorInput);
+          if (newColor !== current.color) changes.color = newColor;
+
+          if (Object.keys(changes).length === 0) {
+            console.log("No changes made.");
+            return;
+          }
+
+          await updateProject(db, id, changes);
+          printSuccess(`${sym.edited} Project #${id} updated`);
+        } catch (err) {
+          printError(String(err));
+          process.exit(1);
+        }
+      },
+    );
 
   // project archive
   projectCmd

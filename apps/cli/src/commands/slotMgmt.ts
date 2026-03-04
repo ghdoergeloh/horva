@@ -1,10 +1,11 @@
 import type { Command } from "commander";
-import { confirm, select } from "@inquirer/prompts";
+import { confirm, input, select } from "@inquirer/prompts";
 import chalk from "chalk";
 
 import {
   deleteSlot,
   editSlot,
+  getOpenSlot,
   getSlot,
   listSlots,
   splitSlot,
@@ -20,6 +21,7 @@ import {
   printError,
   sym,
 } from "../lib/display.js";
+import { askChange, pickSlot, pickTask } from "../lib/pickers.js";
 
 function parseTime(timeStr: string, referenceDate?: Date): Date {
   const base = referenceDate ? new Date(referenceDate) : new Date();
@@ -208,66 +210,154 @@ export function registerSlotMgmtCommands(program: Command): void {
       },
     );
 
-  // tt slot edit <id>
+  // tt slot edit [id]
   slotCmd
-    .command("edit <id>")
+    .command("edit [id]")
     .description("Edit a slot's times or task")
     .option("-s, --start <time>", "New start time (HH:MM or HH:MM YYYY-MM-DD)")
     .option("-e, --end <time>", "New end time (HH:MM or HH:MM YYYY-MM-DD)")
     .option("-t, --task <taskId>", "Assign task (use task ID, e.g. #34 or 34)")
     .option("--no-task", "Remove task assignment")
+    .option("--reopen", "Reopen slot by removing its end time")
     .action(
       async (
-        idStr: string,
-        opts: { start?: string; end?: string; task?: string; noTask?: boolean },
+        idStr: string | undefined,
+        opts: {
+          start?: string;
+          end?: string;
+          task?: string;
+          noTask?: boolean;
+          reopen?: boolean;
+        },
       ) => {
         try {
-          const id = parseInt(idStr, 10);
-          if (isNaN(id)) {
-            printError(`Invalid slot ID: ${idStr}`);
-            process.exit(1);
+          const hasFlags =
+            opts.start !== undefined ||
+            opts.end !== undefined ||
+            opts.task !== undefined ||
+            opts.noTask === true ||
+            opts.reopen === true;
+
+          let current: Awaited<ReturnType<typeof getSlot>>;
+          if (idStr !== undefined) {
+            const id = parseInt(idStr, 10);
+            if (isNaN(id)) {
+              printError(`Invalid slot ID: ${idStr}`);
+              process.exit(1);
+            }
+            current = await getSlot(db, id);
+            if (!current) {
+              printError(`Slot #${id} not found`);
+              process.exit(1);
+            }
+          } else {
+            current = await pickSlot(db, "Which slot do you want to edit?");
           }
 
-          const current = await getSlot(db, id);
-          if (!current) {
-            printError(`Slot #${id} not found`);
-            process.exit(1);
-          }
+          const id = current.id;
 
           const changes: {
             startedAt?: Date;
-            endedAt?: Date;
+            endedAt?: Date | null;
             taskId?: number | null;
           } = {};
 
-          if (opts.start) {
-            changes.startedAt = parseTime(opts.start, current.startedAt);
-          }
-          if (opts.end) {
-            changes.endedAt = parseTime(opts.end, current.startedAt);
-          }
-          if (opts.noTask) {
-            changes.taskId = null;
-          } else if (opts.task) {
-            const taskId = parseInt(opts.task.replace(/^#/, ""), 10);
-            if (isNaN(taskId)) {
-              printError(`Invalid task ID: ${opts.task}`);
-              process.exit(1);
+          if (hasFlags) {
+            // Non-interactive flag path
+            if (opts.start) {
+              changes.startedAt = parseTime(opts.start, current.startedAt);
             }
-            changes.taskId = taskId;
+            if (opts.reopen) {
+              if (!current.endedAt) {
+                printError("Slot is already open.");
+                process.exit(1);
+              }
+              const openSlot = await getOpenSlot(db);
+              if (openSlot) {
+                printError(
+                  `Cannot reopen slot #${current.id}: slot #${openSlot.id} is already open. Close it first.`,
+                );
+                process.exit(1);
+              }
+              changes.endedAt = null;
+            } else if (opts.end) {
+              changes.endedAt = parseTime(opts.end, current.startedAt);
+            }
+            if (opts.noTask) {
+              changes.taskId = null;
+            } else if (opts.task) {
+              const taskId = parseInt(opts.task.replace(/^#/, ""), 10);
+              if (isNaN(taskId)) {
+                printError(`Invalid task ID: ${opts.task}`);
+                process.exit(1);
+              }
+              changes.taskId = taskId;
+            }
+          } else {
+            // Interactive wizard
+            // startedAt
+            const startAction = await askChange(
+              "Start time:",
+              formatTime(current.startedAt),
+            );
+            if (startAction === "change") {
+              const newStartStr = await input({
+                message: "New start time (HH:MM or HH:MM YYYY-MM-DD):",
+              });
+              changes.startedAt = parseTime(newStartStr, current.startedAt);
+            }
+
+            // endedAt
+            const endCurrentDisplay = current.endedAt
+              ? formatTime(current.endedAt)
+              : null;
+            const endAction = await askChange("End time:", endCurrentDisplay, {
+              canRemove: current.endedAt !== null,
+              removeLabel: "Remove (reopen slot)",
+            });
+            if (endAction === "remove") {
+              const openSlot = await getOpenSlot(db);
+              if (openSlot && openSlot.id !== current.id) {
+                printError(
+                  `Cannot reopen slot #${current.id}: slot #${openSlot.id} is already open. Close it first.`,
+                );
+                process.exit(1);
+              }
+              changes.endedAt = null;
+            } else if (endAction === "change") {
+              const newEndStr = await input({
+                message: "New end time (HH:MM or HH:MM YYYY-MM-DD):",
+              });
+              changes.endedAt = parseTime(newEndStr, current.startedAt);
+            }
+
+            // task
+            const taskCurrentDisplay = current.task
+              ? `#${current.task.id} ${current.task.name}`
+              : null;
+            const taskAction = await askChange("Task:", taskCurrentDisplay, {
+              canRemove: current.task !== null,
+              removeLabel: "Remove (no task)",
+            });
+            if (taskAction === "remove") {
+              changes.taskId = null;
+            } else if (taskAction === "change") {
+              const newTaskId = await pickTask(db, "Select task:", {
+                allowNone: false,
+              });
+              if (newTaskId !== null) changes.taskId = newTaskId;
+            }
           }
 
           if (Object.keys(changes).length === 0) {
-            printError(
-              "No changes specified. Use --start, --end, --task, or --no-task.",
-            );
-            process.exit(1);
+            console.log("No changes made.");
+            return;
           }
 
           // Check for neighbor impact before applying
           let adjustNeighbor = false;
 
-          if (changes.endedAt !== undefined) {
+          if (changes.endedAt !== undefined && changes.endedAt !== null) {
             const newEnd = changes.endedAt;
             // Get all slots for the day to find the next one
             const startOfDay = new Date(current.startedAt);
@@ -413,18 +503,24 @@ export function registerSlotMgmtCommands(program: Command): void {
             );
           }
           if (changes.endedAt !== undefined) {
-            const oldEnd = current.endedAt
-              ? formatTime(current.endedAt)
-              : "open";
-            const newEnd = result.updated.endedAt
-              ? formatTime(result.updated.endedAt)
-              : "open";
-            console.log(`  End: ${oldEnd} → ${newEnd}`);
-            if (!changes.startedAt) {
-              const dur = slotDuration(result.updated);
+            if (changes.endedAt === null) {
               console.log(
-                `  Duration: ${formatDuration(slotDuration(current))} → ${formatDuration(dur)}`,
+                `  End: ${current.endedAt ? formatTime(current.endedAt) : "open"} → open (slot reopened)`,
               );
+            } else {
+              const oldEnd = current.endedAt
+                ? formatTime(current.endedAt)
+                : "open";
+              const newEnd = result.updated.endedAt
+                ? formatTime(result.updated.endedAt)
+                : "open";
+              console.log(`  End: ${oldEnd} → ${newEnd}`);
+              if (!changes.startedAt) {
+                const dur = slotDuration(result.updated);
+                console.log(
+                  `  Duration: ${formatDuration(slotDuration(current))} → ${formatDuration(dur)}`,
+                );
+              }
             }
           }
           if (result.neighborAdjusted) {
@@ -449,24 +545,30 @@ export function registerSlotMgmtCommands(program: Command): void {
       },
     );
 
-  // tt slot delete <id>
+  // tt slot delete [id]
   slotCmd
-    .command("delete <id>")
+    .command("delete [id]")
     .alias("rm")
     .description("Delete a slot")
-    .action(async (idStr: string) => {
+    .action(async (idStr: string | undefined) => {
       try {
-        const id = parseInt(idStr, 10);
-        if (isNaN(id)) {
-          printError(`Invalid slot ID: ${idStr}`);
-          process.exit(1);
+        let current: Awaited<ReturnType<typeof getSlot>>;
+        if (idStr !== undefined) {
+          const id = parseInt(idStr, 10);
+          if (isNaN(id)) {
+            printError(`Invalid slot ID: ${idStr}`);
+            process.exit(1);
+          }
+          current = await getSlot(db, id);
+          if (!current) {
+            printError(`Slot #${id} not found`);
+            process.exit(1);
+          }
+        } else {
+          current = await pickSlot(db, "Which slot do you want to delete?");
         }
 
-        const current = await getSlot(db, id);
-        if (!current) {
-          printError(`Slot #${id} not found`);
-          process.exit(1);
-        }
+        const id = current.id;
 
         const from = formatTime(current.startedAt);
         const to = current.endedAt ? formatTime(current.endedAt) : "open";
@@ -519,25 +621,37 @@ export function registerSlotMgmtCommands(program: Command): void {
       }
     });
 
-  // tt slot split <id> <time>
+  // tt slot split [id] <time>
   slotCmd
-    .command("split <id> <time>")
+    .command("split [id] <time>")
     .description("Split a slot at a given time")
     .action(async (idStr: string, timeStr: string) => {
       try {
-        const id = parseInt(idStr, 10);
-        if (isNaN(id)) {
-          printError(`Invalid slot ID: ${idStr}`);
-          process.exit(1);
+        // Commander passes args positionally; if idStr looks like a time (HH:MM), it's the time
+        // and no ID was given — but Commander can't handle this cleanly with [id] <time>.
+        // Instead we treat idStr as ID if numeric, else as time with interactive picker.
+        let current: Awaited<ReturnType<typeof getSlot>>;
+        let resolvedTimeStr = timeStr;
+
+        if (/^\d{1,2}:\d{2}$/.test(idStr)) {
+          // No ID given — idStr is actually the time
+          resolvedTimeStr = idStr;
+          current = await pickSlot(db, "Which slot do you want to split?");
+        } else {
+          const id = parseInt(idStr, 10);
+          if (isNaN(id)) {
+            printError(`Invalid slot ID: ${idStr}`);
+            process.exit(1);
+          }
+          current = await getSlot(db, id);
+          if (!current) {
+            printError(`Slot #${id} not found`);
+            process.exit(1);
+          }
         }
 
-        const current = await getSlot(db, id);
-        if (!current) {
-          printError(`Slot #${id} not found`);
-          process.exit(1);
-        }
-
-        const at = parseTime(timeStr, current.startedAt);
+        const id = current.id;
+        const at = parseTime(resolvedTimeStr, current.startedAt);
         const taskInfo = current.task
           ? `#${current.task.id} ${current.task.name}`
           : "(no task)";

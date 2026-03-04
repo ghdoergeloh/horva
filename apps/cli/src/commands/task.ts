@@ -1,5 +1,5 @@
 import type { Command } from "commander";
-import { input, select } from "@inquirer/prompts";
+import { checkbox, input, select } from "@inquirer/prompts";
 import chalk from "chalk";
 
 import {
@@ -16,14 +16,15 @@ import {
   updateTask,
 } from "@repo/core";
 
-import { db } from "../lib/db";
+import { db } from "../lib/db.js";
 import {
   colorProject,
   formatDate,
   printError,
   printSuccess,
   sym,
-} from "../lib/display";
+} from "../lib/display.js";
+import { askChange, pickTask } from "../lib/pickers.js";
 
 function parseId(ref: string): number {
   const id = parseInt(ref.replace(/^#/, ""), 10);
@@ -205,7 +206,7 @@ export function registerTaskCommands(program: Command): void {
 
   // task edit
   taskCmd
-    .command("edit <id>")
+    .command("edit [id]")
     .description("Edit a task")
     .option("-n, --name <name>", "New name")
     .option("-p, --project <id>", "New project ID")
@@ -218,7 +219,7 @@ export function registerTaskCommands(program: Command): void {
     .option("--remove-link <url>", "Remove link (repeatable)", collect, [])
     .action(
       async (
-        idStr: string,
+        idStr: string | undefined,
         opts: {
           name?: string;
           project?: string;
@@ -232,8 +233,6 @@ export function registerTaskCommands(program: Command): void {
         },
       ) => {
         try {
-          const id = parseId(idStr);
-
           const allLabels = await listLabels(db);
           const resolveLabels = (names: string[]) =>
             names
@@ -243,31 +242,161 @@ export function registerTaskCommands(program: Command): void {
                     (l) => l.name.toLowerCase() === n.toLowerCase(),
                   )?.id,
               )
-              .filter((id): id is number => id !== undefined);
+              .filter((labelId): labelId is number => labelId !== undefined);
 
-          let scheduledDate: Date | null | undefined;
-          if (opts.clearDate) {
-            scheduledDate = null;
-          } else if (opts.date) {
-            scheduledDate = parseDate(opts.date);
+          const hasFlags =
+            opts.name !== undefined ||
+            opts.project !== undefined ||
+            opts.label.length > 0 ||
+            opts.removeLabel.length > 0 ||
+            opts.date !== undefined ||
+            opts.clearDate === true ||
+            opts.note !== undefined ||
+            opts.link.length > 0 ||
+            opts.removeLink.length > 0;
+
+          // Resolve ID (interactively if not provided)
+          let id: number;
+          if (idStr !== undefined) {
+            id = parseId(idStr);
+          } else {
+            const picked = await pickTask(
+              db,
+              "Which task do you want to edit?",
+            );
+            if (picked === null) {
+              console.log("Cancelled.");
+              return;
+            }
+            id = picked;
           }
 
-          await updateTask(db, id, {
-            name: opts.name,
-            projectId: opts.project ? parseInt(opts.project, 10) : undefined,
-            addLabelIds:
-              opts.label.length > 0 ? resolveLabels(opts.label) : undefined,
-            removeLabelIds:
-              opts.removeLabel.length > 0
-                ? resolveLabels(opts.removeLabel)
-                : undefined,
-            scheduledDate,
-            notes: opts.note,
-            addLinks: opts.link.length > 0 ? opts.link : undefined,
-            removeLinks:
-              opts.removeLink.length > 0 ? opts.removeLink : undefined,
-          });
+          if (hasFlags) {
+            // Non-interactive path
+            let scheduledDate: Date | null | undefined;
+            if (opts.clearDate) {
+              scheduledDate = null;
+            } else if (opts.date) {
+              scheduledDate = parseDate(opts.date);
+            }
 
+            await updateTask(db, id, {
+              name: opts.name,
+              projectId: opts.project ? parseInt(opts.project, 10) : undefined,
+              addLabelIds:
+                opts.label.length > 0 ? resolveLabels(opts.label) : undefined,
+              removeLabelIds:
+                opts.removeLabel.length > 0
+                  ? resolveLabels(opts.removeLabel)
+                  : undefined,
+              scheduledDate,
+              notes: opts.note,
+              addLinks: opts.link.length > 0 ? opts.link : undefined,
+              removeLinks:
+                opts.removeLink.length > 0 ? opts.removeLink : undefined,
+            });
+
+            printSuccess(`${sym.edited} Task #${id} updated`);
+            return;
+          }
+
+          // Interactive wizard
+          const current = await getTask(db, id);
+          if (!current) {
+            printError(`Task #${id} not found`);
+            process.exit(1);
+          }
+
+          const changes: Parameters<typeof updateTask>[2] = {};
+
+          // name
+          const newName = await input({
+            message: "Name:",
+            default: current.name,
+          });
+          if (newName !== current.name) changes.name = newName;
+
+          // project
+          const projects = await listProjects(db);
+          const projectChoices = projects.map((p) => ({
+            name: `#${p.id} ${colorProject(p.name, p.color)}`,
+            value: p.id,
+          }));
+          const newProjectId = await select({
+            message: "Project:",
+            choices: projectChoices,
+            default: current.project.id,
+          });
+          if (newProjectId !== current.project.id)
+            changes.projectId = newProjectId;
+
+          // scheduledDate
+          const currentDateDisplay = current.scheduledDate
+            ? formatDate(current.scheduledDate)
+            : null;
+          const dateAction = await askChange(
+            "Scheduled date:",
+            currentDateDisplay,
+            {
+              canRemove: current.scheduledDate !== null,
+              removeLabel: "Remove (clear date)",
+            },
+          );
+          if (dateAction === "remove") {
+            changes.scheduledDate = null;
+          } else if (dateAction === "change") {
+            const newDateStr = await input({
+              message: "New date (today, tomorrow, YYYY-MM-DD):",
+            });
+            changes.scheduledDate = parseDate(newDateStr);
+          }
+
+          // notes
+          const notesAction = await askChange("Notes:", current.notes ?? null, {
+            canRemove: current.notes !== null,
+            removeLabel: "Remove (clear notes)",
+          });
+          if (notesAction === "remove") {
+            changes.notes = null;
+          } else if (notesAction === "change") {
+            changes.notes = await input({
+              message: "New notes:",
+              default: current.notes ?? undefined,
+            });
+          }
+
+          // labels
+          const currentLabelIds = new Set(
+            current.taskLabels.map((tl) => tl.label.id),
+          );
+          const labelChoices = allLabels.map((l) => ({
+            name: l.name,
+            value: l.id,
+            checked: currentLabelIds.has(l.id),
+          }));
+
+          if (allLabels.length > 0) {
+            const selectedLabelIds = await checkbox({
+              message: "Labels (space to toggle):",
+              choices: labelChoices,
+            });
+            const selectedSet = new Set(selectedLabelIds);
+            const toAdd = selectedLabelIds.filter(
+              (lid) => !currentLabelIds.has(lid),
+            );
+            const toRemove = [...currentLabelIds].filter(
+              (lid) => !selectedSet.has(lid),
+            );
+            if (toAdd.length > 0) changes.addLabelIds = toAdd;
+            if (toRemove.length > 0) changes.removeLabelIds = toRemove;
+          }
+
+          if (Object.keys(changes).length === 0) {
+            console.log("No changes made.");
+            return;
+          }
+
+          await updateTask(db, id, changes);
           printSuccess(`${sym.edited} Task #${id} updated`);
         } catch (err) {
           printError(String(err));
