@@ -40,7 +40,7 @@ pnpm --filter @repo/cli link --global
 **Option B — pack and install (self-contained tarball):**
 
 ```bash
-cd apps/cli
+cd apps/cli/dist
 pnpm pack                        # produces repo-cli-<version>.tgz
 npm install -g ./repo-cli-*.tgz  # or: pnpm add -g ./repo-cli-*.tgz
 ```
