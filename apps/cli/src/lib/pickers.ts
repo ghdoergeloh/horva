@@ -22,15 +22,17 @@ function slotDuration(s: { startedAt: Date; endedAt: Date | null }): number {
 
 export async function createTaskInline(
   db: Db,
-  prefillName?: string,
+  prefill?: { name?: string; projectId?: number },
 ): Promise<number> {
-  const name = prefillName ?? (await input({ message: "Task name:" }));
-  const projects = await listProjects(db);
-  let projectId: number | undefined;
-  if (projects.length > 1) {
-    projectId = await pickProject(db, "Project:");
-  } else if (projects[0]) {
-    projectId = projects[0].id;
+  const name = prefill?.name ?? (await input({ message: "Task name:" }));
+  let projectId = prefill?.projectId;
+  if (projectId === undefined) {
+    const projects = await listProjects(db);
+    if (projects.length > 1) {
+      projectId = await pickProject(db, "Project:");
+    } else if (projects[0]) {
+      projectId = projects[0].id;
+    }
   }
   const task = await createTask(db, { name, projectId });
   return task.id;
@@ -93,16 +95,19 @@ export async function pickTask(
     message: opts?.noneFirst ? "Select task:" : message,
     choices,
   });
-  if (result === -1) return createTaskInline(db);
+  if (result === -1) return createTaskInline(db, { projectId });
   return result;
 }
 
 export async function createProjectInline(
   db: Db,
-  prefillName?: string,
+  prefill?: { name?: string; color?: string },
 ): Promise<number> {
-  const name = prefillName ?? (await input({ message: "Project name:" }));
-  const project = await createProject(db, { name, color: "#6366f1" });
+  const name = prefill?.name ?? (await input({ message: "Project name:" }));
+  const project = await createProject(db, {
+    name,
+    color: prefill?.color ?? "#6366f1",
+  });
   return project.id;
 }
 
@@ -124,9 +129,9 @@ export async function pickProject(db: Db, message: string): Promise<number> {
 
 export async function createLabelInline(
   db: Db,
-  prefillName?: string,
+  prefill?: { name?: string },
 ): Promise<number> {
-  const name = prefillName ?? (await input({ message: "Label name:" }));
+  const name = prefill?.name ?? (await input({ message: "Label name:" }));
   const label = await createLabel(db, name);
   return label.id;
 }

@@ -51,7 +51,7 @@ export function registerSlotCommands(program: Command): void {
           if (ref) {
             const id = parseInt(ref.replace(/^#/, ""), 10);
             if (isNaN(id)) {
-              taskId = await createTaskInline(db, ref);
+              taskId = await createTaskInline(db, { name: ref });
             } else {
               taskId = id;
             }
