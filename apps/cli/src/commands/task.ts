@@ -4,6 +4,7 @@ import chalk from "chalk";
 
 import {
   archiveTask,
+  createLabel,
   createTask,
   deleteTask,
   getTask,
@@ -24,7 +25,7 @@ import {
   printSuccess,
   sym,
 } from "../lib/display.js";
-import { askChange, pickTask } from "../lib/pickers.js";
+import { askChange, pickProject, pickTask } from "../lib/pickers.js";
 
 function parseId(ref: string): number {
   const id = parseInt(ref.replace(/^#/, ""), 10);
@@ -83,15 +84,7 @@ export function registerTaskCommands(program: Command): void {
           if (opts.project) {
             projectId = parseInt(opts.project, 10);
           } else {
-            const projects = await listProjects(db);
-            const choices = projects.map((p) => ({
-              name: `#${p.id} ${colorProject(p.name, p.color)}`,
-              value: p.id,
-            }));
-            projectId = await select({
-              message: "Project:",
-              choices,
-            });
+            projectId = await pickProject(db, "Project:");
           }
 
           // Resolve label IDs
@@ -369,17 +362,34 @@ export function registerTaskCommands(program: Command): void {
           const currentLabelIds = new Set(
             current.taskLabels.map((tl) => tl.label.id),
           );
-          const labelChoices = allLabels.map((l) => ({
+          const labelChoices: {
+            name: string;
+            value: number;
+            checked: boolean;
+          }[] = allLabels.map((l) => ({
             name: l.name,
             value: l.id,
             checked: currentLabelIds.has(l.id),
           }));
+          labelChoices.push({
+            name: "Create new label...",
+            value: -1,
+            checked: false,
+          });
 
-          if (allLabels.length > 0) {
-            const selectedLabelIds = await checkbox({
+          {
+            const selectedRaw = await checkbox({
               message: "Labels (space to toggle):",
               choices: labelChoices,
             });
+
+            const selectedLabelIds = selectedRaw.filter((id) => id !== -1);
+            if (selectedRaw.includes(-1)) {
+              const newLabelName = await input({ message: "New label name:" });
+              const newLabel = await createLabel(db, newLabelName);
+              selectedLabelIds.push(newLabel.id);
+            }
+
             const selectedSet = new Set(selectedLabelIds);
             const toAdd = selectedLabelIds.filter(
               (lid) => !currentLabelIds.has(lid),

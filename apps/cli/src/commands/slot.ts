@@ -1,5 +1,4 @@
 import type { Command } from "commander";
-import { select } from "@inquirer/prompts";
 import chalk from "chalk";
 
 import {
@@ -22,6 +21,7 @@ import {
   printError,
   sym,
 } from "../lib/display";
+import { createTaskInline, pickTask } from "../lib/pickers";
 
 function parseTime(timeStr: string): Date {
   const now = new Date();
@@ -51,29 +51,18 @@ export function registerSlotCommands(program: Command): void {
           if (ref) {
             const id = parseInt(ref.replace(/^#/, ""), 10);
             if (isNaN(id)) {
-              printError(`Invalid task reference: ${ref}`);
-              process.exit(1);
+              taskId = await createTaskInline(db, ref);
+            } else {
+              taskId = id;
             }
-            taskId = id;
           } else {
-            // Interactive selection
-            const openTasks = await listTasks(db, { status: "open" });
-            const choices: {
-              name: string;
-              value: number | "no_task";
-            }[] = [
-              { name: "Start without task", value: "no_task" },
-              ...openTasks.map((t) => ({
-                name: `#${t.id} ${t.name}  (${colorProject(t.project.name, t.project.color)})`,
-                value: t.id as number | "no_task",
-              })),
-            ];
-
-            const selected = await select({
-              message: "What do you want to do?",
-              choices,
+            // Interactive selection with project filter
+            const picked = await pickTask(db, "What do you want to do?", {
+              allowNone: true,
+              noneLabel: "Start without task",
+              noneFirst: true,
             });
-            taskId = selected === "no_task" ? undefined : selected;
+            taskId = picked ?? undefined;
           }
 
           if (opts.assign) {
@@ -97,13 +86,11 @@ export function registerSlotCommands(program: Command): void {
 
           if (result.closedSlot) {
             const cs = result.closedSlot;
-            const end = cs.endedAt ? formatTime(cs.endedAt) : "?";
+            const end = formatTime(cs.endedAt);
             const start = formatTime(cs.startedAt);
-            const mins = cs.endedAt
-              ? Math.round(
-                  (cs.endedAt.getTime() - cs.startedAt.getTime()) / 60000,
-                )
-              : 0;
+            const mins = Math.round(
+              (cs.endedAt.getTime() - cs.startedAt.getTime()) / 60000,
+            );
             if (cs.taskId) {
               console.log(
                 `${sym.stop} Stopped #${cs.taskId} at ${end} (${start} - ${end} | ${formatDuration(mins)})`,

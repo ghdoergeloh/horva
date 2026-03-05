@@ -1,6 +1,14 @@
 import { input, select } from "@inquirer/prompts";
 
-import { listProjects, listSlots, listTasks } from "@repo/core";
+import {
+  createLabel,
+  createProject,
+  createTask,
+  listLabels,
+  listProjects,
+  listSlots,
+  listTasks,
+} from "@repo/core";
 
 import type { Db } from "./db.js";
 import { colorProject, formatDuration, formatTime, sym } from "./display.js";
@@ -12,36 +20,130 @@ function slotDuration(s: { startedAt: Date; endedAt: Date | null }): number {
   return Math.round((s.endedAt.getTime() - s.startedAt.getTime()) / 60000);
 }
 
+export async function createTaskInline(
+  db: Db,
+  prefillName?: string,
+): Promise<number> {
+  const name = prefillName ?? (await input({ message: "Task name:" }));
+  const projects = await listProjects(db);
+  let projectId: number | undefined;
+  if (projects.length > 1) {
+    projectId = await pickProject(db, "Project:");
+  } else if (projects[0]) {
+    projectId = projects[0].id;
+  }
+  const task = await createTask(db, { name, projectId });
+  return task.id;
+}
+
 export async function pickTask(
   db: Db,
   message: string,
-  opts?: { allowNone?: boolean; noneLabel?: string },
+  opts?: {
+    allowNone?: boolean;
+    noneLabel?: string;
+    noneFirst?: boolean;
+  },
 ): Promise<number | null> {
-  const tasks = await listTasks(db, { status: "open" });
-  if (tasks.length === 0) throw new Error("No open tasks found.");
+  if (opts?.allowNone && opts.noneFirst) {
+    const noneLabel = opts.noneLabel ?? "(no task)";
+    const first = await select({
+      message,
+      choices: [
+        { name: noneLabel, value: "none" as const },
+        { name: "Select a task...", value: "pick" as const },
+        { name: "Create new task...", value: "create" as const },
+      ],
+    });
+    if (first === "none") return null;
+    if (first === "create") return createTaskInline(db);
+  }
+
+  const projects = await listProjects(db);
+  let projectId: number | undefined;
+
+  if (projects.length > 1) {
+    const projectChoices: { name: string; value: number | null }[] =
+      projects.map((p) => ({
+        name: `#${p.id} ${colorProject(p.name, p.color)}`,
+        value: p.id,
+      }));
+    projectChoices.push({ name: "All projects", value: null });
+    const picked = await select({
+      message: "Filter by project:",
+      choices: projectChoices,
+    });
+    projectId = picked ?? undefined;
+  }
+
+  const tasks = await listTasks(db, { status: "open", projectId });
 
   const choices: { name: string; value: number | null }[] = tasks.map((t) => ({
     name: `#${t.id} ${t.name}  (${colorProject(t.project.name, t.project.color)})`,
     value: t.id,
   }));
 
-  if (opts?.allowNone) {
+  if (opts?.allowNone && !opts.noneFirst) {
     choices.push({ name: opts.noneLabel ?? "(no task)", value: null });
   }
 
-  return select({ message, choices });
+  choices.push({ name: "Create new task...", value: -1 });
+
+  const result = await select({
+    message: opts?.noneFirst ? "Select task:" : message,
+    choices,
+  });
+  if (result === -1) return createTaskInline(db);
+  return result;
+}
+
+export async function createProjectInline(
+  db: Db,
+  prefillName?: string,
+): Promise<number> {
+  const name = prefillName ?? (await input({ message: "Project name:" }));
+  const project = await createProject(db, { name, color: "#6366f1" });
+  return project.id;
 }
 
 export async function pickProject(db: Db, message: string): Promise<number> {
   const projects = await listProjects(db);
-  if (projects.length === 0) throw new Error("No projects found.");
 
-  const choices = projects.map((p) => ({
+  const choices: { name: string; value: number }[] = projects.map((p) => ({
     name: `#${p.id} ${colorProject(p.name, p.color)}`,
     value: p.id,
   }));
+  choices.push({ name: "Create new project...", value: -1 });
 
-  return select({ message, choices });
+  if (choices.length === 1) return createProjectInline(db);
+
+  const result = await select({ message, choices });
+  if (result === -1) return createProjectInline(db);
+  return result;
+}
+
+export async function createLabelInline(
+  db: Db,
+  prefillName?: string,
+): Promise<number> {
+  const name = prefillName ?? (await input({ message: "Label name:" }));
+  const label = await createLabel(db, name);
+  return label.id;
+}
+
+export async function pickLabel(db: Db, message: string): Promise<number> {
+  const labels = await listLabels(db);
+  const choices: { name: string; value: number }[] = labels.map((l) => ({
+    name: l.name,
+    value: l.id,
+  }));
+  choices.push({ name: "Create new label...", value: -1 });
+
+  if (choices.length === 1) return createLabelInline(db);
+
+  const result = await select({ message, choices });
+  if (result === -1) return createLabelInline(db);
+  return result;
 }
 
 export async function pickSlot(db: Db, message: string): Promise<SlotChoice> {
