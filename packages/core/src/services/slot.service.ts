@@ -198,27 +198,10 @@ export async function getNextSlot(
   );
 }
 
-export type NeighborWarning =
-  | {
-      kind: "overlap";
-      neighbor: { id: number; startedAt: Date; endedAt: Date | null };
-    }
-  | {
-      kind: "new_gap";
-      neighbor: { id: number; startedAt: Date; endedAt: Date | null };
-      gapMinutes: number;
-    }
-  | {
-      kind: "close_gap";
-      neighbor: { id: number; startedAt: Date; endedAt: Date | null };
-    }
-  | { kind: "none" };
-
 export async function editSlot(
   db: Db,
   id: number,
   changes: { startedAt?: Date; endedAt?: Date | null; taskId?: number | null },
-  adjustNeighbor: boolean,
 ): Promise<{
   updated: NonNullable<Awaited<ReturnType<typeof getSlot>>>;
   neighborAdjusted?: {
@@ -227,7 +210,6 @@ export async function editSlot(
     from: Date;
     to: Date;
   };
-  warning?: NeighborWarning;
 }> {
   return db.transaction(async (tx) => {
     const current = await tx.query.slot.findFirst({
@@ -259,7 +241,7 @@ export async function editSlot(
         (sl) => sl.id !== id && sl.startedAt >= current.startedAt,
       );
 
-      if (nextSlot && adjustNeighbor) {
+      if (nextSlot) {
         await tx
           .update(slot)
           .set({ startedAt: newEnd })
@@ -288,7 +270,7 @@ export async function editSlot(
         .reverse()
         .find((sl) => sl.id !== id && sl.startedAt < current.startedAt);
 
-      if (prevSlot && adjustNeighbor) {
+      if (prevSlot) {
         await tx
           .update(slot)
           .set({ endedAt: newStart })

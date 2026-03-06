@@ -96,6 +96,29 @@ export const contract = oc.router({
       .route({ method: "POST", path: "/slot/done" })
       .input(z.object({ at: z.string().datetime().optional() }))
       .output(z.object({ closedSlot: slotSchema.nullable() })),
+    edit: oc
+      .route({ method: "PATCH", path: "/slot/{id}" })
+      .input(
+        z.object({
+          id: z.number(),
+          startedAt: z.string().datetime().optional(),
+          endedAt: z.string().datetime().nullable().optional(),
+          taskId: z.number().nullable().optional(),
+        }),
+      )
+      .output(
+        z.object({
+          updated: slotSchema,
+          neighborAdjusted: z
+            .object({
+              id: z.number(),
+              field: z.enum(["startedAt", "endedAt"]),
+              from: z.string().datetime(),
+              to: z.string().datetime(),
+            })
+            .optional(),
+        }),
+      ),
   }),
 
   task: oc.router({

@@ -12,6 +12,7 @@ import {
   deleteProject,
   deleteTask,
   doneSlot,
+  editSlot,
   getLog,
   getOpenSlot,
   getProject,
@@ -150,6 +151,32 @@ export const router = base.router({
               result.closedSlot as Parameters<typeof serializeSlot>[0],
             )
           : null,
+      };
+    }),
+    edit: authed.slot.edit.handler(async ({ input }) => {
+      const { id, ...rest } = input;
+      const result = await editSlot(db, id, {
+        startedAt: rest.startedAt ? new Date(rest.startedAt) : undefined,
+        endedAt:
+          rest.endedAt !== undefined
+            ? rest.endedAt
+              ? new Date(rest.endedAt)
+              : null
+            : undefined,
+        taskId: rest.taskId,
+      });
+      return {
+        updated: serializeSlot(
+          result.updated as Parameters<typeof serializeSlot>[0],
+        ),
+        neighborAdjusted: result.neighborAdjusted
+          ? {
+              id: result.neighborAdjusted.id,
+              field: result.neighborAdjusted.field,
+              from: result.neighborAdjusted.from.toISOString(),
+              to: result.neighborAdjusted.to.toISOString(),
+            }
+          : undefined,
       };
     }),
   },
