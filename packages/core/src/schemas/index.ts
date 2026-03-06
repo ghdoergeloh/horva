@@ -2,6 +2,7 @@ import { z } from "zod";
 
 export const projectStatusSchema = z.enum(["active", "archived", "deleted"]);
 export const taskStatusSchema = z.enum(["open", "done", "archived", "deleted"]);
+export const taskTypeSchema = z.enum(["task", "activity"]);
 export const slotStateSchema = z.enum(["active", "no_task", "task_deleted"]);
 
 export const projectSchema = z.object({
@@ -26,6 +27,7 @@ export const taskSchema = z.object({
   name: z.string(),
   projectId: z.number(),
   status: taskStatusSchema,
+  taskType: taskTypeSchema,
   scheduledDate: z.date().nullable(),
   notes: z.string().nullable(),
   links: z.array(z.string()),
@@ -58,6 +60,7 @@ export const updateProjectSchema = z.object({
 export const createTaskSchema = z.object({
   name: z.string().min(1),
   projectId: z.number().optional(),
+  taskType: taskTypeSchema.optional(),
   labelIds: z.array(z.number()).optional(),
   scheduledDate: z.date().optional(),
   notes: z.string().optional(),
@@ -67,6 +70,7 @@ export const createTaskSchema = z.object({
 export const updateTaskSchema = z.object({
   name: z.string().min(1).optional(),
   projectId: z.number().optional(),
+  taskType: taskTypeSchema.optional(),
   addLabelIds: z.array(z.number()).optional(),
   removeLabelIds: z.array(z.number()).optional(),
   scheduledDate: z.date().nullable().optional(),
@@ -78,6 +82,7 @@ export const updateTaskSchema = z.object({
 export type Project = z.infer<typeof projectSchema>;
 export type Label = z.infer<typeof labelSchema>;
 export type Task = z.infer<typeof taskSchema>;
+export type TaskType = z.infer<typeof taskTypeSchema>;
 export type Slot = z.infer<typeof slotSchema>;
 export type CreateProject = z.infer<typeof createProjectSchema>;
 export type UpdateProject = z.infer<typeof updateProjectSchema>;

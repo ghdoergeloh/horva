@@ -200,6 +200,7 @@ export const router = base.router({
       const t = await createTask(db, {
         name: input.name,
         projectId: input.projectId,
+        taskType: input.taskType,
         labelIds: input.labelIds,
         scheduledDate: input.scheduledDate
           ? new Date(input.scheduledDate)
@@ -212,9 +213,10 @@ export const router = base.router({
       return { task: serializeTask(full) };
     }),
     update: authed.task.update.handler(async ({ input }) => {
-      const { id, ...rest } = input;
+      const { id, taskType, ...rest } = input;
       await updateTask(db, id, {
         ...rest,
+        taskType,
         scheduledDate:
           rest.scheduledDate !== undefined
             ? rest.scheduledDate

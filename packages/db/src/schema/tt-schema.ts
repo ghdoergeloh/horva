@@ -30,6 +30,8 @@ export const taskStatusEnum = pgEnum("task_status", [
   "deleted",
 ]);
 
+export const taskTypeEnum = pgEnum("task_type", ["task", "activity"]);
+
 export const slotStateEnum = pgEnum("slot_state", [
   "active",
   "no_task",
@@ -62,6 +64,7 @@ export const task = pgTable("task", {
     .notNull()
     .references(() => project.id),
   status: taskStatusEnum("status").notNull().default("open"),
+  taskType: taskTypeEnum("task_type").notNull().default("task"),
   scheduledDate: timestamp("scheduled_date"),
   notes: text("notes"),
   links: text("links")

@@ -65,6 +65,7 @@ export function registerTaskCommands(program: Command): void {
     .option("-d, --date <date>", "Scheduled date (today, tomorrow, YYYY-MM-DD)")
     .option("-n, --note <text>", "Add a note")
     .option("--link <url>", "Add a link (repeatable)", collect, [])
+    .option("--activity", "Create as activity instead of task")
     .action(
       async (
         name: string | undefined,
@@ -74,6 +75,7 @@ export function registerTaskCommands(program: Command): void {
           date?: string;
           note?: string;
           link: string[];
+          activity?: boolean;
         },
       ) => {
         try {
@@ -97,19 +99,26 @@ export function registerTaskCommands(program: Command): void {
             if (found) labelIds.push(found.id);
           }
 
-          const scheduledDate = opts.date ? parseDate(opts.date) : undefined;
+          const taskType = opts.activity ? "activity" : "task";
+          const scheduledDate = opts.activity
+            ? undefined
+            : opts.date
+              ? parseDate(opts.date)
+              : undefined;
 
           const created = await createTask(db, {
             name: taskName,
             projectId,
+            taskType,
             labelIds: labelIds.length > 0 ? labelIds : undefined,
             scheduledDate,
             notes: opts.note ?? undefined,
             links: opts.link.length > 0 ? opts.link : [],
           });
 
+          const typeLabel = taskType === "activity" ? "Activity" : "Task";
           printSuccess(
-            `${sym.created} Task #${created.id} "${created.name}" created`,
+            `${sym.created} ${typeLabel} #${created.id} "${created.name}" created`,
           );
 
           const full = await getTask(db, created.id);
@@ -117,6 +126,7 @@ export function registerTaskCommands(program: Command): void {
             const labelNames = full.taskLabels.map((tl) => tl.label.name);
             const details = [
               `Project: ${colorProject(full.project.name, full.project.color)}`,
+              `Type: ${taskType}`,
               labelNames.length > 0 ? `Labels: ${labelNames.join(", ")}` : null,
               scheduledDate ? `Planned: ${formatDate(scheduledDate)}` : null,
             ]
@@ -141,6 +151,8 @@ export function registerTaskCommands(program: Command): void {
     .option("--all", "Include done tasks")
     .option("--done", "Show only done tasks")
     .option("--archived", "Show archived tasks")
+    .option("--activities", "Show only activities")
+    .option("--tasks-only", "Show only tasks (no activities)")
     .action(
       async (
         _filter: string | undefined,
@@ -150,6 +162,8 @@ export function registerTaskCommands(program: Command): void {
           all?: boolean;
           done?: boolean;
           archived?: boolean;
+          activities?: boolean;
+          tasksOnly?: boolean;
         },
       ) => {
         try {
@@ -166,30 +180,121 @@ export function registerTaskCommands(program: Command): void {
             includeStatuses = ["open", "done", "archived"];
           }
 
-          const tasks = await listTasks(db, {
-            projectId: opts.project ? parseInt(opts.project, 10) : undefined,
-            status,
-            includeStatuses,
-          });
+          const projectId = opts.project
+            ? parseInt(opts.project, 10)
+            : undefined;
 
-          if (tasks.length === 0) {
-            console.log("  No tasks found.");
-            return;
-          }
+          const printHeader = () =>
+            console.log(
+              chalk.dim(
+                `  ${"#".padEnd(5)} ${"Task".padEnd(30)} ${"Project".padEnd(15)} ${"Labels".padEnd(15)} Planned`,
+              ),
+            );
 
-          console.log(
-            chalk.dim(
-              `  ${"#".padEnd(5)} ${"Task".padEnd(30)} ${"Project".padEnd(15)} ${"Labels".padEnd(15)} Planned`,
-            ),
-          );
-          for (const t of tasks) {
+          const printRow = (
+            t: Awaited<ReturnType<typeof listTasks>>[number],
+          ) => {
             const labelNames = t.taskLabels.map((tl) => tl.label.name);
             const planned = t.scheduledDate ? formatDate(t.scheduledDate) : "";
             console.log(
               `  ${String(t.id).padEnd(5)} ${t.name.substring(0, 29).padEnd(30)} ${colorProject(t.project.name.substring(0, 14), t.project.color).padEnd(15)} ${labelNames.join(", ").substring(0, 14).padEnd(15)} ${planned}`,
             );
+          };
+
+          if (opts.activities) {
+            const tasks = await listTasks(db, {
+              projectId,
+              status,
+              includeStatuses,
+              taskType: "activity",
+            });
+            if (tasks.length === 0) {
+              console.log("  No activities found.");
+              return;
+            }
+            printHeader();
+            for (const t of tasks) printRow(t);
+            console.log(
+              chalk.dim(
+                `\n  ${tasks.length} activit${tasks.length === 1 ? "y" : "ies"}`,
+              ),
+            );
+            return;
           }
-          console.log(chalk.dim(`\n  ${tasks.length} task(s)`));
+
+          if (opts.tasksOnly) {
+            const tasks = await listTasks(db, {
+              projectId,
+              status,
+              includeStatuses,
+              taskType: "task",
+            });
+            if (tasks.length === 0) {
+              console.log("  No tasks found.");
+              return;
+            }
+            printHeader();
+            for (const t of tasks) printRow(t);
+            console.log(chalk.dim(`\n  ${tasks.length} task(s)`));
+            return;
+          }
+
+          // Default: grouped output — activities then tasks
+          const allTasks = await listTasks(db, {
+            projectId,
+            status,
+            includeStatuses,
+          });
+
+          if (allTasks.length === 0) {
+            console.log("  No tasks found.");
+            return;
+          }
+
+          const activities = allTasks.filter((t) => t.taskType === "activity");
+          const regularTasks = allTasks.filter((t) => t.taskType === "task");
+
+          if (activities.length > 0) {
+            console.log(chalk.bold("  Activities:"));
+            printHeader();
+            for (const t of activities) printRow(t);
+            console.log();
+          }
+
+          if (regularTasks.length > 0) {
+            console.log(chalk.bold("  Tasks:"));
+            printHeader();
+            const openTasks = regularTasks.filter((t) => t.status === "open");
+            const doneTasks = regularTasks.filter((t) => t.status !== "open");
+            for (const t of openTasks) printRow(t);
+            if (doneTasks.length > 0 && !opts.all) {
+              console.log(
+                chalk.dim(
+                  `  ... ${doneTasks.length} more done/archived – use --all to show`,
+                ),
+              );
+            } else {
+              for (const t of doneTasks) printRow(t);
+            }
+          }
+
+          const openCount = regularTasks.filter(
+            (t) => t.status === "open",
+          ).length;
+          const doneCount = regularTasks.filter(
+            (t) => t.status !== "open",
+          ).length;
+          const actCount = activities.length;
+          const summary: string[] = [];
+          if (actCount > 0)
+            summary.push(`${actCount} activit${actCount === 1 ? "y" : "ies"}`);
+          if (openCount > 0 || doneCount > 0) {
+            let taskSummary = `${openCount} open task${openCount === 1 ? "" : "s"}`;
+            if (doneCount > 0 && !opts.all)
+              taskSummary += ` (${doneCount} more done – use --all to show)`;
+            summary.push(taskSummary);
+          }
+          console.log(chalk.dim(`\n  ${summary.join(", ")}`));
         } catch (err) {
           printError(String(err));
           process.exit(1);
@@ -210,6 +315,7 @@ export function registerTaskCommands(program: Command): void {
     .option("--note <text>", "Set/replace note")
     .option("--link <url>", "Add link (repeatable)", collect, [])
     .option("--remove-link <url>", "Remove link (repeatable)", collect, [])
+    .option("--type <type>", "Convert task type (task|activity)")
     .action(
       async (
         idStr: string | undefined,
@@ -223,6 +329,7 @@ export function registerTaskCommands(program: Command): void {
           note?: string;
           link: string[];
           removeLink: string[];
+          type?: string;
         },
       ) => {
         try {
@@ -246,7 +353,8 @@ export function registerTaskCommands(program: Command): void {
             opts.clearDate === true ||
             opts.note !== undefined ||
             opts.link.length > 0 ||
-            opts.removeLink.length > 0;
+            opts.removeLink.length > 0 ||
+            opts.type !== undefined;
 
           // Resolve ID (interactively if not provided)
           let id: number;
@@ -273,9 +381,25 @@ export function registerTaskCommands(program: Command): void {
               scheduledDate = parseDate(opts.date);
             }
 
+            let taskType: "task" | "activity" | undefined;
+            if (opts.type !== undefined) {
+              if (opts.type !== "task" && opts.type !== "activity") {
+                printError(
+                  `Invalid type "${opts.type}". Use "task" or "activity".`,
+                );
+                process.exit(1);
+              }
+              taskType = opts.type;
+            }
+
+            // Fetch current task to show conversion message
+            const currentForEdit =
+              taskType !== undefined ? await getTask(db, id) : undefined;
+
             await updateTask(db, id, {
               name: opts.name,
               projectId: opts.project ? parseInt(opts.project, 10) : undefined,
+              taskType,
               addLabelIds:
                 opts.label.length > 0 ? resolveLabels(opts.label) : undefined,
               removeLabelIds:
@@ -289,7 +413,14 @@ export function registerTaskCommands(program: Command): void {
                 opts.removeLink.length > 0 ? opts.removeLink : undefined,
             });
 
-            printSuccess(`${sym.edited} Task #${id} updated`);
+            if (taskType !== undefined && currentForEdit) {
+              const from = currentForEdit.taskType;
+              printSuccess(
+                `${sym.edited} Task #${id} converted: ${from} → ${taskType}`,
+              );
+            } else {
+              printSuccess(`${sym.edited} Task #${id} updated`);
+            }
             return;
           }
 
@@ -422,6 +553,20 @@ export function registerTaskCommands(program: Command): void {
     .action(async (idStr: string) => {
       try {
         const id = parseId(idStr);
+        const existing = await getTask(db, id);
+        if (!existing) {
+          printError(`Task #${id} not found`);
+          process.exit(1);
+        }
+        if (existing.taskType === "activity") {
+          console.log(
+            `${sym.warning} "${existing.name}" is an activity and cannot be marked as done.`,
+          );
+          console.log(
+            `  Use "tt task archive #${id}" to hide it, or "tt task edit #${id} --type task" to convert it.`,
+          );
+          process.exit(1);
+        }
         const t = await markTaskDone(db, id);
         printSuccess(
           `${sym.checked} Task #${t.id} "${t.name}" marked as done.`,
@@ -525,6 +670,21 @@ export function registerTaskCommands(program: Command): void {
         try {
           const id = parseId(idStr);
 
+          const existing = await getTask(db, id);
+          if (!existing) {
+            printError(`Task #${id} not found`);
+            process.exit(1);
+          }
+          if (existing.taskType === "activity") {
+            console.log(
+              `${sym.warning} "${existing.name}" is an activity and cannot be planned.`,
+            );
+            console.log(
+              `  Use "tt task edit #${id} --type task" to convert it to a task first.`,
+            );
+            process.exit(1);
+          }
+
           if (opts.clear) {
             const t = await planTask(db, id, null);
             printSuccess(`${sym.planned} Task #${t.id} – planning removed.`);
@@ -543,10 +703,9 @@ export function registerTaskCommands(program: Command): void {
           }
 
           const t = await planTask(db, id, date);
-          const existing = await getTask(db, t.id);
           const timeStr = opts.time ? ` at ${opts.time}` : "";
           printSuccess(
-            `${sym.planned} Task #${t.id} "${existing?.name}" planned for ${formatDate(date)}${timeStr}`,
+            `${sym.planned} Task #${t.id} "${existing.name}" planned for ${formatDate(date)}${timeStr}`,
           );
         } catch (err) {
           printError(String(err));

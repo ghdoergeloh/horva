@@ -30,6 +30,7 @@ const taskSchema = z.object({
   name: z.string(),
   projectId: z.number(),
   status: z.enum(["open", "done", "archived", "deleted"]),
+  taskType: z.enum(["task", "activity"]),
   scheduledDate: z.string().datetime().nullable(),
   notes: z.string().nullable(),
   links: z.array(z.string()),
@@ -142,6 +143,7 @@ export const contract = oc.router({
         z.object({
           name: z.string().min(1),
           projectId: z.number().optional(),
+          taskType: z.enum(["task", "activity"]).optional(),
           labelIds: z.array(z.number()).optional(),
           scheduledDate: z.string().datetime().optional(),
           notes: z.string().optional(),
@@ -156,6 +158,7 @@ export const contract = oc.router({
           id: z.number(),
           name: z.string().min(1).optional(),
           projectId: z.number().optional(),
+          taskType: z.enum(["task", "activity"]).optional(),
           addLabelIds: z.array(z.number()).optional(),
           removeLabelIds: z.array(z.number()).optional(),
           scheduledDate: z.string().datetime().nullable().optional(),

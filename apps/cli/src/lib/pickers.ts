@@ -1,4 +1,4 @@
-import { input, select } from "@inquirer/prompts";
+import { input, select, Separator } from "@inquirer/prompts";
 
 import {
   createLabel,
@@ -80,10 +80,33 @@ export async function pickTask(
 
   const tasks = await listTasks(db, { status: "open", projectId });
 
-  const choices: { name: string; value: number | null }[] = tasks.map((t) => ({
-    name: `#${t.id} ${t.name}  (${colorProject(t.project.name, t.project.color)})`,
-    value: t.id,
-  }));
+  const activities = tasks.filter((t) => t.taskType === "activity");
+  const regularTasks = tasks.filter((t) => t.taskType === "task");
+
+  type Choice =
+    | { name: string; value: number | null }
+    | InstanceType<typeof Separator>;
+  const choices: Choice[] = [];
+
+  if (activities.length > 0) {
+    choices.push(new Separator("── Activities ──"));
+    for (const t of activities) {
+      choices.push({
+        name: `#${t.id} ${t.name}  (${colorProject(t.project.name, t.project.color)})`,
+        value: t.id,
+      });
+    }
+  }
+
+  if (regularTasks.length > 0) {
+    choices.push(new Separator("── Recent tasks ──"));
+    for (const t of regularTasks) {
+      choices.push({
+        name: `#${t.id} ${t.name}  (${colorProject(t.project.name, t.project.color)})`,
+        value: t.id,
+      });
+    }
+  }
 
   if (opts?.allowNone && !opts.noneFirst) {
     choices.push({ name: opts.noneLabel ?? "(no task)", value: null });

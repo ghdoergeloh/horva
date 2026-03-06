@@ -9,6 +9,7 @@ export interface ListTasksOpts {
   projectId?: number;
   status?: "open" | "done" | "archived" | "deleted";
   includeStatuses?: ("open" | "done" | "archived" | "deleted")[];
+  taskType?: "task" | "activity";
 }
 
 export async function listTasks(db: Db, opts: ListTasksOpts = {}) {
@@ -24,6 +25,10 @@ export async function listTasks(db: Db, opts: ListTasksOpts = {}) {
     conditions.push(inArray(task.status, opts.includeStatuses));
   } else {
     conditions.push(ne(task.status, "deleted"));
+  }
+
+  if (opts.taskType !== undefined) {
+    conditions.push(eq(task.taskType, opts.taskType));
   }
 
   const rows = await db.query.task.findMany({
@@ -63,7 +68,9 @@ export async function createTask(db: Db, input: CreateTask) {
       .values({
         name: input.name,
         projectId,
-        scheduledDate: input.scheduledDate ?? null,
+        taskType: input.taskType ?? "task",
+        scheduledDate:
+          input.taskType === "activity" ? null : (input.scheduledDate ?? null),
         notes: input.notes ?? null,
         links: input.links ?? [],
       })
@@ -94,6 +101,21 @@ export async function updateTask(db: Db, id: number, input: UpdateTask) {
     };
     if (input.name !== undefined) updates.name = input.name;
     if (input.projectId !== undefined) updates.projectId = input.projectId;
+    if (input.taskType !== undefined) {
+      updates.taskType = input.taskType;
+      // Converting to activity: clear scheduled date and reset to open
+      if (input.taskType === "activity") {
+        updates.scheduledDate = null;
+        if (existing.status === "done") {
+          updates.status = "open";
+          updates.doneAt = null;
+        }
+      }
+      // Converting from activity to task: reset status to open if needed
+      if (input.taskType === "task" && existing.taskType === "activity") {
+        updates.status = "open";
+      }
+    }
     if (input.scheduledDate !== undefined)
       updates.scheduledDate = input.scheduledDate;
     if (input.notes !== undefined) updates.notes = input.notes;
@@ -150,6 +172,10 @@ export async function updateTask(db: Db, id: number, input: UpdateTask) {
 export async function markTaskDone(db: Db, id: number) {
   const existing = await getTask(db, id);
   if (!existing) throw new Error(`Task #${id} not found`);
+  if (existing.taskType === "activity")
+    throw new Error(
+      "Activity cannot be marked as done. Use archive or convert to task.",
+    );
   const [row] = await db
     .update(task)
     .set({ status: "done", doneAt: new Date(), updatedAt: new Date() })
@@ -238,6 +264,8 @@ export async function deleteTask(db: Db, id: number) {
 export async function planTask(db: Db, id: number, date: Date | null) {
   const existing = await getTask(db, id);
   if (!existing) throw new Error(`Task #${id} not found`);
+  if (existing.taskType === "activity")
+    throw new Error("Activity cannot be planned. Convert to task first.");
   const [row] = await db
     .update(task)
     .set({ scheduledDate: date, updatedAt: new Date() })
