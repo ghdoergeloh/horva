@@ -571,15 +571,6 @@ export function registerTaskCommands(program: Command): void {
           printError(`Task #${id} not found`);
           process.exit(1);
         }
-        if (existing.taskType === "activity") {
-          console.log(
-            `${sym.warning} "${existing.name}" is an activity and cannot be marked as done.`,
-          );
-          console.log(
-            `  Use "tt task archive #${id}" to hide it, or "tt task edit #${id} --type task" to convert it.`,
-          );
-          process.exit(1);
-        }
         const t = await markTaskDone(db, id);
         printSuccess(
           `${sym.checked} Task #${t.id} "${t.name}" marked as done.`,

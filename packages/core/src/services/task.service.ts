@@ -69,8 +69,7 @@ export async function createTask(db: Db, input: CreateTask) {
         name: input.name,
         projectId,
         taskType: input.taskType ?? "task",
-        scheduledDate:
-          input.taskType === "activity" ? null : (input.scheduledDate ?? null),
+        scheduledDate: input.scheduledDate ?? null,
         notes: input.notes ?? null,
         links: input.links ?? [],
       })
@@ -103,9 +102,8 @@ export async function updateTask(db: Db, id: number, input: UpdateTask) {
     if (input.projectId !== undefined) updates.projectId = input.projectId;
     if (input.taskType !== undefined) {
       updates.taskType = input.taskType;
-      // Converting to activity: clear scheduled date and reset to open
+      // Converting to activity: reset done status to open (keep scheduledDate)
       if (input.taskType === "activity") {
-        updates.scheduledDate = null;
         if (existing.status === "done") {
           updates.status = "open";
           updates.doneAt = null;
@@ -172,13 +170,19 @@ export async function updateTask(db: Db, id: number, input: UpdateTask) {
 export async function markTaskDone(db: Db, id: number) {
   const existing = await getTask(db, id);
   if (!existing) throw new Error(`Task #${id} not found`);
-  if (existing.taskType === "activity")
-    throw new Error(
-      "Activity cannot be marked as done. Use archive or convert to task.",
-    );
+  // Activities with a scheduled date can be marked done: clear the date so they leave the day plan
+  const updates: Partial<typeof task.$inferInsert> = {
+    updatedAt: new Date(),
+  };
+  if (existing.taskType === "activity") {
+    updates.scheduledDate = null;
+  } else {
+    updates.status = "done";
+    updates.doneAt = new Date();
+  }
   const [row] = await db
     .update(task)
-    .set({ status: "done", doneAt: new Date(), updatedAt: new Date() })
+    .set(updates)
     .where(eq(task.id, id))
     .returning();
   if (!row) throw new Error(`Task #${id} not found after marking done`);
@@ -264,8 +268,6 @@ export async function deleteTask(db: Db, id: number) {
 export async function planTask(db: Db, id: number, date: Date | null) {
   const existing = await getTask(db, id);
   if (!existing) throw new Error(`Task #${id} not found`);
-  if (existing.taskType === "activity")
-    throw new Error("Activity cannot be planned. Convert to task first.");
   const [row] = await db
     .update(task)
     .set({ scheduledDate: date, updatedAt: new Date() })
