@@ -43,8 +43,12 @@ export function getPeriodRange(period: Period): { from: Date; to: Date } {
   }
 }
 
-export async function getLog(db: Db, period: Period) {
-  const { from, to } = getPeriodRange(period);
+export async function getLog(
+  db: Db,
+  period: Period | { from: Date; to: Date },
+) {
+  const { from, to } =
+    typeof period === "string" ? getPeriodRange(period) : period;
 
   const rows = await db.query.slot.findMany({
     where: and(
@@ -78,7 +82,10 @@ export interface SummaryEntry {
   }[];
 }
 
-export async function getSummary(db: Db, period: Period) {
+export async function getSummary(
+  db: Db,
+  period: Period | { from: Date; to: Date },
+) {
   const slots = await getLog(db, period);
 
   const projectMap = new Map<
