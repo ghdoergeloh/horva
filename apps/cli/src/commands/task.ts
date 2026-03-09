@@ -548,11 +548,24 @@ export function registerTaskCommands(program: Command): void {
 
   // task done
   taskCmd
-    .command("done <id>")
+    .command("done [id]")
     .description("Mark task as done")
-    .action(async (idStr: string) => {
+    .action(async (idStr?: string) => {
       try {
-        const id = parseId(idStr);
+        let id: number;
+        if (idStr) {
+          id = parseId(idStr);
+        } else {
+          const picked = await pickTask(
+            db,
+            "Which task do you want to mark as done?",
+          );
+          if (!picked) {
+            printError("No task selected.");
+            process.exit(1);
+          }
+          id = picked;
+        }
         const existing = await getTask(db, id);
         if (!existing) {
           printError(`Task #${id} not found`);
