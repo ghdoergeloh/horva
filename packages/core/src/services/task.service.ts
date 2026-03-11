@@ -1,9 +1,10 @@
 import type { Db } from "@repo/db/client";
-import { and, eq, inArray, ne, notInArray } from "@repo/db";
+import { and, eq, inArray, isNull, ne, notInArray } from "@repo/db";
 import { slot, task, taskLabel } from "@repo/db/schema";
 
 import type { CreateTask, UpdateTask } from "../schemas/index";
 import { getDefaultProject } from "./project.service";
+import { stopSlot } from "./slot.service";
 
 export interface ListTasksOpts {
   projectId?: number;
@@ -170,6 +171,15 @@ export async function updateTask(db: Db, id: number, input: UpdateTask) {
 export async function markTaskDone(db: Db, id: number) {
   const existing = await getTask(db, id);
   if (!existing) throw new Error(`Task #${id} not found`);
+
+  // If this task is currently running, pause it and start a new empty slot
+  const openSlot = await db.query.slot.findFirst({
+    where: and(eq(slot.taskId, id), isNull(slot.endedAt)),
+  });
+  if (openSlot) {
+    await stopSlot(db);
+  }
+
   // Activities with a scheduled date can be marked done: clear the date so they leave the day plan
   const updates: Partial<typeof task.$inferInsert> = {
     updatedAt: new Date(),

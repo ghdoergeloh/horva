@@ -32,10 +32,14 @@ export async function startSlot(db: Db, taskId?: number, at?: Date) {
     });
 
     if (openSlot) {
-      await tx
-        .update(slot)
-        .set({ endedAt: now })
-        .where(eq(slot.id, openSlot.id));
+      if (openSlot.startedAt.getTime() === now.getTime()) {
+        await tx.delete(slot).where(eq(slot.id, openSlot.id));
+      } else {
+        await tx
+          .update(slot)
+          .set({ endedAt: now })
+          .where(eq(slot.id, openSlot.id));
+      }
     }
 
     const state = taskId ? ("active" as const) : ("no_task" as const);
@@ -72,7 +76,14 @@ export async function stopSlot(db: Db, at?: Date) {
       return { closedSlot: null, newSlot: null };
     }
 
-    await tx.update(slot).set({ endedAt: now }).where(eq(slot.id, openSlot.id));
+    if (openSlot.startedAt.getTime() === now.getTime()) {
+      await tx.delete(slot).where(eq(slot.id, openSlot.id));
+    } else {
+      await tx
+        .update(slot)
+        .set({ endedAt: now })
+        .where(eq(slot.id, openSlot.id));
+    }
 
     const [newSlot] = await tx
       .insert(slot)
@@ -105,7 +116,11 @@ export async function doneSlot(db: Db, at?: Date) {
     return { closedSlot: null };
   }
 
-  await db.update(slot).set({ endedAt: now }).where(eq(slot.id, openSlot.id));
+  if (openSlot.startedAt.getTime() === now.getTime()) {
+    await db.delete(slot).where(eq(slot.id, openSlot.id));
+  } else {
+    await db.update(slot).set({ endedAt: now }).where(eq(slot.id, openSlot.id));
+  }
 
   return { closedSlot: { ...openSlot, endedAt: now } };
 }
