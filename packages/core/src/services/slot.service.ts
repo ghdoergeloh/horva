@@ -337,6 +337,97 @@ export async function deleteSlot(db: Db, id: number) {
   return existing;
 }
 
+export async function insertSlot(
+  db: Db,
+  startedAt: Date,
+  endedAt: Date | null | undefined,
+  taskId?: number | null,
+): Promise<{
+  inserted: NonNullable<Awaited<ReturnType<typeof getSlot>>>;
+  neighborAdjusted?: {
+    id: number;
+    field: "startedAt" | "endedAt";
+    from: Date;
+    to: Date;
+  };
+}> {
+  const roundedStart = roundToMinute(startedAt);
+  const roundedEnd = endedAt ? roundToMinute(endedAt) : null;
+  if (roundedEnd && roundedEnd <= roundedStart) {
+    throw new Error("endedAt must be after startedAt");
+  }
+
+  return db.transaction(async (tx) => {
+    const startOfDay = new Date(roundedStart);
+    startOfDay.setHours(0, 0, 0, 0);
+    const endOfDay = new Date(roundedStart);
+    endOfDay.setHours(23, 59, 59, 999);
+
+    const allSlots = await tx.query.slot.findMany({
+      where: and(between(slot.startedAt, startOfDay, endOfDay)),
+      orderBy: [asc(slot.startedAt)],
+    });
+
+    let neighborAdjusted:
+      | { id: number; field: "startedAt" | "endedAt"; from: Date; to: Date }
+      | undefined;
+
+    // Check prev slot (adjust its endedAt if it overlaps with our start)
+    const prevSlot = [...allSlots]
+      .reverse()
+      .find((sl) => sl.startedAt < roundedStart);
+    if (prevSlot?.endedAt && prevSlot.endedAt > roundedStart) {
+      await tx
+        .update(slot)
+        .set({ endedAt: roundedStart })
+        .where(eq(slot.id, prevSlot.id));
+      neighborAdjusted = {
+        id: prevSlot.id,
+        field: "endedAt",
+        from: prevSlot.endedAt,
+        to: roundedStart,
+      };
+    }
+
+    // Check next slot (adjust its startedAt if it overlaps with our end)
+    if (roundedEnd) {
+      const nextSlot = allSlots.find((sl) => sl.startedAt >= roundedStart);
+      if (nextSlot && roundedEnd > nextSlot.startedAt) {
+        await tx
+          .update(slot)
+          .set({ startedAt: roundedEnd })
+          .where(eq(slot.id, nextSlot.id));
+        neighborAdjusted = {
+          id: nextSlot.id,
+          field: "startedAt",
+          from: nextSlot.startedAt,
+          to: roundedEnd,
+        };
+      }
+    }
+
+    const state = taskId ? ("active" as const) : ("no_task" as const);
+    const [inserted] = await tx
+      .insert(slot)
+      .values({
+        startedAt: roundedStart,
+        endedAt: roundedEnd,
+        taskId: taskId ?? null,
+        state,
+      })
+      .returning();
+    if (!inserted) throw new Error("Failed to insert slot");
+
+    const withTask = await tx.query.slot.findFirst({
+      where: eq(slot.id, inserted.id),
+      with: { task: { with: { project: true } } },
+    });
+    if (!withTask) throw new Error("Slot not found after insert");
+
+    return { inserted: withTask, neighborAdjusted };
+  });
+}
+
 export async function splitSlot(db: Db, id: number, at: Date) {
   return db.transaction(async (tx) => {
     const original = await tx.query.slot.findFirst({
