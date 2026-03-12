@@ -256,7 +256,7 @@ export async function editSlot(
         (sl) => sl.id !== id && sl.startedAt >= current.startedAt,
       );
 
-      if (nextSlot) {
+      if (nextSlot && newEnd > nextSlot.startedAt) {
         await tx
           .update(slot)
           .set({ startedAt: newEnd })
@@ -285,7 +285,8 @@ export async function editSlot(
         .reverse()
         .find((sl) => sl.id !== id && sl.startedAt < current.startedAt);
 
-      if (prevSlot) {
+      const prevEnd = prevSlot?.endedAt ?? current.startedAt;
+      if (prevSlot && newStart < prevEnd) {
         await tx
           .update(slot)
           .set({ endedAt: newStart })
@@ -293,7 +294,7 @@ export async function editSlot(
         neighborAdjusted = {
           id: prevSlot.id,
           field: "endedAt",
-          from: prevSlot.endedAt ?? current.startedAt,
+          from: prevEnd,
           to: newStart,
         };
       }
