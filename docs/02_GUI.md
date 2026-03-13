@@ -40,14 +40,18 @@ Die Tagesübersicht ist die **Startseite** und zeigt alle für den aktuellen Tag
 - Tasks für heute geplant, deren Uhrzeit **noch in der Zukunft** liegt.
 - Gleiche Darstellung wie Bereich 1, aber visuell als „noch nicht akut" erkennbar.
 
-### 2.2 Kalenderansicht
+### 2.2 Log-Tabellenansicht
 
-- Darstellung aller Slots in einer **klassischen Kalenderansicht** (Tages-/Wochen-/Monatsansicht).
-- Jeder Slot wird in der **Farbe des Projekts** des zugeordneten Tasks dargestellt.
-- Slots ohne Task: **neutrale Farbe** (z. B. Grau).
-- Slots mit „Task gelöscht": visuell unterscheidbar (z. B. schraffiert).
-- **Lücken** zwischen Slots werden visuell hervorgehoben (z. B. gestrichelte Markierung).
-- Klick auf Slot: Detail-Ansicht mit Bearbeitungsmöglichkeit.
+Tabellarische Darstellung aller Slots eines Tages, analog zur Ausgabe von `tt log`.
+
+**Spalten:** Von · Bis · Dauer · Task (ID + Name, gekürzt) · Projekt (in Projektfarbe)
+
+- Slots chronologisch sortiert, nach Tag gruppiert mit Datumsüberschrift.
+- **Lücken** zwischen Slots als eigene Zeile (z. B. „– Lücke –") hervorgehoben.
+- Laufender Slot: Enduhrzeit wird als laufende Uhr dargestellt.
+- Zeile am Ende jeder Tagesgruppe mit **Gesamtzeit** des Tages.
+- Klick auf eine Zeile: Bearbeitungs-Dialog (Start/Ende ändern, Task zuweisen/ändern).
+- Datumsnavigation: Vorwärts/Rückwärts nach Tag oder Woche.
 
 ### 2.3 Timeline-Ansicht
 

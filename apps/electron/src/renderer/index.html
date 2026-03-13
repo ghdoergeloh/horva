@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'"
+    />
+    <title>Time Tracker</title>
+    <style>
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        background: #f9fafb;
+      }
+
+      #app-boot-spinner {
+        position: fixed;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+        background: #f9fafb;
+        z-index: 9999;
+      }
+
+      #app-boot-spinner p {
+        font-family:
+          system-ui,
+          -apple-system,
+          sans-serif;
+        font-size: 12px;
+        color: #9ca3af;
+        margin: 0;
+      }
+
+      @keyframes tt-spin-minute {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+      @keyframes tt-spin-hour {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+      @keyframes tt-pulse-arc {
+        0%,
+        100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.55;
+        }
+      }
+
+      .tt-boot-minute {
+        transform-origin: 32px 32px;
+        animation: tt-spin-minute 2s linear infinite;
+      }
+      .tt-boot-hour {
+        transform-origin: 32px 32px;
+        animation: tt-spin-hour 14s linear infinite;
+      }
+      .tt-boot-arc {
+        animation: tt-pulse-arc 2s ease-in-out infinite;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Boot spinner: shown immediately, removed by React on first render -->
+    <div id="app-boot-spinner">
+      <svg
+        width="64"
+        height="64"
+        viewBox="0 0 64 64"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <defs>
+          <linearGradient
+            id="b-bg"
+            x1="0"
+            y1="0"
+            x2="64"
+            y2="64"
+            gradientUnits="userSpaceOnUse"
+          >
+            <stop offset="0%" stop-color="#1e1b4b" />
+            <stop offset="50%" stop-color="#312e81" />
+            <stop offset="100%" stop-color="#4c1d95" />
+          </linearGradient>
+          <linearGradient
+            id="b-arc"
+            x1="0"
+            y1="0"
+            x2="64"
+            y2="64"
+            gradientUnits="userSpaceOnUse"
+          >
+            <stop offset="0%" stop-color="#38bdf8" />
+            <stop offset="50%" stop-color="#818cf8" />
+            <stop offset="100%" stop-color="#a78bfa" />
+          </linearGradient>
+          <radialGradient id="b-hand" cx="50%" cy="0%" r="100%">
+            <stop offset="0%" stop-color="#e0e7ff" />
+            <stop offset="100%" stop-color="#a5b4fc" />
+          </radialGradient>
+          <radialGradient id="b-center" cx="35%" cy="30%" r="65%">
+            <stop offset="0%" stop-color="#e0e7ff" />
+            <stop offset="100%" stop-color="#818cf8" />
+          </radialGradient>
+        </defs>
+        <!-- Background -->
+        <rect width="64" height="64" rx="14" fill="url(#b-bg)" />
+        <!-- Inner glow -->
+        <ellipse
+          cx="25.6"
+          cy="19.2"
+          rx="19.2"
+          ry="14.1"
+          fill="#6366f1"
+          fill-opacity="0.18"
+        />
+        <!-- Track ring -->
+        <circle
+          cx="32"
+          cy="32"
+          r="21.1"
+          stroke="#4338ca"
+          stroke-opacity="0.45"
+          stroke-width="4.8"
+          fill="none"
+        />
+        <!-- Progress arc (270°) -->
+        <path
+          class="tt-boot-arc"
+          d="M 15.8 20.1 A 21.1 21.1 0 1 1 15.8 43.9"
+          stroke="url(#b-arc)"
+          stroke-width="4.8"
+          stroke-linecap="round"
+          fill="none"
+        />
+        <!-- Hour hand (slow) -->
+        <line
+          class="tt-boot-hour"
+          x1="32"
+          y1="32"
+          x2="19.8"
+          y2="24.5"
+          stroke="url(#b-hand)"
+          stroke-width="4.2"
+          stroke-linecap="round"
+        />
+        <!-- Minute hand (fast) -->
+        <line
+          class="tt-boot-minute"
+          x1="32"
+          y1="32"
+          x2="47.4"
+          y2="23.5"
+          stroke="url(#b-hand)"
+          stroke-width="3.1"
+          stroke-linecap="round"
+        />
+        <!-- Center hub -->
+        <circle cx="32" cy="32" r="4.6" fill="#1e1b4b" fill-opacity="0.8" />
+        <circle cx="32" cy="32" r="3.3" fill="url(#b-center)" />
+        <!-- Arc tip dot -->
+        <circle cx="15.8" cy="43.9" r="3.5" fill="#7dd3fc" />
+        <circle cx="15.8" cy="43.9" r="1.9" fill="#ffffff" fill-opacity="0.9" />
+      </svg>
+      <p>Laden…</p>
+    </div>
+
+    <div id="root"></div>
+    <script type="module" src="./src/main.tsx"></script>
+  </body>
+</html>

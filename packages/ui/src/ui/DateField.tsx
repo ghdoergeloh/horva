@@ -10,6 +10,7 @@ import {
   DateField as AriaDateField,
   DateInput as AriaDateInput,
   DateSegment,
+  useLocale,
 } from "react-aria-components";
 import { tv } from "tailwind-variants";
 
@@ -31,6 +32,8 @@ export function DateField<T extends DateValue>({
   errorMessage,
   ...props
 }: DateFieldProps<T>) {
+  const { locale: ariaLocale } = useLocale();
+  console.log("locale", ariaLocale);
   return (
     <AriaDateField
       {...props}

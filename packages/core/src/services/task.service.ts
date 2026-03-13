@@ -11,6 +11,8 @@ export interface ListTasksOpts {
   status?: "open" | "done" | "archived" | "deleted";
   includeStatuses?: ("open" | "done" | "archived" | "deleted")[];
   taskType?: "task" | "activity";
+  limit?: number;
+  offset?: number;
 }
 
 export async function listTasks(db: Db, opts: ListTasksOpts = {}) {
@@ -40,6 +42,8 @@ export async function listTasks(db: Db, opts: ListTasksOpts = {}) {
       slots: true,
     },
     orderBy: (t, { desc }) => [desc(t.createdAt)],
+    limit: opts.limit,
+    offset: opts.offset,
   });
   return rows;
 }

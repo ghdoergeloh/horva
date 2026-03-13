@@ -1,0 +1,178 @@
+{
+  "nav": {
+    "today": "Heute",
+    "timeline": "Timeline",
+    "reports": "Berichte",
+    "tasks": "Aufgaben",
+    "labels": "Labels",
+    "newProject": "Neues Projekt"
+  },
+  "app": {
+    "title": "Time Tracker"
+  },
+  "project": {
+    "new": "Neues Projekt",
+    "namePlaceholder": "Projektname",
+    "color": "Farbe",
+    "cancel": "Abbrechen",
+    "create": "Erstellen",
+    "customColor": "Benutzerdefinierte Farbe",
+    "collapse": "Einklappen",
+    "expand": "Ausklappen"
+  },
+  "error": {
+    "unknown": "Unbekannter Fehler",
+    "occurred": "Ein Fehler ist aufgetreten",
+    "retry": "Erneut versuchen"
+  },
+  "dashboard": {
+    "title": "Tagesübersicht",
+    "dueNow": "Jetzt fällig",
+    "laterToday": "Später heute",
+    "overdue": "Überfällig",
+    "noTasksToday": "Keine anstehenden Aufgaben für heute."
+  },
+  "tasks": {
+    "title": "Aufgaben",
+    "activities": "Aktivitäten",
+    "openCount": "{{count}} offene Aufgaben",
+    "activityCount": "{{count}} Aktivitäten",
+    "noTasks": "Keine Aufgaben vorhanden.",
+    "noActivities": "Keine Aktivitäten vorhanden.",
+    "newTask": "Neue Aufgabe",
+    "newActivity": "Neue Aktivität",
+    "newTaskPlaceholder": "Neue Aufgabe…",
+    "create": "Erstellen",
+    "cancel": "Abbrechen",
+    "taskType": {
+      "task": "Aufgabe",
+      "activity": "Aktivität"
+    },
+    "done": {
+      "title": "Erledigte Aufgaben",
+      "none": "Keine erledigten Aufgaben.",
+      "loadMore": "Weitere laden"
+    }
+  },
+  "slot": {
+    "edit": "Slot bearbeiten",
+    "start": "Start",
+    "end": "Ende",
+    "noTask": "Kein Task",
+    "delete": "Löschen",
+    "deleteConfirm": "Slot löschen?",
+    "save": "Speichern",
+    "saving": "Speichern...",
+    "cancel": "Abbrechen",
+    "neighborAdjusted": "Nachbar-Slot #{{id}} wurde automatisch angepasst.",
+    "gap": "– Lücke –",
+    "running": "läuft",
+    "noEntries": "Keine Einträge"
+  },
+  "slotBar": {
+    "notWorking": "Nicht am Arbeiten",
+    "startWork": "Arbeit starten",
+    "switchTask": "Wechseln",
+    "stop": "Stopp",
+    "noTask": "Kein Task"
+  },
+  "startTaskDialog": {
+    "titleStart": "Task starten",
+    "titleSwitch": "Task wechseln",
+    "searchPlaceholder": "Task suchen...",
+    "noTaskFound": "Kein Task gefunden",
+    "createPlaceholder": "Neuen Task erstellen...",
+    "startWithoutTask": "Ohne Task starten",
+    "start": "Start"
+  },
+  "worktime": {
+    "today": "Heute",
+    "week": "Woche"
+  },
+  "timeline": {
+    "previousWeek": "Vorherige Woche",
+    "nextWeek": "Nächste Woche",
+    "today": "Heute",
+    "filterProject": "Projekt filtern…",
+    "removeFilter": "Filter entfernen",
+    "slots": "Slots",
+    "tasks": "Aufgaben"
+  },
+  "reports": {
+    "title": "Auswertung",
+    "today": "Heute",
+    "yesterday": "Gestern",
+    "thisWeek": "Diese Woche",
+    "thisMonth": "Dieser Monat",
+    "custom": "Benutzerdefiniert",
+    "dateRange": "Datumsbereich",
+    "filterLabel": "Label filtern…",
+    "totalWorktime": "Gesamte Arbeitszeit",
+    "avgPerDay": "Ø {{time}} / Tag",
+    "projectShares": "Projektanteile",
+    "labelFilter": "· Label: {{name}}",
+    "hoursPerDay": "Stunden pro Tag",
+    "tasksWithLabel": "Tasks mit Label \u201e{{name}}\u201c",
+    "detailsPerProject": "Details pro Projekt",
+    "noData": "Keine Daten für diesen Zeitraum.",
+    "noDataShort": "Keine Daten",
+    "withLabel": "mit Label",
+    "withoutLabel": "ohne Label"
+  },
+  "labels": {
+    "title": "Labels",
+    "countSingular": "{{count}} Label",
+    "countPlural": "{{count}} Labels",
+    "newPlaceholder": "Neues Label…",
+    "createTitle": "Label erstellen",
+    "deleteTitle": "Label löschen",
+    "deleteConfirm": "Löschen?",
+    "yes": "Ja",
+    "tasks": "{{count}} Tasks"
+  },
+  "taskCard": {
+    "markDone": "Als erledigt markieren",
+    "removeFromToday": "Von heute entfernen",
+    "clickToEdit": "Klicken zum Bearbeiten",
+    "totalTime": "{{time}} gesamt",
+    "pause": "Pause",
+    "start": "Starten"
+  },
+  "taskEditControls": {
+    "editLabels": "Labels bearbeiten",
+    "planDate": "Datum planen",
+    "planned": "Geplant: {{date}}"
+  },
+  "taskUtils": {
+    "today": "Heute",
+    "tomorrow": "Morgen"
+  },
+  "taskSummaryView": {
+    "noProject": "Kein Projekt",
+    "noTask": "Kein Task",
+    "deletedTask": "(Task gelöscht)",
+    "noEntries": "Keine Einträge"
+  },
+  "inlineSlotRow": {
+    "noTask": "Kein Task",
+    "deletedTask": "(Task gelöscht)",
+    "running": "läuft",
+    "delete": "Löschen"
+  },
+  "inlineNewSlotRow": {
+    "noTask": "Kein Task",
+    "cancel": "Abbrechen"
+  },
+  "logTable": {
+    "from": "Von",
+    "until": "Bis",
+    "time": "Zeit",
+    "task": "Task"
+  },
+  "loading": "Laden…",
+  "language": {
+    "label": "Sprache",
+    "de": "Deutsch",
+    "en": "English"
+  }
+}

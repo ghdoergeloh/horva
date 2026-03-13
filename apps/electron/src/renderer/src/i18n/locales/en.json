@@ -1,0 +1,178 @@
+{
+  "nav": {
+    "today": "Today",
+    "timeline": "Timeline",
+    "reports": "Reports",
+    "tasks": "Tasks",
+    "labels": "Labels",
+    "newProject": "New Project"
+  },
+  "app": {
+    "title": "Time Tracker"
+  },
+  "project": {
+    "new": "New Project",
+    "namePlaceholder": "Project name",
+    "color": "Color",
+    "cancel": "Cancel",
+    "create": "Create",
+    "customColor": "Custom color",
+    "collapse": "Collapse",
+    "expand": "Expand"
+  },
+  "error": {
+    "unknown": "Unknown error",
+    "occurred": "An error occurred",
+    "retry": "Try again"
+  },
+  "dashboard": {
+    "title": "Daily Overview",
+    "dueNow": "Due now",
+    "laterToday": "Later today",
+    "overdue": "Overdue",
+    "noTasksToday": "No upcoming tasks for today."
+  },
+  "tasks": {
+    "title": "Tasks",
+    "activities": "Activities",
+    "openCount": "{{count}} open tasks",
+    "activityCount": "{{count}} activities",
+    "noTasks": "No tasks available.",
+    "noActivities": "No activities available.",
+    "newTask": "New Task",
+    "newActivity": "New Activity",
+    "newTaskPlaceholder": "New task…",
+    "create": "Create",
+    "cancel": "Cancel",
+    "taskType": {
+      "task": "Task",
+      "activity": "Activity"
+    },
+    "done": {
+      "title": "Completed Tasks",
+      "none": "No completed tasks.",
+      "loadMore": "Load more"
+    }
+  },
+  "slot": {
+    "edit": "Edit Slot",
+    "start": "Start",
+    "end": "End",
+    "noTask": "No task",
+    "delete": "Delete",
+    "deleteConfirm": "Delete slot?",
+    "save": "Save",
+    "saving": "Saving...",
+    "cancel": "Cancel",
+    "neighborAdjusted": "Neighbor slot #{{id}} was automatically adjusted.",
+    "gap": "– Gap –",
+    "running": "running",
+    "noEntries": "No entries"
+  },
+  "slotBar": {
+    "notWorking": "Not working",
+    "startWork": "Start work",
+    "switchTask": "Switch",
+    "stop": "Stop",
+    "noTask": "No task"
+  },
+  "startTaskDialog": {
+    "titleStart": "Start task",
+    "titleSwitch": "Switch task",
+    "searchPlaceholder": "Search tasks...",
+    "noTaskFound": "No task found",
+    "createPlaceholder": "Create new task...",
+    "startWithoutTask": "Start without task",
+    "start": "Start"
+  },
+  "worktime": {
+    "today": "Today",
+    "week": "Week"
+  },
+  "timeline": {
+    "previousWeek": "Previous week",
+    "nextWeek": "Next week",
+    "today": "Today",
+    "filterProject": "Filter project…",
+    "removeFilter": "Remove filter",
+    "slots": "Slots",
+    "tasks": "Tasks"
+  },
+  "reports": {
+    "title": "Reports",
+    "today": "Today",
+    "yesterday": "Yesterday",
+    "thisWeek": "This week",
+    "thisMonth": "This month",
+    "custom": "Custom",
+    "dateRange": "Date range",
+    "filterLabel": "Filter label…",
+    "totalWorktime": "Total work time",
+    "avgPerDay": "Ø {{time}} / day",
+    "projectShares": "Project shares",
+    "labelFilter": "· Label: {{name}}",
+    "hoursPerDay": "Hours per day",
+    "tasksWithLabel": "Tasks with label \"{{name}}\"",
+    "detailsPerProject": "Details per project",
+    "noData": "No data for this period.",
+    "noDataShort": "No data",
+    "withLabel": "with label",
+    "withoutLabel": "without label"
+  },
+  "labels": {
+    "title": "Labels",
+    "countSingular": "{{count}} label",
+    "countPlural": "{{count}} labels",
+    "newPlaceholder": "New label…",
+    "createTitle": "Create label",
+    "deleteTitle": "Delete label",
+    "deleteConfirm": "Delete?",
+    "yes": "Yes",
+    "tasks": "{{count}} tasks"
+  },
+  "taskCard": {
+    "markDone": "Mark as done",
+    "removeFromToday": "Remove from today",
+    "clickToEdit": "Click to edit",
+    "totalTime": "{{time}} total",
+    "pause": "Pause",
+    "start": "Start"
+  },
+  "taskEditControls": {
+    "editLabels": "Edit labels",
+    "planDate": "Plan date",
+    "planned": "Planned: {{date}}"
+  },
+  "taskUtils": {
+    "today": "Today",
+    "tomorrow": "Tomorrow"
+  },
+  "taskSummaryView": {
+    "noProject": "No project",
+    "noTask": "No task",
+    "deletedTask": "(Task deleted)",
+    "noEntries": "No entries"
+  },
+  "inlineSlotRow": {
+    "noTask": "No task",
+    "deletedTask": "(Task deleted)",
+    "running": "running",
+    "delete": "Delete"
+  },
+  "inlineNewSlotRow": {
+    "noTask": "No task",
+    "cancel": "Cancel"
+  },
+  "logTable": {
+    "from": "From",
+    "until": "Until",
+    "time": "Time",
+    "task": "Task"
+  },
+  "loading": "Loading…",
+  "language": {
+    "label": "Language",
+    "de": "Deutsch",
+    "en": "English"
+  }
+}

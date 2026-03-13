@@ -1,0 +1,26 @@
+appId: com.xapling.timetracker
+productName: Time Tracker
+copyright: Copyright © 2026
+
+directories:
+  buildResources: build
+  output: dist-electron
+
+files:
+  - out/**/*
+  - "!out/**/*.map"
+
+asar: true
+
+asarUnpack:
+  - "**/*.node"
+
+mac:
+  target: dmg
+  category: public.app-category.productivity
+
+win:
+  target: nsis
+
+linux:
+  target: AppImage
