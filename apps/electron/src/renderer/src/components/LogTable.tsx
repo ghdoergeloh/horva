@@ -1,10 +1,11 @@
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 
+import { FormattedMs } from "~/components/FormattedMinutes.js";
 import { InlineNewSlotRow } from "~/components/InlineNewSlotRow.js";
 import { InlineSlotRow } from "~/components/InlineSlotRow.js";
 import { InsertSeparatorRow } from "~/components/InsertSeparatorRow.js";
-import { fmt, fmtDuration } from "~/lib/timeFormatters.js";
+import { fmt } from "~/lib/timeFormatters.js";
 
 interface SlotRow {
   id: number;
@@ -125,7 +126,7 @@ export function LogTable({
                 <td className="py-1 pr-4 font-mono">{fmt(row.from)}</td>
                 <td className="py-1 pr-4 font-mono">{fmt(row.to)}</td>
                 <td className="py-1 pr-6 italic">
-                  {fmtDuration(row.to.getTime() - row.from.getTime())}
+                  <FormattedMs ms={row.to.getTime() - row.from.getTime()} />
                 </td>
                 <td className="py-1 pr-4 italic" colSpan={2}>
                   {t("slot.gap")}

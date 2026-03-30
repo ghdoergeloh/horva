@@ -13,11 +13,15 @@ import { DateRangePicker } from "@repo/ui/DateRangePicker";
 import { Select, SelectItem } from "@repo/ui/Select";
 import { Tab, TabList, Tabs } from "@repo/ui/Tabs";
 
+import { FormattedMinutes } from "~/components/FormattedMinutes.js";
 import { LoadingSpinner } from "~/components/LoadingSpinner.js";
 import { ProjectPie } from "~/components/ProjectPie.js";
+import {
+  formatMinutesWithFormat,
+  useTimeFormat,
+} from "~/contexts/SettingsContext.js";
 import i18n from "~/i18n/index.js";
 import { buildArcPath, lighten } from "~/lib/chartUtils.js";
-import { formatMinutes } from "~/lib/timeFormatters.js";
 
 interface SummaryEntry {
   projectId: number | null;
@@ -61,7 +65,7 @@ function BarChart({ data }: { data: { label: string; minutes: number }[] }) {
             />
           </div>
           <span className="w-12 flex-shrink-0 text-right text-xs text-gray-600">
-            {formatMinutes(item.minutes)}
+            <FormattedMinutes minutes={item.minutes} />
           </span>
         </div>
       ))}
@@ -93,7 +97,7 @@ function ProjectRow({ entry }: { entry: SummaryEntry }) {
           {entry.projectName}
         </span>
         <span className="text-sm font-semibold text-gray-900">
-          {formatMinutes(entry.totalMinutes)}
+          <FormattedMinutes minutes={entry.totalMinutes} />
         </span>
       </Button>
 
@@ -106,7 +110,7 @@ function ProjectRow({ entry }: { entry: SummaryEntry }) {
                   {task.taskName}
                 </span>
                 <span className="text-sm text-gray-500">
-                  {formatMinutes(task.minutes)}
+                  <FormattedMinutes minutes={task.minutes} />
                 </span>
               </div>
             ))}
@@ -208,7 +212,9 @@ function SplitProjectPie({
                 {slice.projectName}
               </span>
               <span className="text-sm text-gray-900">
-                {formatMinutes(slice.minutesWith + slice.minutesWithout)}
+                <FormattedMinutes
+                  minutes={slice.minutesWith + slice.minutesWithout}
+                />
               </span>
             </div>
             {slice.minutesWith > 0 && (
@@ -221,7 +227,7 @@ function SplitProjectPie({
                   {t("reports.withLabel")}
                 </span>
                 <span className="text-xs text-gray-700">
-                  {formatMinutes(slice.minutesWith)}
+                  <FormattedMinutes minutes={slice.minutesWith} />
                 </span>
               </div>
             )}
@@ -235,7 +241,7 @@ function SplitProjectPie({
                   {t("reports.withoutLabel")}
                 </span>
                 <span className="text-xs text-gray-400">
-                  {formatMinutes(slice.minutesWithout)}
+                  <FormattedMinutes minutes={slice.minutesWithout} />
                 </span>
               </div>
             )}
@@ -258,6 +264,7 @@ function calendarDateToDate(date: CalendarDate, endOfDay = false): Date {
 
 function Reports() {
   const { t } = useTranslation();
+  const timeFormat = useTimeFormat();
   const [period, setPeriod] = useState<Period | "custom">("today");
   const [customRange, setCustomRange] = useState<RangeValue<CalendarDate>>({
     start: today(getLocalTimeZone()),
@@ -481,12 +488,12 @@ function Reports() {
               {t("reports.totalWorktime")}
             </p>
             <p className="mt-1 text-4xl font-bold text-gray-900">
-              {formatMinutes(totalMinutes)}
+              <FormattedMinutes minutes={totalMinutes} />
             </p>
             {avgDailyMinutes > 0 && (
               <p className="mt-1 text-sm text-gray-400">
                 {t("reports.avgPerDay", {
-                  time: formatMinutes(avgDailyMinutes),
+                  time: formatMinutesWithFormat(avgDailyMinutes, timeFormat),
                 })}
               </p>
             )}
@@ -527,7 +534,7 @@ function Reports() {
               <h2 className="text-sm font-semibold text-gray-700">
                 {t("reports.tasksWithLabel", { name: filterLabel.name })}
                 <span className="ml-2 font-normal text-gray-400">
-                  {formatMinutes(labelTotalMinutes)}
+                  <FormattedMinutes minutes={labelTotalMinutes} />
                 </span>
               </h2>
               <div className="divide-y divide-gray-50 overflow-hidden rounded-xl border border-gray-200 bg-white">
@@ -549,7 +556,7 @@ function Reports() {
                         {task.projectName}
                       </span>
                       <span className="w-16 text-right text-sm font-medium text-gray-700">
-                        {formatMinutes(task.minutes)}
+                        <FormattedMinutes minutes={task.minutes} />
                       </span>
                     </div>
                   ))}

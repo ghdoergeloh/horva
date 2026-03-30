@@ -2,11 +2,12 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import { EditSlotDialog } from "~/components/EditSlotDialog.js";
+import { FormattedMs } from "~/components/FormattedMinutes.js";
 import { LogTable } from "~/components/LogTable.js";
 import { TaskSummaryView } from "~/components/TaskSummaryView.js";
 import i18n from "~/i18n/index.js";
 import { startOfDay } from "~/lib/dateUtils.js";
-import { fmt, fmtDuration } from "~/lib/timeFormatters.js";
+import { fmt } from "~/lib/timeFormatters.js";
 
 interface SlotRow {
   id: number;
@@ -170,10 +171,12 @@ export function DayRow({
                   : t("slot.running")}
                 {tooltip.slot.endedAt && (
                   <span className="ml-2 text-gray-400">
-                    {fmtDuration(
-                      new Date(tooltip.slot.endedAt).getTime() -
-                        new Date(tooltip.slot.startedAt).getTime(),
-                    )}
+                    <FormattedMs
+                      ms={
+                        new Date(tooltip.slot.endedAt).getTime() -
+                        new Date(tooltip.slot.startedAt).getTime()
+                      }
+                    />
                   </span>
                 )}
               </p>
@@ -184,7 +187,7 @@ export function DayRow({
 
         {/* Total duration */}
         <div className="w-16 shrink-0 text-right text-xs text-gray-400">
-          {totalMs > 0 ? fmtDuration(totalMs) : ""}
+          {totalMs > 0 ? <FormattedMs ms={totalMs} /> : ""}
         </div>
       </div>
 

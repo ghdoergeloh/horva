@@ -5,7 +5,8 @@
     "reports": "Berichte",
     "tasks": "Aufgaben",
     "labels": "Labels",
-    "newProject": "Neues Projekt"
+    "newProject": "Neues Projekt",
+    "settings": "Einstellungen"
   },
   "app": {
     "title": "Time Tracker"
@@ -175,5 +176,14 @@
     "label": "Sprache",
     "de": "Deutsch",
     "en": "English"
+  },
+  "settings": {
+    "title": "Einstellungen",
+    "timeFormat": "Zeitformat",
+    "timeFormatHint": "Wie Zeitangaben angezeigt werden",
+    "timeFormat_hm": "1h 30m",
+    "timeFormat_decimal_colon": "1:30 h",
+    "timeFormat_decimal_dot": "1,50 h",
+    "preview": "Vorschau"
   }
 }

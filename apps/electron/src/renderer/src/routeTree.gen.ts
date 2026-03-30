@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as TimelineRouteImport } from './routes/timeline'
 import { Route as TasksRouteImport } from './routes/tasks'
+import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as ReportsRouteImport } from './routes/reports'
 import { Route as LabelsRouteImport } from './routes/labels'
 import { Route as IndexRouteImport } from './routes/index'
@@ -24,6 +25,11 @@ const TimelineRoute = TimelineRouteImport.update({
 const TasksRoute = TasksRouteImport.update({
   id: '/tasks',
   path: '/tasks',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SettingsRoute = SettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ReportsRoute = ReportsRouteImport.update({
@@ -51,6 +57,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/labels': typeof LabelsRoute
   '/reports': typeof ReportsRoute
+  '/settings': typeof SettingsRoute
   '/tasks': typeof TasksRouteWithChildren
   '/timeline': typeof TimelineRoute
   '/tasks/$projectId': typeof TasksProjectIdRoute
@@ -59,6 +66,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/labels': typeof LabelsRoute
   '/reports': typeof ReportsRoute
+  '/settings': typeof SettingsRoute
   '/tasks': typeof TasksRouteWithChildren
   '/timeline': typeof TimelineRoute
   '/tasks/$projectId': typeof TasksProjectIdRoute
@@ -68,6 +76,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/labels': typeof LabelsRoute
   '/reports': typeof ReportsRoute
+  '/settings': typeof SettingsRoute
   '/tasks': typeof TasksRouteWithChildren
   '/timeline': typeof TimelineRoute
   '/tasks/$projectId': typeof TasksProjectIdRoute
@@ -78,6 +87,7 @@ export interface FileRouteTypes {
     | '/'
     | '/labels'
     | '/reports'
+    | '/settings'
     | '/tasks'
     | '/timeline'
     | '/tasks/$projectId'
@@ -86,6 +96,7 @@ export interface FileRouteTypes {
     | '/'
     | '/labels'
     | '/reports'
+    | '/settings'
     | '/tasks'
     | '/timeline'
     | '/tasks/$projectId'
@@ -94,6 +105,7 @@ export interface FileRouteTypes {
     | '/'
     | '/labels'
     | '/reports'
+    | '/settings'
     | '/tasks'
     | '/timeline'
     | '/tasks/$projectId'
@@ -103,6 +115,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   LabelsRoute: typeof LabelsRoute
   ReportsRoute: typeof ReportsRoute
+  SettingsRoute: typeof SettingsRoute
   TasksRoute: typeof TasksRouteWithChildren
   TimelineRoute: typeof TimelineRoute
 }
@@ -121,6 +134,13 @@ declare module '@tanstack/react-router' {
       path: '/tasks'
       fullPath: '/tasks'
       preLoaderRoute: typeof TasksRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/settings': {
+      id: '/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof SettingsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/reports': {
@@ -168,6 +188,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   LabelsRoute: LabelsRoute,
   ReportsRoute: ReportsRoute,
+  SettingsRoute: SettingsRoute,
   TasksRoute: TasksRouteWithChildren,
   TimelineRoute: TimelineRoute,
 }

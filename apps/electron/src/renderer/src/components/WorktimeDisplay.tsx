@@ -3,14 +3,8 @@ import { useTranslation } from "react-i18next";
 
 import type { SummaryEntry } from "@repo/core";
 
+import { FormattedMinutes } from "~/components/FormattedMinutes.js";
 import { useActiveSlot } from "~/contexts/ActiveSlotContext.js";
-
-function formatMinutes(minutes: number): string {
-  const h = Math.floor(minutes / 60);
-  const m = minutes % 60;
-  if (h === 0) return `${String(m)}m`;
-  return `${String(h)}h ${String(m).padStart(2, "0")}m`;
-}
 
 function elapsedMinutes(startedAt: Date | string): number {
   return Math.floor((Date.now() - new Date(startedAt).getTime()) / 60000);
@@ -52,14 +46,14 @@ export function WorktimeDisplay({ tick }: { tick: number }) {
       <div className="flex items-center gap-1.5">
         <span className="text-gray-400">{t("worktime.today")}</span>
         <span className="font-mono font-medium text-gray-700 tabular-nums">
-          {formatMinutes(todayMinutes)}
+          <FormattedMinutes minutes={todayMinutes} />
         </span>
       </div>
       <div className="h-3 w-px bg-gray-200" />
       <div className="flex items-center gap-1.5">
         <span className="text-gray-400">{t("worktime.week")}</span>
         <span className="font-mono font-medium text-gray-700 tabular-nums">
-          {formatMinutes(weekMinutes)}
+          <FormattedMinutes minutes={weekMinutes} />
         </span>
       </div>
     </div>

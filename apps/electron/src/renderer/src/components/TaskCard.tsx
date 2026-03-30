@@ -11,6 +11,10 @@ import {
   PlanButton,
 } from "~/components/TaskEditControls.js";
 import { useActiveSlot } from "~/contexts/ActiveSlotContext.js";
+import {
+  formatMinutesWithFormat,
+  useTimeFormat,
+} from "~/contexts/SettingsContext.js";
 
 interface TaskCardProps {
   id: number;
@@ -32,13 +36,6 @@ interface TaskCardProps {
   onRemoveLabel?: (labelId: number) => void;
 }
 
-function formatMinutes(minutes: number): string {
-  if (minutes < 60) return `${String(minutes)}m`;
-  const h = Math.floor(minutes / 60);
-  const m = minutes % 60;
-  return m > 0 ? `${String(h)}h ${String(m)}m` : `${String(h)}h`;
-}
-
 export function TaskCard({
   id,
   name,
@@ -58,6 +55,7 @@ export function TaskCard({
   onRemoveLabel,
 }: TaskCardProps) {
   const { t } = useTranslation();
+  const timeFormat = useTimeFormat();
   const { openSlot, invalidate } = useActiveSlot();
   const isRunning = openSlot?.task?.id === id;
   const [editing, setEditing] = useState(false);
@@ -168,7 +166,9 @@ export function TaskCard({
           ))}
           {totalMinutes > 0 && (
             <span className="text-xs text-gray-400">
-              {t("taskCard.totalTime", { time: formatMinutes(totalMinutes) })}
+              {t("taskCard.totalTime", {
+                time: formatMinutesWithFormat(totalMinutes, timeFormat),
+              })}
             </span>
           )}
         </div>

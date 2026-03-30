@@ -1,3 +1,5 @@
+import { FormattedMinutes } from "~/components/FormattedMinutes.js";
+
 interface Slice {
   projectId: number | null;
   projectName: string;
@@ -30,13 +32,6 @@ function buildPaths(
     const d = `M ${String(cx)} ${String(cy)} L ${String(x1)} ${String(y1)} A ${String(r)} ${String(r)} 0 ${String(largeArc)} 1 ${String(x2)} ${String(y2)} Z`;
     return { ...slice, d };
   });
-}
-
-function formatMinutes(minutes: number): string {
-  const h = Math.floor(minutes / 60);
-  const m = minutes % 60;
-  if (h === 0) return `${String(m)}m`;
-  return m > 0 ? `${String(h)}h ${String(m)}m` : `${String(h)}h`;
 }
 
 export function ProjectPie({ data, size = 200 }: ProjectPieProps) {
@@ -95,7 +90,7 @@ export function ProjectPie({ data, size = 200 }: ProjectPieProps) {
               {slice.projectName}
             </span>
             <span className="text-sm font-medium text-gray-900">
-              {formatMinutes(slice.totalMinutes)}
+              <FormattedMinutes minutes={slice.totalMinutes} />
             </span>
             <span className="text-xs text-gray-400">
               {Math.round((slice.totalMinutes / total) * 100)}%

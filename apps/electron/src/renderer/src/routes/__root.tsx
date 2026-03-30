@@ -10,6 +10,7 @@ import {
   Clock,
   LayoutDashboard,
   Plus,
+  Settings,
   Tag,
   X,
 } from "lucide-react";
@@ -17,13 +18,13 @@ import { useTranslation } from "react-i18next";
 
 import { Button } from "@repo/ui/Button";
 import { ColorPicker } from "@repo/ui/ColorPicker";
-import { Select, SelectItem } from "@repo/ui/Select";
 import { TextField } from "@repo/ui/TextField";
 
 import { AppIcon } from "~/components/AppIcon.js";
 import { SlotBar } from "~/components/SlotBar.js";
 import { ActiveSlotProvider } from "~/contexts/ActiveSlotContext.js";
-import i18n, { setLanguage } from "~/i18n/index.js";
+import { SettingsProvider } from "~/contexts/SettingsContext.js";
+import i18n from "~/i18n/index.js";
 
 interface ProjectRow {
   id: number;
@@ -205,169 +206,179 @@ function AppShell() {
   ] as const;
 
   return (
-    <ActiveSlotProvider>
-      <div className="flex h-screen bg-gray-50">
-        {showNewProject && (
-          <NewProjectModal onClose={() => setShowNewProject(false)} />
-        )}
+    <SettingsProvider>
+      <ActiveSlotProvider>
+        <div className="flex h-screen bg-gray-50">
+          {showNewProject && (
+            <NewProjectModal onClose={() => setShowNewProject(false)} />
+          )}
 
-        {/* Sidebar */}
-        <aside className="flex w-48 flex-col border-r border-gray-200 bg-white">
-          <div className="border-b border-gray-200 px-4 py-4">
-            <div className="flex items-center gap-3">
-              <AppIcon size={34} />
-              <span className="text-sm font-semibold tracking-tight text-gray-900">
-                {t("app.title")}
-              </span>
+          {/* Sidebar */}
+          <aside className="flex w-48 flex-col border-r border-gray-200 bg-white">
+            <div className="border-b border-gray-200 px-4 py-4">
+              <div className="flex items-center gap-3">
+                <AppIcon size={34} />
+                <span className="text-sm font-semibold tracking-tight text-gray-900">
+                  {t("app.title")}
+                </span>
+              </div>
             </div>
-          </div>
-          <nav className="flex-1 overflow-y-auto p-2">
-            {/* Today */}
-            {(() => {
-              const { to, label, icon: Icon } = topNavItems[0];
-              const isActive = location.pathname === "/";
-              return (
-                <a
-                  href={`#${to}`}
-                  className={`mb-1 flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors ${
-                    isActive
+            <nav className="flex-1 overflow-y-auto p-2">
+              {/* Today */}
+              {(() => {
+                const { to, label, icon: Icon } = topNavItems[0];
+                const isActive = location.pathname === "/";
+                return (
+                  <a
+                    href={`#${to}`}
+                    className={`mb-1 flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors ${
+                      isActive
+                        ? "bg-indigo-50 font-medium text-indigo-700"
+                        : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
+                    }`}
+                  >
+                    <Icon className="h-4 w-4" />
+                    {label}
+                  </a>
+                );
+              })()}
+
+              {/* Tasks collapsible section */}
+              <div className="mb-1">
+                <div
+                  className={`flex items-center rounded-md text-sm transition-colors ${
+                    isTasksActive
                       ? "bg-indigo-50 font-medium text-indigo-700"
                       : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
                   }`}
                 >
-                  <Icon className="h-4 w-4" />
-                  {label}
-                </a>
-              );
-            })()}
-
-            {/* Tasks collapsible section */}
-            <div className="mb-1">
-              <div
-                className={`flex items-center rounded-md text-sm transition-colors ${
-                  isTasksActive
-                    ? "bg-indigo-50 font-medium text-indigo-700"
-                    : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
-                }`}
-              >
-                <span className="flex flex-1 items-center gap-3 px-3 py-2">
-                  <CheckSquare className="h-4 w-4 flex-shrink-0" />
-                  {t("nav.tasks")}
-                </span>
-                <Button
-                  variant="quiet"
-                  onPress={() => setTasksOpen((v) => !v)}
-                  className="px-2 py-2 opacity-50 hover:opacity-100"
-                  aria-label={
-                    tasksOpen ? t("project.collapse") : t("project.expand")
-                  }
-                >
-                  {tasksOpen ? (
-                    <ChevronDown className="h-3.5 w-3.5" />
-                  ) : (
-                    <ChevronRight className="h-3.5 w-3.5" />
-                  )}
-                </Button>
-              </div>
-
-              {tasksOpen && (
-                <div className="mt-0.5 ml-3 space-y-0.5 border-l border-gray-100 pl-3">
-                  {projects.map((project) => {
-                    const isProjectActive =
-                      location.pathname === `/tasks/${String(project.id)}`;
-                    return (
-                      <a
-                        key={project.id}
-                        href={`#/tasks/${String(project.id)}`}
-                        className={`flex items-center gap-2 rounded-md px-2 py-1.5 text-sm transition-colors ${
-                          isProjectActive
-                            ? "bg-indigo-50 font-medium text-indigo-700"
-                            : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
-                        }`}
-                      >
-                        <span
-                          className="h-2.5 w-2.5 flex-shrink-0 rounded-full"
-                          style={{ backgroundColor: project.color }}
-                        />
-                        <span className="truncate">{project.name}</span>
-                      </a>
-                    );
-                  })}
+                  <span className="flex flex-1 items-center gap-3 px-3 py-2">
+                    <CheckSquare className="h-4 w-4 flex-shrink-0" />
+                    {t("nav.tasks")}
+                  </span>
                   <Button
                     variant="quiet"
-                    onPress={() => setShowNewProject(true)}
+                    onPress={() => setTasksOpen((v) => !v)}
+                    className="px-2 py-2 opacity-50 hover:opacity-100"
+                    aria-label={
+                      tasksOpen ? t("project.collapse") : t("project.expand")
+                    }
                   >
-                    <span className="inline-flex items-center gap-2">
-                      <Plus className="h-3 w-3" />
-                      {t("nav.newProject")}
-                    </span>
+                    {tasksOpen ? (
+                      <ChevronDown className="h-3.5 w-3.5" />
+                    ) : (
+                      <ChevronRight className="h-3.5 w-3.5" />
+                    )}
                   </Button>
                 </div>
-              )}
+
+                {tasksOpen && (
+                  <div className="mt-0.5 ml-3 space-y-0.5 border-l border-gray-100 pl-3">
+                    {projects.map((project) => {
+                      const isProjectActive =
+                        location.pathname === `/tasks/${String(project.id)}`;
+                      return (
+                        <a
+                          key={project.id}
+                          href={`#/tasks/${String(project.id)}`}
+                          className={`flex items-center gap-2 rounded-md px-2 py-1.5 text-sm transition-colors ${
+                            isProjectActive
+                              ? "bg-indigo-50 font-medium text-indigo-700"
+                              : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
+                          }`}
+                        >
+                          <span
+                            className="h-2.5 w-2.5 flex-shrink-0 rounded-full"
+                            style={{ backgroundColor: project.color }}
+                          />
+                          <span className="truncate">{project.name}</span>
+                        </a>
+                      );
+                    })}
+                    <Button
+                      variant="quiet"
+                      onPress={() => setShowNewProject(true)}
+                    >
+                      <span className="inline-flex items-center gap-2">
+                        <Plus className="h-3 w-3" />
+                        {t("nav.newProject")}
+                      </span>
+                    </Button>
+                  </div>
+                )}
+              </div>
+
+              {/* Timeline + Reports */}
+              {topNavItems.slice(1).map(({ to, label, icon: Icon }) => {
+                const isActive = location.pathname === to;
+                return (
+                  <a
+                    key={to}
+                    href={`#${to}`}
+                    className={`mb-1 flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors ${
+                      isActive
+                        ? "bg-indigo-50 font-medium text-indigo-700"
+                        : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
+                    }`}
+                  >
+                    <Icon className="h-4 w-4" />
+                    {label}
+                  </a>
+                );
+              })}
+
+              {/* Labels */}
+              {(() => {
+                const isActive = location.pathname === "/labels";
+                return (
+                  <a
+                    href="#/labels"
+                    className={`mb-1 flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors ${
+                      isActive
+                        ? "bg-indigo-50 font-medium text-indigo-700"
+                        : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
+                    }`}
+                  >
+                    <Tag className="h-4 w-4" />
+                    {t("nav.labels")}
+                  </a>
+                );
+              })()}
+            </nav>
+
+            {/* Settings link */}
+            <div className="border-t border-gray-100 p-2">
+              {(() => {
+                const isActive = location.pathname === "/settings";
+                return (
+                  <a
+                    href="#/settings"
+                    className={`flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors ${
+                      isActive
+                        ? "bg-indigo-50 font-medium text-indigo-700"
+                        : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
+                    }`}
+                  >
+                    <Settings className="h-4 w-4" />
+                    {t("nav.settings")}
+                  </a>
+                );
+              })()}
             </div>
+          </aside>
 
-            {/* Timeline + Reports */}
-            {topNavItems.slice(1).map(({ to, label, icon: Icon }) => {
-              const isActive = location.pathname === to;
-              return (
-                <a
-                  key={to}
-                  href={`#${to}`}
-                  className={`mb-1 flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors ${
-                    isActive
-                      ? "bg-indigo-50 font-medium text-indigo-700"
-                      : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
-                  }`}
-                >
-                  <Icon className="h-4 w-4" />
-                  {label}
-                </a>
-              );
-            })}
-
-            {/* Labels */}
-            {(() => {
-              const isActive = location.pathname === "/labels";
-              return (
-                <a
-                  href="#/labels"
-                  className={`mb-1 flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors ${
-                    isActive
-                      ? "bg-indigo-50 font-medium text-indigo-700"
-                      : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
-                  }`}
-                >
-                  <Tag className="h-4 w-4" />
-                  {t("nav.labels")}
-                </a>
-              );
-            })()}
-          </nav>
-
-          {/* Language selector */}
-          <div className="border-t border-gray-100 p-2">
-            <Select
-              value={i18n.language}
-              onChange={(value) => setLanguage(String(value))}
-              aria-label={t("language.label")}
-            >
-              <SelectItem id="de">{t("language.de")}</SelectItem>
-              <SelectItem id="en">{t("language.en")}</SelectItem>
-            </Select>
+          {/* Main content */}
+          <div className="flex flex-1 flex-col overflow-hidden">
+            <SlotBar />
+            <main className="flex-1 overflow-auto p-6">
+              <RouteErrorBoundary>
+                <Outlet />
+              </RouteErrorBoundary>
+            </main>
           </div>
-        </aside>
-
-        {/* Main content */}
-        <div className="flex flex-1 flex-col overflow-hidden">
-          <SlotBar />
-          <main className="flex-1 overflow-auto p-6">
-            <RouteErrorBoundary>
-              <Outlet />
-            </RouteErrorBoundary>
-          </main>
         </div>
-      </div>
-    </ActiveSlotProvider>
+      </ActiveSlotProvider>
+    </SettingsProvider>
   );
 }
 

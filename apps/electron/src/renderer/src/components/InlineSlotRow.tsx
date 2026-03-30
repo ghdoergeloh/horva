@@ -8,8 +8,13 @@ import { Button } from "@repo/ui/Button";
 import { Select, SelectItem } from "@repo/ui/Select";
 import { TimeField } from "@repo/ui/TimeField";
 
+import { FormattedMs } from "~/components/FormattedMinutes.js";
 import { LiveTime } from "~/components/LiveTime.js";
-import { applyTimeString, fmt, fmtDuration } from "~/lib/timeFormatters.js";
+import {
+  formatMinutesWithFormat,
+  useTimeFormat,
+} from "~/contexts/SettingsContext.js";
+import { applyTimeString, fmt } from "~/lib/timeFormatters.js";
 
 interface SlotRow {
   id: number;
@@ -61,6 +66,7 @@ export function InlineSlotRow({
   onEndEdit,
 }: InlineSlotRowProps) {
   const { t } = useTranslation();
+  const timeFormat = useTimeFormat();
   const queryClient = useQueryClient();
   const [startTime, setStartTime] = useState(fmt(slot.startedAt));
   const [endTime, setEndTime] = useState(slot.endedAt ? fmt(slot.endedAt) : "");
@@ -155,10 +161,12 @@ export function InlineSlotRow({
         </td>
         <td className="py-1.5 pr-6 text-gray-700">
           {slot.endedAt ? (
-            fmtDuration(
-              new Date(slot.endedAt).getTime() -
-                new Date(slot.startedAt).getTime(),
-            )
+            <FormattedMs
+              ms={
+                new Date(slot.endedAt).getTime() -
+                new Date(slot.startedAt).getTime()
+              }
+            />
           ) : (
             <LiveTime startedAt={slot.startedAt} />
           )}
@@ -217,7 +225,9 @@ export function InlineSlotRow({
                 endTime,
               );
               const ms = new Date(end).getTime() - new Date(start).getTime();
-              return ms > 0 ? fmtDuration(ms) : "–";
+              return ms > 0
+                ? formatMinutesWithFormat(Math.round(ms / 60000), timeFormat)
+                : "–";
             })()
           : "–"}
       </td>

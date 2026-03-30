@@ -1,6 +1,6 @@
 import { useTranslation } from "react-i18next";
 
-import { fmtDuration } from "~/lib/timeFormatters.js";
+import { FormattedMs } from "~/components/FormattedMinutes.js";
 
 interface SlotRow {
   endedAt: Date | string | null;
@@ -84,7 +84,7 @@ export function TaskSummaryView({ slots }: { slots: SlotRow[] }) {
               {proj.projectName}
             </span>
             <span className="text-xs font-medium text-gray-500">
-              {fmtDuration(proj.totalMs)}
+              <FormattedMs ms={proj.totalMs} />
             </span>
           </div>
           <div className="space-y-0.5 pl-4">
@@ -99,7 +99,7 @@ export function TaskSummaryView({ slots }: { slots: SlotRow[] }) {
                     {task.taskName}
                   </span>
                   <span className="text-xs text-gray-400">
-                    {fmtDuration(task.ms)}
+                    <FormattedMs ms={task.ms} />
                   </span>
                 </div>
               ))}
