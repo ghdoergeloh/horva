@@ -20,7 +20,9 @@
     "@dnd-kit/sortable": "^10.0.0",
     "@dnd-kit/utilities": "^3.2.2",
     "dotenv": "catalog:",
-    "pg": "^8.18.0"
+    "i18next": "^26.0.2",
+    "pg": "^8.18.0",
+    "react-i18next": "^17.0.1"
   },
   "devDependencies": {
     "@electron-toolkit/preload": "^3.0.1",

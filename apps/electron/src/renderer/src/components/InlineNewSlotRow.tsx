@@ -1,4 +1,5 @@
-import React, { useEffect, useRef, useState } from "react";
+import type React from "react";
+import { useEffect, useRef, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { X } from "lucide-react";
 import { useTranslation } from "react-i18next";

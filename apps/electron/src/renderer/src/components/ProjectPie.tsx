@@ -60,7 +60,7 @@ export function ProjectPie({ data, size = 200 }: ProjectPieProps) {
             cx={cx}
             cy={cy}
             r={r}
-            fill={data[0]!.projectColor}
+            fill={data[0]?.projectColor ?? ""}
             stroke="white"
             strokeWidth={2}
           />
