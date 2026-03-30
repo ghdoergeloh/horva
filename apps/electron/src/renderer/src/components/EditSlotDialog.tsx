@@ -3,6 +3,10 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { AlertTriangle, Trash2, X } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
+import { Button } from "@repo/ui/Button";
+import { Select, SelectItem } from "@repo/ui/Select";
+import { TimeField } from "@repo/ui/TimeField";
+
 import { applyTimeString, fmt } from "~/lib/timeFormatters.js";
 
 interface Slot {
@@ -22,6 +26,22 @@ interface TaskOption {
   id: number;
   name: string;
   project: { name: string; color: string };
+}
+
+function stringToTime(value: string) {
+  if (!value) return null;
+  const [h, m] = value.split(":").map((s) => Number.parseInt(s, 10));
+  if (Number.isNaN(h) || Number.isNaN(m)) return null;
+  return { hour: h, minute: m };
+}
+
+function timeToString(
+  value: { hour?: number | null; minute?: number | null } | null,
+): string {
+  if (!value) return "";
+  const hour = value.hour ?? 0;
+  const minute = value.minute ?? 0;
+  return `${String(hour).padStart(2, "0")}:${String(minute).padStart(2, "0")}`;
 }
 
 export function EditSlotDialog({ slot, onClose }: EditSlotDialogProps) {
@@ -91,37 +111,33 @@ export function EditSlotDialog({ slot, onClose }: EditSlotDialogProps) {
           <h2 className="text-sm font-semibold text-gray-900">
             {t("slot.edit")}
           </h2>
-          <button
-            onClick={onClose}
+          <Button
+            variant="quiet"
+            onPress={onClose}
             className="rounded p-1 text-gray-400 hover:bg-gray-100"
+            aria-label={t("slot.cancel")}
           >
             <X className="h-4 w-4" />
-          </button>
+          </Button>
         </div>
 
         <div className="space-y-4 p-4">
           {/* Times */}
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="mb-1 block text-xs font-medium text-gray-700">
-                {t("slot.start")}
-              </label>
-              <input
-                type="time"
-                value={startTime}
-                onChange={(e) => setStartTime(e.target.value)}
-                className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm"
+              <TimeField
+                label={t("slot.start")}
+                value={stringToTime(startTime) as never}
+                onChange={(value) => setStartTime(timeToString(value))}
+                className="w-full"
               />
             </div>
             <div>
-              <label className="mb-1 block text-xs font-medium text-gray-700">
-                {t("slot.end")}
-              </label>
-              <input
-                type="time"
-                value={endTime}
-                onChange={(e) => setEndTime(e.target.value)}
-                className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm"
+              <TimeField
+                label={t("slot.end")}
+                value={stringToTime(endTime) as never}
+                onChange={(value) => setEndTime(timeToString(value))}
+                className="w-full"
               />
             </div>
           </div>
@@ -131,20 +147,18 @@ export function EditSlotDialog({ slot, onClose }: EditSlotDialogProps) {
             <label className="mb-1 block text-xs font-medium text-gray-700">
               {t("logTable.task")}
             </label>
-            <select
-              value={taskId ?? ""}
-              onChange={(e) =>
-                setTaskId(e.target.value ? Number(e.target.value) : null)
-              }
-              className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm"
+            <Select
+              value={taskId === null ? "" : String(taskId)}
+              onChange={(value) => setTaskId(value ? Number(value) : null)}
+              aria-label={t("logTable.task")}
             >
-              <option value="">{t("slot.noTask")}</option>
+              <SelectItem id="">{t("slot.noTask")}</SelectItem>
               {tasks.map((t) => (
-                <option key={t.id} value={t.id}>
+                <SelectItem key={t.id} id={String(t.id)}>
                   {t.project.name} / {t.name}
-                </option>
+                </SelectItem>
               ))}
-            </select>
+            </Select>
           </div>
 
           {/* Neighbor warning */}
@@ -162,48 +176,53 @@ export function EditSlotDialog({ slot, onClose }: EditSlotDialogProps) {
               <span className="text-xs text-gray-500">
                 {t("slot.deleteConfirm")}
               </span>
-              <button
-                onClick={async () => {
+              <Button
+                variant="destructive"
+                onPress={async () => {
                   await window.api.slots.delete(slot.id);
                   await queryClient.invalidateQueries({ queryKey: ["slots"] });
                   onClose();
                 }}
-                className="rounded-lg bg-red-600 px-3 py-2 text-sm font-medium text-white hover:bg-red-700"
+                className="px-3 py-2 text-sm font-medium"
               >
                 {t("slot.delete")}
-              </button>
-              <button
-                onClick={() => setConfirmDelete(false)}
-                className="rounded-lg px-3 py-2 text-sm text-gray-600 hover:bg-gray-50"
+              </Button>
+              <Button
+                variant="secondary"
+                onPress={() => setConfirmDelete(false)}
+                className="px-3 py-2 text-sm text-gray-600 hover:bg-gray-50"
               >
                 {t("slot.cancel")}
-              </button>
+              </Button>
             </div>
           ) : (
-            <button
-              onClick={() => setConfirmDelete(true)}
-              title={t("slot.deleteConfirm")}
+            <Button
+              variant="quiet"
+              onPress={() => setConfirmDelete(true)}
               className="rounded-lg p-2 text-gray-400 hover:bg-red-50 hover:text-red-500"
+              aria-label={t("slot.deleteConfirm")}
             >
               <Trash2 className="h-4 w-4" />
-            </button>
+            </Button>
           )}
 
           {!confirmDelete && (
             <div className="flex gap-2">
-              <button
-                onClick={onClose}
-                className="rounded-lg px-3 py-2 text-sm text-gray-600 hover:bg-gray-50"
+              <Button
+                variant="secondary"
+                onPress={onClose}
+                className="px-3 py-2 text-sm text-gray-600 hover:bg-gray-50"
               >
                 {t("slot.cancel")}
-              </button>
-              <button
-                onClick={() => void handleSave()}
-                disabled={saving}
-                className="rounded-lg bg-indigo-600 px-3 py-2 text-sm font-medium text-white hover:bg-indigo-700 disabled:opacity-50"
+              </Button>
+              <Button
+                variant="primary"
+                onPress={() => void handleSave()}
+                isDisabled={saving}
+                className="px-3 py-2 text-sm font-medium"
               >
                 {saving ? t("slot.saving") : t("slot.save")}
-              </button>
+              </Button>
             </div>
           )}
         </div>

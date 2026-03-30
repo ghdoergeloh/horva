@@ -8,7 +8,10 @@ import { ChevronDown, ChevronRight, X } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
 import type { Period } from "@repo/core";
+import { Button } from "@repo/ui/Button";
 import { DateRangePicker } from "@repo/ui/DateRangePicker";
+import { Select, SelectItem } from "@repo/ui/Select";
+import { Tab, TabList, Tabs } from "@repo/ui/Tabs";
 
 import { LoadingSpinner } from "~/components/LoadingSpinner.js";
 import { ProjectPie } from "~/components/ProjectPie.js";
@@ -71,9 +74,11 @@ function ProjectRow({ entry }: { entry: SummaryEntry }) {
 
   return (
     <div className="rounded-lg border border-gray-100">
-      <button
-        onClick={() => setExpanded((e) => !e)}
+      <Button
+        variant="quiet"
+        onPress={() => setExpanded((e) => !e)}
         className="flex w-full items-center gap-3 px-4 py-3 hover:bg-gray-50"
+        aria-label={entry.projectName}
       >
         {expanded ? (
           <ChevronDown className="h-4 w-4 text-gray-400" />
@@ -90,7 +95,7 @@ function ProjectRow({ entry }: { entry: SummaryEntry }) {
         <span className="text-sm font-semibold text-gray-900">
           {formatMinutes(entry.totalMinutes)}
         </span>
-      </button>
+      </Button>
 
       {expanded && (
         <div className="border-t border-gray-100 px-4 py-3">
@@ -175,7 +180,7 @@ function SplitProjectPie({
             cx={cx}
             cy={cy}
             r={r}
-            fill={paths[0]!.fill}
+            fill={paths[0]?.fill ?? ""}
             stroke="white"
             strokeWidth={2}
           />
@@ -397,31 +402,25 @@ function Reports() {
           {t("reports.title")}
         </h1>
         <div className="flex flex-wrap items-center gap-2">
-          <div className="flex gap-1 rounded-lg border border-gray-200 bg-white p-1">
-            {PERIOD_VALUES.map((value) => (
-              <button
-                key={value}
-                onClick={() => setPeriod(value)}
-                className={`rounded-md px-3 py-1.5 text-sm transition-colors ${
-                  period === value
-                    ? "bg-indigo-600 font-medium text-white"
-                    : "text-gray-600 hover:bg-gray-50"
-                }`}
-              >
-                {periodLabels[value] ?? value}
-              </button>
-            ))}
-            <button
-              onClick={() => setPeriod("custom")}
-              className={`rounded-md px-3 py-1.5 text-sm transition-colors ${
-                period === "custom"
-                  ? "bg-indigo-600 font-medium text-white"
-                  : "text-gray-600 hover:bg-gray-50"
-              }`}
+          <Tabs
+            selectedKey={period}
+            onSelectionChange={(key) => setPeriod(key as Period | "custom")}
+            className="flex-row items-center gap-1"
+          >
+            <TabList
+              aria-label={t("reports.period")}
+              className="m-0 flex-row gap-1 p-0"
             >
-              {t("reports.custom")}
-            </button>
-          </div>
+              {PERIOD_VALUES.map((value) => (
+                <Tab key={value} id={value} className="px-2.5 py-1 text-xs">
+                  {periodLabels[value] ?? value}
+                </Tab>
+              ))}
+              <Tab id="custom" className="px-2.5 py-1 text-xs">
+                {t("reports.custom")}
+              </Tab>
+            </TabList>
+          </Tabs>
           {isCustom && (
             <DateRangePicker
               aria-label={t("reports.dateRange")}
@@ -434,36 +433,36 @@ function Reports() {
 
           {/* Label filter */}
           {allLabels.length > 0 && (
-            <div className="flex items-center gap-1 rounded-lg border border-gray-200 bg-white px-2 py-1">
+            <div className="flex items-center gap-1 rounded-lg bg-transparent">
               {filterLabel ? (
                 <>
                   <span className="text-sm text-gray-700">
                     {filterLabel.name}
                   </span>
-                  <button
-                    onClick={() => setFilterLabelId(null)}
+                  <Button
+                    variant="quiet"
+                    onPress={() => setFilterLabelId(null)}
                     className="ml-1 text-gray-400 hover:text-gray-600"
+                    aria-label={t("reports.clearLabelFilter")}
                   >
                     <X className="h-3.5 w-3.5" />
-                  </button>
+                  </Button>
                 </>
               ) : (
-                <select
-                  value=""
-                  onChange={(e) =>
-                    setFilterLabelId(
-                      e.target.value ? Number(e.target.value) : null,
-                    )
+                <Select
+                  value={filterLabelId === null ? "" : String(filterLabelId)}
+                  onChange={(value) =>
+                    setFilterLabelId(value ? Number(value) : null)
                   }
-                  className="bg-transparent text-sm text-gray-500 outline-none"
+                  aria-label={t("reports.filterLabel")}
                 >
-                  <option value="">{t("reports.filterLabel")}</option>
+                  <SelectItem id="">{t("reports.filterLabel")}</SelectItem>
                   {allLabels.map((l) => (
-                    <option key={l.id} value={l.id}>
+                    <SelectItem key={l.id} id={String(l.id)}>
                       {l.name}
-                    </option>
+                    </SelectItem>
                   ))}
-                </select>
+                </Select>
               )}
             </div>
           )}

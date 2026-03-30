@@ -2,8 +2,9 @@ import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { ChevronDown, ChevronRight } from "lucide-react";
-import { useLocale } from "react-aria-components";
 import { useTranslation } from "react-i18next";
+
+import { Button } from "@repo/ui/Button";
 
 import type { LabelRow } from "~/components/TaskEditControls.js";
 import { LoadingSpinner } from "~/components/LoadingSpinner.js";
@@ -53,9 +54,11 @@ function CollapsibleSection({
 
   return (
     <section>
-      <button
-        onClick={() => setOpen((v) => !v)}
+      <Button
+        variant="quiet"
+        onPress={() => setOpen((v) => !v)}
         className="mb-3 flex items-center gap-1.5 text-left"
+        aria-label={title}
       >
         {open ? (
           <ChevronDown className={`h-3.5 w-3.5 ${titleClassName}`} />
@@ -70,7 +73,7 @@ function CollapsibleSection({
         <span className="text-xs font-normal tracking-normal text-gray-400 normal-case">
           ({count})
         </span>
-      </button>
+      </Button>
       {open && children}
     </section>
   );

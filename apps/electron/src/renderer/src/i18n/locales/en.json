@@ -141,6 +141,7 @@
   "taskEditControls": {
     "editLabels": "Edit labels",
     "planDate": "Plan date",
+    "planToday": "Plan for today",
     "planned": "Planned: {{date}}"
   },
   "taskUtils": {

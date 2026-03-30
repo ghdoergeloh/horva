@@ -1,8 +1,12 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
-import { ChevronLeft, ChevronRight, X } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useTranslation } from "react-i18next";
+
+import { Button } from "@repo/ui/Button";
+import { Select, SelectItem } from "@repo/ui/Select";
+import { Tab, TabList, Tabs } from "@repo/ui/Tabs";
 
 import { DayRow } from "~/components/DayRow.js";
 import i18n from "~/i18n/index.js";
@@ -151,94 +155,74 @@ function Timeline() {
     <div className="mx-auto flex h-full w-full max-w-5xl flex-col">
       {/* Header */}
       <div className="mb-6 flex items-center gap-3">
-        <button
-          onClick={() => setWeekOffset((o) => o - 1)}
+        <Button
+          variant="quiet"
+          onPress={() => setWeekOffset((o) => o - 1)}
           className="rounded p-1 hover:bg-gray-100"
           aria-label={t("timeline.previousWeek")}
         >
           <ChevronLeft className="h-5 w-5" />
-        </button>
+        </Button>
         <h1 className="w-64 text-center text-lg font-semibold text-gray-900">
           {formatWeekLabel(weekDays)}
         </h1>
-        <button
-          onClick={() => setWeekOffset((o) => o + 1)}
-          disabled={isCurrentWeek}
-          className="rounded p-1 hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-40"
+        <Button
+          variant="quiet"
+          onPress={() => setWeekOffset((o) => o + 1)}
+          isDisabled={isCurrentWeek}
+          className="rounded p-1 hover:bg-gray-100"
           aria-label={t("timeline.nextWeek")}
         >
           <ChevronRight className="h-5 w-5" />
-        </button>
+        </Button>
         {!isCurrentWeek && (
-          <button
-            onClick={() => setWeekOffset(0)}
-            className="ml-2 rounded-md border border-gray-200 px-3 py-1 text-sm hover:bg-gray-50"
+          <Button
+            variant="secondary"
+            onPress={() => setWeekOffset(0)}
+            className="ml-2"
           >
             {t("timeline.today")}
-          </button>
+          </Button>
         )}
         {/* Project filter */}
         {projectOptions.length > 0 && (
-          <div className="ml-auto flex items-center gap-1 rounded-lg border border-gray-200 bg-white px-2 py-1">
-            {filterProject !== null ? (
-              <>
-                <div
-                  className="h-2.5 w-2.5 shrink-0 rounded-sm"
-                  style={{
-                    backgroundColor:
-                      projectOptions.find((p) => p.name === filterProject)
-                        ?.color ?? "#9ca3af",
-                  }}
-                />
-                <span className="text-sm text-gray-700">{filterProject}</span>
-                <button
-                  onClick={() => setFilterProject(null)}
-                  className="ml-1 text-gray-400 hover:text-gray-600"
-                  aria-label={t("timeline.removeFilter")}
-                >
-                  <X className="h-3.5 w-3.5" />
-                </button>
-              </>
-            ) : (
-              <select
-                value=""
-                onChange={(e) => setFilterProject(e.target.value || null)}
-                className="bg-transparent text-sm text-gray-500 outline-none"
-              >
-                <option value="">{t("timeline.filterProject")}</option>
-                {projectOptions.map((p) => (
-                  <option key={p.name} value={p.name}>
-                    {p.name}
-                  </option>
-                ))}
-              </select>
-            )}
-          </div>
+          <Select
+            className="ml-auto"
+            value={filterProject ?? ""}
+            onChange={(value) => setFilterProject(value ? String(value) : null)}
+            aria-label={t("timeline.filterProject")}
+          >
+            <SelectItem id="">{t("timeline.filterProject")}</SelectItem>
+            {projectOptions.map((p) => (
+              <SelectItem key={p.name} id={p.name}>
+                <span className="inline-flex items-center gap-2">
+                  <span
+                    className="h-2.5 w-2.5 shrink-0 rounded-sm"
+                    style={{ backgroundColor: p.color }}
+                  />
+                  <span>{p.name}</span>
+                </span>
+              </SelectItem>
+            ))}
+          </Select>
         )}
-        <div
-          className={`flex gap-1 rounded-lg border border-gray-200 bg-white p-1 ${projectOptions.length > 0 ? "" : "ml-auto"}`}
+        <Tabs
+          selectedKey={viewMode}
+          onSelectionChange={(key) => setViewMode(key as "slots" | "tasks")}
+          className={`ml-auto flex-row items-center gap-1 ${projectOptions.length > 0 ? "" : ""}`}
         >
-          <button
-            onClick={() => setViewMode("slots")}
-            className={`rounded-md px-3 py-1 text-sm transition-colors ${
-              viewMode === "slots"
-                ? "bg-indigo-600 font-medium text-white"
-                : "text-gray-600 hover:bg-gray-50"
-            }`}
+          <TabList
+            aria-label={t("timeline.viewMode")}
+            className="m-0 flex-row gap-1 p-0"
           >
-            {t("timeline.slots")}
-          </button>
-          <button
-            onClick={() => setViewMode("tasks")}
-            className={`rounded-md px-3 py-1 text-sm transition-colors ${
-              viewMode === "tasks"
-                ? "bg-indigo-600 font-medium text-white"
-                : "text-gray-600 hover:bg-gray-50"
-            }`}
-          >
-            {t("timeline.tasks")}
-          </button>
-        </div>
+            <Tab id="slots" className="px-2.5 py-1 text-xs">
+              {t("timeline.slots")}
+            </Tab>
+            <Tab id="tasks" className="px-2.5 py-1 text-xs">
+              {t("timeline.tasks")}
+            </Tab>
+          </TabList>
+        </Tabs>
       </div>
 
       {/* Card */}

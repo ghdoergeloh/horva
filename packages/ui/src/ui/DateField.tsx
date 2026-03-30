@@ -2,7 +2,7 @@
 
 import type {
   DateFieldProps as AriaDateFieldProps,
-  DateInputProps,
+  DateInputProps as AriaDateInputProps,
   DateValue,
   ValidationResult,
 } from "react-aria-components";
@@ -65,14 +65,19 @@ const segmentStyles = tv({
   },
 });
 
-export function DateInput(props: Omit<DateInputProps, "children">) {
+interface DateInputProps extends Omit<AriaDateInputProps, "children"> {
+  minWidth?: "none" | "small" | "medium";
+}
+
+export function DateInput({ minWidth = "medium", ...props }: DateInputProps) {
   return (
     <AriaDateInput
       className={(renderProps) =>
         fieldGroupStyles({
           ...renderProps,
+          minWidth,
           class:
-            "inline h-9 min-w-[150px] cursor-text overflow-x-auto px-3 font-sans text-sm leading-8.5 whitespace-nowrap [scrollbar-width:none] disabled:cursor-default",
+            "inline h-9 cursor-text overflow-x-auto px-3 font-sans text-sm leading-8.5 whitespace-nowrap [scrollbar-width:none] disabled:cursor-default",
         })
       }
       {...props}

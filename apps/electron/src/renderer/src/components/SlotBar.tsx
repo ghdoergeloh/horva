@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { Play, Square, SwitchCamera } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
+import { Button } from "@repo/ui/Button";
+
 import { useActiveSlot } from "~/contexts/ActiveSlotContext.js";
 import { StartTaskDialog } from "./StartTaskDialog.js";
 import { WorktimeDisplay } from "./WorktimeDisplay.js";
@@ -37,16 +39,19 @@ export function SlotBar() {
     return (
       <div className="flex items-center gap-3 border-b border-gray-200 bg-white px-6 py-3">
         <span className="text-sm text-gray-500">{t("slotBar.notWorking")}</span>
-        <button
-          onClick={() => {
+        <Button
+          variant="primary"
+          onPress={() => {
             setSwitchMode(false);
             setShowStartDialog(true);
           }}
-          className="flex items-center gap-1.5 rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-indigo-700"
+          className="px-3 py-1.5 text-sm"
         >
-          <Play className="h-3.5 w-3.5" />
-          {t("slotBar.startWork")}
-        </button>
+          <span className="inline-flex items-center gap-1.5">
+            <Play className="h-3.5 w-3.5" />
+            {t("slotBar.startWork")}
+          </span>
+        </Button>
         <div className="ml-auto">
           <WorktimeDisplay tick={tick} />
         </div>
@@ -97,27 +102,32 @@ export function SlotBar() {
       <WorktimeDisplay tick={tick} />
 
       {/* Switch task */}
-      <button
-        onClick={() => {
+      <Button
+        variant="secondary"
+        onPress={() => {
           setSwitchMode(true);
           setShowStartDialog(true);
         }}
-        title={t("slotBar.switchTask")}
-        className="flex items-center gap-1.5 rounded-md border border-gray-300 px-2.5 py-1.5 text-xs text-gray-700 hover:bg-gray-50"
+        className="px-3 py-1.5 text-sm"
+        aria-label={t("slotBar.switchTask")}
       >
-        <SwitchCamera className="h-3.5 w-3.5" />
-        {t("slotBar.switchTask")}
-      </button>
+        <span className="inline-flex items-center gap-1.5">
+          <SwitchCamera className="h-3.5 w-3.5" />
+          {t("slotBar.switchTask")}
+        </span>
+      </Button>
 
       {/* Pause — ends the current slot */}
-      <button
-        onClick={() => void handleStop()}
-        title="Arbeit pausieren"
-        className="flex items-center gap-1.5 rounded-md border border-red-200 bg-red-50 px-2.5 py-1.5 text-xs font-medium text-red-700 hover:bg-red-100"
+      <Button
+        variant="destructive"
+        onPress={() => void handleStop()}
+        className="px-3 py-1.5 text-sm font-medium"
       >
-        <Square className="h-3.5 w-3.5" />
-        {t("slotBar.stop")}
-      </button>
+        <span className="inline-flex items-center gap-1.5">
+          <Square className="h-3.5 w-3.5" />
+          {t("slotBar.stop")}
+        </span>
+      </Button>
 
       {showStartDialog && (
         <StartTaskDialog

@@ -2,6 +2,8 @@ import { useState } from "react";
 import { Circle, Pause, Play, Repeat } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
+import { Button } from "@repo/ui/Button";
+
 import type { LabelRow } from "~/components/TaskEditControls.js";
 import {
   InlineRenameInput,
@@ -97,19 +99,20 @@ export function TaskCard({
     >
       {/* Done / unschedule button */}
       {onMarkDone && (
-        <button
-          onClick={onMarkDone}
-          title={
+        <Button
+          variant="quiet"
+          onPress={onMarkDone}
+          className="flex-shrink-0 text-gray-300 hover:text-green-500"
+          aria-label={
             isActivity ? t("taskCard.removeFromToday") : t("taskCard.markDone")
           }
-          className="flex-shrink-0 text-gray-300 hover:text-green-500"
         >
           {isActivity ? (
             <Repeat className="h-5 w-5" />
           ) : (
             <Circle className="h-5 w-5" />
           )}
-        </button>
+        </Button>
       )}
 
       {/* Project color bar */}
@@ -190,21 +193,27 @@ export function TaskCard({
 
       {/* Start / Stop button */}
       {isRunning ? (
-        <button
-          onClick={() => void handleStop()}
-          className="flex w-20 flex-shrink-0 items-center justify-center gap-1 rounded-md bg-amber-50 px-2.5 py-1.5 text-xs font-medium text-amber-700 transition-colors hover:bg-amber-100"
+        <Button
+          variant="secondary"
+          onPress={() => void handleStop()}
+          className="w-24 flex-shrink-0 bg-amber-50 px-3 py-1.5 text-sm font-medium text-amber-700 transition-colors hover:bg-amber-100"
         >
-          <Pause className="h-3 w-3" />
-          {t("taskCard.pause")}
-        </button>
+          <span className="inline-flex items-center justify-center gap-1">
+            <Pause className="h-3 w-3" />
+            {t("taskCard.pause")}
+          </span>
+        </Button>
       ) : (
-        <button
-          onClick={() => void handleStart()}
-          className="flex w-20 flex-shrink-0 items-center justify-center gap-1 rounded-md bg-indigo-600 px-2.5 py-1.5 text-xs font-medium text-white opacity-0 transition-opacity group-hover:opacity-100 hover:bg-indigo-700"
+        <Button
+          variant="primary"
+          onPress={() => void handleStart()}
+          className="w-24 flex-shrink-0 px-3 py-1.5 text-sm font-medium text-white opacity-0 transition-opacity group-hover:opacity-100 hover:bg-indigo-700"
         >
-          <Play className="h-3 w-3" />
-          {t("taskCard.start")}
-        </button>
+          <span className="inline-flex items-center justify-center gap-1">
+            <Play className="h-3 w-3" />
+            {t("taskCard.start")}
+          </span>
+        </Button>
       )}
     </div>
   );

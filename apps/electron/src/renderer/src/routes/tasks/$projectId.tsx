@@ -1,9 +1,13 @@
-import type { FormEvent, KeyboardEvent } from "react";
+import type { KeyboardEvent } from "react";
 import { useEffect, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, useParams } from "@tanstack/react-router";
 import { ChevronDown, ChevronRight, Plus, X } from "lucide-react";
 import { useTranslation } from "react-i18next";
+
+import { Button } from "@repo/ui/Button";
+import { Select, SelectItem } from "@repo/ui/Select";
+import { TextField } from "@repo/ui/TextField";
 
 import type { LabelRow } from "~/components/TaskEditControls.js";
 import { LoadingSpinner } from "~/components/LoadingSpinner.js";
@@ -52,9 +56,11 @@ function CollapsibleSection({
 
   return (
     <section>
-      <button
-        onClick={() => setOpen((v) => !v)}
+      <Button
+        variant="quiet"
+        onPress={() => setOpen((v) => !v)}
         className="mb-3 flex items-center gap-1.5 text-left"
+        aria-label={title}
       >
         {open ? (
           <ChevronDown className={`h-3.5 w-3.5 ${titleClassName}`} />
@@ -69,7 +75,7 @@ function CollapsibleSection({
         <span className="text-xs font-normal tracking-normal text-gray-400 normal-case">
           ({count})
         </span>
-      </button>
+      </Button>
       {open && children}
     </section>
   );
@@ -92,8 +98,7 @@ function NewTaskForm({
     defaultTaskType,
   );
 
-  function handleSubmit(e: FormEvent) {
-    e.preventDefault();
+  function submit() {
     const trimmed = name.trim();
     if (!trimmed) return;
     onCreate(trimmed, taskType);
@@ -101,46 +106,50 @@ function NewTaskForm({
   }
 
   function handleKeyDown(e: KeyboardEvent) {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      submit();
+      return;
+    }
     if (e.key === "Escape") onClose();
   }
 
   return (
-    <form
-      onSubmit={handleSubmit}
+    <div
       onKeyDown={handleKeyDown}
       className="flex items-center gap-2 border-t border-gray-100 px-3 py-2"
     >
-      <input
+      <TextField
         autoFocus
-        type="text"
         value={name}
-        onChange={(e) => setName(e.target.value)}
+        onChange={setName}
+        onKeyDown={(e) => handleKeyDown(e)}
         placeholder={t("tasks.newTaskPlaceholder")}
-        className="min-w-0 flex-1 rounded border border-gray-200 bg-white px-2 py-1 text-sm text-gray-900 outline-none focus:border-indigo-400 focus:ring-1 focus:ring-indigo-300"
+        className="min-w-0 flex-1"
       />
-      <select
+      <Select
         value={taskType}
-        onChange={(e) => setTaskType(e.target.value as "task" | "activity")}
-        className="rounded border border-gray-200 bg-white px-1 py-1 text-xs text-gray-600 outline-none focus:border-indigo-400"
+        onChange={(value) => setTaskType(value as "task" | "activity")}
       >
-        <option value="task">{t("tasks.taskType.task")}</option>
-        <option value="activity">{t("tasks.taskType.activity")}</option>
-      </select>
-      <button
-        type="button"
-        onClick={onClose}
+        <SelectItem id="task">{t("tasks.taskType.task")}</SelectItem>
+        <SelectItem id="activity">{t("tasks.taskType.activity")}</SelectItem>
+      </Select>
+      <Button
+        variant="quiet"
+        onPress={onClose}
         className="flex-shrink-0 rounded p-0.5 text-gray-400 hover:text-gray-600"
       >
         <X className="h-3.5 w-3.5" />
-      </button>
-      <button
-        type="submit"
-        disabled={!name.trim()}
-        className="flex-shrink-0 rounded bg-indigo-600 px-2.5 py-1 text-xs text-white hover:bg-indigo-700 disabled:opacity-40"
+      </Button>
+      <Button
+        variant="primary"
+        isDisabled={!name.trim()}
+        onPress={submit}
+        className="flex-shrink-0"
       >
         {t("tasks.create")}
-      </button>
-    </form>
+      </Button>
+    </div>
   );
 }
 
@@ -206,9 +215,11 @@ function DoneTasksSection({
 
   return (
     <section>
-      <button
-        onClick={handleToggle}
+      <Button
+        variant="quiet"
+        onPress={handleToggle}
         className="mb-3 flex items-center gap-1.5 text-left"
+        aria-label={t("tasks.done.title")}
       >
         {open ? (
           <ChevronDown className="h-3.5 w-3.5 text-gray-400" />
@@ -224,7 +235,7 @@ function DoneTasksSection({
             {hasMore ? "+" : ""})
           </span>
         )}
-      </button>
+      </Button>
 
       {open && (
         <div className="space-y-2">
@@ -248,12 +259,13 @@ function DoneTasksSection({
           )}
 
           {!isFetching && hasMore && (
-            <button
-              onClick={handleLoadMore}
+            <Button
+              variant="quiet"
+              onPress={handleLoadMore}
               className="mt-1 text-xs text-indigo-500 hover:text-indigo-700"
             >
               {t("tasks.done.loadMore")}
-            </button>
+            </Button>
           )}
 
           {!isFetching && accumulated.length === 0 && (
@@ -430,13 +442,16 @@ function ProjectTaskPage() {
             }
           />
         ) : (
-          <button
-            onClick={() => setAddingTaskType("task")}
-            className="mt-3 flex items-center gap-1.5 text-xs text-gray-400 hover:text-indigo-500"
+          <Button
+            variant="quiet"
+            onPress={() => setAddingTaskType("task")}
+            className="mt-3 flex items-center gap-1.5 text-sm text-gray-400 hover:text-indigo-500"
           >
-            <Plus className="h-3.5 w-3.5" />
-            {t("tasks.newTask")}
-          </button>
+            <span className="inline-flex items-center gap-1.5">
+              <Plus className="h-3.5 w-3.5" />
+              {t("tasks.newTask")}
+            </span>
+          </Button>
         )}
       </CollapsibleSection>
 
@@ -461,13 +476,16 @@ function ProjectTaskPage() {
             }
           />
         ) : (
-          <button
-            onClick={() => setAddingTaskType("activity")}
-            className="mt-3 flex items-center gap-1.5 text-xs text-gray-400 hover:text-indigo-500"
+          <Button
+            variant="quiet"
+            onPress={() => setAddingTaskType("activity")}
+            className="mt-3 flex items-center gap-1.5 text-sm text-gray-400 hover:text-indigo-500"
           >
-            <Plus className="h-3.5 w-3.5" />
-            {t("tasks.newActivity")}
-          </button>
+            <span className="inline-flex items-center gap-1.5">
+              <Plus className="h-3.5 w-3.5" />
+              {t("tasks.newActivity")}
+            </span>
+          </Button>
         )}
       </CollapsibleSection>
 

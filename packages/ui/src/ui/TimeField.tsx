@@ -35,7 +35,7 @@ export function TimeField<T extends TimeValue>({
       )}
     >
       <Label>{label}</Label>
-      <DateInput />
+      <DateInput minWidth="none" />
       {description && <Description>{description}</Description>}
       <FieldError>{errorMessage}</FieldError>
     </AriaTimeField>

@@ -1,7 +1,12 @@
-import React, { useEffect, useRef, useState } from "react";
+import type { KeyboardEvent } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { Trash2 } from "lucide-react";
 import { useTranslation } from "react-i18next";
+
+import { Button } from "@repo/ui/Button";
+import { Select, SelectItem } from "@repo/ui/Select";
+import { TimeField } from "@repo/ui/TimeField";
 
 import { LiveTime } from "~/components/LiveTime.js";
 import { applyTimeString, fmt, fmtDuration } from "~/lib/timeFormatters.js";
@@ -23,6 +28,21 @@ interface TaskOption {
   id: number;
   name: string;
   project: { name: string; color: string };
+}
+function stringToTime(value: string) {
+  if (!value) return null;
+  const [h, m] = value.split(":").map((s) => Number.parseInt(s, 10));
+  if (Number.isNaN(h) || Number.isNaN(m)) return null;
+  return { hour: h, minute: m };
+}
+
+function timeToString(
+  value: { hour?: number | null; minute?: number | null } | null,
+): string {
+  if (!value) return "";
+  const hour = value.hour ?? 0;
+  const minute = value.minute ?? 0;
+  return `${String(hour).padStart(2, "0")}:${String(minute).padStart(2, "0")}`;
 }
 
 export interface InlineSlotRowProps {
@@ -105,8 +125,12 @@ export function InlineSlotRow({
     onEndEdit();
   }
 
-  function handleKeyDown(e: React.KeyboardEvent) {
-    if (e.key === "Enter") void save();
+  function handleKeyDownCapture(e: KeyboardEvent) {
+    if (e.key === "Enter") {
+      // Ignore Enter from portaled elements (e.g. Select dropdown)
+      if (rowRef.current && !rowRef.current.contains(e.target as Node)) return;
+      void save();
+    }
     if (e.key === "Escape") onEndEdit();
   }
 
@@ -161,22 +185,24 @@ export function InlineSlotRow({
   }
 
   return (
-    <tr ref={rowRef} className="bg-indigo-50/60" onKeyDown={handleKeyDown}>
+    <tr
+      ref={rowRef}
+      className="bg-indigo-50/60"
+      onKeyDownCapture={handleKeyDownCapture}
+    >
       <td className="py-1 pr-2">
-        <input
+        <TimeField
           autoFocus
-          type="time"
-          value={startTime}
-          onChange={(e) => setStartTime(e.target.value)}
-          className="w-24 rounded border border-indigo-300 bg-white px-1.5 py-0.5 font-mono text-sm outline-none focus:ring-1 focus:ring-indigo-400"
+          value={stringToTime(startTime) as never}
+          onChange={(value) => setStartTime(timeToString(value))}
+          className="w-20"
         />
       </td>
       <td className="py-1 pr-2">
-        <input
-          type="time"
-          value={endTime}
-          onChange={(e) => setEndTime(e.target.value)}
-          className="w-24 rounded border border-indigo-300 bg-white px-1.5 py-0.5 font-mono text-sm outline-none focus:ring-1 focus:ring-indigo-400"
+        <TimeField
+          value={stringToTime(endTime) as never}
+          onChange={(value) => setEndTime(timeToString(value))}
+          className="w-20"
         />
       </td>
       <td className="py-1 pr-6 text-xs text-gray-400">
@@ -196,45 +222,47 @@ export function InlineSlotRow({
           : "–"}
       </td>
       <td className="py-1 pr-2" colSpan={2}>
-        <select
-          value={taskId ?? ""}
-          onChange={(e) =>
-            setTaskId(e.target.value ? Number(e.target.value) : null)
-          }
-          className="w-full rounded border border-indigo-300 bg-white px-1.5 py-0.5 text-sm outline-none focus:ring-1 focus:ring-indigo-400"
+        <Select
+          value={taskId === null ? "" : String(taskId)}
+          onChange={(value) => setTaskId(value ? Number(value) : null)}
+          aria-label={t("inlineSlotRow.noTask")}
+          className="w-full"
         >
-          <option value="">{t("inlineSlotRow.noTask")}</option>
+          <SelectItem id="">{t("inlineSlotRow.noTask")}</SelectItem>
           {allTasks.map((t) => (
-            <option key={t.id} value={t.id}>
+            <SelectItem key={t.id} id={String(t.id)}>
               {t.project.name} / {t.name}
-            </option>
+            </SelectItem>
           ))}
-        </select>
+        </Select>
       </td>
       <td className="py-1 pl-2">
         {confirmDelete ? (
           <div className="flex items-center gap-1">
-            <button
-              onClick={() => void handleDelete()}
-              className="rounded bg-red-600 px-1.5 py-0.5 text-xs text-white hover:bg-red-700"
+            <Button
+              variant="destructive"
+              onPress={() => void handleDelete()}
+              className="px-1.5 py-0.5 text-xs"
             >
               {t("inlineSlotRow.delete")}
-            </button>
-            <button
-              onClick={() => setConfirmDelete(false)}
-              className="rounded px-1 py-0.5 text-xs text-gray-400 hover:text-gray-600"
+            </Button>
+            <Button
+              variant="quiet"
+              onPress={() => setConfirmDelete(false)}
+              className="px-1 py-0.5 text-xs text-gray-400 hover:text-gray-600"
             >
               ✕
-            </button>
+            </Button>
           </div>
         ) : (
-          <button
-            onClick={() => setConfirmDelete(true)}
+          <Button
+            variant="quiet"
+            onPress={() => setConfirmDelete(true)}
             className="rounded p-0.5 text-gray-300 hover:text-red-500"
-            title={t("slot.deleteConfirm")}
+            aria-label={t("slot.deleteConfirm")}
           >
             <Trash2 className="h-3.5 w-3.5" />
-          </button>
+          </Button>
         )}
       </td>
     </tr>

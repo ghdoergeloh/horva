@@ -1,4 +1,4 @@
-import type { FormEvent, ReactNode } from "react";
+import type { ReactNode } from "react";
 import { Component, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createRootRoute, Outlet, useLocation } from "@tanstack/react-router";
@@ -14,6 +14,11 @@ import {
   X,
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
+
+import { Button } from "@repo/ui/Button";
+import { ColorPicker } from "@repo/ui/ColorPicker";
+import { Select, SelectItem } from "@repo/ui/Select";
+import { TextField } from "@repo/ui/TextField";
 
 import { AppIcon } from "~/components/AppIcon.js";
 import { SlotBar } from "~/components/SlotBar.js";
@@ -55,8 +60,7 @@ function NewProjectModal({ onClose }: { onClose: () => void }) {
     },
   });
 
-  function handleSubmit(e: FormEvent) {
-    e.preventDefault();
+  function handleSubmit() {
     const trimmed = name.trim();
     if (!trimmed) return;
     createProjectMutation.mutate({ name: trimmed, color });
@@ -74,70 +78,66 @@ function NewProjectModal({ onClose }: { onClose: () => void }) {
           <h2 className="text-sm font-semibold text-gray-900">
             {t("project.new")}
           </h2>
-          <button
-            onClick={onClose}
+          <Button
+            variant="quiet"
+            onPress={onClose}
             className="rounded p-0.5 text-gray-400 hover:text-gray-600"
+            aria-label={t("project.cancel")}
           >
             <X className="h-4 w-4" />
-          </button>
+          </Button>
         </div>
-        <form onSubmit={handleSubmit}>
-          <div className="mb-3 flex items-center gap-2">
-            <div
-              className="h-3.5 w-3.5 flex-shrink-0 rounded-sm"
-              style={{ backgroundColor: color }}
-            />
-            <input
-              autoFocus
-              type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder={t("project.namePlaceholder")}
-              className="min-w-0 flex-1 rounded border border-gray-200 bg-white px-2 py-1.5 text-sm text-gray-900 outline-none focus:border-indigo-400 focus:ring-1 focus:ring-indigo-300"
-            />
-          </div>
-          <div className="mb-4">
-            <span className="mb-1.5 block text-xs text-gray-500">
-              {t("project.color")}
-            </span>
-            <div className="flex flex-wrap items-center gap-1.5">
-              {COLOR_PRESETS.map((c) => (
-                <button
-                  key={c}
-                  type="button"
-                  onClick={() => setColor(c)}
-                  className={`h-5 w-5 rounded-full transition-transform hover:scale-110 ${
-                    color === c ? "ring-2 ring-gray-400 ring-offset-1" : ""
-                  }`}
-                  style={{ backgroundColor: c }}
-                />
-              ))}
-              <input
-                type="color"
-                value={color}
-                onChange={(e) => setColor(e.target.value)}
-                className="h-5 w-5 cursor-pointer rounded-full border-0 bg-transparent p-0"
-                title={t("project.customColor")}
+        <div className="mb-3 flex items-center gap-2">
+          <div
+            className="h-3.5 w-3.5 flex-shrink-0 rounded-sm"
+            style={{ backgroundColor: color }}
+          />
+          <TextField
+            autoFocus
+            value={name}
+            onChange={setName}
+            placeholder={t("project.namePlaceholder")}
+            className="min-w-0 flex-1"
+          />
+        </div>
+        <div className="mb-4">
+          <span className="mb-1.5 block text-xs text-gray-500">
+            {t("project.color")}
+          </span>
+          <div className="flex flex-wrap items-center gap-1.5">
+            {COLOR_PRESETS.map((c) => (
+              <Button
+                key={c}
+                variant="quiet"
+                onPress={() => setColor(c)}
+                className={`h-5 w-5 rounded-full transition-transform hover:scale-110 ${
+                  color === c ? "ring-2 ring-gray-400 ring-offset-1" : ""
+                }`}
+                style={{ backgroundColor: c }}
+                aria-label={t("project.color")}
               />
-            </div>
+            ))}
+            <ColorPicker
+              aria-label={t("project.customColor")}
+              value={color}
+              onChange={(val) => {
+                setColor(val.toString());
+              }}
+            />
           </div>
-          <div className="flex justify-end gap-2">
-            <button
-              type="button"
-              onClick={onClose}
-              className="rounded px-3 py-1.5 text-xs text-gray-500 hover:bg-gray-100"
-            >
-              {t("project.cancel")}
-            </button>
-            <button
-              type="submit"
-              disabled={!name.trim() || createProjectMutation.isPending}
-              className="rounded bg-indigo-600 px-3 py-1.5 text-xs text-white hover:bg-indigo-700 disabled:opacity-40"
-            >
-              {t("project.create")}
-            </button>
-          </div>
-        </form>
+        </div>
+        <div className="flex justify-end gap-2">
+          <Button variant="secondary" onPress={onClose}>
+            {t("project.cancel")}
+          </Button>
+          <Button
+            variant="primary"
+            isDisabled={!name.trim() || createProjectMutation.isPending}
+            onPress={handleSubmit}
+          >
+            {t("project.create")}
+          </Button>
+        </div>
       </div>
     </div>
   );
@@ -171,12 +171,13 @@ class RouteErrorBoundary extends Component<
             {i18n.t("error.occurred")}
           </p>
           <p className="mt-1 text-xs text-gray-400">{this.state.message}</p>
-          <button
-            className="mt-4 rounded-md bg-indigo-600 px-3 py-1.5 text-sm text-white hover:bg-indigo-700"
-            onClick={() => this.setState({ hasError: false, message: "" })}
+          <Button
+            variant="secondary"
+            className="mt-4"
+            onPress={() => this.setState({ hasError: false, message: "" })}
           >
             {i18n.t("error.retry")}
-          </button>
+          </Button>
         </div>
       );
     }
@@ -253,10 +254,11 @@ function AppShell() {
                   <CheckSquare className="h-4 w-4 flex-shrink-0" />
                   {t("nav.tasks")}
                 </span>
-                <button
-                  onClick={() => setTasksOpen((v) => !v)}
+                <Button
+                  variant="quiet"
+                  onPress={() => setTasksOpen((v) => !v)}
                   className="px-2 py-2 opacity-50 hover:opacity-100"
-                  title={
+                  aria-label={
                     tasksOpen ? t("project.collapse") : t("project.expand")
                   }
                 >
@@ -265,7 +267,7 @@ function AppShell() {
                   ) : (
                     <ChevronRight className="h-3.5 w-3.5" />
                   )}
-                </button>
+                </Button>
               </div>
 
               {tasksOpen && (
@@ -291,13 +293,15 @@ function AppShell() {
                       </a>
                     );
                   })}
-                  <button
-                    onClick={() => setShowNewProject(true)}
-                    className="flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-xs text-gray-400 transition-colors hover:text-indigo-500"
+                  <Button
+                    variant="quiet"
+                    onPress={() => setShowNewProject(true)}
                   >
-                    <Plus className="h-3 w-3" />
-                    {t("nav.newProject")}
-                  </button>
+                    <span className="inline-flex items-center gap-2">
+                      <Plus className="h-3 w-3" />
+                      {t("nav.newProject")}
+                    </span>
+                  </Button>
                 </div>
               )}
             </div>
@@ -342,15 +346,14 @@ function AppShell() {
 
           {/* Language selector */}
           <div className="border-t border-gray-100 p-2">
-            <select
+            <Select
               value={i18n.language}
-              onChange={(e) => setLanguage(e.target.value)}
-              className="w-full rounded-md border border-gray-200 bg-white px-2 py-1.5 text-xs text-gray-600 outline-none focus:border-indigo-400"
+              onChange={(value) => setLanguage(String(value))}
               aria-label={t("language.label")}
             >
-              <option value="de">{t("language.de")}</option>
-              <option value="en">{t("language.en")}</option>
-            </select>
+              <SelectItem id="de">{t("language.de")}</SelectItem>
+              <SelectItem id="en">{t("language.en")}</SelectItem>
+            </Select>
           </div>
         </aside>
 

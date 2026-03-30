@@ -68,6 +68,11 @@ export const fieldBorderStyles = tv({
     isDisabled: {
       true: "border-neutral-200 dark:border-neutral-700 forced-colors:border-[GrayText]",
     },
+    minWidth: {
+      none: "",
+      small: "min-w-[50px]",
+      medium: "min-w-[150px]",
+    },
   },
 });
 
@@ -75,6 +80,9 @@ export const fieldGroupStyles = tv({
   extend: focusRing,
   base: "group flex items-center h-9 box-border bg-white dark:bg-neutral-900 forced-colors:bg-[Field] border rounded-lg overflow-hidden transition",
   variants: fieldBorderStyles.variants,
+  defaultVariants: {
+    minWidth: "none",
+  },
 });
 
 export function FieldGroup(props: GroupProps) {

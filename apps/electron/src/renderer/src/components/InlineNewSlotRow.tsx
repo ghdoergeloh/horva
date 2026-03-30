@@ -3,6 +3,10 @@ import { useQueryClient } from "@tanstack/react-query";
 import { X } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
+import { Button } from "@repo/ui/Button";
+import { Select, SelectItem } from "@repo/ui/Select";
+import { TimeField } from "@repo/ui/TimeField";
+
 import { applyTimeString, fmt, fmtDuration } from "~/lib/timeFormatters.js";
 
 interface TaskOption {
@@ -18,6 +22,22 @@ export interface InlineNewSlotRowProps {
   allTasks: TaskOption[];
   onCancel: () => void;
   onSaved: () => void;
+}
+
+function stringToTime(value: string) {
+  if (!value) return null;
+  const [h, m] = value.split(":").map((s) => Number.parseInt(s, 10));
+  if (Number.isNaN(h) || Number.isNaN(m)) return null;
+  return { hour: h, minute: m };
+}
+
+function timeToString(
+  value: { hour?: number | null; minute?: number | null } | null,
+): string {
+  if (!value) return "";
+  const hour = value.hour ?? 0;
+  const minute = value.minute ?? 0;
+  return `${String(hour).padStart(2, "0")}:${String(minute).padStart(2, "0")}`;
 }
 
 export function InlineNewSlotRow({
@@ -68,10 +88,11 @@ export function InlineNewSlotRow({
     onSaved();
   }
 
-  function handleKeyDown(e: React.KeyboardEvent) {
+  function handleKeyDownCapture(e: React.KeyboardEvent) {
     if (e.key === "Enter") {
-      e.preventDefault();
-      save().catch((err: unknown) => console.error("insert failed", err));
+      // Ignore Enter from portaled elements (e.g. Select dropdown)
+      if (rowRef.current && !rowRef.current.contains(e.target as Node)) return;
+      void save();
     }
     if (e.key === "Escape") onCancel();
   }
@@ -80,31 +101,33 @@ export function InlineNewSlotRow({
   const autoFocusEnd = prefillStart !== null && !prefillEnd;
 
   return (
-    <tr ref={rowRef} className="bg-indigo-50/60">
+    <tr
+      ref={rowRef}
+      className="bg-indigo-50/60"
+      onKeyDownCapture={handleKeyDownCapture}
+    >
       <td className="py-1 pr-2">
-        <input
+        <TimeField
           autoFocus={autoFocusStart}
-          type="time"
-          value={startTime}
-          onChange={(e) => {
-            setStartTime(e.target.value);
+          value={stringToTime(startTime) as never}
+          onChange={(value) => {
+            setStartTime(timeToString(value));
             setHasError(false);
           }}
-          onKeyDown={handleKeyDown}
-          className={`w-24 rounded border bg-white px-1.5 py-0.5 font-mono text-sm outline-none focus:ring-1 ${hasError && !startTime ? "border-red-400 focus:ring-red-400" : "border-indigo-300 focus:ring-indigo-400"}`}
+          isInvalid={hasError && !startTime}
+          className="w-24"
         />
       </td>
       <td className="py-1 pr-2">
-        <input
+        <TimeField
           autoFocus={autoFocusEnd}
-          type="time"
-          value={endTime}
-          onChange={(e) => {
-            setEndTime(e.target.value);
+          value={stringToTime(endTime) as never}
+          onChange={(value) => {
+            setEndTime(timeToString(value));
             setHasError(false);
           }}
-          onKeyDown={handleKeyDown}
-          className={`w-24 rounded border bg-white px-1.5 py-0.5 font-mono text-sm outline-none focus:ring-1 ${hasError && endTime ? "border-red-400 focus:ring-red-400" : "border-indigo-300 focus:ring-indigo-400"}`}
+          isInvalid={hasError && !!endTime}
+          className="w-24"
         />
       </td>
       <td className="py-1 pr-6 text-xs text-gray-400">
@@ -118,31 +141,30 @@ export function InlineNewSlotRow({
           : "–"}
       </td>
       <td className="py-1 pr-2" colSpan={2}>
-        <select
+        <Select
           autoFocus={!autoFocusStart && !autoFocusEnd}
-          value={taskId ?? ""}
-          onChange={(e) =>
-            setTaskId(e.target.value ? Number(e.target.value) : null)
-          }
-          onKeyDown={handleKeyDown}
-          className="w-full rounded border border-indigo-300 bg-white px-1.5 py-0.5 text-sm outline-none focus:ring-1 focus:ring-indigo-400"
+          value={taskId === null ? "" : String(taskId)}
+          onChange={(value) => setTaskId(value ? Number(value) : null)}
+          aria-label={t("inlineNewSlotRow.noTask")}
+          className="w-full"
         >
-          <option value="">{t("inlineNewSlotRow.noTask")}</option>
+          <SelectItem id="">{t("inlineNewSlotRow.noTask")}</SelectItem>
           {allTasks.map((t) => (
-            <option key={t.id} value={t.id}>
+            <SelectItem key={t.id} id={String(t.id)}>
               {t.project.name} / {t.name}
-            </option>
+            </SelectItem>
           ))}
-        </select>
+        </Select>
       </td>
       <td className="py-1 pl-2">
-        <button
-          onClick={onCancel}
+        <Button
+          variant="quiet"
+          onPress={onCancel}
           className="rounded p-0.5 text-gray-300 hover:text-gray-600"
-          title={t("inlineNewSlotRow.cancel")}
+          aria-label={t("inlineNewSlotRow.cancel")}
         >
           <X className="h-3.5 w-3.5" />
-        </button>
+        </Button>
       </td>
     </tr>
   );

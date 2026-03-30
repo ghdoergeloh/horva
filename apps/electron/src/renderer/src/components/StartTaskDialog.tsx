@@ -1,7 +1,11 @@
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Play, Plus, Search, X } from "lucide-react";
+import { Play, Plus, X } from "lucide-react";
 import { useTranslation } from "react-i18next";
+
+import { Button } from "@repo/ui/Button";
+import { SearchField } from "@repo/ui/SearchField";
+import { TextField } from "@repo/ui/TextField";
 
 interface StartTaskDialogProps {
   switchMode?: boolean;
@@ -25,11 +29,6 @@ export function StartTaskDialog({
   const [search, setSearch] = useState("");
   const [newTaskName, setNewTaskName] = useState("");
   const [creating, setCreating] = useState(false);
-  const inputRef = useRef<HTMLInputElement>(null);
-
-  useEffect(() => {
-    inputRef.current?.focus();
-  }, []);
 
   const { data: tasks = [] } = useQuery({
     queryKey: ["tasks", "open"],
@@ -74,34 +73,34 @@ export function StartTaskDialog({
               ? t("startTaskDialog.titleSwitch")
               : t("startTaskDialog.titleStart")}
           </h2>
-          <button
-            onClick={onClose}
+          <Button
+            variant="quiet"
+            onPress={onClose}
             className="rounded p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600"
+            aria-label={t("startTaskDialog.close")}
           >
             <X className="h-4 w-4" />
-          </button>
+          </Button>
         </div>
 
         {/* Search */}
         <div className="border-b border-gray-100 px-4 py-3">
-          <div className="flex items-center gap-2 rounded-lg border border-gray-200 px-3 py-2">
-            <Search className="h-4 w-4 text-gray-400" />
-            <input
-              ref={inputRef}
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder={t("startTaskDialog.searchPlaceholder")}
-              className="flex-1 text-sm outline-none placeholder:text-gray-400"
-            />
-          </div>
+          <SearchField
+            autoFocus
+            value={search}
+            onChange={setSearch}
+            placeholder={t("startTaskDialog.searchPlaceholder")}
+            className="w-full"
+          />
         </div>
 
         {/* Task list */}
         <div className="max-h-64 overflow-y-auto py-2">
           {filtered.map((task) => (
-            <button
+            <Button
               key={task.id}
-              onClick={() => void startWithTask(task.id)}
+              variant="quiet"
+              onPress={() => void startWithTask(task.id)}
               className="flex w-full items-center gap-3 px-4 py-2 text-left hover:bg-gray-50"
             >
               <div
@@ -114,7 +113,7 @@ export function StartTaskDialog({
               <span className="flex-shrink-0 text-xs text-gray-400">
                 {task.project.name}
               </span>
-            </button>
+            </Button>
           ))}
           {filtered.length === 0 && search && (
             <p className="px-4 py-3 text-sm text-gray-400">
@@ -128,35 +127,39 @@ export function StartTaskDialog({
           <div className="flex items-center gap-2">
             <div className="flex flex-1 items-center gap-2 rounded-lg border border-gray-200 px-3 py-2">
               <Plus className="h-4 w-4 flex-shrink-0 text-gray-400" />
-              <input
+              <TextField
                 value={newTaskName}
-                onChange={(e) => setNewTaskName(e.target.value)}
+                onChange={setNewTaskName}
                 onKeyDown={(e) => {
                   if (e.key === "Enter") void createAndStart();
                 }}
                 placeholder={t("startTaskDialog.createPlaceholder")}
-                className="flex-1 text-sm outline-none placeholder:text-gray-400"
+                className="flex-1 text-sm"
               />
             </div>
-            <button
-              onClick={() => void createAndStart()}
-              disabled={!newTaskName.trim() || creating}
-              className="flex items-center gap-1.5 rounded-lg bg-indigo-600 px-3 py-2 text-xs font-medium text-white hover:bg-indigo-700 disabled:opacity-50"
+            <Button
+              variant="primary"
+              onPress={() => void createAndStart()}
+              isDisabled={!newTaskName.trim() || creating}
+              className="px-3 py-2 text-xs font-medium"
             >
-              <Play className="h-3.5 w-3.5" />
-              {t("startTaskDialog.start")}
-            </button>
+              <span className="inline-flex items-center gap-1.5">
+                <Play className="h-3.5 w-3.5" />
+                {t("startTaskDialog.start")}
+              </span>
+            </Button>
           </div>
         </div>
 
         {/* Start without task */}
         <div className="border-t border-gray-100 px-4 py-3">
-          <button
-            onClick={() => void startWithoutTask()}
-            className="w-full rounded-lg py-2 text-sm text-gray-500 hover:bg-gray-50 hover:text-gray-700"
+          <Button
+            variant="secondary"
+            onPress={() => void startWithoutTask()}
+            className="w-full py-2 text-sm text-gray-500 hover:bg-gray-50 hover:text-gray-700"
           >
             {t("startTaskDialog.startWithoutTask")}
-          </button>
+          </Button>
         </div>
       </div>
     </div>

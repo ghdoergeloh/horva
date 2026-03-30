@@ -1,9 +1,11 @@
-import type { FormEvent } from "react";
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { Plus, Tag, Trash2, X } from "lucide-react";
 import { useTranslation } from "react-i18next";
+
+import { Button } from "@repo/ui/Button";
+import { TextField } from "@repo/ui/TextField";
 
 import type { LabelRow } from "~/components/TaskEditControls.js";
 import { LoadingSpinner } from "~/components/LoadingSpinner.js";
@@ -58,14 +60,6 @@ function LabelsPage() {
     },
   });
 
-  function handleCreate(e: FormEvent) {
-    e.preventDefault();
-    const trimmed = newName.trim();
-    if (!trimmed) return;
-    createLabelMutation.mutate(trimmed);
-    setNewName("");
-  }
-
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-20">
@@ -111,30 +105,34 @@ function LabelsPage() {
                       <span className="text-xs text-gray-400">
                         {t("labels.deleteConfirm")}
                       </span>
-                      <button
-                        onClick={() => {
+                      <Button
+                        variant="destructive"
+                        onPress={() => {
                           deleteLabelMutation.mutate(label.id);
                           setConfirmDeleteId(null);
                         }}
-                        className="rounded px-1.5 py-0.5 text-xs text-red-600 hover:bg-red-50"
+                        className="rounded px-1.5 py-0.5 text-xs"
                       >
                         {t("labels.yes")}
-                      </button>
-                      <button
-                        onClick={() => setConfirmDeleteId(null)}
-                        className="rounded p-0.5 text-gray-400 hover:bg-gray-100"
+                      </Button>
+                      <Button
+                        variant="quiet"
+                        onPress={() => setConfirmDeleteId(null)}
+                        className="rounded p-0.5"
+                        aria-label={t("labels.cancelDelete")}
                       >
                         <X className="h-3 w-3" />
-                      </button>
+                      </Button>
                     </div>
                   ) : (
-                    <button
-                      onClick={() => setConfirmDeleteId(label.id)}
-                      title={t("labels.deleteTitle")}
+                    <Button
+                      variant="quiet"
+                      onPress={() => setConfirmDeleteId(label.id)}
                       className="text-gray-300 hover:text-red-400"
+                      aria-label={t("labels.deleteTitle")}
                     >
                       <Trash2 className="h-3.5 w-3.5" />
-                    </button>
+                    </Button>
                   )}
                 </div>
               );
@@ -142,26 +140,30 @@ function LabelsPage() {
           </div>
         )}
 
-        <form
-          onSubmit={handleCreate}
+        <div
           className={`flex items-center gap-2 px-3 py-2 ${labels.length > 0 ? "border-t border-gray-50" : ""}`}
         >
-          <input
-            type="text"
+          <TextField
             value={newName}
-            onChange={(e) => setNewName(e.target.value)}
+            onChange={setNewName}
             placeholder={t("labels.newPlaceholder")}
-            className="min-w-0 flex-1 rounded border border-transparent bg-transparent px-1 py-0.5 text-sm text-gray-700 placeholder-gray-300 outline-none focus:border-gray-200 focus:bg-white"
+            className="min-w-0 flex-1"
           />
-          <button
-            type="submit"
-            disabled={!newName.trim()}
-            title={t("labels.createTitle")}
-            className="flex-shrink-0 text-gray-300 hover:text-indigo-500 disabled:opacity-30"
+          <Button
+            variant="quiet"
+            isDisabled={!newName.trim()}
+            aria-label={t("labels.createTitle")}
+            onPress={() => {
+              const trimmed = newName.trim();
+              if (!trimmed) return;
+              createLabelMutation.mutate(trimmed);
+              setNewName("");
+            }}
+            className="flex-shrink-0"
           >
             <Plus className="h-4 w-4" />
-          </button>
-        </form>
+          </Button>
+        </div>
       </div>
     </div>
   );
