@@ -2,7 +2,7 @@ import type { CalendarDateTime } from "@internationalized/date";
 import type { KeyboardEvent } from "react";
 import { useRef, useState } from "react";
 import { parseDateTime } from "@internationalized/date";
-import { Sun, Tag } from "lucide-react";
+import { Tag } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
 import { Button } from "@repo/ui/Button";
@@ -146,8 +146,6 @@ export function PlanButton({ scheduledDate, onPlan }: PlanButtonProps) {
       className="relative flex shrink-0 items-center gap-1"
       onKeyDownCapture={(e) => {
         if (!open) return;
-        const target = e.target as HTMLElement | null;
-        if (target?.closest("[data-plan-today='true']")) return;
 
         if (e.key === "Enter") {
           e.preventDefault();
@@ -189,29 +187,6 @@ export function PlanButton({ scheduledDate, onPlan }: PlanButtonProps) {
           className="text-xs"
         />
       )}
-      <Button
-        data-plan-today="true"
-        variant="quiet"
-        onPress={() => {
-          const now = new Date();
-          // Keep the currently drafted time if set, otherwise use now
-          const d = new Date(
-            now.getFullYear(),
-            now.getMonth(),
-            now.getDate(),
-            draftValue ? draftValue.hour : now.getHours(),
-            draftValue ? draftValue.minute : now.getMinutes(),
-            0,
-            0,
-          );
-          onPlan(d.toISOString());
-          setOpen(false);
-        }}
-        className="h-7 w-7 p-0 text-amber-500 hover:text-amber-600"
-        aria-label={t("taskEditControls.planToday")}
-      >
-        <Sun className="h-3.5 w-3.5" />
-      </Button>
     </div>
   );
 }

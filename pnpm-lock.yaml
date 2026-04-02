@@ -626,6 +626,9 @@ importers:
 
   packages/ui:
     dependencies:
+      "@internationalized/date":
+        specifier: ^3.11.0
+        version: 3.11.0
       lucide-react:
         specifier: ^0.564.0
         version: 0.564.0(react@19.2.4)

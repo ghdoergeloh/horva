@@ -16,6 +16,7 @@
   },
   "prettier": "@repo/prettier-config",
   "dependencies": {
+    "@internationalized/date": "^3.11.0",
     "lucide-react": "^0.564.0",
     "react-aria": "^3.46.0",
     "react-aria-components": "^1.15.1",
