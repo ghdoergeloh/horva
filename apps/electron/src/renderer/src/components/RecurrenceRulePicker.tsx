@@ -92,12 +92,12 @@ function parseRruleString(
     const freq: Freq =
       (freqMap as Record<number, Freq | undefined>)[o.freq] ?? "DAILY";
 
-    const byWeekday = (o.byweekday as (number | { weekday: number })[]).map(
-      (w) => (typeof w === "number" ? w : w.weekday),
-    );
+    const byWeekday = (
+      (o.byweekday as unknown as (number | { weekday: number })[] | null) ?? []
+    ).map((w) => (typeof w === "number" ? w : w.weekday));
 
-    const bysetpos = o.bysetpos;
-    const bymonthday = o.bymonthday;
+    const bysetpos = (o.bysetpos as unknown as number[] | null) ?? [];
+    const bymonthday = (o.bymonthday as unknown as number[] | null) ?? [];
     const bySetPos = bysetpos[0] ?? 1;
     const bySetPosDay = byWeekday[0] ?? 0;
     const monthlyMode = bysetpos.length > 0 ? "bySetPos" : "byMonthDay";
@@ -146,8 +146,8 @@ function buildRrule(state: RuleState): string {
       return new CalendarDate(zdt.year, zdt.month, zdt.day);
     })();
 
-  // Convert wall-clock time in state.tzid to a real UTC instant via Intl offset.
-  const probe = new Date(
+  // rrule with tzid stores wall-clock digits directly in UTC fields.
+  const dtstart = new Date(
     Date.UTC(
       base.year,
       base.month - 1,
@@ -156,34 +156,6 @@ function buildRrule(state: RuleState): string {
       state.time.minute,
     ),
   );
-  const parts = new Intl.DateTimeFormat("en-US", {
-    timeZone: state.tzid,
-    year: "numeric",
-    month: "numeric",
-    day: "numeric",
-    hour: "numeric",
-    minute: "numeric",
-    second: "numeric",
-    hour12: false,
-  }).formatToParts(probe);
-  const get = (type: string) =>
-    parseInt(parts.find((p) => p.type === type)?.value ?? "0");
-  const localMs = Date.UTC(
-    get("year"),
-    get("month") - 1,
-    get("day"),
-    get("hour") === 24 ? 0 : get("hour"),
-    get("minute"),
-    get("second"),
-  );
-  const wallMs = Date.UTC(
-    base.year,
-    base.month - 1,
-    base.day,
-    state.time.hour,
-    state.time.minute,
-  );
-  const dtstart = new Date(wallMs + (wallMs - localMs));
 
   let byweekday: (typeof RRule.MO)[] | undefined;
   if (state.freq === "WEEKLY" && state.byWeekday.length > 0) {
@@ -245,7 +217,6 @@ export function RecurrenceRulePicker({
   const [state, setState] = useState<RuleState>(() =>
     value ? parseRruleString(value, scheduledAt) : defaultState(scheduledAt),
   );
-
   function update(partial: Partial<RuleState>) {
     const next = { ...state, ...partial };
     setState(next);

@@ -105,6 +105,7 @@ function RecurrenceModalContent({
         {t("taskCard.recurrenceModalTitle")}
       </Heading>
       <RecurrenceRulePicker
+        key={recurrenceRule ?? "new"}
         value={draft}
         scheduledAt={scheduledDate}
         onChange={setDraft}
