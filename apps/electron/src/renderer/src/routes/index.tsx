@@ -137,6 +137,13 @@ function DailyOverview() {
     onSuccess: invalidateTasks,
   });
 
+  function byScheduledAt(a: TaskRow, b: TaskRow) {
+    return (
+      new Date(a.scheduledAt ?? "").getTime() -
+      new Date(b.scheduledAt ?? "").getTime()
+    );
+  }
+
   // Filter tasks and activities scheduled for today
   const todayTasks = tasks.filter((t) => {
     if (!t.scheduledAt) return false;
@@ -144,29 +151,37 @@ function DailyOverview() {
   });
 
   // Due now: no time component, or scheduled time in the past
-  const dueNow = todayTasks.filter((t) => {
-    const d = new Date(t.scheduledAt ?? "");
-    // If time is midnight (00:00), treat as "no specific time" → due now
-    return d.getHours() === 0 && d.getMinutes() === 0 ? true : d <= now;
-  });
+  const dueNow = todayTasks
+    .filter((t) => {
+      const d = new Date(t.scheduledAt ?? "");
+      // If time is midnight (00:00), treat as "no specific time" → due now
+      return d.getHours() === 0 && d.getMinutes() === 0 ? true : d <= now;
+    })
+    .sort(byScheduledAt);
 
   // Later today: future time
-  const laterToday = todayTasks.filter((t) => {
-    const d = new Date(t.scheduledAt ?? "");
-    return d.getHours() !== 0 && d > now;
-  });
+  const laterToday = todayTasks
+    .filter((t) => {
+      const d = new Date(t.scheduledAt ?? "");
+      return d.getHours() !== 0 && d > now;
+    })
+    .sort(byScheduledAt);
 
   // Overdue: scheduled before today
-  const overdue = tasks.filter((t) => {
-    if (!t.scheduledAt) return false;
-    return new Date(t.scheduledAt).toISOString().slice(0, 10) < todayStr;
-  });
+  const overdue = tasks
+    .filter((t) => {
+      if (!t.scheduledAt) return false;
+      return new Date(t.scheduledAt).toISOString().slice(0, 10) < todayStr;
+    })
+    .sort(byScheduledAt);
 
   // Planned: scheduled after today
-  const planned = tasks.filter((t) => {
-    if (!t.scheduledAt) return false;
-    return new Date(t.scheduledAt).toISOString().slice(0, 10) > todayStr;
-  });
+  const planned = tasks
+    .filter((t) => {
+      if (!t.scheduledAt) return false;
+      return new Date(t.scheduledAt).toISOString().slice(0, 10) > todayStr;
+    })
+    .sort(byScheduledAt);
 
   const locale = i18n.language === "de" ? "de-DE" : "en-US";
 
