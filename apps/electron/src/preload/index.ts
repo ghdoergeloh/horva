@@ -51,6 +51,8 @@ const api = {
     delete: (id: number) => ipcRenderer.invoke("tasks:delete", id),
     plan: (id: number, date: string | null) =>
       ipcRenderer.invoke("tasks:plan", id, date),
+    setRecurrence: (id: number, rule: string | null) =>
+      ipcRenderer.invoke("tasks:setRecurrence", id, rule),
   },
   projects: {
     list: (includeArchived = false) =>

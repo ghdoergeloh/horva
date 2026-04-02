@@ -20,6 +20,7 @@
   "prettier": "@repo/prettier-config",
   "dependencies": {
     "@repo/db": "workspace:*",
+    "rrule": "catalog:",
     "zod": "catalog:"
   },
   "devDependencies": {

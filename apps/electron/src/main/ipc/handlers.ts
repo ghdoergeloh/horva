@@ -221,6 +221,15 @@ export function registerHandlers(ipcMain: IpcMain, db: Db): void {
     notify(_e.sender, "tasks");
     return result;
   });
+  ipcMain.handle(
+    "tasks:setRecurrence",
+    async (_e, id: number, rule: string | null) => {
+      assertId(id, "id");
+      const result = await updateTask(db, id, { recurrenceRule: rule });
+      notify(_e.sender, "tasks");
+      return result;
+    },
+  );
 
   // Projects
   ipcMain.handle("projects:list", (_e, includeArchived: boolean) =>

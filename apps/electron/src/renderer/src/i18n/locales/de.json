@@ -1,4 +1,8 @@
 {
+  "common": {
+    "save": "Speichern",
+    "cancel": "Abbrechen"
+  },
   "nav": {
     "today": "Heute",
     "timeline": "Timeline",
@@ -31,6 +35,7 @@
     "dueNow": "Jetzt fällig",
     "laterToday": "Später heute",
     "overdue": "Überfällig",
+    "planned": "Geplant",
     "noTasksToday": "Keine anstehenden Aufgaben für heute."
   },
   "tasks": {
@@ -131,19 +136,43 @@
     "yes": "Ja",
     "tasks": "{{count}} Tasks"
   },
+  "recurrence": {
+    "doesNotRepeat": "Wiederholt sich nicht",
+    "repeats": "Wiederholt sich",
+    "daily": "Täglich",
+    "weekly": "Wöchentlich",
+    "monthly": "Monatlich",
+    "yearly": "Jährlich",
+    "every": "Alle",
+    "days": "Tage",
+    "weeks": "Wochen",
+    "months": "Monate",
+    "years": "Jahre",
+    "onDay": "am Tag",
+    "onThe": "am",
+    "first": "ersten",
+    "second": "zweiten",
+    "third": "dritten",
+    "fourth": "vierten",
+    "last": "letzten",
+    "timezone": "Zeitzone"
+  },
   "taskCard": {
     "markDone": "Als erledigt markieren",
     "removeFromToday": "Von heute entfernen",
     "clickToEdit": "Klicken zum Bearbeiten",
     "totalTime": "{{time}} gesamt",
     "pause": "Pause",
-    "start": "Starten"
+    "start": "Starten",
+    "recurring": "Wiederkehrende Aktivität",
+    "recurrenceModalTitle": "Wiederholung"
   },
   "taskEditControls": {
     "editLabels": "Labels bearbeiten",
     "planDate": "Datum planen",
     "planToday": "Für heute planen",
-    "planned": "Geplant: {{date}}"
+    "planned": "Geplant: {{date}}",
+    "planTime": "Uhrzeit"
   },
   "taskUtils": {
     "today": "Heute",

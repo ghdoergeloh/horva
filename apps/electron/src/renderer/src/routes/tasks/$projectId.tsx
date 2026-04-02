@@ -18,7 +18,8 @@ interface TaskRow {
   name: string;
   status: string;
   taskType: string;
-  scheduledDate: Date | string | null;
+  scheduledAt: Date | string | null;
+  recurrenceRule: string | null;
   project: { id: number; name: string; color: string };
   taskLabels: { label: { id: number; name: string } }[];
   slots: { startedAt: Date | string; endedAt: Date | string | null }[];
@@ -248,7 +249,8 @@ function DoneTasksSection({
               labels={t.taskLabels.map((tl) => tl.label)}
               totalMinutes={calcTotalMinutes(t.slots)}
               isActivity={t.taskType === "activity"}
-              scheduledDate={t.scheduledDate}
+              scheduledAt={t.scheduledAt}
+              recurrenceRule={t.recurrenceRule}
               allLabels={allLabels}
               onMarkDone={() => onReopen(t.id)}
             />
@@ -332,6 +334,12 @@ function ProjectTaskPage() {
     onSuccess: invalidateTasks,
   });
 
+  const setRecurrenceMutation = useMutation({
+    mutationFn: ({ id, rule }: { id: number; rule: string | null }) =>
+      window.api.tasks.setRecurrence(id, rule),
+    onSuccess: invalidateTasks,
+  });
+
   const addLabelMutation = useMutation({
     mutationFn: ({ taskId, labelId }: { taskId: number; labelId: number }) =>
       window.api.tasks.update(taskId, { addLabelIds: [labelId] }),
@@ -365,6 +373,7 @@ function ProjectTaskPage() {
   const allActivities = tasks.filter((t) => t.taskType === "activity");
 
   function renderCard(t: TaskRow) {
+    const isActivity = t.taskType === "activity";
     return (
       <TaskCard
         key={t.id}
@@ -373,12 +382,18 @@ function ProjectTaskPage() {
         project={t.project}
         labels={t.taskLabels.map((tl) => tl.label)}
         totalMinutes={calcTotalMinutes(t.slots)}
-        isActivity={t.taskType === "activity"}
-        scheduledDate={t.scheduledDate}
+        isActivity={isActivity}
+        scheduledAt={t.scheduledAt}
+        recurrenceRule={t.recurrenceRule}
         onMarkDone={() => markDoneMutation.mutate(t.id)}
         allLabels={allLabels}
         onRename={(name) => renameMutation.mutate({ id: t.id, name })}
         onPlan={(date) => planMutation.mutate({ id: t.id, date })}
+        onSetRecurrence={
+          isActivity
+            ? (rule) => setRecurrenceMutation.mutate({ id: t.id, rule })
+            : undefined
+        }
         onAddLabel={(labelId) =>
           addLabelMutation.mutate({ taskId: t.id, labelId })
         }

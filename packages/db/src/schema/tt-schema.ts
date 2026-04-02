@@ -65,7 +65,8 @@ export const task = pgTable("task", {
     .references(() => project.id),
   status: taskStatusEnum("status").notNull().default("open"),
   taskType: taskTypeEnum("task_type").notNull().default("task"),
-  scheduledDate: timestamp("scheduled_date"),
+  scheduledAt: timestamp("scheduled_at"),
+  recurrenceRule: text("recurrence_rule"),
   notes: text("notes"),
   links: text("links")
     .array()

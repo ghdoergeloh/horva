@@ -100,7 +100,7 @@ export function registerTaskCommands(program: Command): void {
           }
 
           const taskType = opts.activity ? "activity" : "task";
-          const scheduledDate = opts.activity
+          const scheduledAt = opts.activity
             ? undefined
             : opts.date
               ? parseDate(opts.date)
@@ -111,7 +111,7 @@ export function registerTaskCommands(program: Command): void {
             projectId,
             taskType,
             labelIds: labelIds.length > 0 ? labelIds : undefined,
-            scheduledDate,
+            scheduledAt,
             notes: opts.note ?? undefined,
             links: opts.link.length > 0 ? opts.link : [],
           });
@@ -128,7 +128,7 @@ export function registerTaskCommands(program: Command): void {
               `Project: ${colorProject(full.project.name, full.project.color)}`,
               `Type: ${taskType}`,
               labelNames.length > 0 ? `Labels: ${labelNames.join(", ")}` : null,
-              scheduledDate ? `Planned: ${formatDate(scheduledDate)}` : null,
+              scheduledAt ? `Planned: ${formatDate(scheduledAt)}` : null,
             ]
               .filter(Boolean)
               .join(" | ");
@@ -195,7 +195,7 @@ export function registerTaskCommands(program: Command): void {
             t: Awaited<ReturnType<typeof listTasks>>[number],
           ) => {
             const labelNames = t.taskLabels.map((tl) => tl.label.name);
-            const planned = t.scheduledDate ? formatDate(t.scheduledDate) : "";
+            const planned = t.scheduledAt ? formatDate(t.scheduledAt) : "";
             console.log(
               `  ${String(t.id).padEnd(5)} ${t.name.substring(0, 29).padEnd(30)} ${colorProject(t.project.name.substring(0, 14), t.project.color).padEnd(15)} ${labelNames.join(", ").substring(0, 14).padEnd(15)} ${planned}`,
             );
@@ -374,11 +374,11 @@ export function registerTaskCommands(program: Command): void {
 
           if (hasFlags) {
             // Non-interactive path
-            let scheduledDate: Date | null | undefined;
+            let scheduledAt: Date | null | undefined;
             if (opts.clearDate) {
-              scheduledDate = null;
+              scheduledAt = null;
             } else if (opts.date) {
-              scheduledDate = parseDate(opts.date);
+              scheduledAt = parseDate(opts.date);
             }
 
             let taskType: "task" | "activity" | undefined;
@@ -406,7 +406,7 @@ export function registerTaskCommands(program: Command): void {
                 opts.removeLabel.length > 0
                   ? resolveLabels(opts.removeLabel)
                   : undefined,
-              scheduledDate,
+              scheduledAt,
               notes: opts.note,
               addLinks: opts.link.length > 0 ? opts.link : undefined,
               removeLinks:
@@ -454,25 +454,25 @@ export function registerTaskCommands(program: Command): void {
           if (newProjectId !== current.project.id)
             changes.projectId = newProjectId;
 
-          // scheduledDate
-          const currentDateDisplay = current.scheduledDate
-            ? formatDate(current.scheduledDate)
+          // scheduledAt
+          const currentDateDisplay = current.scheduledAt
+            ? formatDate(current.scheduledAt)
             : null;
           const dateAction = await askChange(
             "Scheduled date:",
             currentDateDisplay,
             {
-              canRemove: current.scheduledDate !== null,
+              canRemove: current.scheduledAt !== null,
               removeLabel: "Remove (clear date)",
             },
           );
           if (dateAction === "remove") {
-            changes.scheduledDate = null;
+            changes.scheduledAt = null;
           } else if (dateAction === "change") {
             const newDateStr = await input({
               message: "New date (today, tomorrow, YYYY-MM-DD):",
             });
-            changes.scheduledDate = parseDate(newDateStr);
+            changes.scheduledAt = parseDate(newDateStr);
           }
 
           // notes

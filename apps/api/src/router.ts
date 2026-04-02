@@ -60,7 +60,7 @@ function serializeProject(p: Awaited<ReturnType<typeof getProject>>) {
 function serializeTask(t: NonNullable<Awaited<ReturnType<typeof getTask>>>) {
   return {
     ...t,
-    scheduledDate: serializeDate(t.scheduledDate),
+    scheduledAt: serializeDate(t.scheduledAt),
     createdAt: t.createdAt.toISOString(),
     updatedAt: t.updatedAt.toISOString(),
     doneAt: serializeDate(t.doneAt),
@@ -202,9 +202,10 @@ export const router = base.router({
         projectId: input.projectId,
         taskType: input.taskType,
         labelIds: input.labelIds,
-        scheduledDate: input.scheduledDate
-          ? new Date(input.scheduledDate)
+        scheduledAt: input.scheduledAt
+          ? new Date(input.scheduledAt)
           : undefined,
+        recurrenceRule: input.recurrenceRule,
         notes: input.notes,
         links: input.links,
       });
@@ -217,12 +218,13 @@ export const router = base.router({
       await updateTask(db, id, {
         ...rest,
         taskType,
-        scheduledDate:
-          rest.scheduledDate !== undefined
-            ? rest.scheduledDate
-              ? new Date(rest.scheduledDate)
+        scheduledAt:
+          rest.scheduledAt !== undefined
+            ? rest.scheduledAt
+              ? new Date(rest.scheduledAt)
               : null
             : undefined,
+        recurrenceRule: rest.recurrenceRule,
       });
       const full = await getTask(db, id);
       if (!full) throw new Error("Task not found after update");

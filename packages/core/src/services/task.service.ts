@@ -3,6 +3,7 @@ import { and, eq, inArray, isNull, ne, notInArray } from "@repo/db";
 import { slot, task, taskLabel } from "@repo/db/schema";
 
 import type { CreateTask, UpdateTask } from "../schemas/index";
+import { rruleFromString } from "../utils/rrule";
 import { getDefaultProject } from "./project.service";
 import { stopSlot } from "./slot.service";
 
@@ -74,7 +75,8 @@ export async function createTask(db: Db, input: CreateTask) {
         name: input.name,
         projectId,
         taskType: input.taskType ?? "task",
-        scheduledDate: input.scheduledDate ?? null,
+        scheduledAt: input.scheduledAt ?? null,
+        recurrenceRule: input.recurrenceRule ?? null,
         notes: input.notes ?? null,
         links: input.links ?? [],
       })
@@ -107,7 +109,7 @@ export async function updateTask(db: Db, id: number, input: UpdateTask) {
     if (input.projectId !== undefined) updates.projectId = input.projectId;
     if (input.taskType !== undefined) {
       updates.taskType = input.taskType;
-      // Converting to activity: reset done status to open (keep scheduledDate)
+      // Converting to activity: reset done status to open (keep scheduledAt)
       if (input.taskType === "activity") {
         if (existing.status === "done") {
           updates.status = "open";
@@ -119,8 +121,10 @@ export async function updateTask(db: Db, id: number, input: UpdateTask) {
         updates.status = "open";
       }
     }
-    if (input.scheduledDate !== undefined)
-      updates.scheduledDate = input.scheduledDate;
+    if (input.scheduledAt !== undefined)
+      updates.scheduledAt = input.scheduledAt;
+    if (input.recurrenceRule !== undefined)
+      updates.recurrenceRule = input.recurrenceRule;
     if (input.notes !== undefined) updates.notes = input.notes;
 
     if (input.addLinks !== undefined || input.removeLinks !== undefined) {
@@ -184,16 +188,25 @@ export async function markTaskDone(db: Db, id: number) {
     await stopSlot(db);
   }
 
-  // Activities with a scheduled date can be marked done: clear the date so they leave the day plan
   const updates: Partial<typeof task.$inferInsert> = {
     updatedAt: new Date(),
   };
+
   if (existing.taskType === "activity") {
-    updates.scheduledDate = null;
+    if (existing.recurrenceRule) {
+      // Advance to the next occurrence from now (skips any missed ones)
+      const rule = rruleFromString(existing.recurrenceRule);
+      const next = rule.after(new Date(), false);
+      updates.scheduledAt = next ?? null;
+    } else {
+      // No recurrence: clear the date so the activity leaves the day plan
+      updates.scheduledAt = null;
+    }
   } else {
     updates.status = "done";
     updates.doneAt = new Date();
   }
+
   const [row] = await db
     .update(task)
     .set(updates)
@@ -284,7 +297,7 @@ export async function planTask(db: Db, id: number, date: Date | null) {
   if (!existing) throw new Error(`Task #${id} not found`);
   const [row] = await db
     .update(task)
-    .set({ scheduledDate: date, updatedAt: new Date() })
+    .set({ scheduledAt: date, updatedAt: new Date() })
     .where(eq(task.id, id))
     .returning();
   if (!row) throw new Error(`Task #${id} not found after plan`);

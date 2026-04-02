@@ -16,7 +16,8 @@ interface TaskRow {
   name: string;
   status: string;
   taskType: string;
-  scheduledDate: Date | string | null;
+  scheduledAt: Date | string | null;
+  recurrenceRule: string | null;
   project: { name: string; color: string };
   taskLabels: { label: { id: number; name: string } }[];
   slots: { startedAt: Date | string; endedAt: Date | string | null }[];
@@ -118,6 +119,12 @@ function DailyOverview() {
     onSuccess: invalidateTasks,
   });
 
+  const setRecurrenceMutation = useMutation({
+    mutationFn: ({ id, rule }: { id: number; rule: string | null }) =>
+      window.api.tasks.setRecurrence(id, rule),
+    onSuccess: invalidateTasks,
+  });
+
   const addLabelMutation = useMutation({
     mutationFn: ({ taskId, labelId }: { taskId: number; labelId: number }) =>
       window.api.tasks.update(taskId, { addLabelIds: [labelId] }),
@@ -132,27 +139,33 @@ function DailyOverview() {
 
   // Filter tasks and activities scheduled for today
   const todayTasks = tasks.filter((t) => {
-    if (!t.scheduledDate) return false;
-    return new Date(t.scheduledDate).toISOString().slice(0, 10) === todayStr;
+    if (!t.scheduledAt) return false;
+    return new Date(t.scheduledAt).toISOString().slice(0, 10) === todayStr;
   });
 
   // Due now: no time component, or scheduled time in the past
   const dueNow = todayTasks.filter((t) => {
-    const d = new Date(t.scheduledDate ?? "");
+    const d = new Date(t.scheduledAt ?? "");
     // If time is midnight (00:00), treat as "no specific time" → due now
     return d.getHours() === 0 && d.getMinutes() === 0 ? true : d <= now;
   });
 
   // Later today: future time
   const laterToday = todayTasks.filter((t) => {
-    const d = new Date(t.scheduledDate ?? "");
+    const d = new Date(t.scheduledAt ?? "");
     return d.getHours() !== 0 && d > now;
   });
 
   // Overdue: scheduled before today
   const overdue = tasks.filter((t) => {
-    if (!t.scheduledDate) return false;
-    return new Date(t.scheduledDate).toISOString().slice(0, 10) < todayStr;
+    if (!t.scheduledAt) return false;
+    return new Date(t.scheduledAt).toISOString().slice(0, 10) < todayStr;
+  });
+
+  // Planned: scheduled after today
+  const planned = tasks.filter((t) => {
+    if (!t.scheduledAt) return false;
+    return new Date(t.scheduledAt).toISOString().slice(0, 10) > todayStr;
   });
 
   const locale = i18n.language === "de" ? "de-DE" : "en-US";
@@ -161,6 +174,7 @@ function DailyOverview() {
     t: TaskRow,
     opts?: { dimmed?: boolean; scheduledTime?: string; overdue?: boolean },
   ) {
+    const isActivity = t.taskType === "activity";
     return (
       <TaskCard
         key={t.id}
@@ -169,12 +183,18 @@ function DailyOverview() {
         project={t.project}
         labels={t.taskLabels.map((tl) => tl.label)}
         totalMinutes={calcTotalMinutes(t.slots)}
-        isActivity={t.taskType === "activity"}
-        scheduledDate={t.scheduledDate}
+        isActivity={isActivity}
+        scheduledAt={t.scheduledAt}
+        recurrenceRule={t.recurrenceRule}
         onMarkDone={() => markDoneMutation.mutate(t.id)}
         allLabels={allLabels}
         onRename={(name) => renameMutation.mutate({ id: t.id, name })}
         onPlan={(date) => planMutation.mutate({ id: t.id, date })}
+        onSetRecurrence={
+          isActivity
+            ? (rule) => setRecurrenceMutation.mutate({ id: t.id, rule })
+            : undefined
+        }
         onAddLabel={(labelId) =>
           addLabelMutation.mutate({ taskId: t.id, labelId })
         }
@@ -229,12 +249,13 @@ function DailyOverview() {
             {laterToday.map((t) =>
               renderCard(t, {
                 dimmed: true,
-                scheduledTime: new Date(
-                  t.scheduledDate ?? "",
-                ).toLocaleTimeString(locale, {
-                  hour: "2-digit",
-                  minute: "2-digit",
-                }),
+                scheduledTime: new Date(t.scheduledAt ?? "").toLocaleTimeString(
+                  locale,
+                  {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  },
+                ),
               }),
             )}
           </div>
@@ -253,12 +274,38 @@ function DailyOverview() {
             {overdue.map((t) =>
               renderCard(t, {
                 overdue: true,
-                scheduledTime: new Date(
-                  t.scheduledDate ?? "",
-                ).toLocaleDateString(locale, {
-                  day: "numeric",
-                  month: "short",
-                }),
+                scheduledTime: new Date(t.scheduledAt ?? "").toLocaleDateString(
+                  locale,
+                  {
+                    day: "numeric",
+                    month: "short",
+                  },
+                ),
+              }),
+            )}
+          </div>
+        </CollapsibleSection>
+      )}
+
+      {/* Planned (future) */}
+      {planned.length > 0 && (
+        <CollapsibleSection
+          title={t("dashboard.planned")}
+          count={planned.length}
+          defaultOpen={false}
+        >
+          <div className="space-y-2">
+            {planned.map((t) =>
+              renderCard(t, {
+                dimmed: true,
+                scheduledTime: new Date(t.scheduledAt ?? "").toLocaleDateString(
+                  locale,
+                  {
+                    weekday: "short",
+                    day: "numeric",
+                    month: "short",
+                  },
+                ),
               }),
             )}
           </div>

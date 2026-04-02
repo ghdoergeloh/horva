@@ -1,4 +1,8 @@
 {
+  "common": {
+    "save": "Save",
+    "cancel": "Cancel"
+  },
   "nav": {
     "today": "Today",
     "timeline": "Timeline",
@@ -31,6 +35,7 @@
     "dueNow": "Due now",
     "laterToday": "Later today",
     "overdue": "Overdue",
+    "planned": "Planned",
     "noTasksToday": "No upcoming tasks for today."
   },
   "tasks": {
@@ -137,13 +142,16 @@
     "clickToEdit": "Click to edit",
     "totalTime": "{{time}} total",
     "pause": "Pause",
-    "start": "Start"
+    "start": "Start",
+    "recurring": "Recurring activity",
+    "recurrenceModalTitle": "Recurrence"
   },
   "taskEditControls": {
     "editLabels": "Edit labels",
     "planDate": "Plan date",
     "planToday": "Plan for today",
-    "planned": "Planned: {{date}}"
+    "planned": "Planned: {{date}}",
+    "planTime": "Time"
   },
   "taskUtils": {
     "today": "Today",
@@ -176,6 +184,27 @@
     "label": "Language",
     "de": "Deutsch",
     "en": "English"
+  },
+  "recurrence": {
+    "doesNotRepeat": "Does not repeat",
+    "repeats": "Repeats",
+    "daily": "Daily",
+    "weekly": "Weekly",
+    "monthly": "Monthly",
+    "yearly": "Yearly",
+    "every": "Every",
+    "days": "days",
+    "weeks": "weeks",
+    "months": "months",
+    "years": "years",
+    "onDay": "on day",
+    "onThe": "on the",
+    "first": "first",
+    "second": "second",
+    "third": "third",
+    "fourth": "fourth",
+    "last": "last",
+    "timezone": "Timezone"
   },
   "settings": {
     "title": "Settings",

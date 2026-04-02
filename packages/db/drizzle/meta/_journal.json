@@ -15,6 +15,13 @@
       "when": 1772786257653,
       "tag": "0001_lazy_mockingbird",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1743552000000,
+      "tag": "0002_recurring_activities",
+      "breakpoints": true
     }
   ]
 }

@@ -11,12 +11,24 @@ export function formatScheduledDate(d: Date | string): string {
   today.setHours(0, 0, 0, 0);
   const tomorrow = new Date(today);
   tomorrow.setDate(today.getDate() + 1);
-  date.setHours(0, 0, 0, 0);
-  if (date.getTime() === today.getTime()) return i18n.t("taskUtils.today");
-  if (date.getTime() === tomorrow.getTime())
-    return i18n.t("taskUtils.tomorrow");
+
+  const dateOnly = new Date(date);
+  dateOnly.setHours(0, 0, 0, 0);
+
+  const hasTime = date.getHours() !== 0 || date.getMinutes() !== 0;
   const locale = i18n.language === "de" ? "de-DE" : "en-US";
-  return date.toLocaleDateString(locale, { day: "numeric", month: "short" });
+  const timePart = hasTime
+    ? ` ${date.toLocaleTimeString(locale, { hour: "2-digit", minute: "2-digit" })}`
+    : "";
+
+  if (dateOnly.getTime() === today.getTime())
+    return `${i18n.t("taskUtils.today")}${timePart}`;
+  if (dateOnly.getTime() === tomorrow.getTime())
+    return `${i18n.t("taskUtils.tomorrow")}${timePart}`;
+  return (
+    dateOnly.toLocaleDateString(locale, { day: "numeric", month: "short" }) +
+    timePart
+  );
 }
 
 export function formatMinutes(minutes: number): string {

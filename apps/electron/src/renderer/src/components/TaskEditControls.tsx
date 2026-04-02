@@ -1,15 +1,14 @@
-import type { CalendarDate } from "@internationalized/date";
+import type { CalendarDateTime } from "@internationalized/date";
 import type { KeyboardEvent } from "react";
 import { useRef, useState } from "react";
-import { parseDate } from "@internationalized/date";
+import { parseDateTime } from "@internationalized/date";
 import { Sun, Tag } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
 import { Button } from "@repo/ui/Button";
-import { DatePicker } from "@repo/ui/DatePicker";
+import { DateTimePicker } from "@repo/ui/DateTimePicker";
 import { TextField } from "@repo/ui/TextField";
 
-import { localDateStr } from "~/lib/dateUtils.js";
 import { formatScheduledDate, toDateInputValue } from "~/lib/taskUtils.js";
 
 export interface LabelRow {
@@ -100,24 +99,44 @@ export function PlanButton({ scheduledDate, onPlan }: PlanButtonProps) {
   const ref = useRef<HTMLDivElement>(null);
   const closeActionRef = useRef<"none" | "commit" | "cancel">("none");
 
-  const dateInputValue = scheduledDate ? toDateInputValue(scheduledDate) : null;
+  function toPickerValue(d: Date | string | null): CalendarDateTime | null {
+    if (!d) return null;
+    const date = new Date(d);
+    const dateStr = toDateInputValue(date); // YYYY-MM-DD
+    const h = date.getHours();
+    const m = date.getMinutes();
+    return parseDateTime(
+      `${dateStr}T${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}:00`,
+    );
+  }
 
-  const pickerValue: CalendarDate | null =
-    dateInputValue !== null ? parseDate(dateInputValue) : null;
-  const [draftValue, setDraftValue] = useState<CalendarDate | null>(
-    pickerValue,
+  const initialValue = toPickerValue(scheduledDate);
+  const [draftValue, setDraftValue] = useState<CalendarDateTime | null>(
+    initialValue,
   );
 
   function commitAndClose() {
     closeActionRef.current = "commit";
-    const next = draftValue === null ? null : draftValue.toString(); // 'YYYY-MM-DD'
-    if (next !== dateInputValue) onPlan(next);
+    if (draftValue === null) {
+      onPlan(null);
+    } else {
+      const d = new Date(
+        draftValue.year,
+        draftValue.month - 1,
+        draftValue.day,
+        draftValue.hour,
+        draftValue.minute,
+        0,
+        0,
+      );
+      onPlan(d.toISOString());
+    }
     setOpen(false);
   }
 
   function cancelAndClose() {
     closeActionRef.current = "cancel";
-    setDraftValue(pickerValue);
+    setDraftValue(initialValue);
     setOpen(false);
   }
 
@@ -146,7 +165,7 @@ export function PlanButton({ scheduledDate, onPlan }: PlanButtonProps) {
           variant="quiet"
           onPress={() => {
             closeActionRef.current = "none";
-            setDraftValue(pickerValue);
+            setDraftValue(toPickerValue(scheduledDate));
             setOpen(true);
           }}
           className="h-7 px-2 text-[11px] text-gray-500 hover:text-gray-700"
@@ -157,12 +176,14 @@ export function PlanButton({ scheduledDate, onPlan }: PlanButtonProps) {
             : t("taskEditControls.planDate")}
         </Button>
       ) : (
-        <DatePicker<CalendarDate>
+        <DateTimePicker
           aria-label={t("taskEditControls.planDate")}
           value={draftValue}
           onChange={setDraftValue}
           onBlur={() => {
-            commitAndClose();
+            setTimeout(() => {
+              if (closeActionRef.current === "none") commitAndClose();
+            }, 100);
           }}
           autoFocus
           className="text-xs"
@@ -172,7 +193,18 @@ export function PlanButton({ scheduledDate, onPlan }: PlanButtonProps) {
         data-plan-today="true"
         variant="quiet"
         onPress={() => {
-          onPlan(localDateStr(new Date()));
+          const now = new Date();
+          // Keep the currently drafted time if set, otherwise use now
+          const d = new Date(
+            now.getFullYear(),
+            now.getMonth(),
+            now.getDate(),
+            draftValue ? draftValue.hour : now.getHours(),
+            draftValue ? draftValue.minute : now.getMinutes(),
+            0,
+            0,
+          );
+          onPlan(d.toISOString());
           setOpen(false);
         }}
         className="h-7 w-7 p-0 text-amber-500 hover:text-amber-600"
