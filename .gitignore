@@ -25,6 +25,9 @@ apps/expo/.gitignore
 apps/expo/ios
 apps/expo/android
 
+#electron
+dist-electron/
+
 # production
 build
 
@@ -39,8 +42,8 @@ yarn-error.log*
 .pnpm-debug.log*
 
 # local env files
-.env
-.env*.local
+.env*
+!.env.example
 
 # vercel
 .vercel
