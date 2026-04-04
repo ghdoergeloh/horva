@@ -7,7 +7,7 @@ import type {
 } from "react-aria-components";
 import { CheckboxGroup as AriaCheckboxGroup } from "react-aria-components";
 
-import { composeTailwindRenderProps } from "@repo/ui";
+import { composeTailwindRenderProps } from "@timetracker/ui";
 
 import { Description, FieldError, Label } from "./Field";
 

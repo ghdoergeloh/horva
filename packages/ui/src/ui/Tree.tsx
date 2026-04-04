@@ -13,7 +13,7 @@ import {
 } from "react-aria-components";
 import { tv } from "tailwind-variants";
 
-import { composeTailwindRenderProps, focusRing } from "@repo/ui";
+import { composeTailwindRenderProps, focusRing } from "@timetracker/ui";
 
 import { Checkbox } from "./Checkbox";
 

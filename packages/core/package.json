@@ -1,5 +1,5 @@
 {
-  "name": "@repo/core",
+  "name": "@timetracker/core",
   "private": true,
   "license": "MIT",
   "type": "module",
@@ -17,16 +17,16 @@
     "lint": "eslint",
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
-  "prettier": "@repo/prettier-config",
+  "prettier": "@timetracker/prettier-config",
   "dependencies": {
-    "@repo/db": "workspace:*",
+    "@timetracker/db": "workspace:*",
     "rrule": "catalog:",
     "zod": "catalog:"
   },
   "devDependencies": {
-    "@repo/eslint-config": "workspace:*",
-    "@repo/prettier-config": "workspace:*",
-    "@repo/tsconfig": "workspace:*",
+    "@timetracker/eslint-config": "workspace:*",
+    "@timetracker/prettier-config": "workspace:*",
+    "@timetracker/tsconfig": "workspace:*",
     "eslint": "catalog:",
     "prettier": "catalog:",
     "typescript": "catalog:"

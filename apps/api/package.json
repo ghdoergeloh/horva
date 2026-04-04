@@ -1,5 +1,5 @@
 {
-  "name": "@repo/api",
+  "name": "@timetracker/api",
   "private": true,
   "type": "module",
   "scripts": {
@@ -22,17 +22,17 @@
     "@opentelemetry/sdk-node": "^0.57.2",
     "@opentelemetry/semantic-conventions": "^1.32.0",
     "@orpc/server": "^1.13.5",
-    "@repo/auth": "workspace:*",
-    "@repo/contract": "workspace:*",
-    "@repo/core": "workspace:*",
-    "@repo/db": "workspace:*",
+    "@timetracker/auth": "workspace:*",
+    "@timetracker/contract": "workspace:*",
+    "@timetracker/core": "workspace:*",
+    "@timetracker/db": "workspace:*",
     "dotenv": "catalog:",
     "hono": "^4.11.9"
   },
   "devDependencies": {
-    "@repo/eslint-config": "workspace:*",
-    "@repo/prettier-config": "workspace:*",
-    "@repo/tsconfig": "workspace:*",
+    "@timetracker/eslint-config": "workspace:*",
+    "@timetracker/prettier-config": "workspace:*",
+    "@timetracker/tsconfig": "workspace:*",
     "@types/node": "catalog:",
     "eslint": "catalog:",
     "prettier": "catalog:",

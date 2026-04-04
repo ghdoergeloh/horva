@@ -6,7 +6,7 @@
 
 ## Summary
 
-`electron-vite` is the de-facto build tool for Electron applications using Vite. It wraps a single `electron.vite.config.ts` around three separate Vite builds — main process, preload scripts, and renderer — and handles the Node.js / browser context split automatically. For this monorepo the goal is `apps/electron/` that imports `@repo/db`, `@repo/core`, and `@repo/ui`, runs direct PostgreSQL queries in the Electron main process, and exposes typed IPC endpoints to a React + TanStack Router renderer.
+`electron-vite` is the de-facto build tool for Electron applications using Vite. It wraps a single `electron.vite.config.ts` around three separate Vite builds — main process, preload scripts, and renderer — and handles the Node.js / browser context split automatically. For this monorepo the goal is `apps/electron/` that imports `@timetracker/db`, `@timetracker/core`, and `@timetracker/ui`, runs direct PostgreSQL queries in the Electron main process, and exposes typed IPC endpoints to a React + TanStack Router renderer.
 
 ---
 
@@ -38,14 +38,14 @@ Electron has supported ESM in the main process since Electron 28 (Node loader). 
 
 ### Dependency handling
 
-By default electron-vite externalises everything listed in `dependencies`. Workspace packages (`@repo/*`) **are not** in `node_modules` the same way — Vite detects they are linked and treats them as source code (bundled inline). This is the right behaviour for main process and preload: you want `@repo/core` and `@repo/db` bundled in. Third-party runtime deps like `pg` stay external so electron-builder can include them in the asar.
+By default electron-vite externalises everything listed in `dependencies`. Workspace packages (`@timetracker/*`) **are not** in `node_modules` the same way — Vite detects they are linked and treats them as source code (bundled inline). This is the right behaviour for main process and preload: you want `@timetracker/core` and `@timetracker/db` bundled in. Third-party runtime deps like `pg` stay external so electron-builder can include them in the asar.
 
 Control with:
 
 ```ts
 build: {
   externalizeDeps: {
-    exclude: ['@repo/core', '@repo/db'],   // force bundle (usually automatic for workspace links)
+    exclude: ['@timetracker/core', '@timetracker/db'],   // force bundle (usually automatic for workspace links)
     include: ['some-esm-only-pkg'],        // force external
   }
 }
@@ -114,12 +114,12 @@ contextBridge.exposeInMainWorld("electron", { ipcRenderer });
 // main/index.ts
 import { app, BrowserWindow, ipcMain } from "electron";
 
-import { db } from "@repo/db/client"; // bundled inline by electron-vite
+import { db } from "@timetracker/db/client"; // bundled inline by electron-vite
 
 import { registerHandlers } from "./ipc/handlers.js";
 
 app.whenReady().then(async () => {
-  // DB connection via @repo/db is available — pg connects lazily on first query
+  // DB connection via @timetracker/db is available — pg connects lazily on first query
   registerHandlers(ipcMain, db);
   createWindow();
 });
@@ -131,8 +131,8 @@ app.whenReady().then(async () => {
 // main/ipc/handlers.ts
 import type { IpcMain } from "electron";
 
-import type { Db } from "@repo/db/client";
-import { taskService } from "@repo/core";
+import type { Db } from "@timetracker/db/client";
+import { taskService } from "@timetracker/core";
 
 export function registerHandlers(ipcMain: IpcMain, db: Db) {
   ipcMain.handle("tasks:list", (_event, projectId: number) =>
@@ -149,7 +149,7 @@ export function registerHandlers(ipcMain: IpcMain, db: Db) {
 
 ```ts
 // renderer/src/types/electron.d.ts
-import type { CreateTaskInput, Task } from "@repo/core";
+import type { CreateTaskInput, Task } from "@timetracker/core";
 
 declare global {
   interface Window {
@@ -222,7 +222,7 @@ The workspace base tsconfig uses `moduleResolution: Bundler`. For the electron m
 
 ### 7. Vite and CJS conflicts in main process
 
-If a workspace package (e.g. `@repo/db` which uses `pg`) triggers a CJS/ESM conflict during bundling, add it to `build.externalizeDeps.exclude` explicitly to force bundling, or ensure the package is marked `"type": "module"` (which `@repo/db` already is).
+If a workspace package (e.g. `@timetracker/db` which uses `pg`) triggers a CJS/ESM conflict during bundling, add it to `build.externalizeDeps.exclude` explicitly to force bundling, or ensure the package is marked `"type": "module"` (which `@timetracker/db` already is).
 
 ---
 
@@ -233,7 +233,7 @@ If a workspace package (e.g. `@repo/db` which uses `pg`) triggers a CJS/ESM conf
 ```json
 // apps/electron/package.json (key parts)
 {
-  "name": "@repo/electron",
+  "name": "@timetracker/electron",
   "type": "module",
   "main": "./out/main/index.js",
   "scripts": {
@@ -244,18 +244,18 @@ If a workspace package (e.g. `@repo/db` which uses `pg`) triggers a CJS/ESM conf
     "typecheck": "tsc --noEmit --emitDeclarationOnly false -p tsconfig.node.json && tsc --noEmit --emitDeclarationOnly false -p tsconfig.web.json"
   },
   "dependencies": {
-    "@repo/core": "workspace:*",
-    "@repo/db": "workspace:*",
-    "@repo/ui": "workspace:*",
+    "@timetracker/core": "workspace:*",
+    "@timetracker/db": "workspace:*",
+    "@timetracker/ui": "workspace:*",
     "pg": "^8.18.0",
     "electron-updater": "^6.x"
   },
   "devDependencies": {
     "@electron-toolkit/preload": "^3.x",
     "@electron-toolkit/utils": "^3.x",
-    "@repo/eslint-config": "workspace:*",
-    "@repo/tailwind-config": "workspace:*",
-    "@repo/tsconfig": "workspace:*",
+    "@timetracker/eslint-config": "workspace:*",
+    "@timetracker/tailwind-config": "workspace:*",
+    "@timetracker/tsconfig": "workspace:*",
     "@tailwindcss/vite": "catalog:",
     "@tanstack/react-router": "^1.x",
     "@tanstack/router-plugin": "^1.x",
@@ -275,7 +275,7 @@ If a workspace package (e.g. `@repo/db` which uses `pg`) triggers a CJS/ESM conf
 }
 ```
 
-> Note: `electron`, `electron-builder`, and `electron-vite` are devDependencies because they're build/packaging tools. Runtime code (`@repo/core`, `@repo/db`, `pg`) goes in `dependencies` so electron-builder includes them.
+> Note: `electron`, `electron-builder`, and `electron-vite` are devDependencies because they're build/packaging tools. Runtime code (`@timetracker/core`, `@timetracker/db`, `pg`) goes in `dependencies` so electron-builder includes them.
 
 ### `electron.vite.config.ts`
 
@@ -290,8 +290,10 @@ export default defineConfig({
   main: {
     plugins: [
       // Externalise true third-party deps (pg, etc.); workspace packages
-      // (@repo/*) are linked and auto-treated as source by Vite.
-      externalizeDepsPlugin({ exclude: ["@repo/core", "@repo/db"] }),
+      // (@timetracker/*) are linked and auto-treated as source by Vite.
+      externalizeDepsPlugin({
+        exclude: ["@timetracker/core", "@timetracker/db"],
+      }),
     ],
     resolve: {
       alias: { "~": path.resolve(__dirname, "src/main") },
@@ -300,7 +302,9 @@ export default defineConfig({
   preload: {
     plugins: [
       // Preload must be fully bundled when sandbox: false
-      externalizeDepsPlugin({ exclude: ["@repo/core", "@repo/db"] }),
+      externalizeDepsPlugin({
+        exclude: ["@timetracker/core", "@timetracker/db"],
+      }),
     ],
   },
   renderer: {
@@ -329,7 +333,7 @@ The main/preload and renderer need separate tsconfigs because they target differ
 ```json
 // tsconfig.node.json — for main + preload
 {
-  "extends": "@repo/tsconfig/base.json",
+  "extends": "@timetracker/tsconfig/base.json",
   "compilerOptions": {
     "lib": ["ES2022"],
     "module": "ESNext",
@@ -345,7 +349,7 @@ The main/preload and renderer need separate tsconfigs because they target differ
 ```json
 // tsconfig.web.json — for renderer
 {
-  "extends": "@repo/tsconfig/base.json",
+  "extends": "@timetracker/tsconfig/base.json",
   "compilerOptions": {
     "lib": ["ES2022", "DOM", "DOM.Iterable"],
     "jsx": "react-jsx",
@@ -360,14 +364,14 @@ The main/preload and renderer need separate tsconfigs because they target differ
 
 ### Turborepo integration
 
-Add to `turbo.json` global tasks — electron's `dev` task needs `@repo/db` and `@repo/core` built first:
+Add to `turbo.json` global tasks — electron's `dev` task needs `@timetracker/db` and `@timetracker/core` built first:
 
 ```json
 // The existing turbo.json "build" pipeline already handles ^build dependency
-// No changes needed — turbo will build @repo/db and @repo/core before @repo/electron
+// No changes needed — turbo will build @timetracker/db and @timetracker/core before @timetracker/electron
 ```
 
-The `package.json` workspace dep on `@repo/core` and `@repo/db` is sufficient for Turborepo to infer the build order.
+The `package.json` workspace dep on `@timetracker/core` and `@timetracker/db` is sufficient for Turborepo to infer the build order.
 
 ### electron-builder.yml
 
@@ -422,7 +426,7 @@ import path from "node:path";
 import { is } from "@electron-toolkit/utils";
 import { app, BrowserWindow, ipcMain, shell } from "electron";
 
-import { db } from "@repo/db/client";
+import { db } from "@timetracker/db/client";
 
 import { registerHandlers } from "./ipc/handlers.js";
 
@@ -469,7 +473,7 @@ app.on("window-all-closed", () => {
 // src/preload/index.ts
 import { contextBridge, ipcRenderer } from "electron";
 
-import type { CreateTaskInput, Task } from "@repo/core";
+import type { CreateTaskInput, Task } from "@timetracker/core";
 
 const api = {
   tasks: {
@@ -539,7 +543,7 @@ import dotenv from "dotenv";
 import { app } from "electron";
 
 // Now import db — it will pick up DATABASE_URL from process.env
-import { db } from "@repo/db/client";
+import { db } from "@timetracker/db/client";
 
 if (is.dev) {
   dotenv.config({ path: path.resolve(__dirname, "../../../.env") });

@@ -4,7 +4,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { ChevronDown, ChevronRight } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
-import { Button } from "@repo/ui/Button";
+import { Button } from "@timetracker/ui/Button";
 
 import type { LabelRow } from "~/components/TaskEditControls.js";
 import { LoadingSpinner } from "~/components/LoadingSpinner.js";

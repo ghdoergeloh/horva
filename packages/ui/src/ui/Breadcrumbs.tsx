@@ -12,7 +12,7 @@ import {
 } from "react-aria-components";
 import { twMerge } from "tailwind-merge";
 
-import { composeTailwindRenderProps } from "@repo/ui";
+import { composeTailwindRenderProps } from "@timetracker/ui";
 
 import { Link } from "./Link";
 

@@ -6,7 +6,7 @@ import {
 } from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
 
-import { Button } from "@repo/ui/Button";
+import { Button } from "@timetracker/ui/Button";
 
 import { authClient } from "~/lib/auth";
 

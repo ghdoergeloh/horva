@@ -34,5 +34,5 @@ if (!process.env["TT_DATABASE_URL"]) {
   }
 }
 
-export { db } from "@repo/db/client";
-export type { Db } from "@repo/db/client";
+export { db } from "@timetracker/db/client";
+export type { Db } from "@timetracker/db/client";

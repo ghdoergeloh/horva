@@ -6,8 +6,8 @@ import type {
   Period,
   UpdateProject,
   UpdateTask,
-} from "@repo/core";
-import type { Db } from "@repo/db/client";
+} from "@timetracker/core";
+import type { Db } from "@timetracker/db/client";
 import {
   archiveProject,
   archiveTask,
@@ -39,7 +39,7 @@ import {
   stopSlot,
   updateProject,
   updateTask,
-} from "@repo/core";
+} from "@timetracker/core";
 
 export type DbChangedScope = "slots" | "tasks" | "all";
 

@@ -1,6 +1,6 @@
-import type { Db } from "@repo/db/client";
-import { and, gte, isNotNull, lte } from "@repo/db";
-import { slot } from "@repo/db/schema";
+import type { Db } from "@timetracker/db/client";
+import { and, gte, isNotNull, lte } from "@timetracker/db";
+import { slot } from "@timetracker/db/schema";
 
 export type Period = "today" | "yesterday" | "week" | "month" | "all";
 

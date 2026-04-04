@@ -8,7 +8,7 @@ import {
 } from "react-aria-components";
 import { tv } from "tailwind-variants";
 
-import { composeTailwindRenderProps } from "@repo/ui";
+import { composeTailwindRenderProps } from "@timetracker/ui";
 
 import { ColorThumb } from "./ColorThumb";
 import { Label } from "./Field";

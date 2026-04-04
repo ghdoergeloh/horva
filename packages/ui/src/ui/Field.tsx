@@ -18,7 +18,7 @@ import {
 import { twMerge } from "tailwind-merge";
 import { tv } from "tailwind-variants";
 
-import { composeTailwindRenderProps, focusRing } from "@repo/ui";
+import { composeTailwindRenderProps, focusRing } from "@timetracker/ui";
 
 export function Label(props: LabelProps) {
   return (

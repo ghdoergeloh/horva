@@ -3,9 +3,9 @@ import { Circle, Pause, Play, RefreshCw, Repeat } from "lucide-react";
 import { DialogTrigger, Heading } from "react-aria-components";
 import { useTranslation } from "react-i18next";
 
-import { Button } from "@repo/ui/Button";
-import { Dialog } from "@repo/ui/Dialog";
-import { Modal } from "@repo/ui/Modal";
+import { Button } from "@timetracker/ui/Button";
+import { Dialog } from "@timetracker/ui/Dialog";
+import { Modal } from "@timetracker/ui/Modal";
 
 import type { LabelRow } from "~/components/TaskEditControls.js";
 import { RecurrenceRulePicker } from "~/components/RecurrenceRulePicker.js";

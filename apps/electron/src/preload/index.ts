@@ -7,7 +7,7 @@ import type {
   Period,
   UpdateProject,
   UpdateTask,
-} from "@repo/core";
+} from "@timetracker/core";
 
 export type DbChangedScope = "slots" | "tasks" | "all";
 

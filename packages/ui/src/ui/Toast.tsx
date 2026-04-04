@@ -13,7 +13,7 @@ import {
 } from "react-aria-components";
 import { flushSync } from "react-dom";
 
-import { composeTailwindRenderProps } from "@repo/ui";
+import { composeTailwindRenderProps } from "@timetracker/ui";
 
 import "./Toast.css";
 

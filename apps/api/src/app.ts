@@ -3,7 +3,7 @@ import { RPCHandler } from "@orpc/server/fetch";
 import { Hono } from "hono";
 import { cors } from "hono/cors";
 
-import { auth } from "@repo/auth/auth";
+import { auth } from "@timetracker/auth/auth";
 
 import { router } from "./router";
 

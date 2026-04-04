@@ -4,7 +4,7 @@ import type { MeterProps as AriaMeterProps } from "react-aria-components";
 import { AlertTriangle } from "lucide-react";
 import { Meter as AriaMeter } from "react-aria-components";
 
-import { composeTailwindRenderProps } from "@repo/ui";
+import { composeTailwindRenderProps } from "@timetracker/ui";
 
 import { Label } from "./Field";
 

@@ -13,7 +13,7 @@
   "iconLibrary": "lucide",
   "aliases": {
     "components": "src",
-    "utils": "@repo/ui",
+    "utils": "@timetracker/ui",
     "ui": "src/ui/",
     "lib": "src/lib/",
     "hooks": "src/hooks/"

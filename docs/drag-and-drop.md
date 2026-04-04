@@ -84,7 +84,7 @@ Add to `apps/electron/package.json` (or whichever app needs DnD):
 Install:
 
 ```bash
-pnpm --filter @repo/electron-app add @dnd-kit/core @dnd-kit/sortable @dnd-kit/utilities
+pnpm --filter @timetracker/electron-app add @dnd-kit/core @dnd-kit/sortable @dnd-kit/utilities
 ```
 
 `@dnd-kit/utilities` is a small helper package that provides `CSS.Transform.toString()` — needed for the transform style applied during drag.

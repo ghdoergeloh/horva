@@ -4,7 +4,7 @@ import type { ButtonProps as RACButtonProps } from "react-aria-components";
 import { composeRenderProps, Button as RACButton } from "react-aria-components";
 import { tv } from "tailwind-variants";
 
-import { focusRing } from "@repo/ui";
+import { focusRing } from "@timetracker/ui";
 
 export interface ButtonProps extends RACButtonProps {
   /** @default 'primary' */

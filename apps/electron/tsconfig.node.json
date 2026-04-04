@@ -1,5 +1,5 @@
 {
-  "extends": "@repo/tsconfig/base.json",
+  "extends": "@timetracker/tsconfig/base.json",
   "compilerOptions": {
     "composite": true,
     "lib": ["ES2022"],

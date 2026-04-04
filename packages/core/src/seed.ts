@@ -1,6 +1,6 @@
-import type { Db } from "@repo/db/client";
-import { eq } from "@repo/db";
-import { project } from "@repo/db/schema";
+import type { Db } from "@timetracker/db/client";
+import { eq } from "@timetracker/db";
+import { project } from "@timetracker/db/schema";
 
 export async function seed(db: Db) {
   const existing = await db.query.project.findFirst({

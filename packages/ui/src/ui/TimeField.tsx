@@ -7,7 +7,7 @@ import type {
 } from "react-aria-components";
 import { TimeField as AriaTimeField } from "react-aria-components";
 
-import { composeTailwindRenderProps } from "@repo/ui";
+import { composeTailwindRenderProps } from "@timetracker/ui";
 
 import { DateInput } from "./DateField";
 import { Description, FieldError, Label } from "./Field";

@@ -24,7 +24,7 @@ pnpm db:push
 From the repo root:
 
 ```bash
-pnpm --filter @repo/cli build
+pnpm --filter @timetracker/cli build
 ```
 
 This compiles the CLI to `apps/cli/dist/index.js`.
@@ -34,15 +34,15 @@ This compiles the CLI to `apps/cli/dist/index.js`.
 **Option A — link (development, reflects rebuilds instantly):**
 
 ```bash
-pnpm --filter @repo/cli link --global
+pnpm --filter @timetracker/cli link --global
 ```
 
 **Option B — pack and install (self-contained tarball):**
 
 ```bash
 cd apps/cli/dist
-pnpm pack                        # produces repo-cli-<version>.tgz
-npm install -g ./repo-cli-*.tgz  # or: pnpm add -g ./repo-cli-*.tgz
+pnpm pack                        # produces timetracker-cli-<version>.tgz
+npm install -g ./timetracker-cli-*.tgz  # or: pnpm add -g ./timetracker-cli-*.tgz
 ```
 
 The tarball bundles `dist/index.js` and is independent of the monorepo after installation.
@@ -58,13 +58,13 @@ tt --help
 **If installed via link:**
 
 ```bash
-pnpm unlink --global @repo/cli
+pnpm unlink --global @timetracker/cli
 ```
 
 **If installed via tarball:**
 
 ```bash
-npm uninstall -g @repo/cli  # or: pnpm remove -g @repo/cli
+npm uninstall -g @timetracker/cli  # or: pnpm remove -g @timetracker/cli
 ```
 
 ## Usage

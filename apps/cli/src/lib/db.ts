@@ -8,5 +8,5 @@ if (!process.env["TT_DATABASE_URL"]) {
   if (cfg?.databaseUrl) process.env["TT_DATABASE_URL"] = cfg.databaseUrl;
 }
 
-export { db } from "@repo/db/client";
-export type { Db } from "@repo/db/client";
+export { db } from "@timetracker/db/client";
+export type { Db } from "@timetracker/db/client";

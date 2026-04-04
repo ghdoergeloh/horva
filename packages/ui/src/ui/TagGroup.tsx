@@ -18,7 +18,7 @@ import {
 import { twMerge } from "tailwind-merge";
 import { tv } from "tailwind-variants";
 
-import { focusRing } from "@repo/ui";
+import { focusRing } from "@timetracker/ui";
 
 import { Description, Label } from "./Field";
 

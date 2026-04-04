@@ -1,8 +1,8 @@
 import type { Command } from "commander";
 import { confirm, input } from "@inquirer/prompts";
 
-import type { Db } from "@repo/db/client";
-import { seed } from "@repo/core";
+import type { Db } from "@timetracker/db/client";
+import { seed } from "@timetracker/core";
 
 import { configPath, readConfig, writeConfig } from "../lib/config.js";
 import { printError, printSuccess, sym } from "../lib/display.js";

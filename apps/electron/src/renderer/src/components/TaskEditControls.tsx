@@ -5,9 +5,9 @@ import { parseDateTime } from "@internationalized/date";
 import { Tag } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
-import { Button } from "@repo/ui/Button";
-import { DateTimePicker } from "@repo/ui/DateTimePicker";
-import { TextField } from "@repo/ui/TextField";
+import { Button } from "@timetracker/ui/Button";
+import { DateTimePicker } from "@timetracker/ui/DateTimePicker";
+import { TextField } from "@timetracker/ui/TextField";
 
 import { formatScheduledDate, toDateInputValue } from "~/lib/taskUtils.js";
 

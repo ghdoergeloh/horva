@@ -1,5 +1,5 @@
 import { defineConfig } from "eslint/config";
 
-import { baseConfig } from "@repo/eslint-config/base";
+import { baseConfig } from "@timetracker/eslint-config/base";
 
 export default defineConfig(baseConfig);

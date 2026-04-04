@@ -1,8 +1,8 @@
 import type { Command } from "commander";
 import chalk from "chalk";
 
-import type { Period } from "@repo/core";
-import { getLog, getOpenSlot, getSummary } from "@repo/core";
+import type { Period } from "@timetracker/core";
+import { getLog, getOpenSlot, getSummary } from "@timetracker/core";
 
 import { db } from "../lib/db";
 import {

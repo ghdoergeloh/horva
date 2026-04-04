@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Play, Square, SwitchCamera } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
-import { Button } from "@repo/ui/Button";
+import { Button } from "@timetracker/ui/Button";
 
 import { useActiveSlot } from "~/contexts/ActiveSlotContext.js";
 import { StartTaskDialog } from "./StartTaskDialog.js";

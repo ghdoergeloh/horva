@@ -4,9 +4,9 @@ import { useQueryClient } from "@tanstack/react-query";
 import { Trash2 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
-import { Button } from "@repo/ui/Button";
-import { Select, SelectItem } from "@repo/ui/Select";
-import { TimeField } from "@repo/ui/TimeField";
+import { Button } from "@timetracker/ui/Button";
+import { Select, SelectItem } from "@timetracker/ui/Select";
+import { TimeField } from "@timetracker/ui/TimeField";
 
 import { FormattedMs } from "~/components/FormattedMinutes.js";
 import { LiveTime } from "~/components/LiveTime.js";

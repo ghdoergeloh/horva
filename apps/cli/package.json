@@ -1,5 +1,5 @@
 {
-  "name": "@repo/cli",
+  "name": "@timetracker/cli",
   "version": "0.0.1",
   "type": "module",
   "bin": {
@@ -17,20 +17,20 @@
     "pack": "node build.mjs && cd dist && pnpm pack --pack-destination ..",
     "typecheck": "tsc"
   },
-  "prettier": "@repo/prettier-config",
+  "prettier": "@timetracker/prettier-config",
   "dependencies": {
     "@inquirer/prompts": "^7.5.0",
-    "@repo/core": "workspace:*",
-    "@repo/db": "workspace:*",
+    "@timetracker/core": "workspace:*",
+    "@timetracker/db": "workspace:*",
     "chalk": "^5.4.1",
     "commander": "^14.0.3",
     "dotenv": "catalog:",
     "pg": "^8.18.0"
   },
   "devDependencies": {
-    "@repo/eslint-config": "workspace:*",
-    "@repo/prettier-config": "workspace:*",
-    "@repo/tsconfig": "workspace:*",
+    "@timetracker/eslint-config": "workspace:*",
+    "@timetracker/prettier-config": "workspace:*",
+    "@timetracker/tsconfig": "workspace:*",
     "@types/node": "catalog:",
     "@types/pg": "^8.16.0",
     "esbuild": "^0.25.0",

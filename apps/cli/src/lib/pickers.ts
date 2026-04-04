@@ -8,7 +8,7 @@ import {
   listProjects,
   listSlots,
   listTasks,
-} from "@repo/core";
+} from "@timetracker/core";
 
 import type { Db } from "./db.js";
 import { colorProject, formatDuration, formatTime, sym } from "./display.js";

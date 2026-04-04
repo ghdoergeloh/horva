@@ -1,5 +1,5 @@
 {
-  "extends": "@repo/tsconfig/compiled-package.json",
+  "extends": "@timetracker/tsconfig/compiled-package.json",
   "include": ["src"],
   "exclude": ["node_modules"]
 }

@@ -9,7 +9,7 @@ import {
 } from "react-aria-components";
 import { tv } from "tailwind-variants";
 
-import { focusRing } from "@repo/ui";
+import { focusRing } from "@timetracker/ui";
 
 import { ColorArea } from "./ColorArea";
 import { ColorField } from "./ColorField";

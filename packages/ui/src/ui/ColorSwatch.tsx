@@ -3,7 +3,7 @@
 import type { ColorSwatchProps } from "react-aria-components";
 import { ColorSwatch as AriaColorSwatch } from "react-aria-components";
 
-import { composeTailwindRenderProps } from "@repo/ui";
+import { composeTailwindRenderProps } from "@timetracker/ui";
 
 export function ColorSwatch(props: ColorSwatchProps) {
   return (

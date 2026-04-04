@@ -1,7 +1,7 @@
 import { defineConfig } from "eslint/config";
 
-import { baseConfig, restrictEnvAccess } from "@repo/eslint-config/base";
-import { reactConfig } from "@repo/eslint-config/react";
+import { baseConfig, restrictEnvAccess } from "@timetracker/eslint-config/base";
+import { reactConfig } from "@timetracker/eslint-config/react";
 
 export default defineConfig(
   {

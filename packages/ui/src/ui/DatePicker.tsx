@@ -8,7 +8,7 @@ import type {
 import { CalendarIcon } from "lucide-react";
 import { DatePicker as AriaDatePicker } from "react-aria-components";
 
-import { composeTailwindRenderProps } from "@repo/ui";
+import { composeTailwindRenderProps } from "@timetracker/ui";
 
 import { Calendar } from "./Calendar";
 import { DateInput } from "./DateField";

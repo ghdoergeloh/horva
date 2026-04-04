@@ -1,5 +1,5 @@
 {
-  "name": "@repo/auth",
+  "name": "@timetracker/auth",
   "private": true,
   "license": "MIT",
   "type": "module",
@@ -14,18 +14,18 @@
     "lint": "eslint",
     "typecheck": "tsc --noEmit"
   },
-  "prettier": "@repo/prettier-config",
+  "prettier": "@timetracker/prettier-config",
   "dependencies": {
-    "@repo/db": "workspace:*",
-    "@repo/transactional": "workspace:*",
+    "@timetracker/db": "workspace:*",
+    "@timetracker/transactional": "workspace:*",
     "better-auth": "^1.4.18",
     "zod": "catalog:"
   },
   "devDependencies": {
     "@better-auth/cli": "catalog:",
-    "@repo/eslint-config": "workspace:*",
-    "@repo/prettier-config": "workspace:*",
-    "@repo/tsconfig": "workspace:*",
+    "@timetracker/eslint-config": "workspace:*",
+    "@timetracker/prettier-config": "workspace:*",
+    "@timetracker/tsconfig": "workspace:*",
     "eslint": "catalog:",
     "prettier": "catalog:",
     "typescript": "catalog:"

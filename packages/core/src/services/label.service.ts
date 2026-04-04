@@ -1,6 +1,6 @@
-import type { Db } from "@repo/db/client";
-import { eq } from "@repo/db";
-import { label, taskLabel } from "@repo/db/schema";
+import type { Db } from "@timetracker/db/client";
+import { eq } from "@timetracker/db";
+import { label, taskLabel } from "@timetracker/db/schema";
 
 export async function listLabels(db: Db) {
   return db.query.label.findMany({ orderBy: (l, { asc }) => [asc(l.name)] });

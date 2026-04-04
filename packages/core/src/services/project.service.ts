@@ -1,6 +1,6 @@
-import type { Db } from "@repo/db/client";
-import { eq, inArray, ne } from "@repo/db";
-import { project, task } from "@repo/db/schema";
+import type { Db } from "@timetracker/db/client";
+import { eq, inArray, ne } from "@timetracker/db";
+import { project, task } from "@timetracker/db/schema";
 
 import type { CreateProject, UpdateProject } from "../schemas/index.js";
 

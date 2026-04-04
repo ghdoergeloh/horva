@@ -6,13 +6,21 @@ import { defineConfig, externalizeDepsPlugin } from "electron-vite";
 
 export default defineConfig({
   main: {
-    plugins: [externalizeDepsPlugin({ exclude: ["@repo/core", "@repo/db"] })],
+    plugins: [
+      externalizeDepsPlugin({
+        exclude: ["@timetracker/core", "@timetracker/db"],
+      }),
+    ],
     resolve: {
       alias: { "~": path.resolve(__dirname, "src/main") },
     },
   },
   preload: {
-    plugins: [externalizeDepsPlugin({ exclude: ["@repo/core", "@repo/db"] })],
+    plugins: [
+      externalizeDepsPlugin({
+        exclude: ["@timetracker/core", "@timetracker/db"],
+      }),
+    ],
   },
   renderer: {
     root: "src/renderer",

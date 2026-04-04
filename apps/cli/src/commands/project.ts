@@ -8,7 +8,7 @@ import {
   deleteProject,
   listProjects,
   updateProject,
-} from "@repo/core";
+} from "@timetracker/core";
 
 import { db } from "../lib/db.js";
 import {

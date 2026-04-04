@@ -1,4 +1,4 @@
-# Template for a monorepo
+# Timetracker
 
 ## Architecture
 

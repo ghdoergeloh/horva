@@ -9,7 +9,7 @@ import type {
 import { ChevronDown } from "lucide-react";
 import { ComboBox as AriaComboBox, ListBox } from "react-aria-components";
 
-import { composeTailwindRenderProps } from "@repo/ui";
+import { composeTailwindRenderProps } from "@timetracker/ui";
 
 import type { DropdownSectionProps } from "./ListBox";
 import { Description, FieldError, FieldGroup, Input, Label } from "./Field";

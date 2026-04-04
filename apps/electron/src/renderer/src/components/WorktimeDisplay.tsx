@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 
-import type { SummaryEntry } from "@repo/core";
+import type { SummaryEntry } from "@timetracker/core";
 
 import { FormattedMinutes } from "~/components/FormattedMinutes.js";
 import { useActiveSlot } from "~/contexts/ActiveSlotContext.js";

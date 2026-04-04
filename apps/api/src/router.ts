@@ -1,7 +1,7 @@
 import { implement } from "@orpc/server";
 
-import { auth } from "@repo/auth/auth";
-import { contract } from "@repo/contract";
+import { auth } from "@timetracker/auth/auth";
+import { contract } from "@timetracker/contract";
 import {
   archiveProject,
   archiveTask,
@@ -28,8 +28,8 @@ import {
   stopSlot,
   updateProject,
   updateTask,
-} from "@repo/core";
-import { db } from "@repo/db/client";
+} from "@timetracker/core";
+import { db } from "@timetracker/db/client";
 
 const base = implement(contract).$context<{ request: Request }>();
 

@@ -1,5 +1,5 @@
 {
-  "name": "@repo/transactional",
+  "name": "@timetracker/transactional",
   "private": true,
   "license": "MIT",
   "type": "module",
@@ -18,7 +18,7 @@
     "preview": "email dev --dir src/templates --port 3001",
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
-  "prettier": "@repo/prettier-config",
+  "prettier": "@timetracker/prettier-config",
   "dependencies": {
     "@react-email/components": "^1.0.7",
     "nodemailer": "^8.0.1",
@@ -26,9 +26,9 @@
   },
   "devDependencies": {
     "@react-email/preview-server": "^5.2.8",
-    "@repo/eslint-config": "workspace:*",
-    "@repo/prettier-config": "workspace:*",
-    "@repo/tsconfig": "workspace:*",
+    "@timetracker/eslint-config": "workspace:*",
+    "@timetracker/prettier-config": "workspace:*",
+    "@timetracker/tsconfig": "workspace:*",
     "@types/nodemailer": "^7.0.10",
     "@types/react": "catalog:react19",
     "eslint": "catalog:",

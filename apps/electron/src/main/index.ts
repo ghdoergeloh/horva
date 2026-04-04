@@ -3,7 +3,7 @@ import { fileURLToPath } from "node:url";
 import { is } from "@electron-toolkit/utils";
 import { app, BrowserWindow, ipcMain, shell } from "electron";
 
-import { seed } from "@repo/core";
+import { seed } from "@timetracker/core";
 
 import { db } from "./db.js";
 import { registerHandlers } from "./ipc/handlers.js";
@@ -22,7 +22,7 @@ function createWindow(): void {
     webPreferences: {
       preload: path.join(__dirname, "../preload/index.mjs"),
       // sandbox: false is required because the preload script imports Node.js modules
-      // (@repo/core, @repo/db) via contextBridge. Enabling sandbox would prevent preload
+      // (@timetracker/core, @timetracker/db) via contextBridge. Enabling sandbox would prevent preload
       // from accessing Node.js APIs. Risk: a renderer XSS would have Node.js access.
       // Mitigate by keeping contextIsolation: true and validating all IPC inputs.
       sandbox: false,
