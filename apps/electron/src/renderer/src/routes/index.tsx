@@ -188,7 +188,7 @@ function DailyOverview() {
 
   function renderCard(
     t: TaskRow,
-    opts?: { dimmed?: boolean; scheduledTime?: string; overdue?: boolean },
+    opts?: { scheduledTime?: string; overdue?: boolean },
   ) {
     const isActivity = t.taskType === "activity";
     return (
@@ -264,7 +264,6 @@ function DailyOverview() {
           <div className="space-y-2">
             {laterToday.map((t) =>
               renderCard(t, {
-                dimmed: true,
                 scheduledTime: t.scheduledAt?.toLocaleTimeString(locale, {
                   hour: "2-digit",
                   minute: "2-digit",
@@ -307,7 +306,6 @@ function DailyOverview() {
           <div className="space-y-2">
             {planned.map((t) =>
               renderCard(t, {
-                dimmed: true,
                 scheduledTime: t.scheduledAt?.toLocaleDateString(locale, {
                   weekday: "short",
                   day: "numeric",
