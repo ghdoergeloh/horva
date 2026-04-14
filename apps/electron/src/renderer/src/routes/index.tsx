@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { CalendarDate, getLocalTimeZone, today } from "@internationalized/date";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { ChevronDown, ChevronRight } from "lucide-react";
@@ -16,22 +17,18 @@ interface TaskRow {
   name: string;
   status: string;
   taskType: string;
-  scheduledAt: Date | string | null;
+  scheduledAt: Date | null;
   recurrenceRule: string | null;
   project: { name: string; color: string };
   taskLabels: { label: { id: number; name: string } }[];
-  slots: { startedAt: Date | string; endedAt: Date | string | null }[];
+  slots: { startedAt: Date; endedAt: Date | null }[];
 }
 
 function calcTotalMinutes(slots: TaskRow["slots"]): number {
   return slots.reduce((sum, s) => {
     if (!s.endedAt) return sum;
     return (
-      sum +
-      Math.round(
-        (new Date(s.endedAt).getTime() - new Date(s.startedAt).getTime()) /
-          60000,
-      )
+      sum + Math.round((s.endedAt.getTime() - s.startedAt.getTime()) / 60000)
     );
   }, 0);
 }
@@ -83,7 +80,12 @@ function CollapsibleSection({
 function DailyOverview() {
   const { t } = useTranslation();
   const now = new Date();
-  const todayStr = now.toISOString().slice(0, 10);
+  const tz = getLocalTimeZone();
+  const todayDate = today(tz);
+
+  function toCalendarDate(d: Date): CalendarDate {
+    return new CalendarDate(d.getFullYear(), d.getMonth() + 1, d.getDate());
+  }
   const queryClient = useQueryClient();
 
   const { data: tasks = [], isLoading } = useQuery({
@@ -138,22 +140,20 @@ function DailyOverview() {
   });
 
   function byScheduledAt(a: TaskRow, b: TaskRow) {
-    return (
-      new Date(a.scheduledAt ?? "").getTime() -
-      new Date(b.scheduledAt ?? "").getTime()
-    );
+    return (a.scheduledAt?.getTime() ?? 0) - (b.scheduledAt?.getTime() ?? 0);
   }
 
   // Filter tasks and activities scheduled for today
   const todayTasks = tasks.filter((t) => {
     if (!t.scheduledAt) return false;
-    return new Date(t.scheduledAt).toISOString().slice(0, 10) === todayStr;
+    return toCalendarDate(t.scheduledAt).compare(todayDate) === 0;
   });
 
   // Due now: no time component, or scheduled time in the past
   const dueNow = todayTasks
     .filter((t) => {
-      const d = new Date(t.scheduledAt ?? "");
+      if (!t.scheduledAt) return false;
+      const d = t.scheduledAt;
       // If time is midnight (00:00), treat as "no specific time" → due now
       return d.getHours() === 0 && d.getMinutes() === 0 ? true : d <= now;
     })
@@ -162,24 +162,25 @@ function DailyOverview() {
   // Later today: future time
   const laterToday = todayTasks
     .filter((t) => {
-      const d = new Date(t.scheduledAt ?? "");
+      if (!t.scheduledAt) return false;
+      const d = t.scheduledAt;
       return d.getHours() !== 0 && d > now;
     })
     .sort(byScheduledAt);
 
-  // Overdue: scheduled before today
+  // Overdue: scheduled before today (local date comparison)
   const overdue = tasks
     .filter((t) => {
       if (!t.scheduledAt) return false;
-      return new Date(t.scheduledAt).toISOString().slice(0, 10) < todayStr;
+      return toCalendarDate(t.scheduledAt).compare(todayDate) < 0;
     })
     .sort(byScheduledAt);
 
-  // Planned: scheduled after today
+  // Planned: scheduled after today (local date comparison)
   const planned = tasks
     .filter((t) => {
       if (!t.scheduledAt) return false;
-      return new Date(t.scheduledAt).toISOString().slice(0, 10) > todayStr;
+      return toCalendarDate(t.scheduledAt).compare(todayDate) > 0;
     })
     .sort(byScheduledAt);
 
@@ -264,13 +265,10 @@ function DailyOverview() {
             {laterToday.map((t) =>
               renderCard(t, {
                 dimmed: true,
-                scheduledTime: new Date(t.scheduledAt ?? "").toLocaleTimeString(
-                  locale,
-                  {
-                    hour: "2-digit",
-                    minute: "2-digit",
-                  },
-                ),
+                scheduledTime: t.scheduledAt?.toLocaleTimeString(locale, {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                }),
               }),
             )}
           </div>
@@ -289,13 +287,10 @@ function DailyOverview() {
             {overdue.map((t) =>
               renderCard(t, {
                 overdue: true,
-                scheduledTime: new Date(t.scheduledAt ?? "").toLocaleDateString(
-                  locale,
-                  {
-                    day: "numeric",
-                    month: "short",
-                  },
-                ),
+                scheduledTime: t.scheduledAt?.toLocaleDateString(locale, {
+                  day: "numeric",
+                  month: "short",
+                }),
               }),
             )}
           </div>
@@ -313,14 +308,11 @@ function DailyOverview() {
             {planned.map((t) =>
               renderCard(t, {
                 dimmed: true,
-                scheduledTime: new Date(t.scheduledAt ?? "").toLocaleDateString(
-                  locale,
-                  {
-                    weekday: "short",
-                    day: "numeric",
-                    month: "short",
-                  },
-                ),
+                scheduledTime: t.scheduledAt?.toLocaleDateString(locale, {
+                  weekday: "short",
+                  day: "numeric",
+                  month: "short",
+                }),
               }),
             )}
           </div>
