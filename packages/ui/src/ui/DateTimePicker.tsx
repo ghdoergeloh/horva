@@ -7,7 +7,6 @@ import type {
 } from "react-aria-components";
 import { use } from "react";
 import {
-  CalendarDateTime,
   getLocalTimeZone,
   now,
   toCalendarDateTime,
@@ -41,16 +40,11 @@ function CalendarActions() {
 
   function handleToday() {
     if (!state) return;
-    const ref = state.value;
     const tz = getLocalTimeZone();
-    let val: DateValue;
-    if (ref instanceof ZonedDateTime) {
-      val = now(tz);
-    } else if (ref instanceof CalendarDateTime) {
-      val = toCalendarDateTime(now(tz));
-    } else {
-      val = today(tz);
-    }
+    const val =
+      state.value instanceof ZonedDateTime
+        ? now(tz).set({ hour: 0, minute: 0, second: 0, millisecond: 0 })
+        : toCalendarDateTime(today(tz));
     state.setValue(val);
     state.close();
   }

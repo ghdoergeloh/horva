@@ -114,18 +114,25 @@ export function PlanButton({ scheduledDate, onPlan }: PlanButtonProps) {
   const [draftValue, setDraftValue] = useState<CalendarDateTime | null>(
     initialValue,
   );
+  const draftValueRef = useRef(draftValue);
+
+  function updateDraft(v: CalendarDateTime | null) {
+    draftValueRef.current = v;
+    setDraftValue(v);
+  }
 
   function commitAndClose() {
     closeActionRef.current = "commit";
-    if (draftValue === null) {
+    const val = draftValueRef.current;
+    if (val === null) {
       onPlan(null);
     } else {
       const d = new Date(
-        draftValue.year,
-        draftValue.month - 1,
-        draftValue.day,
-        draftValue.hour,
-        draftValue.minute,
+        val.year,
+        val.month - 1,
+        val.day,
+        val.hour,
+        val.minute,
         0,
         0,
       );
@@ -177,11 +184,23 @@ export function PlanButton({ scheduledDate, onPlan }: PlanButtonProps) {
         <DateTimePicker
           aria-label={t("taskEditControls.planDate")}
           value={draftValue}
-          onChange={setDraftValue}
-          onBlur={() => {
+          onChange={updateDraft}
+          onBlur={(e) => {
+            if (ref.current?.contains(e.relatedTarget as Node)) return;
+            // Also check if focus moved into a portal (popover) by seeing if
+            // relatedTarget exists at all; if it's null the popover button
+            // grabbed focus but portals don't appear inside ref.current.
+            // We rely on onOpenChange to commit after the popover closes.
+            if (e.relatedTarget === null) return;
             setTimeout(() => {
               if (closeActionRef.current === "none") commitAndClose();
             }, 100);
+          }}
+          onOpenChange={(isOpen) => {
+            if (!isOpen && closeActionRef.current === "none") {
+              // Popover just closed (e.g. user picked a date from calendar)
+              commitAndClose();
+            }
           }}
           autoFocus
           className="text-xs"
