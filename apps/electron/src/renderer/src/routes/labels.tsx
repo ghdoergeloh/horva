@@ -7,13 +7,8 @@ import { useTranslation } from "react-i18next";
 import { Button } from "@horva/ui/Button";
 import { TextField } from "@horva/ui/TextField";
 
-import type { LabelRow } from "~/components/TaskEditControls.js";
 import { LoadingSpinner } from "~/components/LoadingSpinner.js";
-
-interface TaskRow {
-  id: number;
-  taskLabels: { label: { id: number; name: string } }[];
-}
+import { client } from "~/lib/orpc.js";
 
 function LabelsPage() {
   const { t } = useTranslation();
@@ -23,15 +18,20 @@ function LabelsPage() {
 
   const { data: labels = [], isLoading } = useQuery({
     queryKey: ["labels"],
-    queryFn: () => window.api.labels.list() as Promise<LabelRow[]>,
+    queryFn: async () => {
+      const res = await client.label.list();
+      return res.labels;
+    },
   });
 
   const { data: allTasksForCounts = [] } = useQuery({
     queryKey: ["tasks", "forLabelCounts"],
-    queryFn: () =>
-      window.api.tasks.list({
+    queryFn: async () => {
+      const res = await client.task.list({
         includeStatuses: ["open", "done", "archived"],
-      }) as Promise<TaskRow[]>,
+      });
+      return res.tasks;
+    },
   });
 
   const labelTaskCounts = new Map<number, number>();
@@ -47,13 +47,13 @@ function LabelsPage() {
   }
 
   const createLabelMutation = useMutation({
-    mutationFn: (name: string) => window.api.labels.create(name),
+    mutationFn: (name: string) => client.label.create({ name }),
     onSuccess: () =>
       void queryClient.invalidateQueries({ queryKey: ["labels"] }),
   });
 
   const deleteLabelMutation = useMutation({
-    mutationFn: (id: number) => window.api.labels.delete(id),
+    mutationFn: (id: number) => client.label.delete({ id }),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ["labels"] });
       void queryClient.invalidateQueries({ queryKey: ["tasks"] });

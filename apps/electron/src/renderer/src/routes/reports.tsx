@@ -22,30 +22,11 @@ import {
 } from "~/contexts/SettingsContext.js";
 import i18n from "~/i18n/index.js";
 import { buildArcPath, lighten } from "~/lib/chartUtils.js";
+import { client } from "~/lib/orpc.js";
 
-interface SummaryEntry {
-  projectId: number | null;
-  projectName: string;
-  projectColor: string;
-  totalMinutes: number;
-  tasks: { taskId: number; taskName: string; minutes: number }[];
-}
-
-interface RawSlot {
-  startedAt: Date | string;
-  endedAt: Date | string | null;
-  task?: {
-    id: number;
-    name: string;
-    project: { id: number; name: string; color: string };
-    taskLabels?: { label: { id: number; name: string } }[];
-  } | null;
-}
-
-interface LabelRow {
-  id: number;
-  name: string;
-}
+type SummaryEntry = Awaited<
+  ReturnType<typeof client.log.summary>
+>["summary"][number];
 
 const PERIOD_VALUES: Period[] = ["today", "yesterday", "week", "month"];
 
@@ -283,32 +264,37 @@ function Reports() {
 
   const { data: allLabels = [] } = useQuery({
     queryKey: ["labels"],
-    queryFn: () => window.api.labels.list() as Promise<LabelRow[]>,
+    queryFn: async () => {
+      const res = await client.label.list();
+      return res.labels;
+    },
   });
 
   const { data: summary = [], isLoading } = useQuery({
     queryKey: ["log", "summary", period, isCustom ? customRange : null],
-    queryFn: () => {
-      if (isCustom) {
-        const from = calendarDateToDate(customRange.start).toISOString();
-        const to = calendarDateToDate(customRange.end, true).toISOString();
-        return window.api.log.getSummaryRange(from, to) as Promise<
-          SummaryEntry[]
-        >;
+    queryFn: async () => {
+      if (period === "custom") {
+        const from = calendarDateToDate(customRange.start);
+        const to = calendarDateToDate(customRange.end, true);
+        const res = await client.log.summary({ from, to });
+        return res.summary;
       }
-      return window.api.log.getSummary(period) as Promise<SummaryEntry[]>;
+      const res = await client.log.summary({ period });
+      return res.summary;
     },
   });
 
   const { data: logSlots = [] } = useQuery({
     queryKey: ["log", "raw", period, isCustom ? customRange : null],
-    queryFn: () => {
-      if (isCustom) {
-        const from = calendarDateToDate(customRange.start).toISOString();
-        const to = calendarDateToDate(customRange.end, true).toISOString();
-        return window.api.log.getRange(from, to) as Promise<RawSlot[]>;
+    queryFn: async () => {
+      if (period === "custom") {
+        const from = calendarDateToDate(customRange.start);
+        const to = calendarDateToDate(customRange.end, true);
+        const res = await client.log.entries({ from, to });
+        return res.slots;
       }
-      return window.api.log.get(period) as Promise<RawSlot[]>;
+      const res = await client.log.entries({ period });
+      return res.slots;
     },
   });
 
@@ -349,7 +335,7 @@ function Reports() {
             .filter(
               (s) =>
                 s.task?.project.id === entry.projectId &&
-                s.task.taskLabels?.some((tl) => tl.label.id === filterLabelId),
+                s.task.taskLabels.some((tl) => tl.label.id === filterLabelId),
             )
             .map((s) => s.task?.id),
         );
@@ -381,7 +367,7 @@ function Reports() {
             .filter(
               (s) =>
                 s.task?.project.id === entry.projectId &&
-                s.task.taskLabels?.some((tl) => tl.label.id === filterLabelId),
+                s.task.taskLabels.some((tl) => tl.label.id === filterLabelId),
             )
             .map((s) => s.task?.id),
         );

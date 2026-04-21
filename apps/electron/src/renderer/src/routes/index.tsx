@@ -7,22 +7,12 @@ import { useTranslation } from "react-i18next";
 
 import { Button } from "@horva/ui/Button";
 
-import type { LabelRow } from "~/components/TaskEditControls.js";
 import { LoadingSpinner } from "~/components/LoadingSpinner.js";
 import { TaskCard } from "~/components/TaskCard.js";
 import i18n from "~/i18n/index.js";
+import { client } from "~/lib/orpc.js";
 
-interface TaskRow {
-  id: number;
-  name: string;
-  status: string;
-  taskType: string;
-  scheduledAt: Date | null;
-  recurrenceRule: string | null;
-  project: { name: string; color: string };
-  taskLabels: { label: { id: number; name: string } }[];
-  slots: { startedAt: Date; endedAt: Date | null }[];
-}
+type TaskRow = Awaited<ReturnType<typeof client.task.list>>["tasks"][number];
 
 function calcTotalMinutes(slots: TaskRow["slots"]): number {
   return slots.reduce((sum, s) => {
@@ -90,14 +80,19 @@ function DailyOverview() {
 
   const { data: tasks = [], isLoading } = useQuery({
     queryKey: ["tasks", "today"],
-    queryFn: () =>
-      window.api.tasks.list({ status: "open" }) as Promise<TaskRow[]>,
+    queryFn: async () => {
+      const res = await client.task.list({ status: "open" });
+      return res.tasks;
+    },
     refetchInterval: 60_000,
   });
 
   const { data: allLabels = [] } = useQuery({
     queryKey: ["labels"],
-    queryFn: () => window.api.labels.list() as Promise<LabelRow[]>,
+    queryFn: async () => {
+      const res = await client.label.list();
+      return res.labels;
+    },
   });
 
   function invalidateTasks() {
@@ -105,37 +100,37 @@ function DailyOverview() {
   }
 
   const markDoneMutation = useMutation({
-    mutationFn: (taskId: number) => window.api.tasks.markDone(taskId),
+    mutationFn: (taskId: number) => client.task.done({ id: taskId }),
     onSuccess: invalidateTasks,
   });
 
   const renameMutation = useMutation({
     mutationFn: ({ id, name }: { id: number; name: string }) =>
-      window.api.tasks.update(id, { name }),
+      client.task.update({ id, name }),
     onSuccess: invalidateTasks,
   });
 
   const planMutation = useMutation({
     mutationFn: ({ id, date }: { id: number; date: string | null }) =>
-      window.api.tasks.plan(id, date),
+      client.task.plan({ id, date: date ? new Date(date) : null }),
     onSuccess: invalidateTasks,
   });
 
   const setRecurrenceMutation = useMutation({
     mutationFn: ({ id, rule }: { id: number; rule: string | null }) =>
-      window.api.tasks.setRecurrence(id, rule),
+      client.task.update({ id, recurrenceRule: rule }),
     onSuccess: invalidateTasks,
   });
 
   const addLabelMutation = useMutation({
     mutationFn: ({ taskId, labelId }: { taskId: number; labelId: number }) =>
-      window.api.tasks.update(taskId, { addLabelIds: [labelId] }),
+      client.task.update({ id: taskId, addLabelIds: [labelId] }),
     onSuccess: invalidateTasks,
   });
 
   const removeLabelMutation = useMutation({
     mutationFn: ({ taskId, labelId }: { taskId: number; labelId: number }) =>
-      window.api.tasks.update(taskId, { removeLabelIds: [labelId] }),
+      client.task.update({ id: taskId, removeLabelIds: [labelId] }),
     onSuccess: invalidateTasks,
   });
 

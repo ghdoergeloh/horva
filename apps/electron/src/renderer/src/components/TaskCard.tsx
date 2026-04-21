@@ -26,6 +26,7 @@ import {
   formatMinutesWithFormat,
   useTimeFormat,
 } from "~/contexts/SettingsContext.js";
+import { client } from "~/lib/orpc.js";
 
 interface TaskCardProps {
   id: number;
@@ -167,12 +168,12 @@ export function TaskCard({
   const canEdit = Boolean(onRename ?? onPlan ?? allLabels);
 
   async function handleStart() {
-    await window.api.slots.start(id);
+    await client.slot.start({ taskId: id });
     await invalidate();
   }
 
   async function handleStop() {
-    await window.api.slots.stop();
+    await client.slot.stop({});
     await invalidate();
   }
 

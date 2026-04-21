@@ -5,6 +5,7 @@ import { useTranslation } from "react-i18next";
 import { Button } from "@horva/ui/Button";
 
 import { useActiveSlot } from "~/contexts/ActiveSlotContext.js";
+import { client } from "~/lib/orpc.js";
 import { StartTaskDialog } from "./StartTaskDialog.js";
 import { WorktimeDisplay } from "./WorktimeDisplay.js";
 
@@ -31,7 +32,7 @@ export function SlotBar() {
   }, [openSlot]);
 
   async function handleStop() {
-    await window.api.slots.done();
+    await client.slot.done({});
     await invalidate();
   }
 

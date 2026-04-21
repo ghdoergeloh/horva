@@ -12,18 +12,9 @@ import { TextField } from "@horva/ui/TextField";
 import type { LabelRow } from "~/components/TaskEditControls.js";
 import { LoadingSpinner } from "~/components/LoadingSpinner.js";
 import { TaskCard } from "~/components/TaskCard.js";
+import { client } from "~/lib/orpc.js";
 
-interface TaskRow {
-  id: number;
-  name: string;
-  status: string;
-  taskType: string;
-  scheduledAt: Date | string | null;
-  recurrenceRule: string | null;
-  project: { id: number; name: string; color: string };
-  taskLabels: { label: { id: number; name: string } }[];
-  slots: { startedAt: Date | string; endedAt: Date | string | null }[];
-}
+type TaskRow = Awaited<ReturnType<typeof client.task.list>>["tasks"][number];
 
 function calcTotalMinutes(slots: TaskRow["slots"]): number {
   return slots.reduce((sum, s) => {
@@ -182,13 +173,15 @@ function DoneTasksSection({
 
   const { data: fetched, isFetching } = useQuery({
     queryKey: ["tasks", "project", projectId, "done", page],
-    queryFn: () =>
-      window.api.tasks.list({
+    queryFn: async () => {
+      const res = await client.task.list({
         projectId,
         status: "done",
         limit: PAGE_SIZE,
         offset: page * PAGE_SIZE,
-      }) as Promise<TaskRow[]>,
+      });
+      return res.tasks;
+    },
     enabled: open,
   });
 
@@ -297,26 +290,29 @@ function ProjectTaskPage() {
 
   const { data: projectData, isLoading: projectLoading } = useQuery({
     queryKey: ["projects", projectId],
-    queryFn: () =>
-      window.api.projects.get(projectId) as Promise<{
-        id: number;
-        name: string;
-        color: string;
-      }>,
+    queryFn: async () => {
+      const res = await client.project.get({ id: projectId });
+      return res.project;
+    },
   });
 
   const { data: tasks = [], isLoading: tasksLoading } = useQuery({
     queryKey: ["tasks", "project", projectId],
-    queryFn: () =>
-      window.api.tasks.list({
+    queryFn: async () => {
+      const res = await client.task.list({
         projectId,
         includeStatuses: ["open"],
-      }) as Promise<TaskRow[]>,
+      });
+      return res.tasks;
+    },
   });
 
   const { data: allLabels = [] } = useQuery({
     queryKey: ["labels"],
-    queryFn: () => window.api.labels.list() as Promise<LabelRow[]>,
+    queryFn: async () => {
+      const res = await client.label.list();
+      return res.labels;
+    },
   });
 
   function invalidateTasks() {
@@ -324,42 +320,42 @@ function ProjectTaskPage() {
   }
 
   const markDoneMutation = useMutation({
-    mutationFn: (taskId: number) => window.api.tasks.markDone(taskId),
+    mutationFn: (taskId: number) => client.task.done({ id: taskId }),
     onSuccess: invalidateTasks,
   });
 
   const renameMutation = useMutation({
     mutationFn: ({ id, name }: { id: number; name: string }) =>
-      window.api.tasks.update(id, { name }),
+      client.task.update({ id, name }),
     onSuccess: invalidateTasks,
   });
 
   const planMutation = useMutation({
     mutationFn: ({ id, date }: { id: number; date: string | null }) =>
-      window.api.tasks.plan(id, date),
+      client.task.plan({ id, date: date ? new Date(date) : null }),
     onSuccess: invalidateTasks,
   });
 
   const setRecurrenceMutation = useMutation({
     mutationFn: ({ id, rule }: { id: number; rule: string | null }) =>
-      window.api.tasks.setRecurrence(id, rule),
+      client.task.update({ id, recurrenceRule: rule }),
     onSuccess: invalidateTasks,
   });
 
   const addLabelMutation = useMutation({
     mutationFn: ({ taskId, labelId }: { taskId: number; labelId: number }) =>
-      window.api.tasks.update(taskId, { addLabelIds: [labelId] }),
+      client.task.update({ id: taskId, addLabelIds: [labelId] }),
     onSuccess: invalidateTasks,
   });
 
   const removeLabelMutation = useMutation({
     mutationFn: ({ taskId, labelId }: { taskId: number; labelId: number }) =>
-      window.api.tasks.update(taskId, { removeLabelIds: [labelId] }),
+      client.task.update({ id: taskId, removeLabelIds: [labelId] }),
     onSuccess: invalidateTasks,
   });
 
   const reopenMutation = useMutation({
-    mutationFn: (taskId: number) => window.api.tasks.reopen(taskId),
+    mutationFn: (taskId: number) => client.task.reopen({ id: taskId }),
     onSuccess: invalidateTasks,
   });
 
@@ -370,7 +366,7 @@ function ProjectTaskPage() {
     }: {
       name: string;
       taskType: "task" | "activity";
-    }) => window.api.tasks.create({ projectId, name, taskType }),
+    }) => client.task.create({ projectId, name, taskType }),
     onSuccess: invalidateTasks,
   });
 

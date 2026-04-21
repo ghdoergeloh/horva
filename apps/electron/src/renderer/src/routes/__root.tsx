@@ -25,12 +25,7 @@ import { SlotBar } from "~/components/SlotBar.js";
 import { ActiveSlotProvider } from "~/contexts/ActiveSlotContext.js";
 import { SettingsProvider } from "~/contexts/SettingsContext.js";
 import i18n from "~/i18n/index.js";
-
-interface ProjectRow {
-  id: number;
-  name: string;
-  color: string;
-}
+import { client } from "~/lib/orpc.js";
 
 const COLOR_PRESETS = [
   "#6366f1",
@@ -52,8 +47,16 @@ function NewProjectModal({ onClose }: { onClose: () => void }) {
   const [color, setColor] = useState("#6366f1");
 
   const createProjectMutation = useMutation({
-    mutationFn: ({ name: n, color: c }: { name: string; color: string }) =>
-      window.api.projects.create({ name: n, color: c }) as Promise<ProjectRow>,
+    mutationFn: async ({
+      name: n,
+      color: c,
+    }: {
+      name: string;
+      color: string;
+    }) => {
+      const res = await client.project.create({ name: n, color: c });
+      return res.project;
+    },
     onSuccess: (project) => {
       void queryClient.invalidateQueries({ queryKey: ["projects"] });
       window.location.hash = `/tasks/${String(project.id)}`;
@@ -194,7 +197,10 @@ function AppShell() {
 
   const { data: projects = [] } = useQuery({
     queryKey: ["projects"],
-    queryFn: () => window.api.projects.list() as Promise<ProjectRow[]>,
+    queryFn: async () => {
+      const res = await client.project.list({});
+      return res.projects;
+    },
   });
 
   const isTasksActive = location.pathname.startsWith("/tasks");

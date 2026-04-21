@@ -7,17 +7,12 @@ import { Button } from "@horva/ui/Button";
 import { SearchField } from "@horva/ui/SearchField";
 import { TextField } from "@horva/ui/TextField";
 
+import { client } from "~/lib/orpc.js";
+
 interface StartTaskDialogProps {
   switchMode?: boolean;
   onClose: () => void;
   onStarted: () => Promise<void>;
-}
-
-interface TaskRow {
-  id: number;
-  name: string;
-  project: { name: string; color: string };
-  status: string;
 }
 
 export function StartTaskDialog({
@@ -32,8 +27,10 @@ export function StartTaskDialog({
 
   const { data: tasks = [] } = useQuery({
     queryKey: ["tasks", "open"],
-    queryFn: () =>
-      window.api.tasks.list({ status: "open" }) as Promise<TaskRow[]>,
+    queryFn: async () => {
+      const res = await client.task.list({ status: "open" });
+      return res.tasks;
+    },
   });
 
   const filtered = search
@@ -41,12 +38,12 @@ export function StartTaskDialog({
     : tasks.slice(0, 10);
 
   async function startWithTask(taskId: number) {
-    await window.api.slots.start(taskId);
+    await client.slot.start({ taskId });
     await onStarted();
   }
 
   async function startWithoutTask() {
-    await window.api.slots.start(undefined);
+    await client.slot.start({});
     await onStarted();
   }
 
@@ -54,9 +51,7 @@ export function StartTaskDialog({
     if (!newTaskName.trim()) return;
     setCreating(true);
     try {
-      const task = (await window.api.tasks.create({
-        name: newTaskName.trim(),
-      })) as { id: number };
+      const { task } = await client.task.create({ name: newTaskName.trim() });
       await startWithTask(task.id);
     } finally {
       setCreating(false);

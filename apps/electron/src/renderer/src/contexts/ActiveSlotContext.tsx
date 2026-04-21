@@ -1,16 +1,11 @@
-import { createContext, useContext, useEffect } from "react";
+import { createContext, useContext } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 
-export interface ActiveSlot {
-  id: number;
-  startedAt: Date | string;
-  state: string;
-  task?: {
-    id: number;
-    name: string;
-    project: { name: string; color: string };
-  } | null;
-}
+import { client } from "~/lib/orpc";
+
+type OpenSlotResponse = Awaited<ReturnType<typeof client.slot.status>>["slot"];
+
+export type ActiveSlot = NonNullable<OpenSlotResponse>;
 
 interface ActiveSlotContextValue {
   openSlot: ActiveSlot | null | undefined;
@@ -31,26 +26,14 @@ export function ActiveSlotProvider({
 
   const { data: openSlot, isLoading } = useQuery({
     queryKey: ["slots", "open"],
-    queryFn: () =>
-      (
-        window.api.slots.getOpen() as Promise<ActiveSlot | null | undefined>
-      ).then((r) => r ?? null),
-    // Fallback polling — primary updates come via db:changed IPC event
+    queryFn: async () => {
+      const res = await client.slot.status();
+      return res.slot;
+    },
+    // Fallback polling keeps the active-slot duration display fresh even if
+    // another window or the CLI advances the state.
     refetchInterval: 60_000,
   });
-
-  // Subscribe to main-process push notifications after every DB mutation.
-  useEffect(() => {
-    const unsubscribe = window.events.onDbChanged((scope) => {
-      if (scope === "slots" || scope === "all") {
-        void queryClient.invalidateQueries({ queryKey: ["slots"] });
-      }
-      if (scope === "tasks" || scope === "all") {
-        void queryClient.invalidateQueries({ queryKey: ["tasks"] });
-      }
-    });
-    return unsubscribe;
-  }, [queryClient]);
 
   async function invalidate() {
     await queryClient.invalidateQueries({ queryKey: ["slots"] });

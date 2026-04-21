@@ -14,6 +14,7 @@ import {
   formatMinutesWithFormat,
   useTimeFormat,
 } from "~/contexts/SettingsContext.js";
+import { client } from "~/lib/orpc.js";
 import { applyTimeString, fmt } from "~/lib/timeFormatters.js";
 
 interface SlotRow {
@@ -97,36 +98,38 @@ export function InlineSlotRow({
 
   async function save() {
     const changes: {
-      startedAt?: string;
-      endedAt?: string | null;
+      id: number;
+      startedAt?: Date;
+      endedAt?: Date | null;
       taskId?: number | null;
-    } = {};
+    } = { id: slot.id };
 
     const startedAtIso = new Date(slot.startedAt).toISOString();
     const endedAtIso = slot.endedAt
       ? new Date(slot.endedAt).toISOString()
       : null;
     const newStart = applyTimeString(startedAtIso, startTime);
-    if (newStart !== startedAtIso) changes.startedAt = newStart;
+    if (newStart !== startedAtIso) changes.startedAt = new Date(newStart);
 
     if (endTime) {
       const newEnd = applyTimeString(startedAtIso, endTime);
-      if (newEnd !== endedAtIso) changes.endedAt = newEnd;
+      if (newEnd !== endedAtIso) changes.endedAt = new Date(newEnd);
     } else if (endedAtIso) {
       changes.endedAt = null;
     }
 
     if (taskId !== slot.taskId) changes.taskId = taskId;
 
-    if (Object.keys(changes).length > 0) {
-      await window.api.slots.edit(slot.id, changes);
+    // Only fire if there's something to change beyond the id.
+    if (Object.keys(changes).length > 1) {
+      await client.slot.edit(changes);
       await queryClient.invalidateQueries({ queryKey: ["slots"] });
     }
     onEndEdit();
   }
 
   async function handleDelete() {
-    await window.api.slots.delete(slot.id);
+    await client.slot.delete({ id: slot.id });
     await queryClient.invalidateQueries({ queryKey: ["slots"] });
     onEndEdit();
   }

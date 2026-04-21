@@ -11,25 +11,9 @@ import { Tab, TabList, Tabs } from "@horva/ui/Tabs";
 import { DayRow } from "~/components/DayRow.js";
 import i18n from "~/i18n/index.js";
 import { endOfDay, localDateStr, startOfDay } from "~/lib/dateUtils.js";
+import { client } from "~/lib/orpc.js";
 
-interface SlotRow {
-  id: number;
-  startedAt: Date | string;
-  endedAt: Date | string | null;
-  taskId: number | null;
-  state: string;
-  task?: {
-    id: number;
-    name: string;
-    project: { name: string; color: string };
-  } | null;
-}
-
-interface TaskOption {
-  id: number;
-  name: string;
-  project: { name: string; color: string };
-}
+type SlotRow = Awaited<ReturnType<typeof client.slot.list>>["slots"][number];
 
 function getWeekDays(weekOffset = 0): Date[] {
   const now = new Date();
@@ -87,8 +71,8 @@ function Timeline() {
   const lastDay = weekDays[6];
   if (!firstDay || !lastDay) throw new Error("Week days not calculated");
 
-  const from = startOfDay(firstDay).toISOString();
-  const to = endOfDay(lastDay).toISOString();
+  const from = startOfDay(firstDay);
+  const to = endOfDay(lastDay);
   const isCurrentWeek = weekOffset === 0;
 
   const todayStr = localDateStr(new Date());
@@ -110,15 +94,20 @@ function Timeline() {
   }
 
   const { data: allSlots = [] } = useQuery({
-    queryKey: ["slots", from, to],
-    queryFn: () => window.api.slots.list(from, to) as Promise<SlotRow[]>,
+    queryKey: ["slots", from.toISOString(), to.toISOString()],
+    queryFn: async () => {
+      const res = await client.slot.list({ from, to });
+      return res.slots;
+    },
     refetchInterval: 15000,
   });
 
   const { data: allTasks = [] } = useQuery({
     queryKey: ["tasks", "open"],
-    queryFn: () =>
-      window.api.tasks.list({ status: "open" }) as Promise<TaskOption[]>,
+    queryFn: async () => {
+      const res = await client.task.list({ status: "open" });
+      return res.tasks;
+    },
   });
 
   const projectOptions = Array.from(

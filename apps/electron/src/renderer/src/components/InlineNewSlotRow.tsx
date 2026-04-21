@@ -8,6 +8,7 @@ import { Button } from "@horva/ui/Button";
 import { Select, SelectItem } from "@horva/ui/Select";
 import { TimeField } from "@horva/ui/TimeField";
 
+import { client } from "~/lib/orpc.js";
 import { applyTimeString, fmt, fmtDuration } from "~/lib/timeFormatters.js";
 
 interface TaskOption {
@@ -83,8 +84,11 @@ export function InlineNewSlotRow({
       return;
     }
     setHasError(false);
-    console.log("insert", { startIso, endIso, taskId });
-    await window.api.slots.insert(startIso, endIso, taskId);
+    await client.slot.insert({
+      startedAt: new Date(startIso),
+      endedAt: endIso ? new Date(endIso) : null,
+      taskId,
+    });
     await queryClient.invalidateQueries({ queryKey: ["slots"] });
     onSaved();
   }

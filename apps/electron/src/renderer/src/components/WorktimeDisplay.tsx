@@ -1,10 +1,9 @@
 import { useQuery } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 
-import type { SummaryEntry } from "@horva/core";
-
 import { FormattedMinutes } from "~/components/FormattedMinutes.js";
 import { useActiveSlot } from "~/contexts/ActiveSlotContext.js";
+import { client } from "~/lib/orpc.js";
 
 function elapsedMinutes(startedAt: Date | string): number {
   return Math.floor((Date.now() - new Date(startedAt).getTime()) / 60000);
@@ -18,15 +17,20 @@ export function WorktimeDisplay({ tick }: { tick: number }) {
   const { openSlot } = useActiveSlot();
 
   const { data: todaySummary } = useQuery({
-    queryKey: ["log:getSummary", "today"],
-    queryFn: () =>
-      window.api.log.getSummary("today") as Promise<SummaryEntry[]>,
+    queryKey: ["log", "summary", "today"],
+    queryFn: async () => {
+      const res = await client.log.summary({ period: "today" });
+      return res.summary;
+    },
     refetchInterval: 60_000,
   });
 
   const { data: weekSummary } = useQuery({
-    queryKey: ["log:getSummary", "week"],
-    queryFn: () => window.api.log.getSummary("week") as Promise<SummaryEntry[]>,
+    queryKey: ["log", "summary", "week"],
+    queryFn: async () => {
+      const res = await client.log.summary({ period: "week" });
+      return res.summary;
+    },
     refetchInterval: 60_000,
   });
 

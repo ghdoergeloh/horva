@@ -7,6 +7,7 @@ import { Button } from "@horva/ui/Button";
 import { Select, SelectItem } from "@horva/ui/Select";
 import { TimeField } from "@horva/ui/TimeField";
 
+import { client } from "~/lib/orpc.js";
 import { applyTimeString, fmt } from "~/lib/timeFormatters.js";
 
 interface Slot {
@@ -20,12 +21,6 @@ interface Slot {
 interface EditSlotDialogProps {
   slot: Slot;
   onClose: () => void;
-}
-
-interface TaskOption {
-  id: number;
-  name: string;
-  project: { name: string; color: string };
 }
 
 function stringToTime(value: string) {
@@ -56,8 +51,10 @@ export function EditSlotDialog({ slot, onClose }: EditSlotDialogProps) {
 
   const { data: tasks = [] } = useQuery({
     queryKey: ["tasks", "open"],
-    queryFn: () =>
-      window.api.tasks.list({ status: "open" }) as Promise<TaskOption[]>,
+    queryFn: async () => {
+      const res = await client.task.list({ status: "open" });
+      return res.tasks;
+    },
   });
 
   async function handleSave() {
@@ -65,31 +62,29 @@ export function EditSlotDialog({ slot, onClose }: EditSlotDialogProps) {
     setWarning(null);
     try {
       const changes: {
-        startedAt?: string;
-        endedAt?: string | null;
+        id: number;
+        startedAt?: Date;
+        endedAt?: Date | null;
         taskId?: number | null;
-      } = {};
+      } = { id: slot.id };
 
       const startedAtIso = new Date(slot.startedAt).toISOString();
       const endedAtIso = slot.endedAt
         ? new Date(slot.endedAt).toISOString()
         : null;
       const newStart = applyTimeString(startedAtIso, startTime);
-      if (newStart !== startedAtIso) changes.startedAt = newStart;
+      if (newStart !== startedAtIso) changes.startedAt = new Date(newStart);
 
       if (endTime) {
         const newEnd = applyTimeString(startedAtIso, endTime);
-        if (newEnd !== endedAtIso) changes.endedAt = newEnd;
+        if (newEnd !== endedAtIso) changes.endedAt = new Date(newEnd);
       } else if (endedAtIso) {
         changes.endedAt = null;
       }
 
       if (taskId !== slot.taskId) changes.taskId = taskId;
 
-      const result = (await window.api.slots.edit(slot.id, changes)) as {
-        updated: Slot;
-        neighborAdjusted?: { id: number; field: string };
-      };
+      const result = await client.slot.edit(changes);
 
       if (result.neighborAdjusted) {
         setWarning(
@@ -179,7 +174,7 @@ export function EditSlotDialog({ slot, onClose }: EditSlotDialogProps) {
               <Button
                 variant="destructive"
                 onPress={async () => {
-                  await window.api.slots.delete(slot.id);
+                  await client.slot.delete({ id: slot.id });
                   await queryClient.invalidateQueries({ queryKey: ["slots"] });
                   onClose();
                 }}
