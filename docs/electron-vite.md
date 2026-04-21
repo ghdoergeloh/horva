@@ -177,7 +177,7 @@ const router = createRouter({
 });
 ```
 
-The `@tanstack/router-plugin/vite` plugin works the same as in `apps/react/`.
+The `@tanstack/router-plugin/vite` plugin is configured per renderer (see `electron.vite.config.ts`).
 
 ---
 

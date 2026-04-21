@@ -95,8 +95,8 @@ pnpm db:push           # Apply schema to the database
 ```bash
 pnpm dev                              # Run everything (Turbo)
 pnpm -F @horva/api dev                # API only
-pnpm -F react dev                     # Web frontend only
 pnpm -F @horva/electron-app dev       # Electron desktop app only
+pnpm -F @horva/cli dev                # CLI only
 ```
 
 ### Common commands
@@ -132,13 +132,12 @@ See [`CLAUDE.md`](./CLAUDE.md) for a deeper walkthrough of conventions, and [`do
 .
 ├── apps
 │   ├── api          # Hono + oRPC REST API (port 3000)
-│   ├── cli          # Commander-based CLI (local or remote via the API)
-│   ├── electron     # Electron desktop app (electron-vite + electron-builder)
-│   └── react        # Vite + React 19 web frontend (TanStack Router/Query)
+│   ├── cli          # Commander-based CLI (invokes @horva/core against a local DB)
+│   └── electron     # Electron desktop app (electron-vite + electron-builder)
 ├── packages
 │   ├── auth         # better-auth (email/password) w/ Drizzle adapter
 │   ├── contract     # Shared oRPC + Zod API contract
-│   ├── core         # Shared business logic
+│   ├── core         # Services, transport-agnostic handlers, shared config
 │   ├── db           # Drizzle ORM + PostgreSQL schema
 │   ├── transactional# Email templates
 │   └── ui           # React Aria Components + Tailwind (shadcn-style)
@@ -149,7 +148,7 @@ See [`CLAUDE.md`](./CLAUDE.md) for a deeper walkthrough of conventions, and [`do
 
 ## Architecture
 
-The **contract** package is the hub: `packages/contract` defines the API shape → `apps/api` implements it → `apps/react`, `apps/cli`, and `apps/electron` consume it as fully typed clients.
+The **contract** package is the hub: `packages/contract` defines the API shape → `@horva/core/handlers` implements it → `apps/api` mounts the handlers over HTTP, and the Electron main process mounts the same handlers over IPC. Any consumer (Electron renderer, future web frontend, third-party integrations) gets full end-to-end type safety.
 
 ### Web frontend
 

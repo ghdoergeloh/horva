@@ -1,8 +1,0 @@
-{
-  "extends": "./tsconfig.json",
-  "compilerOptions": {
-    "types": ["node"],
-    "tsBuildInfoFile": ".cache/tsbuildinfo.node.json"
-  },
-  "include": ["vite.config.ts"]
-}

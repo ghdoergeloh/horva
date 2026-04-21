@@ -65,8 +65,9 @@ docs/        # feature specs and design docs
 The **contract** package (`packages/contract`) is the source of truth for the API shape. When adding an endpoint:
 
 1. Define the route in `packages/contract/src/index.ts`.
-2. Implement it in `apps/api/src/router.ts`.
-3. Consume it from `apps/react`, `apps/cli`, or `apps/electron` with full type inference.
+2. Implement the handler in `packages/core/src/handlers/<section>.ts`.
+3. Wire it into `apps/api/src/router.ts` (and the Electron IPC bridge).
+4. Consume it from `apps/electron` or a future web frontend with full type inference.
 
 ## Workflow
 
@@ -98,7 +99,7 @@ pnpm -F @horva/db typecheck
 - **ESM only.** All packages are `"type": "module"`.
 - **Imports are auto-sorted** by Prettier: types → React → third-party → `@horva/*` → local (`~/`, `../`, `./`). Don't fight the sort.
 - **Tailwind classes** are sorted automatically inside `cn()` and `cva()`.
-- **Path aliases:** `apps/react` uses `~/` → `src/`.
+- **Path aliases:** the Electron renderer uses `~/` → `src/renderer/src/`.
 - **Dependency versions** live in `pnpm-workspace.yaml` catalogs. New deps should use `catalog:` references where appropriate.
 - **No mocks at the DB boundary.** Integration tests hit real PostgreSQL via Docker Compose.
 - **Comments** should explain _why_, not _what_. Most code doesn't need them.

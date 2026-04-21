@@ -47,30 +47,31 @@ This is a **pnpm monorepo** with **Turborepo** for build orchestration. All pack
 ### Workspaces
 
 - **`apps/api`** - Hono REST API with oRPC handlers. Runs on port 3000. Entry: `src/index.ts` -> `src/app.ts` -> `src/router.ts`.
-- **`apps/react`** - Vite + React 19 frontend. Uses TanStack Router (file-based routing in `src/routes/`) and TanStack Query with oRPC client. Path alias: `~/` maps to `src/`.
-- **`apps/cli`** - Commander-based CLI application. Can operate locally (invoking core directly) or remotely (via oRPC client calling the API).
-- **`packages/contract`** - oRPC contract defining the API schema with Zod. Shared between API (implements) and frontend/CLI (consumes as client).
+- **`apps/electron`** - Electron desktop app. `src/main` runs the Node side (DB access, IPC handlers), `src/renderer` is the Vite + React 19 + TanStack Router/Query frontend. Path alias: `~/` maps to `src/renderer/src/`.
+- **`apps/cli`** - Commander-based CLI application. Invokes `@horva/core` services directly against a local database.
+- **`packages/contract`** - oRPC contract defining the API schema with Zod. Shared between API (implements via `@horva/core` handlers) and future web frontend (consumes as client).
 - **`packages/auth`** - better-auth configuration with email/password. Uses Drizzle adapter with PostgreSQL. Exports `./auth` (server) and `./client` (browser).
 - **`packages/db`** - Drizzle ORM + PostgreSQL (node-postgres). Exports `./client` (db instance), `./schema` (table definitions). Uses `with-env` script (`dotenv -e ../../.env --`) to load root `.env`.
-- **`packages/core`** - Shared business logic (placeholder).
+- **`packages/core`** - Shared business logic and transport-agnostic oRPC handlers. Services in `src/services/*` do the actual work; handlers in `src/handlers/*` wrap them with `{ input, context: { db, session } }` so both the HTTP API and the Electron IPC transport can mount the same functions. Also exposes `./config` for the shared `$XDG_CONFIG_HOME/horva/config.json` schema.
 - **`packages/ui`** - React Aria Components with Tailwind CSS and class-variance-authority. Shadcn-compatible CLI for adding components.
 - **`tooling/*`** - Shared configs for ESLint, Prettier, TypeScript, Tailwind, Vitest.
 
 ### Data Flow
 
-The **contract** package is central: `packages/contract` defines the API shape -> `apps/api` implements it via `@orpc/server` -> `apps/react` consumes it via `@orpc/client` + `@orpc/react-query`. This gives end-to-end type safety from API to frontend.
+The **contract** package is central: `packages/contract` defines the API shape -> `@horva/core/handlers` implements it as transport-agnostic functions -> `apps/api` mounts them over HTTP via `@orpc/server` -> the Electron renderer (eventually) and any future web frontend consume them via `@orpc/client` + `@orpc/react-query`. This gives end-to-end type safety across every client.
 
 When adding a new API endpoint:
 
 1. Define the route in `packages/contract/src/index.ts` (schema + method + path)
-2. Implement the handler in `apps/api/src/router.ts`
-3. The frontend/CLI can immediately consume it with full type inference
+2. Implement the handler in `packages/core/src/handlers/<section>.ts`
+3. Wire it into `apps/api/src/router.ts` (one line)
+4. Consumers pick it up with full type inference
 
 ### Key Conventions
 
 - **Imports**: Auto-sorted by Prettier — order is: types, react, third-party, `@horva/*` workspace packages, local (`~/`, `../`, `./`). Tailwind classes sorted in `cn()` and `cva()` calls.
 - **TypeScript**: Strict mode with `noUncheckedIndexedAccess`, `verbatimModuleSyntax` (use `import type` for type-only imports). Base config in `tooling/typescript/base.json`.
-- **ESLint**: Flat config (v9). Configs exported from `tooling/eslint` as `./base`, `./react`. Route files in `apps/react/src/routes/` have `react-refresh/only-export-components` disabled.
+- **ESLint**: Flat config (v9). Configs exported from `tooling/eslint` as `./base`, `./react`. Route files in the Electron renderer's `src/routes/` have `react-refresh/only-export-components` disabled.
 - **Dependencies**: Versions centralized in `pnpm-workspace.yaml` catalogs. Use `catalog:` or `catalog:react19` in package.json version fields.
 - **Commits**: Conventional commits enforced via commitlint + husky pre-commit hook (lint-staged runs Prettier on staged files).
 - **Package exports**: Workspace packages use conditional exports with `types` + `default` fields pointing to `dist/` and `src/` respectively.
