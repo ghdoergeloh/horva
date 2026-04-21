@@ -8,200 +8,200 @@
 // You should NOT make any changes in this file as it will be overwritten.
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
-import { Route as rootRouteImport } from "./routes/__root";
-import { Route as IndexRouteImport } from "./routes/index";
-import { Route as LabelsRouteImport } from "./routes/labels";
-import { Route as ReportsRouteImport } from "./routes/reports";
-import { Route as SettingsRouteImport } from "./routes/settings";
-import { Route as TasksRouteImport } from "./routes/tasks";
-import { Route as TasksProjectIdRouteImport } from "./routes/tasks/$projectId";
-import { Route as TasksIndexRouteImport } from "./routes/tasks/index";
-import { Route as TimelineRouteImport } from "./routes/timeline";
+import { Route as rootRouteImport } from './routes/__root'
+import { Route as TimelineRouteImport } from './routes/timeline'
+import { Route as TasksRouteImport } from './routes/tasks'
+import { Route as SettingsRouteImport } from './routes/settings'
+import { Route as ReportsRouteImport } from './routes/reports'
+import { Route as LabelsRouteImport } from './routes/labels'
+import { Route as IndexRouteImport } from './routes/index'
+import { Route as TasksIndexRouteImport } from './routes/tasks/index'
+import { Route as TasksProjectIdRouteImport } from './routes/tasks/$projectId'
 
 const TimelineRoute = TimelineRouteImport.update({
-  id: "/timeline",
-  path: "/timeline",
+  id: '/timeline',
+  path: '/timeline',
   getParentRoute: () => rootRouteImport,
-} as any);
+} as any)
 const TasksRoute = TasksRouteImport.update({
-  id: "/tasks",
-  path: "/tasks",
+  id: '/tasks',
+  path: '/tasks',
   getParentRoute: () => rootRouteImport,
-} as any);
+} as any)
 const SettingsRoute = SettingsRouteImport.update({
-  id: "/settings",
-  path: "/settings",
+  id: '/settings',
+  path: '/settings',
   getParentRoute: () => rootRouteImport,
-} as any);
+} as any)
 const ReportsRoute = ReportsRouteImport.update({
-  id: "/reports",
-  path: "/reports",
+  id: '/reports',
+  path: '/reports',
   getParentRoute: () => rootRouteImport,
-} as any);
+} as any)
 const LabelsRoute = LabelsRouteImport.update({
-  id: "/labels",
-  path: "/labels",
+  id: '/labels',
+  path: '/labels',
   getParentRoute: () => rootRouteImport,
-} as any);
+} as any)
 const IndexRoute = IndexRouteImport.update({
-  id: "/",
-  path: "/",
+  id: '/',
+  path: '/',
   getParentRoute: () => rootRouteImport,
-} as any);
+} as any)
 const TasksIndexRoute = TasksIndexRouteImport.update({
-  id: "/",
-  path: "/",
+  id: '/',
+  path: '/',
   getParentRoute: () => TasksRoute,
-} as any);
+} as any)
 const TasksProjectIdRoute = TasksProjectIdRouteImport.update({
-  id: "/$projectId",
-  path: "/$projectId",
+  id: '/$projectId',
+  path: '/$projectId',
   getParentRoute: () => TasksRoute,
-} as any);
+} as any)
 
 export interface FileRoutesByFullPath {
-  "/": typeof IndexRoute;
-  "/labels": typeof LabelsRoute;
-  "/reports": typeof ReportsRoute;
-  "/settings": typeof SettingsRoute;
-  "/tasks": typeof TasksRouteWithChildren;
-  "/timeline": typeof TimelineRoute;
-  "/tasks/$projectId": typeof TasksProjectIdRoute;
-  "/tasks/": typeof TasksIndexRoute;
+  '/': typeof IndexRoute
+  '/labels': typeof LabelsRoute
+  '/reports': typeof ReportsRoute
+  '/settings': typeof SettingsRoute
+  '/tasks': typeof TasksRouteWithChildren
+  '/timeline': typeof TimelineRoute
+  '/tasks/$projectId': typeof TasksProjectIdRoute
+  '/tasks/': typeof TasksIndexRoute
 }
 export interface FileRoutesByTo {
-  "/": typeof IndexRoute;
-  "/labels": typeof LabelsRoute;
-  "/reports": typeof ReportsRoute;
-  "/settings": typeof SettingsRoute;
-  "/timeline": typeof TimelineRoute;
-  "/tasks/$projectId": typeof TasksProjectIdRoute;
-  "/tasks": typeof TasksIndexRoute;
+  '/': typeof IndexRoute
+  '/labels': typeof LabelsRoute
+  '/reports': typeof ReportsRoute
+  '/settings': typeof SettingsRoute
+  '/timeline': typeof TimelineRoute
+  '/tasks/$projectId': typeof TasksProjectIdRoute
+  '/tasks': typeof TasksIndexRoute
 }
 export interface FileRoutesById {
-  __root__: typeof rootRouteImport;
-  "/": typeof IndexRoute;
-  "/labels": typeof LabelsRoute;
-  "/reports": typeof ReportsRoute;
-  "/settings": typeof SettingsRoute;
-  "/tasks": typeof TasksRouteWithChildren;
-  "/timeline": typeof TimelineRoute;
-  "/tasks/$projectId": typeof TasksProjectIdRoute;
-  "/tasks/": typeof TasksIndexRoute;
+  __root__: typeof rootRouteImport
+  '/': typeof IndexRoute
+  '/labels': typeof LabelsRoute
+  '/reports': typeof ReportsRoute
+  '/settings': typeof SettingsRoute
+  '/tasks': typeof TasksRouteWithChildren
+  '/timeline': typeof TimelineRoute
+  '/tasks/$projectId': typeof TasksProjectIdRoute
+  '/tasks/': typeof TasksIndexRoute
 }
 export interface FileRouteTypes {
-  fileRoutesByFullPath: FileRoutesByFullPath;
+  fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    | "/"
-    | "/labels"
-    | "/reports"
-    | "/settings"
-    | "/tasks"
-    | "/timeline"
-    | "/tasks/$projectId"
-    | "/tasks/";
-  fileRoutesByTo: FileRoutesByTo;
+    | '/'
+    | '/labels'
+    | '/reports'
+    | '/settings'
+    | '/tasks'
+    | '/timeline'
+    | '/tasks/$projectId'
+    | '/tasks/'
+  fileRoutesByTo: FileRoutesByTo
   to:
-    | "/"
-    | "/labels"
-    | "/reports"
-    | "/settings"
-    | "/timeline"
-    | "/tasks/$projectId"
-    | "/tasks";
+    | '/'
+    | '/labels'
+    | '/reports'
+    | '/settings'
+    | '/timeline'
+    | '/tasks/$projectId'
+    | '/tasks'
   id:
-    | "__root__"
-    | "/"
-    | "/labels"
-    | "/reports"
-    | "/settings"
-    | "/tasks"
-    | "/timeline"
-    | "/tasks/$projectId"
-    | "/tasks/";
-  fileRoutesById: FileRoutesById;
+    | '__root__'
+    | '/'
+    | '/labels'
+    | '/reports'
+    | '/settings'
+    | '/tasks'
+    | '/timeline'
+    | '/tasks/$projectId'
+    | '/tasks/'
+  fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute;
-  LabelsRoute: typeof LabelsRoute;
-  ReportsRoute: typeof ReportsRoute;
-  SettingsRoute: typeof SettingsRoute;
-  TasksRoute: typeof TasksRouteWithChildren;
-  TimelineRoute: typeof TimelineRoute;
+  IndexRoute: typeof IndexRoute
+  LabelsRoute: typeof LabelsRoute
+  ReportsRoute: typeof ReportsRoute
+  SettingsRoute: typeof SettingsRoute
+  TasksRoute: typeof TasksRouteWithChildren
+  TimelineRoute: typeof TimelineRoute
 }
 
-declare module "@tanstack/react-router" {
+declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    "/timeline": {
-      id: "/timeline";
-      path: "/timeline";
-      fullPath: "/timeline";
-      preLoaderRoute: typeof TimelineRouteImport;
-      parentRoute: typeof rootRouteImport;
-    };
-    "/tasks": {
-      id: "/tasks";
-      path: "/tasks";
-      fullPath: "/tasks";
-      preLoaderRoute: typeof TasksRouteImport;
-      parentRoute: typeof rootRouteImport;
-    };
-    "/settings": {
-      id: "/settings";
-      path: "/settings";
-      fullPath: "/settings";
-      preLoaderRoute: typeof SettingsRouteImport;
-      parentRoute: typeof rootRouteImport;
-    };
-    "/reports": {
-      id: "/reports";
-      path: "/reports";
-      fullPath: "/reports";
-      preLoaderRoute: typeof ReportsRouteImport;
-      parentRoute: typeof rootRouteImport;
-    };
-    "/labels": {
-      id: "/labels";
-      path: "/labels";
-      fullPath: "/labels";
-      preLoaderRoute: typeof LabelsRouteImport;
-      parentRoute: typeof rootRouteImport;
-    };
-    "/": {
-      id: "/";
-      path: "/";
-      fullPath: "/";
-      preLoaderRoute: typeof IndexRouteImport;
-      parentRoute: typeof rootRouteImport;
-    };
-    "/tasks/": {
-      id: "/tasks/";
-      path: "/";
-      fullPath: "/tasks/";
-      preLoaderRoute: typeof TasksIndexRouteImport;
-      parentRoute: typeof TasksRoute;
-    };
-    "/tasks/$projectId": {
-      id: "/tasks/$projectId";
-      path: "/$projectId";
-      fullPath: "/tasks/$projectId";
-      preLoaderRoute: typeof TasksProjectIdRouteImport;
-      parentRoute: typeof TasksRoute;
-    };
+    '/timeline': {
+      id: '/timeline'
+      path: '/timeline'
+      fullPath: '/timeline'
+      preLoaderRoute: typeof TimelineRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/tasks': {
+      id: '/tasks'
+      path: '/tasks'
+      fullPath: '/tasks'
+      preLoaderRoute: typeof TasksRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/settings': {
+      id: '/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof SettingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/reports': {
+      id: '/reports'
+      path: '/reports'
+      fullPath: '/reports'
+      preLoaderRoute: typeof ReportsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/labels': {
+      id: '/labels'
+      path: '/labels'
+      fullPath: '/labels'
+      preLoaderRoute: typeof LabelsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/tasks/': {
+      id: '/tasks/'
+      path: '/'
+      fullPath: '/tasks/'
+      preLoaderRoute: typeof TasksIndexRouteImport
+      parentRoute: typeof TasksRoute
+    }
+    '/tasks/$projectId': {
+      id: '/tasks/$projectId'
+      path: '/$projectId'
+      fullPath: '/tasks/$projectId'
+      preLoaderRoute: typeof TasksProjectIdRouteImport
+      parentRoute: typeof TasksRoute
+    }
   }
 }
 
 interface TasksRouteChildren {
-  TasksProjectIdRoute: typeof TasksProjectIdRoute;
-  TasksIndexRoute: typeof TasksIndexRoute;
+  TasksProjectIdRoute: typeof TasksProjectIdRoute
+  TasksIndexRoute: typeof TasksIndexRoute
 }
 
 const TasksRouteChildren: TasksRouteChildren = {
   TasksProjectIdRoute: TasksProjectIdRoute,
   TasksIndexRoute: TasksIndexRoute,
-};
+}
 
-const TasksRouteWithChildren = TasksRoute._addFileChildren(TasksRouteChildren);
+const TasksRouteWithChildren = TasksRoute._addFileChildren(TasksRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
@@ -210,7 +210,7 @@ const rootRouteChildren: RootRouteChildren = {
   SettingsRoute: SettingsRoute,
   TasksRoute: TasksRouteWithChildren,
   TimelineRoute: TimelineRoute,
-};
+}
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
-  ._addFileTypes<FileRouteTypes>();
+  ._addFileTypes<FileRouteTypes>()
