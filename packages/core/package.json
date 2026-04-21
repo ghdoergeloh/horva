@@ -7,6 +7,10 @@
     ".": {
       "types": "./dist/index.d.ts",
       "default": "./src/index.ts"
+    },
+    "./config": {
+      "types": "./dist/config/config.d.ts",
+      "default": "./src/config/config.ts"
     }
   },
   "scripts": {
