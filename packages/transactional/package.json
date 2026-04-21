@@ -20,16 +20,16 @@
   },
   "prettier": "@horva/prettier-config",
   "dependencies": {
-    "@react-email/components": "^1.0.7",
-    "nodemailer": "^8.0.1",
+    "@react-email/components": "^1.0.12",
+    "nodemailer": "^8.0.5",
     "react": "catalog:react19"
   },
   "devDependencies": {
     "@horva/eslint-config": "workspace:*",
     "@horva/prettier-config": "workspace:*",
     "@horva/tsconfig": "workspace:*",
-    "@react-email/preview-server": "^5.2.8",
-    "@types/nodemailer": "^7.0.10",
+    "@react-email/preview-server": "^5.2.10",
+    "@types/nodemailer": "^8.0.0",
     "@types/react": "catalog:react19",
     "eslint": "catalog:",
     "prettier": "catalog:",

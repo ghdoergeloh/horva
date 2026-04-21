@@ -25,15 +25,15 @@
     "chalk": "^5.4.1",
     "commander": "^14.0.3",
     "dotenv": "catalog:",
-    "pg": "^8.18.0"
+    "pg": "^8.20.0"
   },
   "devDependencies": {
     "@horva/eslint-config": "workspace:*",
     "@horva/prettier-config": "workspace:*",
     "@horva/tsconfig": "workspace:*",
     "@types/node": "catalog:",
-    "@types/pg": "^8.16.0",
-    "esbuild": "^0.25.0",
+    "@types/pg": "^8.20.0",
+    "esbuild": "^0.28.0",
     "eslint": "catalog:",
     "prettier": "catalog:",
     "typescript": "catalog:"

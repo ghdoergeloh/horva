@@ -4,29 +4,29 @@ packages:
   - tooling/*
 
 catalog:
-  "@better-auth/cli": ^1.4.18
+  "@better-auth/cli": ^1.4.21
   "@better-auth/expo": ^1.4.18
-  "@tailwindcss/postcss": ^4.1.18
-  "@tailwindcss/vite": ^4.1.18
+  "@tailwindcss/postcss": ^4.2.4
+  "@tailwindcss/vite": ^4.2.4
   "@tanstack/react-form": ^1.23.8
   "@tanstack/react-query": ^5.90.8
   "@trpc/client": ^11.7.1
   "@trpc/server": ^11.7.1
   "@trpc/tanstack-react-query": ^11.7.1
-  "@types/node": ^24.10.13
+  "@types/node": ^22.19.17
   "@vitejs/plugin-react": ^5.1.4
   dotenv: ^17.3.1
-  drizzle-kit: ^0.31.9
-  drizzle-orm: ^0.45.1
+  drizzle-kit: ^0.31.10
+  drizzle-orm: ^0.45.2
   drizzle-zod: ^0.8.3
   eslint: ^9.39.2
-  postcss: ^8.5.6
-  prettier: ^3.8.1
-  tailwindcss: ^4.1.18
+  postcss: ^8.5.10
+  prettier: ^3.8.3
+  tailwindcss: ^4.2.4
   tsx: ^4.21.0
   typescript: ^5.9.3
   vite: ^7.3.1
-  vitest: ^4.1.2
+  vitest: ^4.1.5
   rrule: ^2.8.1
   zod: ^4.3.6
 
@@ -34,8 +34,8 @@ catalogs:
   react19:
     "@types/react": ^19.2.14
     "@types/react-dom": ^19.2.3
-    react: ^19.2.4
-    react-dom: ^19.2.4
+    react: ^19.2.5
+    react-dom: ^19.2.5
 
 linkWorkspacePackages: true
 
