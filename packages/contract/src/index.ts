@@ -7,22 +7,21 @@ const userSchema = z.object({
   name: z.string(),
 });
 
-// Shared tt schemas (datetime as ISO string for JSON transport)
 const projectSchema = z.object({
   id: z.number(),
   name: z.string(),
   color: z.string(),
   status: z.enum(["active", "archived", "deleted"]),
   isDefault: z.boolean(),
-  createdAt: z.string().datetime(),
-  updatedAt: z.string().datetime(),
-  deletedAt: z.string().datetime().nullable(),
+  createdAt: z.date(),
+  updatedAt: z.date(),
+  deletedAt: z.date().nullable(),
 });
 
 const labelSchema = z.object({
   id: z.number(),
   name: z.string(),
-  createdAt: z.string().datetime(),
+  createdAt: z.date(),
 });
 
 const taskSchema = z.object({
@@ -31,39 +30,33 @@ const taskSchema = z.object({
   projectId: z.number(),
   status: z.enum(["open", "done", "archived", "deleted"]),
   taskType: z.enum(["task", "activity"]),
-  scheduledAt: z.string().datetime().nullable(),
+  scheduledAt: z.date().nullable(),
   recurrenceRule: z.string().nullable(),
   notes: z.string().nullable(),
   links: z.array(z.string()),
-  createdAt: z.string().datetime(),
-  updatedAt: z.string().datetime(),
-  doneAt: z.string().datetime().nullable(),
-  archivedAt: z.string().datetime().nullable(),
-  deletedAt: z.string().datetime().nullable(),
+  createdAt: z.date(),
+  updatedAt: z.date(),
+  doneAt: z.date().nullable(),
+  archivedAt: z.date().nullable(),
+  deletedAt: z.date().nullable(),
 });
 
 const slotSchema = z.object({
   id: z.number(),
-  startedAt: z.string().datetime(),
-  endedAt: z.string().datetime().nullable(),
+  startedAt: z.date(),
+  endedAt: z.date().nullable(),
   taskId: z.number().nullable(),
   state: z.enum(["active", "no_task", "task_deleted"]),
-  createdAt: z.string().datetime(),
+  createdAt: z.date(),
 });
 
 export const contract = oc.router({
   user: oc.router({
     me: oc
-      .route({
-        method: "GET",
-        path: "/user/me",
-      })
+      .route({ method: "GET", path: "/user/me" })
       .output(z.object({ user: userSchema.nullable() })),
     hello: oc
-      .route({
-        method: "GET",
-        path: "/user/hello",
-      })
+      .route({ method: "GET", path: "/user/hello" })
       .output(z.object({ message: z.string() })),
   }),
 
@@ -76,7 +69,7 @@ export const contract = oc.router({
       .input(
         z.object({
           taskId: z.number().optional(),
-          at: z.string().datetime().optional(),
+          at: z.date().optional(),
         }),
       )
       .output(
@@ -87,7 +80,7 @@ export const contract = oc.router({
       ),
     stop: oc
       .route({ method: "POST", path: "/slot/stop" })
-      .input(z.object({ at: z.string().datetime().optional() }))
+      .input(z.object({ at: z.date().optional() }))
       .output(
         z.object({
           closedSlot: slotSchema.nullable(),
@@ -96,15 +89,15 @@ export const contract = oc.router({
       ),
     done: oc
       .route({ method: "POST", path: "/slot/done" })
-      .input(z.object({ at: z.string().datetime().optional() }))
+      .input(z.object({ at: z.date().optional() }))
       .output(z.object({ closedSlot: slotSchema.nullable() })),
     edit: oc
       .route({ method: "PATCH", path: "/slot/{id}" })
       .input(
         z.object({
           id: z.number(),
-          startedAt: z.string().datetime().optional(),
-          endedAt: z.string().datetime().nullable().optional(),
+          startedAt: z.date().optional(),
+          endedAt: z.date().nullable().optional(),
           taskId: z.number().nullable().optional(),
         }),
       )
@@ -115,8 +108,8 @@ export const contract = oc.router({
             .object({
               id: z.number(),
               field: z.enum(["startedAt", "endedAt"]),
-              from: z.string().datetime(),
-              to: z.string().datetime(),
+              from: z.date(),
+              to: z.date(),
             })
             .optional(),
         }),
@@ -146,7 +139,7 @@ export const contract = oc.router({
           projectId: z.number().optional(),
           taskType: z.enum(["task", "activity"]).optional(),
           labelIds: z.array(z.number()).optional(),
-          scheduledAt: z.string().datetime().optional(),
+          scheduledAt: z.date().optional(),
           recurrenceRule: z.string().optional(),
           notes: z.string().optional(),
           links: z.array(z.string()).optional(),
@@ -163,7 +156,7 @@ export const contract = oc.router({
           taskType: z.enum(["task", "activity"]).optional(),
           addLabelIds: z.array(z.number()).optional(),
           removeLabelIds: z.array(z.number()).optional(),
-          scheduledAt: z.string().datetime().nullable().optional(),
+          scheduledAt: z.date().nullable().optional(),
           recurrenceRule: z.string().nullable().optional(),
           notes: z.string().nullable().optional(),
           addLinks: z.array(z.string()).optional(),
@@ -192,7 +185,7 @@ export const contract = oc.router({
       .input(
         z.object({
           id: z.number(),
-          date: z.string().datetime().nullable(),
+          date: z.date().nullable(),
         }),
       )
       .output(z.object({ task: taskSchema })),
