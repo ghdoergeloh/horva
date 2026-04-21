@@ -19,8 +19,6 @@
     "lint:ws": "pnpm dlx sherif@latest",
     "prepare": "husky",
     "preview:emails": "pnpm -F @horva/transactional preview",
-    "test:unit": "turbo run test:unit",
-    "test:unit:coverage": "turbo run test:unit:coverage",
     "typecheck": "turbo run typecheck"
   },
   "prettier": "@horva/prettier-config",

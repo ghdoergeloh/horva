@@ -109,7 +109,6 @@ pnpm lint                 # ESLint
 pnpm lint:fix             # ESLint with --fix
 pnpm format               # Prettier check
 pnpm format:fix           # Prettier write
-pnpm test:unit            # Unit tests (Vitest)
 
 # Database
 pnpm db:generate          # Generate Drizzle migrations

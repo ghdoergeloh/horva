@@ -54,14 +54,6 @@
       "dependsOn": ["^build"],
       "outputs": []
     },
-    "test:unit": {
-      "dependsOn": ["^build"],
-      "outputs": ["coverage/**"]
-    },
-    "test:unit:coverage": {
-      "dependsOn": ["^build"],
-      "outputs": ["coverage/**"]
-    },
     "pack": {
       "dependsOn": ["build"],
       "cache": false

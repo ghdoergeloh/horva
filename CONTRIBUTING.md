@@ -80,10 +80,9 @@ The **contract** package (`packages/contract`) is the source of truth for the AP
    pnpm format:fix
    pnpm lint
    pnpm typecheck
-   pnpm test:unit
    pnpm build
    ```
-   CI runs the same checks on every PR.
+   CI runs the same checks on every PR. (A test suite isn't wired up yet — see [#tests](https://github.com/ghdoergeloh/horva/issues?q=label%3Atests) if you'd like to help add one.)
 4. **Push** your branch and open a pull request against `main`.
 
 For changes that only touch one package, you can scope the checks:
@@ -91,7 +90,6 @@ For changes that only touch one package, you can scope the checks:
 ```bash
 pnpm -F @horva/db lint
 pnpm -F @horva/db typecheck
-pnpm -F @horva/db test:unit
 ```
 
 ## Coding conventions

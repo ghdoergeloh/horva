@@ -19,8 +19,43 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  verify:
+    name: Verify
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ github.event.inputs.tag || github.ref }}
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          run_install: false
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: "24"
+          cache: "pnpm"
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Prettier Check
+        run: pnpm format
+
+      - name: Build
+        run: pnpm build
+
+      - name: Type Check
+        run: pnpm typecheck
+
+      - name: ESLint Check
+        run: pnpm lint
+
   build:
     name: Build (${{ matrix.os }})
+    needs: verify
     strategy:
       fail-fast: false
       matrix:
