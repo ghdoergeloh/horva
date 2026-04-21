@@ -1,0 +1,9 @@
+# Auto-generated files
+apps/electron/src/renderer/src/routeTree.gen.ts
+
+# Build output
+**/dist/
+**/out/
+**/.turbo/
+**/.cache/
+**/node_modules/
