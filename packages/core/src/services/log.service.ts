@@ -1,6 +1,6 @@
-import type { Db } from "@timetracker/db/client";
-import { and, gte, isNotNull, lte } from "@timetracker/db";
-import { slot } from "@timetracker/db/schema";
+import type { Db } from "@horva/db/client";
+import { and, gte, isNotNull, lte } from "@horva/db";
+import { slot } from "@horva/db/schema";
 
 export type Period = "today" | "yesterday" | "week" | "month" | "all";
 

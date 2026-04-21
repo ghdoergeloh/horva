@@ -19,7 +19,7 @@ import {
   DatePickerStateContext,
 } from "react-aria-components";
 
-import { composeTailwindRenderProps } from "@timetracker/ui";
+import { composeTailwindRenderProps } from "@horva/ui";
 
 import { Calendar } from "./Calendar";
 import { DateInput } from "./DateField";

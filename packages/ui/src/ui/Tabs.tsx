@@ -19,7 +19,7 @@ import {
 import { twMerge } from "tailwind-merge";
 import { tv } from "tailwind-variants";
 
-import { focusRing } from "@timetracker/ui";
+import { focusRing } from "@horva/ui";
 
 const tabsStyles = tv({
   base: "flex gap-4 font-sans max-w-full",

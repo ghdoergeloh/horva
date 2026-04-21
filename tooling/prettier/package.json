@@ -1,5 +1,5 @@
 {
-  "name": "@timetracker/prettier-config",
+  "name": "@horva/prettier-config",
   "private": true,
   "type": "module",
   "exports": {
@@ -10,7 +10,7 @@
     "format": "prettier --check . --ignore-path ../../.gitignore",
     "typecheck": "tsc --noEmit"
   },
-  "prettier": "@timetracker/prettier-config",
+  "prettier": "@horva/prettier-config",
   "dependencies": {
     "@ianvs/prettier-plugin-sort-imports": "^4.7.1",
     "prettier": "catalog:",
@@ -18,7 +18,7 @@
     "prettier-plugin-tailwindcss": "^0.7.2"
   },
   "devDependencies": {
-    "@timetracker/tsconfig": "workspace:*",
+    "@horva/tsconfig": "workspace:*",
     "@types/node": "catalog:",
     "typescript": "catalog:"
   }

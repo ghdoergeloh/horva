@@ -1,5 +1,5 @@
 {
-  "name": "@timetracker/vitest",
+  "name": "@horva/vitest",
   "version": "0.1.0",
   "private": true,
   "license": "MIT",
@@ -13,11 +13,11 @@
     "lint": "eslint",
     "typecheck": "tsc --noEmit"
   },
-  "prettier": "@timetracker/prettier-config",
+  "prettier": "@horva/prettier-config",
   "devDependencies": {
-    "@timetracker/eslint-config": "workspace:*",
-    "@timetracker/prettier-config": "workspace:*",
-    "@timetracker/tsconfig": "workspace:*",
+    "@horva/eslint-config": "workspace:*",
+    "@horva/prettier-config": "workspace:*",
+    "@horva/tsconfig": "workspace:*",
     "@vitejs/plugin-react": "catalog:",
     "eslint": "catalog:",
     "prettier": "catalog:",

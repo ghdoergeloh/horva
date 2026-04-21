@@ -3,10 +3,10 @@ import { CalendarDate, fromDate, Time } from "@internationalized/date";
 import { useTranslation } from "react-i18next";
 import { RRule } from "rrule";
 
-import { Button } from "@timetracker/ui/Button";
-import { NumberField } from "@timetracker/ui/NumberField";
-import { Select, SelectItem } from "@timetracker/ui/Select";
-import { TimeField } from "@timetracker/ui/TimeField";
+import { Button } from "@horva/ui/Button";
+import { NumberField } from "@horva/ui/NumberField";
+import { Select, SelectItem } from "@horva/ui/Select";
+import { TimeField } from "@horva/ui/TimeField";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 

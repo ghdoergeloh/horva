@@ -3,7 +3,7 @@
 import type { ProgressBarProps as AriaProgressBarProps } from "react-aria-components";
 import { ProgressBar as AriaProgressBar } from "react-aria-components";
 
-import { composeTailwindRenderProps } from "@timetracker/ui";
+import { composeTailwindRenderProps } from "@horva/ui";
 
 import { Label } from "./Field";
 

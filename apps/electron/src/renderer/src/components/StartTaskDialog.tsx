@@ -3,9 +3,9 @@ import { useQuery } from "@tanstack/react-query";
 import { Play, Plus, X } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
-import { Button } from "@timetracker/ui/Button";
-import { SearchField } from "@timetracker/ui/SearchField";
-import { TextField } from "@timetracker/ui/TextField";
+import { Button } from "@horva/ui/Button";
+import { SearchField } from "@horva/ui/SearchField";
+import { TextField } from "@horva/ui/TextField";
 
 interface StartTaskDialogProps {
   switchMode?: boolean;

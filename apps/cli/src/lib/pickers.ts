@@ -8,7 +8,7 @@ import {
   listProjects,
   listSlots,
   listTasks,
-} from "@timetracker/core";
+} from "@horva/core";
 
 import type { Db } from "./db.js";
 import { colorProject, formatDuration, formatTime, sym } from "./display.js";

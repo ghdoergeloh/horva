@@ -27,7 +27,7 @@ import {
 import { twMerge } from "tailwind-merge";
 import { tv } from "tailwind-variants";
 
-import { composeTailwindRenderProps, focusRing } from "@timetracker/ui";
+import { composeTailwindRenderProps, focusRing } from "@horva/ui";
 
 import { Checkbox } from "./Checkbox";
 

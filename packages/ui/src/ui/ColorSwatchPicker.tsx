@@ -11,7 +11,7 @@ import {
 } from "react-aria-components";
 import { tv } from "tailwind-variants";
 
-import { focusRing } from "@timetracker/ui";
+import { focusRing } from "@horva/ui";
 
 import { ColorSwatch } from "./ColorSwatch";
 

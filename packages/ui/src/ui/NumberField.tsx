@@ -8,7 +8,7 @@ import type {
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { NumberField as AriaNumberField, Button } from "react-aria-components";
 
-import { composeTailwindRenderProps } from "@timetracker/ui";
+import { composeTailwindRenderProps } from "@horva/ui";
 
 import {
   Description,

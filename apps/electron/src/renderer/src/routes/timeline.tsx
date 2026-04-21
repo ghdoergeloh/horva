@@ -4,9 +4,9 @@ import { createFileRoute } from "@tanstack/react-router";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
-import { Button } from "@timetracker/ui/Button";
-import { Select, SelectItem } from "@timetracker/ui/Select";
-import { Tab, TabList, Tabs } from "@timetracker/ui/Tabs";
+import { Button } from "@horva/ui/Button";
+import { Select, SelectItem } from "@horva/ui/Select";
+import { Tab, TabList, Tabs } from "@horva/ui/Tabs";
 
 import { DayRow } from "~/components/DayRow.js";
 import i18n from "~/i18n/index.js";

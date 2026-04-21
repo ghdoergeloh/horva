@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 
-import { Select, SelectItem } from "@timetracker/ui/Select";
+import { Select, SelectItem } from "@horva/ui/Select";
 
 import type { TimeFormat } from "~/contexts/SettingsContext.js";
 import {

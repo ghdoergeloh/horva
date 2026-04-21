@@ -1,9 +1,9 @@
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 
-import { db } from "@timetracker/db/client";
-import * as schema from "@timetracker/db/schema";
-import { sendVerificationEmail } from "@timetracker/transactional";
+import { db } from "@horva/db/client";
+import * as schema from "@horva/db/schema";
+import { sendVerificationEmail } from "@horva/transactional";
 
 export const auth = betterAuth({
   database: drizzleAdapter(db, {

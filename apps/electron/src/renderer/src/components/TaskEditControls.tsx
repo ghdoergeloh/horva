@@ -10,9 +10,9 @@ import {
 import { Tag } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
-import { Button } from "@timetracker/ui/Button";
-import { DateTimePicker } from "@timetracker/ui/DateTimePicker";
-import { TextField } from "@timetracker/ui/TextField";
+import { Button } from "@horva/ui/Button";
+import { DateTimePicker } from "@horva/ui/DateTimePicker";
+import { TextField } from "@horva/ui/TextField";
 
 import { formatScheduledDate } from "~/lib/taskUtils.js";
 

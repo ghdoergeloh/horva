@@ -3,9 +3,9 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { AlertTriangle, Trash2, X } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
-import { Button } from "@timetracker/ui/Button";
-import { Select, SelectItem } from "@timetracker/ui/Select";
-import { TimeField } from "@timetracker/ui/TimeField";
+import { Button } from "@horva/ui/Button";
+import { Select, SelectItem } from "@horva/ui/Select";
+import { TimeField } from "@horva/ui/TimeField";
 
 import { applyTimeString, fmt } from "~/lib/timeFormatters.js";
 

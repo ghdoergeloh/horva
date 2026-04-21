@@ -1,6 +1,6 @@
-import type { Db } from "@timetracker/db/client";
-import { eq, inArray, ne } from "@timetracker/db";
-import { project, task } from "@timetracker/db/schema";
+import type { Db } from "@horva/db/client";
+import { eq, inArray, ne } from "@horva/db";
+import { project, task } from "@horva/db/schema";
 
 import type { CreateProject, UpdateProject } from "../schemas/index.js";
 

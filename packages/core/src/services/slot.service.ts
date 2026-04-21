@@ -1,6 +1,6 @@
-import type { Db } from "@timetracker/db/client";
-import { and, asc, between, eq, gte, isNull, lte } from "@timetracker/db";
-import { slot } from "@timetracker/db/schema";
+import type { Db } from "@horva/db/client";
+import { and, asc, between, eq, gte, isNull, lte } from "@horva/db";
+import { slot } from "@horva/db/schema";
 
 export function roundToMinute(date: Date): Date {
   const d = new Date(date);

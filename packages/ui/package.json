@@ -1,5 +1,5 @@
 {
-  "name": "@timetracker/ui",
+  "name": "@horva/ui",
   "private": true,
   "license": "MIT",
   "type": "module",
@@ -14,7 +14,7 @@
     "typecheck": "tsc --noEmit --emitDeclarationOnly false",
     "ui-add": "pnpm dlx shadcn@latest add"
   },
-  "prettier": "@timetracker/prettier-config",
+  "prettier": "@horva/prettier-config",
   "dependencies": {
     "@internationalized/date": "^3.11.0",
     "lucide-react": "^0.564.0",
@@ -25,9 +25,9 @@
     "tailwind-variants": "^3.2.2"
   },
   "devDependencies": {
-    "@timetracker/eslint-config": "workspace:*",
-    "@timetracker/prettier-config": "workspace:*",
-    "@timetracker/tsconfig": "workspace:*",
+    "@horva/eslint-config": "workspace:*",
+    "@horva/prettier-config": "workspace:*",
+    "@horva/tsconfig": "workspace:*",
     "@types/react": "catalog:react19",
     "@types/react-dom": "catalog:react19",
     "eslint": "catalog:",

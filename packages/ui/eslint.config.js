@@ -1,7 +1,7 @@
 import { defineConfig } from "eslint/config";
 
-import { baseConfig } from "@timetracker/eslint-config/base";
-import { reactConfig } from "@timetracker/eslint-config/react";
+import { baseConfig } from "@horva/eslint-config/base";
+import { reactConfig } from "@horva/eslint-config/react";
 
 export default defineConfig(
   {

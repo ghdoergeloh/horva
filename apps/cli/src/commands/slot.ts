@@ -10,7 +10,7 @@ import {
   listTasks,
   startSlot,
   stopSlot,
-} from "@timetracker/core";
+} from "@horva/core";
 
 import { db } from "../lib/db";
 import {
@@ -31,7 +31,7 @@ function parseTime(timeStr: string): Date {
 }
 
 export function registerSlotCommands(program: Command): void {
-  // tt start [ref]
+  // horva start [ref]
   program
     .command("start [ref]")
     .alias("s")
@@ -127,7 +127,7 @@ export function registerSlotCommands(program: Command): void {
       },
     );
 
-  // tt stop
+  // horva stop
   program
     .command("stop")
     .alias("x")
@@ -165,7 +165,7 @@ export function registerSlotCommands(program: Command): void {
       }
     });
 
-  // tt done
+  // horva done
   program
     .command("done")
     .alias("d")
@@ -206,7 +206,7 @@ export function registerSlotCommands(program: Command): void {
       }
     });
 
-  // tt status
+  // horva status
   program
     .command("status")
     .alias("?")

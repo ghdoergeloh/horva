@@ -8,7 +8,7 @@ import {
   deleteProject,
   listProjects,
   updateProject,
-} from "@timetracker/core";
+} from "@horva/core";
 
 import { db } from "../lib/db.js";
 import {

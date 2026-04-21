@@ -15,7 +15,7 @@ import {
   planTask,
   reopenTask,
   updateTask,
-} from "@timetracker/core";
+} from "@horva/core";
 
 import { db } from "../lib/db.js";
 import {
@@ -684,7 +684,7 @@ export function registerTaskCommands(program: Command): void {
               `${sym.warning} "${existing.name}" is an activity and cannot be planned.`,
             );
             console.log(
-              `  Use "tt task edit #${id} --type task" to convert it to a task first.`,
+              `  Use "horva task edit #${id} --type task" to convert it to a task first.`,
             );
             process.exit(1);
           }

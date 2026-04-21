@@ -2,8 +2,8 @@ import type { FormEvent } from "react";
 import { useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 
-import { Button } from "@timetracker/ui/Button";
-import { TextField } from "@timetracker/ui/TextField";
+import { Button } from "@horva/ui/Button";
+import { TextField } from "@horva/ui/TextField";
 
 import { authClient } from "~/lib/auth";
 

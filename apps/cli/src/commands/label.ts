@@ -2,7 +2,7 @@ import type { Command } from "commander";
 import { select } from "@inquirer/prompts";
 import chalk from "chalk";
 
-import { createLabel, deleteLabel, listLabels } from "@timetracker/core";
+import { createLabel, deleteLabel, listLabels } from "@horva/core";
 
 import { db } from "../lib/db";
 import { printError, printSuccess, sym } from "../lib/display";

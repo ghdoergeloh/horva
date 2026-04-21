@@ -1,5 +1,5 @@
 {
-  "name": "@timetracker/api",
+  "name": "@horva/api",
   "private": true,
   "type": "module",
   "scripts": {
@@ -14,6 +14,10 @@
   },
   "dependencies": {
     "@hono/node-server": "^1.19.9",
+    "@horva/auth": "workspace:*",
+    "@horva/contract": "workspace:*",
+    "@horva/core": "workspace:*",
+    "@horva/db": "workspace:*",
     "@opentelemetry/api": "^1.9.0",
     "@opentelemetry/api-logs": "^0.57.2",
     "@opentelemetry/exporter-logs-otlp-http": "^0.57.2",
@@ -22,17 +26,13 @@
     "@opentelemetry/sdk-node": "^0.57.2",
     "@opentelemetry/semantic-conventions": "^1.32.0",
     "@orpc/server": "^1.13.5",
-    "@timetracker/auth": "workspace:*",
-    "@timetracker/contract": "workspace:*",
-    "@timetracker/core": "workspace:*",
-    "@timetracker/db": "workspace:*",
     "dotenv": "catalog:",
     "hono": "^4.11.9"
   },
   "devDependencies": {
-    "@timetracker/eslint-config": "workspace:*",
-    "@timetracker/prettier-config": "workspace:*",
-    "@timetracker/tsconfig": "workspace:*",
+    "@horva/eslint-config": "workspace:*",
+    "@horva/prettier-config": "workspace:*",
+    "@horva/tsconfig": "workspace:*",
     "@types/node": "catalog:",
     "eslint": "catalog:",
     "prettier": "catalog:",

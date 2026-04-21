@@ -54,7 +54,7 @@
     }
   },
   "globalEnv": [
-    "TT_DATABASE_URL",
+    "DATABASE_URL",
     "XDG_CONFIG_HOME",
     "AUTH_DISCORD_ID",
     "AUTH_DISCORD_SECRET",

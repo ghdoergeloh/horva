@@ -10,9 +10,9 @@ import {
 import { DialogTrigger, Heading } from "react-aria-components";
 import { useTranslation } from "react-i18next";
 
-import { Button } from "@timetracker/ui/Button";
-import { Dialog } from "@timetracker/ui/Dialog";
-import { Modal } from "@timetracker/ui/Modal";
+import { Button } from "@horva/ui/Button";
+import { Dialog } from "@horva/ui/Dialog";
+import { Modal } from "@horva/ui/Modal";
 
 import type { LabelRow } from "~/components/TaskEditControls.js";
 import { RecurrenceRulePicker } from "~/components/RecurrenceRulePicker.js";

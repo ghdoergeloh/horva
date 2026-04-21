@@ -14,9 +14,9 @@ if (is.dev) {
 }
 
 // Fall back to ~/.config/tt/config.json (or $XDG_CONFIG_HOME/tt/config.json) if
-// TT_DATABASE_URL is not set via .env. This allows production installs to store
+// DATABASE_URL is not set via .env. This allows production installs to store
 // DB credentials in a separate config file instead of a .env file.
-if (!process.env["TT_DATABASE_URL"]) {
+if (!process.env["DATABASE_URL"]) {
   const configPath = join(
     process.env["XDG_CONFIG_HOME"] ?? join(homedir(), ".config"),
     "tt",
@@ -27,12 +27,12 @@ if (!process.env["TT_DATABASE_URL"]) {
       const cfg = JSON.parse(readFileSync(configPath, "utf8")) as {
         databaseUrl?: string;
       };
-      if (cfg.databaseUrl) process.env["TT_DATABASE_URL"] = cfg.databaseUrl;
+      if (cfg.databaseUrl) process.env["DATABASE_URL"] = cfg.databaseUrl;
     } catch {
       // ignore parse errors
     }
   }
 }
 
-export { db } from "@timetracker/db/client";
-export type { Db } from "@timetracker/db/client";
+export { db } from "@horva/db/client";
+export type { Db } from "@horva/db/client";

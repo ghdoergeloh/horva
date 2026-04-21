@@ -9,7 +9,7 @@ import {
   getSlot,
   listSlots,
   splitSlot,
-} from "@timetracker/core";
+} from "@horva/core";
 
 import { db } from "../lib/db.js";
 import {
@@ -115,7 +115,7 @@ export function registerSlotMgmtCommands(program: Command): void {
     .alias("sl")
     .description("Manage time slots");
 
-  // tt slot list [period]
+  // horva slot list [period]
   slotCmd
     .command("list [period]")
     .alias("ls")
@@ -210,7 +210,7 @@ export function registerSlotMgmtCommands(program: Command): void {
       },
     );
 
-  // tt slot edit [id]
+  // horva slot edit [id]
   slotCmd
     .command("edit [id]")
     .description("Edit a slot's times or task")
@@ -406,7 +406,7 @@ export function registerSlotMgmtCommands(program: Command): void {
       },
     );
 
-  // tt slot delete [id]
+  // horva slot delete [id]
   slotCmd
     .command("delete [id]")
     .alias("rm")
@@ -482,7 +482,7 @@ export function registerSlotMgmtCommands(program: Command): void {
       }
     });
 
-  // tt slot split [id] <time>
+  // horva slot split [id] <time>
   slotCmd
     .command("split [id] <time>")
     .description("Split a slot at a given time")

@@ -1,5 +1,5 @@
 {
-  "name": "@timetracker/transactional",
+  "name": "@horva/transactional",
   "private": true,
   "license": "MIT",
   "type": "module",
@@ -18,17 +18,17 @@
     "preview": "email dev --dir src/templates --port 3001",
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
-  "prettier": "@timetracker/prettier-config",
+  "prettier": "@horva/prettier-config",
   "dependencies": {
     "@react-email/components": "^1.0.7",
     "nodemailer": "^8.0.1",
     "react": "catalog:react19"
   },
   "devDependencies": {
+    "@horva/eslint-config": "workspace:*",
+    "@horva/prettier-config": "workspace:*",
+    "@horva/tsconfig": "workspace:*",
     "@react-email/preview-server": "^5.2.8",
-    "@timetracker/eslint-config": "workspace:*",
-    "@timetracker/prettier-config": "workspace:*",
-    "@timetracker/tsconfig": "workspace:*",
     "@types/nodemailer": "^7.0.10",
     "@types/react": "catalog:react19",
     "eslint": "catalog:",

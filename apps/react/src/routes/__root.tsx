@@ -6,7 +6,7 @@ import {
 } from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
 
-import { Button } from "@timetracker/ui/Button";
+import { Button } from "@horva/ui/Button";
 
 import { authClient } from "~/lib/auth";
 

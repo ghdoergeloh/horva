@@ -16,9 +16,9 @@ import {
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
-import { Button } from "@timetracker/ui/Button";
-import { ColorPicker } from "@timetracker/ui/ColorPicker";
-import { TextField } from "@timetracker/ui/TextField";
+import { Button } from "@horva/ui/Button";
+import { ColorPicker } from "@horva/ui/ColorPicker";
+import { TextField } from "@horva/ui/TextField";
 
 import { AppIcon } from "~/components/AppIcon.js";
 import { SlotBar } from "~/components/SlotBar.js";

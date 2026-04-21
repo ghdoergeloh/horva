@@ -1,4 +1,4 @@
-# tt — Time Tracker CLI
+# horva — Horva Time Tracker CLI
 
 A command-line time tracker for managing projects, tasks, labels, and time slots.
 
@@ -24,7 +24,7 @@ pnpm db:push
 From the repo root:
 
 ```bash
-pnpm --filter @timetracker/cli build
+pnpm --filter @horva/cli build
 ```
 
 This compiles the CLI to `apps/cli/dist/index.js`.
@@ -34,15 +34,15 @@ This compiles the CLI to `apps/cli/dist/index.js`.
 **Option A — link (development, reflects rebuilds instantly):**
 
 ```bash
-pnpm --filter @timetracker/cli link --global
+pnpm --filter @horva/cli link --global
 ```
 
 **Option B — pack and install (self-contained tarball):**
 
 ```bash
 cd apps/cli/dist
-pnpm pack                        # produces timetracker-cli-<version>.tgz
-npm install -g ./timetracker-cli-*.tgz  # or: pnpm add -g ./timetracker-cli-*.tgz
+pnpm pack                        # produces horva-cli-<version>.tgz
+npm install -g ./horva-cli-*.tgz  # or: pnpm add -g ./horva-cli-*.tgz
 ```
 
 The tarball bundles `dist/index.js` and is independent of the monorepo after installation.
@@ -50,7 +50,7 @@ The tarball bundles `dist/index.js` and is independent of the monorepo after ins
 ### Verify
 
 ```bash
-tt --help
+horva --help
 ```
 
 ## Uninstall
@@ -58,27 +58,27 @@ tt --help
 **If installed via link:**
 
 ```bash
-pnpm unlink --global @timetracker/cli
+pnpm unlink --global @horva/cli
 ```
 
 **If installed via tarball:**
 
 ```bash
-npm uninstall -g @timetracker/cli  # or: pnpm remove -g @timetracker/cli
+npm uninstall -g @horva/cli  # or: pnpm remove -g @horva/cli
 ```
 
 ## Usage
 
 ```
-tt project [options]     Manage projects
-tt task [options]        Manage tasks
-tt label [options]       Manage labels
-tt slot [options]        Manage time slots
-tt log [options]         View time logs
+horva project [options]     Manage projects
+horva task [options]        Manage tasks
+horva label [options]       Manage labels
+horva slot [options]        Manage time slots
+horva log [options]         View time logs
 ```
 
-Run `tt <command> --help` for details on each command.
+Run `horva <command> --help` for details on each command.
 
 ## Environment
 
-The CLI reads `TT_DATABASE_URL` from the `.env` file at the repo root. Make sure it is configured before running any commands.
+The CLI reads `DATABASE_URL` from the `.env` file at the repo root. Make sure it is configured before running any commands.

@@ -1,4 +1,4 @@
-# Timetracker
+# Horva
 
 ## Architecture
 

@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-import { Button } from "@timetracker/ui/Button";
+import { Button } from "@horva/ui/Button";
 
 export function InsertSeparatorRow({ onInsert }: { onInsert: () => void }) {
   const [hovered, setHovered] = useState(false);

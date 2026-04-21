@@ -7,11 +7,11 @@ import { createFileRoute } from "@tanstack/react-router";
 import { ChevronDown, ChevronRight, X } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
-import type { Period } from "@timetracker/core";
-import { Button } from "@timetracker/ui/Button";
-import { DateRangePicker } from "@timetracker/ui/DateRangePicker";
-import { Select, SelectItem } from "@timetracker/ui/Select";
-import { Tab, TabList, Tabs } from "@timetracker/ui/Tabs";
+import type { Period } from "@horva/core";
+import { Button } from "@horva/ui/Button";
+import { DateRangePicker } from "@horva/ui/DateRangePicker";
+import { Select, SelectItem } from "@horva/ui/Select";
+import { Tab, TabList, Tabs } from "@horva/ui/Tabs";
 
 import { FormattedMinutes } from "~/components/FormattedMinutes.js";
 import { LoadingSpinner } from "~/components/LoadingSpinner.js";

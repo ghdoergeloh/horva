@@ -7,7 +7,7 @@ import type {
   Period,
   UpdateProject,
   UpdateTask,
-} from "@timetracker/core";
+} from "@horva/core";
 
 export type DbChangedScope = "slots" | "tasks" | "all";
 

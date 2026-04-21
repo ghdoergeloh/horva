@@ -1,8 +1,8 @@
 import type { Command } from "commander";
 import chalk from "chalk";
 
-import type { Period } from "@timetracker/core";
-import { getLog, getOpenSlot, getSummary } from "@timetracker/core";
+import type { Period } from "@horva/core";
+import { getLog, getOpenSlot, getSummary } from "@horva/core";
 
 import { db } from "../lib/db";
 import {
@@ -23,7 +23,7 @@ function parsePeriod(str: string | undefined): Period {
 }
 
 export function registerLogCommands(program: Command): void {
-  // tt log
+  // horva log
   program
     .command("log [period]")
     .alias("lg")
@@ -168,7 +168,7 @@ export function registerLogCommands(program: Command): void {
       }
     });
 
-  // tt summary
+  // horva summary
   program
     .command("summary [period]")
     .alias("sum")

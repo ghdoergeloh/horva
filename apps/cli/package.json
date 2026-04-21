@@ -1,9 +1,9 @@
 {
-  "name": "@timetracker/cli",
+  "name": "@horva/cli",
   "version": "0.0.1",
   "type": "module",
   "bin": {
-    "tt": "./dist/index.js"
+    "horva": "./dist/index.js"
   },
   "files": [
     "dist"
@@ -17,20 +17,20 @@
     "pack": "node build.mjs && cd dist && pnpm pack --pack-destination ..",
     "typecheck": "tsc"
   },
-  "prettier": "@timetracker/prettier-config",
+  "prettier": "@horva/prettier-config",
   "dependencies": {
+    "@horva/core": "workspace:*",
+    "@horva/db": "workspace:*",
     "@inquirer/prompts": "^7.5.0",
-    "@timetracker/core": "workspace:*",
-    "@timetracker/db": "workspace:*",
     "chalk": "^5.4.1",
     "commander": "^14.0.3",
     "dotenv": "catalog:",
     "pg": "^8.18.0"
   },
   "devDependencies": {
-    "@timetracker/eslint-config": "workspace:*",
-    "@timetracker/prettier-config": "workspace:*",
-    "@timetracker/tsconfig": "workspace:*",
+    "@horva/eslint-config": "workspace:*",
+    "@horva/prettier-config": "workspace:*",
+    "@horva/tsconfig": "workspace:*",
     "@types/node": "catalog:",
     "@types/pg": "^8.16.0",
     "esbuild": "^0.25.0",

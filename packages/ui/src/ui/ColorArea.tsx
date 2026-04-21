@@ -3,7 +3,7 @@
 import type { ColorAreaProps as AriaColorAreaProps } from "react-aria-components";
 import { ColorArea as AriaColorArea } from "react-aria-components";
 
-import { composeTailwindRenderProps } from "@timetracker/ui";
+import { composeTailwindRenderProps } from "@horva/ui";
 
 import { ColorThumb } from "./ColorThumb";
 

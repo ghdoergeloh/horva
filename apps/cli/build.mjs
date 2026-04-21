@@ -4,7 +4,7 @@ import { build, context } from "esbuild";
 
 const watchMode = process.argv.includes("--watch");
 
-// Bundle workspace packages (@timetracker/*) inline; keep third-party deps external
+// Bundle workspace packages (@horva/*) inline; keep third-party deps external
 // so they are resolved from node_modules at runtime.
 const thirdPartyExternal = [
   "@inquirer/prompts",
@@ -38,7 +38,7 @@ if (watchMode) {
 /**
  * Write dist/package.json for `pnpm pack` / publishing.
  *
- * The compiled bundle includes all @timetracker/* workspace packages inline, so the
+ * The compiled bundle includes all @horva/* workspace packages inline, so the
  * only real runtime dependencies are the third-party externals listed above.
  * Catalog version specifiers are resolved from the workspace root so the
  * published manifest contains concrete version ranges.

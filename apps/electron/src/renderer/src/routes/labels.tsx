@@ -4,8 +4,8 @@ import { createFileRoute } from "@tanstack/react-router";
 import { Plus, Tag, Trash2, X } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
-import { Button } from "@timetracker/ui/Button";
-import { TextField } from "@timetracker/ui/TextField";
+import { Button } from "@horva/ui/Button";
+import { TextField } from "@horva/ui/TextField";
 
 import type { LabelRow } from "~/components/TaskEditControls.js";
 import { LoadingSpinner } from "~/components/LoadingSpinner.js";

@@ -1,5 +1,5 @@
 {
-  "name": "@timetracker/tsconfig",
+  "name": "@horva/tsconfig",
   "private": true,
   "files": [
     "*.json"

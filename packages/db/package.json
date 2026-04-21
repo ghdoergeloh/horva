@@ -1,5 +1,5 @@
 {
-  "name": "@timetracker/db",
+  "name": "@horva/db",
   "private": true,
   "license": "MIT",
   "type": "module",
@@ -30,7 +30,7 @@
     "typecheck": "tsc --noEmit --emitDeclarationOnly false",
     "with-env": "dotenv -e ../../.env --"
   },
-  "prettier": "@timetracker/prettier-config",
+  "prettier": "@horva/prettier-config",
   "dependencies": {
     "dotenv": "catalog:",
     "drizzle-orm": "catalog:",
@@ -39,9 +39,9 @@
     "zod": "catalog:"
   },
   "devDependencies": {
-    "@timetracker/eslint-config": "workspace:*",
-    "@timetracker/prettier-config": "workspace:*",
-    "@timetracker/tsconfig": "workspace:*",
+    "@horva/eslint-config": "workspace:*",
+    "@horva/prettier-config": "workspace:*",
+    "@horva/tsconfig": "workspace:*",
     "@types/pg": "^8.16.0",
     "drizzle-kit": "catalog:",
     "eslint": "catalog:",

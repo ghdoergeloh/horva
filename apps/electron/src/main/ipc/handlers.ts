@@ -6,8 +6,8 @@ import type {
   Period,
   UpdateProject,
   UpdateTask,
-} from "@timetracker/core";
-import type { Db } from "@timetracker/db/client";
+} from "@horva/core";
+import type { Db } from "@horva/db/client";
 import {
   archiveProject,
   archiveTask,
@@ -40,7 +40,7 @@ import {
   stopSlot,
   updateProject,
   updateTask,
-} from "@timetracker/core";
+} from "@horva/core";
 
 export type DbChangedScope = "slots" | "tasks" | "all";
 

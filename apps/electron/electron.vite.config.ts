@@ -8,7 +8,7 @@ export default defineConfig({
   main: {
     plugins: [
       externalizeDepsPlugin({
-        exclude: ["@timetracker/core", "@timetracker/db"],
+        exclude: ["@horva/core", "@horva/db"],
       }),
     ],
     resolve: {
@@ -18,7 +18,7 @@ export default defineConfig({
   preload: {
     plugins: [
       externalizeDepsPlugin({
-        exclude: ["@timetracker/core", "@timetracker/db"],
+        exclude: ["@horva/core", "@horva/db"],
       }),
     ],
   },

@@ -4,7 +4,7 @@ import type { LinkProps as AriaLinkProps } from "react-aria-components";
 import { Link as AriaLink, composeRenderProps } from "react-aria-components";
 import { tv } from "tailwind-variants";
 
-import { focusRing } from "@timetracker/ui";
+import { focusRing } from "@horva/ui";
 
 interface LinkProps extends AriaLinkProps {
   variant?: "primary" | "secondary";

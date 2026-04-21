@@ -5,9 +5,9 @@ import { createFileRoute, useParams } from "@tanstack/react-router";
 import { ChevronDown, ChevronRight, Plus, X } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
-import { Button } from "@timetracker/ui/Button";
-import { Select, SelectItem } from "@timetracker/ui/Select";
-import { TextField } from "@timetracker/ui/TextField";
+import { Button } from "@horva/ui/Button";
+import { Select, SelectItem } from "@horva/ui/Select";
+import { TextField } from "@horva/ui/TextField";
 
 import type { LabelRow } from "~/components/TaskEditControls.js";
 import { LoadingSpinner } from "~/components/LoadingSpinner.js";

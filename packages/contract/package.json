@@ -1,5 +1,5 @@
 {
-  "name": "@timetracker/contract",
+  "name": "@horva/contract",
   "version": "0.0.0",
   "private": true,
   "type": "module",
@@ -15,15 +15,15 @@
     "lint": "eslint",
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
-  "prettier": "@timetracker/prettier-config",
+  "prettier": "@horva/prettier-config",
   "dependencies": {
     "@orpc/contract": "^1.13.5",
     "zod": "catalog:"
   },
   "devDependencies": {
-    "@timetracker/eslint-config": "workspace:*",
-    "@timetracker/prettier-config": "workspace:*",
-    "@timetracker/tsconfig": "workspace:*",
+    "@horva/eslint-config": "workspace:*",
+    "@horva/prettier-config": "workspace:*",
+    "@horva/tsconfig": "workspace:*",
     "@types/node": "catalog:",
     "eslint": "catalog:",
     "prettier": "catalog:",

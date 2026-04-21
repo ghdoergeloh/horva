@@ -7,13 +7,13 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ```bash
 # Development
 pnpm dev                          # Start all apps/packages in watch mode (Turbo)
-pnpm -F @timetracker/api dev             # Start only the API
+pnpm -F @horva/api dev             # Start only the API
 pnpm -F react dev                 # Start only the React frontend
 
 # Build & Type Check
 pnpm build                        # Build all workspaces
 pnpm typecheck                    # Type-check all workspaces
-pnpm -F @timetracker/db build            # Build a single package (use -F <package-name>)
+pnpm -F @horva/db build            # Build a single package (use -F <package-name>)
 
 # Lint & Format
 pnpm lint                         # Lint all workspaces
@@ -21,14 +21,14 @@ pnpm lint:fix                     # Lint and auto-fix
 pnpm format                       # Check formatting
 pnpm format:fix                   # Fix formatting
 
-# Database (requires TT_DATABASE_URL in .env)
+# Database (requires DATABASE_URL in .env)
 pnpm db:push                      # Push schema to database
 pnpm db:generate                  # Generate migrations
 pnpm db:migrate                   # Run migrations
 pnpm db:studio                    # Open Drizzle Studio
 
 # Auth schema (after changing better-auth config)
-pnpm -F @timetracker/auth generate       # Regenerate auth tables into packages/db/src/schema/auth-schema.ts
+pnpm -F @horva/auth generate       # Regenerate auth tables into packages/db/src/schema/auth-schema.ts
 
 # Docker (PostgreSQL + Mailpit)
 docker compose up -d              # Start local services
@@ -37,7 +37,7 @@ docker compose up -d              # Start local services
 pnpm turbo gen init               # Interactive generator for new packages
 
 # Add UI components (shadcn-style)
-pnpm -F @timetracker/ui ui-add           # Add a new UI component
+pnpm -F @horva/ui ui-add           # Add a new UI component
 ```
 
 ## Architecture
@@ -68,7 +68,7 @@ When adding a new API endpoint:
 
 ### Key Conventions
 
-- **Imports**: Auto-sorted by Prettier — order is: types, react, third-party, `@timetracker/*` workspace packages, local (`~/`, `../`, `./`). Tailwind classes sorted in `cn()` and `cva()` calls.
+- **Imports**: Auto-sorted by Prettier — order is: types, react, third-party, `@horva/*` workspace packages, local (`~/`, `../`, `./`). Tailwind classes sorted in `cn()` and `cva()` calls.
 - **TypeScript**: Strict mode with `noUncheckedIndexedAccess`, `verbatimModuleSyntax` (use `import type` for type-only imports). Base config in `tooling/typescript/base.json`.
 - **ESLint**: Flat config (v9). Configs exported from `tooling/eslint` as `./base`, `./react`. Route files in `apps/react/src/routes/` have `react-refresh/only-export-components` disabled.
 - **Dependencies**: Versions centralized in `pnpm-workspace.yaml` catalogs. Use `catalog:` or `catalog:react19` in package.json version fields.

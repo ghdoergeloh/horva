@@ -1,5 +1,5 @@
 {
-  "extends": "@timetracker/tsconfig/base.json",
+  "extends": "@horva/tsconfig/base.json",
   "include": ["src", "*.ts"],
   "exclude": ["node_modules"]
 }

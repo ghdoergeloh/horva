@@ -1,6 +1,6 @@
 import { defineConfig } from "eslint/config";
 
-import { baseConfig } from "@timetracker/eslint-config/base";
+import { baseConfig } from "@horva/eslint-config/base";
 
 export default defineConfig(
   {

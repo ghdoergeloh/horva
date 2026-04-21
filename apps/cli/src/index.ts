@@ -11,7 +11,7 @@ import { registerTaskCommands } from "./commands/task.js";
 
 const program = new Command();
 
-program.name("tt").description("Time tracking CLI").version("0.1.0");
+program.name("horva").description("Horva time tracking CLI").version("0.1.0");
 
 registerInitCommand(program);
 registerSlotCommands(program);

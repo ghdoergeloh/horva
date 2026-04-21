@@ -89,7 +89,7 @@ importers:
       "@commitlint/config-conventional":
         specifier: ^20.4.1
         version: 20.4.1
-      "@timetracker/prettier-config":
+      "@horva/prettier-config":
         specifier: workspace:*
         version: link:tooling/prettier
       "@turbo/gen":
@@ -143,16 +143,16 @@ importers:
       "@orpc/server":
         specifier: ^1.13.5
         version: 1.13.5(@opentelemetry/api@1.9.0)(ws@8.20.0(bufferutil@4.1.0))
-      "@timetracker/auth":
+      "@horva/auth":
         specifier: workspace:*
         version: link:../../packages/auth
-      "@timetracker/contract":
+      "@horva/contract":
         specifier: workspace:*
         version: link:../../packages/contract
-      "@timetracker/core":
+      "@horva/core":
         specifier: workspace:*
         version: link:../../packages/core
-      "@timetracker/db":
+      "@horva/db":
         specifier: workspace:*
         version: link:../../packages/db
       dotenv:
@@ -162,13 +162,13 @@ importers:
         specifier: ^4.11.9
         version: 4.11.9
     devDependencies:
-      "@timetracker/eslint-config":
+      "@horva/eslint-config":
         specifier: workspace:*
         version: link:../../tooling/eslint
-      "@timetracker/prettier-config":
+      "@horva/prettier-config":
         specifier: workspace:*
         version: link:../../tooling/prettier
-      "@timetracker/tsconfig":
+      "@horva/tsconfig":
         specifier: workspace:*
         version: link:../../tooling/typescript
       "@types/node":
@@ -192,10 +192,10 @@ importers:
       "@inquirer/prompts":
         specifier: ^7.5.0
         version: 7.10.1(@types/node@24.10.13)
-      "@timetracker/core":
+      "@horva/core":
         specifier: workspace:*
         version: link:../../packages/core
-      "@timetracker/db":
+      "@horva/db":
         specifier: workspace:*
         version: link:../../packages/db
       chalk:
@@ -211,13 +211,13 @@ importers:
         specifier: ^8.18.0
         version: 8.18.0
     devDependencies:
-      "@timetracker/eslint-config":
+      "@horva/eslint-config":
         specifier: workspace:*
         version: link:../../tooling/eslint
-      "@timetracker/prettier-config":
+      "@horva/prettier-config":
         specifier: workspace:*
         version: link:../../tooling/prettier
-      "@timetracker/tsconfig":
+      "@horva/tsconfig":
         specifier: workspace:*
         version: link:../../tooling/typescript
       "@types/node":
@@ -275,25 +275,25 @@ importers:
       "@internationalized/date":
         specifier: ^3.11.0
         version: 3.11.0
-      "@timetracker/core":
+      "@horva/core":
         specifier: workspace:*
         version: link:../../packages/core
-      "@timetracker/db":
+      "@horva/db":
         specifier: workspace:*
         version: link:../../packages/db
-      "@timetracker/eslint-config":
+      "@horva/eslint-config":
         specifier: workspace:*
         version: link:../../tooling/eslint
-      "@timetracker/prettier-config":
+      "@horva/prettier-config":
         specifier: workspace:*
         version: link:../../tooling/prettier
-      "@timetracker/tailwind-config":
+      "@horva/tailwind-config":
         specifier: workspace:*
         version: link:../../tooling/tailwind
-      "@timetracker/tsconfig":
+      "@horva/tsconfig":
         specifier: workspace:*
         version: link:../../tooling/typescript
-      "@timetracker/ui":
+      "@horva/ui":
         specifier: workspace:*
         version: link:../../packages/ui
       "@tailwindcss/vite":
@@ -368,13 +368,13 @@ importers:
       "@orpc/react-query":
         specifier: ^1.13.5
         version: 1.13.5(@opentelemetry/api@1.9.0)(@orpc/client@1.13.5(@opentelemetry/api@1.9.0))(@tanstack/query-core@5.90.20)(@tanstack/react-query@5.90.21(react@19.2.4))(react@19.2.4)
-      "@timetracker/auth":
+      "@horva/auth":
         specifier: workspace:*
         version: link:../../packages/auth
-      "@timetracker/contract":
+      "@horva/contract":
         specifier: workspace:*
         version: link:../../packages/contract
-      "@timetracker/ui":
+      "@horva/ui":
         specifier: workspace:*
         version: link:../../packages/ui
       "@tanstack/react-query":
@@ -393,16 +393,16 @@ importers:
         specifier: catalog:react19
         version: 19.2.4(react@19.2.4)
     devDependencies:
-      "@timetracker/eslint-config":
+      "@horva/eslint-config":
         specifier: workspace:*
         version: link:../../tooling/eslint
-      "@timetracker/prettier-config":
+      "@horva/prettier-config":
         specifier: workspace:*
         version: link:../../tooling/prettier
-      "@timetracker/tailwind-config":
+      "@horva/tailwind-config":
         specifier: workspace:*
         version: link:../../tooling/tailwind
-      "@timetracker/tsconfig":
+      "@horva/tsconfig":
         specifier: workspace:*
         version: link:../../tooling/typescript
       "@tailwindcss/vite":
@@ -441,10 +441,10 @@ importers:
 
   packages/auth:
     dependencies:
-      "@timetracker/db":
+      "@horva/db":
         specifier: workspace:*
         version: link:../db
-      "@timetracker/transactional":
+      "@horva/transactional":
         specifier: workspace:*
         version: link:../transactional
       better-auth:
@@ -457,13 +457,13 @@ importers:
       "@better-auth/cli":
         specifier: "catalog:"
         version: 1.4.18(@better-fetch/fetch@1.1.21)(@opentelemetry/api@1.9.0)(@types/better-sqlite3@7.6.13)(@vercel/postgres@0.10.0)(better-call@1.1.8(zod@4.3.6))(drizzle-kit@0.31.9)(jose@6.1.3)(kysely@0.28.11)(nanostores@1.1.0)(next@16.1.6(@babel/core@7.29.0)(@opentelemetry/api@1.9.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(postgres@3.4.8)(prisma@5.22.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(vitest@4.1.2(@opentelemetry/api@1.9.0)(@types/node@25.5.0)(vite@7.3.1(@types/node@25.5.0)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2)))
-      "@timetracker/eslint-config":
+      "@horva/eslint-config":
         specifier: workspace:*
         version: link:../../tooling/eslint
-      "@timetracker/prettier-config":
+      "@horva/prettier-config":
         specifier: workspace:*
         version: link:../../tooling/prettier
-      "@timetracker/tsconfig":
+      "@horva/tsconfig":
         specifier: workspace:*
         version: link:../../tooling/typescript
       eslint:
@@ -485,13 +485,13 @@ importers:
         specifier: "catalog:"
         version: 4.3.6
     devDependencies:
-      "@timetracker/eslint-config":
+      "@horva/eslint-config":
         specifier: workspace:*
         version: link:../../tooling/eslint
-      "@timetracker/prettier-config":
+      "@horva/prettier-config":
         specifier: workspace:*
         version: link:../../tooling/prettier
-      "@timetracker/tsconfig":
+      "@horva/tsconfig":
         specifier: workspace:*
         version: link:../../tooling/typescript
       "@types/node":
@@ -509,7 +509,7 @@ importers:
 
   packages/core:
     dependencies:
-      "@timetracker/db":
+      "@horva/db":
         specifier: workspace:*
         version: link:../db
       rrule:
@@ -519,13 +519,13 @@ importers:
         specifier: "catalog:"
         version: 4.3.6
     devDependencies:
-      "@timetracker/eslint-config":
+      "@horva/eslint-config":
         specifier: workspace:*
         version: link:../../tooling/eslint
-      "@timetracker/prettier-config":
+      "@horva/prettier-config":
         specifier: workspace:*
         version: link:../../tooling/prettier
-      "@timetracker/tsconfig":
+      "@horva/tsconfig":
         specifier: workspace:*
         version: link:../../tooling/typescript
       eslint:
@@ -556,13 +556,13 @@ importers:
         specifier: "catalog:"
         version: 4.3.6
     devDependencies:
-      "@timetracker/eslint-config":
+      "@horva/eslint-config":
         specifier: workspace:*
         version: link:../../tooling/eslint
-      "@timetracker/prettier-config":
+      "@horva/prettier-config":
         specifier: workspace:*
         version: link:../../tooling/prettier
-      "@timetracker/tsconfig":
+      "@horva/tsconfig":
         specifier: workspace:*
         version: link:../../tooling/typescript
       "@types/pg":
@@ -596,13 +596,13 @@ importers:
       "@react-email/preview-server":
         specifier: ^5.2.8
         version: 5.2.8(@opentelemetry/api@1.9.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
-      "@timetracker/eslint-config":
+      "@horva/eslint-config":
         specifier: workspace:*
         version: link:../../tooling/eslint
-      "@timetracker/prettier-config":
+      "@horva/prettier-config":
         specifier: workspace:*
         version: link:../../tooling/prettier
-      "@timetracker/tsconfig":
+      "@horva/tsconfig":
         specifier: workspace:*
         version: link:../../tooling/typescript
       "@types/nodemailer":
@@ -648,13 +648,13 @@ importers:
         specifier: ^3.2.2
         version: 3.2.2(tailwind-merge@3.4.1)(tailwindcss@4.1.18)
     devDependencies:
-      "@timetracker/eslint-config":
+      "@horva/eslint-config":
         specifier: workspace:*
         version: link:../../tooling/eslint
-      "@timetracker/prettier-config":
+      "@horva/prettier-config":
         specifier: workspace:*
         version: link:../../tooling/prettier
-      "@timetracker/tsconfig":
+      "@horva/tsconfig":
         specifier: workspace:*
         version: link:../../tooling/typescript
       "@types/react":
@@ -718,7 +718,7 @@ importers:
         specifier: ^8.55.0
         version: 8.55.0(eslint@9.39.2(jiti@2.6.1))(typescript@5.9.3)
     devDependencies:
-      "@timetracker/prettier-config":
+      "@horva/prettier-config":
         specifier: workspace:*
         version: link:../prettier
       eslint:
@@ -745,7 +745,7 @@ importers:
         specifier: ^0.7.2
         version: 0.7.2(@ianvs/prettier-plugin-sort-imports@4.7.1(prettier@3.8.1))(prettier@3.8.1)
     devDependencies:
-      "@timetracker/tsconfig":
+      "@horva/tsconfig":
         specifier: workspace:*
         version: link:../typescript
       "@types/node":
@@ -773,13 +773,13 @@ importers:
         specifier: ^2.0.1
         version: 2.0.1(tailwindcss@4.1.18)
     devDependencies:
-      "@timetracker/eslint-config":
+      "@horva/eslint-config":
         specifier: workspace:*
         version: link:../eslint
-      "@timetracker/prettier-config":
+      "@horva/prettier-config":
         specifier: workspace:*
         version: link:../prettier
-      "@timetracker/tsconfig":
+      "@horva/tsconfig":
         specifier: workspace:*
         version: link:../typescript
       "@types/node":
@@ -799,13 +799,13 @@ importers:
 
   tooling/vitest:
     devDependencies:
-      "@timetracker/eslint-config":
+      "@horva/eslint-config":
         specifier: workspace:*
         version: link:../eslint
-      "@timetracker/prettier-config":
+      "@horva/prettier-config":
         specifier: workspace:*
         version: link:../prettier
-      "@timetracker/tsconfig":
+      "@horva/tsconfig":
         specifier: workspace:*
         version: link:../typescript
       "@vitejs/plugin-react":

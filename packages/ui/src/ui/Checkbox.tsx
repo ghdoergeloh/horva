@@ -8,7 +8,7 @@ import {
 } from "react-aria-components";
 import { tv } from "tailwind-variants";
 
-import { focusRing } from "@timetracker/ui";
+import { focusRing } from "@horva/ui";
 
 const checkboxStyles = tv({
   base: "flex gap-2 items-center group font-sans text-sm transition relative [-webkit-tap-highlight-color:transparent]",

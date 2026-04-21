@@ -1,8 +1,8 @@
 import type { Command } from "commander";
 import { confirm, input } from "@inquirer/prompts";
 
-import type { Db } from "@timetracker/db/client";
-import { seed } from "@timetracker/core";
+import type { Db } from "@horva/db/client";
+import { seed } from "@horva/core";
 
 import { configPath, readConfig, writeConfig } from "../lib/config.js";
 import { printError, printSuccess, sym } from "../lib/display.js";
@@ -11,7 +11,7 @@ import { runMigrations } from "../lib/migrate.js";
 export function registerInitCommand(program: Command): void {
   program
     .command("init")
-    .description("Configure database connection and initialize tt")
+    .description("Configure database connection and initialize horva")
     .action(async () => {
       try {
         const existing = readConfig();
@@ -29,7 +29,7 @@ export function registerInitCommand(program: Command): void {
 
         const databaseUrl = await input({
           message: "PostgreSQL connection URL:",
-          default: existing?.databaseUrl ?? "postgres://localhost:5432/tt",
+          default: existing?.databaseUrl ?? "postgres://localhost:5432/horva",
           validate: (v) =>
             v.startsWith("postgres") || "Must be a postgres:// URL",
         });
@@ -38,7 +38,7 @@ export function registerInitCommand(program: Command): void {
         printSuccess(`${sym.checked} Config written to ${configPath()}`);
 
         // Set for the current process so the db client can connect
-        process.env["TT_DATABASE_URL"] = databaseUrl;
+        process.env["DATABASE_URL"] = databaseUrl;
 
         await runMigrations(databaseUrl);
         printSuccess(`${sym.checked} Schema applied.`);

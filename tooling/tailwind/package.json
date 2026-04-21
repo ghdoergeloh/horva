@@ -1,5 +1,5 @@
 {
-  "name": "@timetracker/tailwind-config",
+  "name": "@horva/tailwind-config",
   "private": true,
   "license": "MIT",
   "type": "module",
@@ -13,7 +13,7 @@
     "lint": "eslint",
     "typecheck": "tsc --noEmit"
   },
-  "prettier": "@timetracker/prettier-config",
+  "prettier": "@horva/prettier-config",
   "dependencies": {
     "@tailwindcss/postcss": "catalog:",
     "postcss": "catalog:",
@@ -22,9 +22,9 @@
     "tailwindcss-react-aria-components": "^2.0.1"
   },
   "devDependencies": {
-    "@timetracker/eslint-config": "workspace:*",
-    "@timetracker/prettier-config": "workspace:*",
-    "@timetracker/tsconfig": "workspace:*",
+    "@horva/eslint-config": "workspace:*",
+    "@horva/prettier-config": "workspace:*",
+    "@horva/tsconfig": "workspace:*",
     "@types/node": "catalog:",
     "eslint": "catalog:",
     "prettier": "catalog:",

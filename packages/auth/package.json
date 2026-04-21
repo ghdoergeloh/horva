@@ -1,5 +1,5 @@
 {
-  "name": "@timetracker/auth",
+  "name": "@horva/auth",
   "private": true,
   "license": "MIT",
   "type": "module",
@@ -14,18 +14,18 @@
     "lint": "eslint",
     "typecheck": "tsc --noEmit"
   },
-  "prettier": "@timetracker/prettier-config",
+  "prettier": "@horva/prettier-config",
   "dependencies": {
-    "@timetracker/db": "workspace:*",
-    "@timetracker/transactional": "workspace:*",
+    "@horva/db": "workspace:*",
+    "@horva/transactional": "workspace:*",
     "better-auth": "^1.4.18",
     "zod": "catalog:"
   },
   "devDependencies": {
     "@better-auth/cli": "catalog:",
-    "@timetracker/eslint-config": "workspace:*",
-    "@timetracker/prettier-config": "workspace:*",
-    "@timetracker/tsconfig": "workspace:*",
+    "@horva/eslint-config": "workspace:*",
+    "@horva/prettier-config": "workspace:*",
+    "@horva/tsconfig": "workspace:*",
     "eslint": "catalog:",
     "prettier": "catalog:",
     "typescript": "catalog:"

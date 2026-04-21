@@ -1,6 +1,6 @@
-import type { Db } from "@timetracker/db/client";
-import { and, eq, inArray, isNull, ne, notInArray, sql } from "@timetracker/db";
-import { slot, task, taskLabel } from "@timetracker/db/schema";
+import type { Db } from "@horva/db/client";
+import { and, eq, inArray, isNull, ne, notInArray, sql } from "@horva/db";
+import { slot, task, taskLabel } from "@horva/db/schema";
 
 import type { CreateTask, UpdateTask } from "../schemas/index";
 import { rruleFromString } from "../utils/rrule";
