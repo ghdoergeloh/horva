@@ -159,6 +159,7 @@
   },
   "taskCard": {
     "markDone": "Als erledigt markieren",
+    "markOpen": "Als offen markieren",
     "removeFromToday": "Von heute entfernen",
     "clickToEdit": "Klicken zum Bearbeiten",
     "totalTime": "{{time}} gesamt",

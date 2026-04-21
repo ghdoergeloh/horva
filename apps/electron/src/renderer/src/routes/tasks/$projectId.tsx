@@ -214,6 +214,11 @@ function DoneTasksSection({
     setPage((p) => p + 1);
   }
 
+  function handleReopen(id: number) {
+    setAccumulated((prev) => prev.filter((t) => t.id !== id));
+    onReopen(id);
+  }
+
   return (
     <section>
       <Button
@@ -249,10 +254,11 @@ function DoneTasksSection({
               labels={t.taskLabels.map((tl) => tl.label)}
               totalMinutes={calcTotalMinutes(t.slots)}
               isActivity={t.taskType === "activity"}
+              isDone={t.taskType !== "activity"}
               scheduledAt={t.scheduledAt}
               recurrenceRule={t.recurrenceRule}
               allLabels={allLabels}
-              onMarkDone={() => onReopen(t.id)}
+              onMarkDone={() => handleReopen(t.id)}
             />
           ))}
 

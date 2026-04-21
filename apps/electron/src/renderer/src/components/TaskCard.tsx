@@ -1,5 +1,12 @@
 import { useState } from "react";
-import { Circle, Pause, Play, RefreshCw, Repeat } from "lucide-react";
+import {
+  CheckCircle2,
+  Circle,
+  Pause,
+  Play,
+  RefreshCw,
+  Repeat,
+} from "lucide-react";
 import { DialogTrigger, Heading } from "react-aria-components";
 import { useTranslation } from "react-i18next";
 
@@ -31,6 +38,7 @@ interface TaskCardProps {
   scheduledAt?: Date | string | null;
   recurrenceRule?: string | null;
   isActivity?: boolean;
+  isDone?: boolean;
   overdue?: boolean;
   onMarkDone?: () => void;
   // Optional editing
@@ -139,6 +147,7 @@ export function TaskCard({
   scheduledAt,
   recurrenceRule,
   isActivity = false,
+  isDone = false,
   overdue = false,
   onMarkDone,
   allLabels,
@@ -194,13 +203,23 @@ export function TaskCard({
         <Button
           variant="quiet"
           onPress={onMarkDone}
-          className="shrink-0 text-gray-300 hover:text-green-500"
+          className={`shrink-0 ${
+            isDone
+              ? "text-green-500 hover:text-gray-300"
+              : "text-gray-300 hover:text-green-500"
+          }`}
           aria-label={
-            isActivity ? t("taskCard.removeFromToday") : t("taskCard.markDone")
+            isActivity
+              ? t("taskCard.removeFromToday")
+              : isDone
+                ? t("taskCard.markOpen")
+                : t("taskCard.markDone")
           }
         >
           {isActivity ? (
             <Repeat className="h-5 w-5" />
+          ) : isDone ? (
+            <CheckCircle2 className="h-5 w-5" />
           ) : (
             <Circle className="h-5 w-5" />
           )}

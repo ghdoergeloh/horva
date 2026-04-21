@@ -138,6 +138,7 @@
   },
   "taskCard": {
     "markDone": "Mark as done",
+    "markOpen": "Mark as open",
     "removeFromToday": "Remove from today",
     "clickToEdit": "Click to edit",
     "totalTime": "{{time}} total",
