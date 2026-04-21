@@ -1,5 +1,5 @@
 import type { Db } from "@timetracker/db/client";
-import { and, eq, inArray, isNull, ne, notInArray } from "@timetracker/db";
+import { and, eq, inArray, isNull, ne, notInArray, sql } from "@timetracker/db";
 import { slot, task, taskLabel } from "@timetracker/db/schema";
 
 import type { CreateTask, UpdateTask } from "../schemas/index";
@@ -42,7 +42,11 @@ export async function listTasks(db: Db, opts: ListTasksOpts = {}) {
       taskLabels: { with: { label: true } },
       slots: true,
     },
-    orderBy: (t, { desc }) => [desc(t.createdAt)],
+    orderBy: (t, { asc, desc }) => [
+      sql`${t.priority} ASC NULLS LAST`,
+      asc(t.scheduledAt),
+      desc(t.createdAt),
+    ],
     limit: opts.limit,
     offset: opts.offset,
   });
@@ -289,6 +293,20 @@ export async function deleteTask(db: Db, id: number) {
 
     if (!row) throw new Error(`Task #${id} not found after delete`);
     return { task: row, affectedSlots: affectedSlots.length };
+  });
+}
+
+export async function reorderTasks(db: Db, orderedIds: number[]) {
+  if (orderedIds.length === 0) return;
+  await db.transaction(async (tx) => {
+    for (let i = 0; i < orderedIds.length; i++) {
+      const id = orderedIds[i];
+      if (id === undefined) continue;
+      await tx
+        .update(task)
+        .set({ priority: i + 1, updatedAt: new Date() })
+        .where(eq(task.id, id));
+    }
   });
 }
 

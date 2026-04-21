@@ -34,6 +34,7 @@ import {
   markTaskDone,
   planTask,
   reopenTask,
+  reorderTasks,
   splitSlot,
   startSlot,
   stopSlot,
@@ -210,6 +211,12 @@ export function registerHandlers(ipcMain: IpcMain, db: Db): void {
     const result = await deleteTask(db, id);
     notify(_e.sender, "tasks");
     return result;
+  });
+  ipcMain.handle("tasks:reorder", async (_e, orderedIds: number[]) => {
+    if (!Array.isArray(orderedIds)) throw new Error("orderedIds must be array");
+    for (const id of orderedIds) assertId(id, "id");
+    await reorderTasks(db, orderedIds);
+    notify(_e.sender, "tasks");
   });
   ipcMain.handle("tasks:plan", async (_e, id: number, date: string | null) => {
     assertId(id, "id");

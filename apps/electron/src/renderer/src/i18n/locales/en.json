@@ -50,6 +50,12 @@
     "newTaskPlaceholder": "New task…",
     "create": "Create",
     "cancel": "Cancel",
+    "overview": {
+      "title": "All Tasks",
+      "subtitle": "Prioritize via drag & drop",
+      "empty": "No open tasks.",
+      "dragHandle": "Drag to reorder"
+    },
     "taskType": {
       "task": "Task",
       "activity": "Activity"

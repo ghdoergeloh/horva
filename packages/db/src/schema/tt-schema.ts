@@ -1,6 +1,7 @@
 import { relations, sql } from "drizzle-orm";
 import {
   boolean,
+  doublePrecision,
   integer,
   pgEnum,
   pgSequence,
@@ -67,6 +68,7 @@ export const task = pgTable("task", {
   taskType: taskTypeEnum("task_type").notNull().default("task"),
   scheduledAt: timestamp("scheduled_at"),
   recurrenceRule: text("recurrence_rule"),
+  priority: doublePrecision("priority"),
   notes: text("notes"),
   links: text("links")
     .array()

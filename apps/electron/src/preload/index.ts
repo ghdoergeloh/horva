@@ -53,6 +53,8 @@ const api = {
       ipcRenderer.invoke("tasks:plan", id, date),
     setRecurrence: (id: number, rule: string | null) =>
       ipcRenderer.invoke("tasks:setRecurrence", id, rule),
+    reorder: (orderedIds: number[]) =>
+      ipcRenderer.invoke("tasks:reorder", orderedIds),
   },
   projects: {
     list: (includeArchived = false) =>

@@ -50,6 +50,12 @@
     "newTaskPlaceholder": "Neue Aufgabe…",
     "create": "Erstellen",
     "cancel": "Abbrechen",
+    "overview": {
+      "title": "Alle Aufgaben",
+      "subtitle": "Per Drag & Drop priorisieren",
+      "empty": "Keine offenen Aufgaben.",
+      "dragHandle": "Ziehen zum Neuordnen"
+    },
     "taskType": {
       "task": "Aufgabe",
       "activity": "Aktivität"

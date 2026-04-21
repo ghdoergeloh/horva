@@ -197,7 +197,8 @@ function AppShell() {
     queryFn: () => window.api.projects.list() as Promise<ProjectRow[]>,
   });
 
-  const isTasksActive = location.pathname.startsWith("/tasks/");
+  const isTasksActive = location.pathname.startsWith("/tasks");
+  const isTasksOverview = location.pathname === "/tasks";
 
   const topNavItems = [
     { to: "/", label: t("nav.today"), icon: LayoutDashboard },
@@ -247,15 +248,20 @@ function AppShell() {
               <div className="mb-1">
                 <div
                   className={`flex items-center rounded-md text-sm transition-colors ${
-                    isTasksActive
+                    isTasksOverview
                       ? "bg-indigo-50 font-medium text-indigo-700"
-                      : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
+                      : isTasksActive
+                        ? "font-medium text-indigo-700"
+                        : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
                   }`}
                 >
-                  <span className="flex flex-1 items-center gap-3 px-3 py-2">
+                  <a
+                    href="#/tasks"
+                    className="flex flex-1 items-center gap-3 px-3 py-2"
+                  >
                     <CheckSquare className="h-4 w-4 flex-shrink-0" />
                     {t("nav.tasks")}
-                  </span>
+                  </a>
                   <Button
                     variant="quiet"
                     onPress={() => setTasksOpen((v) => !v)}

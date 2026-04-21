@@ -30,6 +30,7 @@ export const taskSchema = z.object({
   taskType: taskTypeSchema,
   scheduledAt: z.date().nullable(),
   recurrenceRule: z.string().nullable(),
+  priority: z.number().nullable(),
   notes: z.string().nullable(),
   links: z.array(z.string()),
   createdAt: z.date(),
