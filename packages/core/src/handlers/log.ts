@@ -1,18 +1,29 @@
+import type { Period } from "../services/log.service";
 import type { HandlerArgs } from "./types";
 import { getLog, getSummary } from "../services/log.service";
 
-type Period = "today" | "yesterday" | "week" | "month" | "all";
+type RangeInput = { period: Period } | { from: Date; to: Date };
 
-interface PeriodInput {
-  period?: Period;
+function toRange(
+  input: RangeInput | undefined,
+): Period | { from: Date; to: Date } {
+  if (!input) return "today";
+  if ("period" in input) return input.period;
+  return input;
 }
 
-export async function entries({ input, context }: HandlerArgs<PeriodInput>) {
-  const slots = await getLog(context.db, input.period ?? "today");
+export async function entries({
+  input,
+  context,
+}: HandlerArgs<RangeInput | undefined>) {
+  const slots = await getLog(context.db, toRange(input));
   return { slots };
 }
 
-export async function summary({ input, context }: HandlerArgs<PeriodInput>) {
-  const summary = await getSummary(context.db, input.period ?? "today");
+export async function summary({
+  input,
+  context,
+}: HandlerArgs<RangeInput | undefined>) {
+  const summary = await getSummary(context.db, toRange(input));
   return { summary };
 }

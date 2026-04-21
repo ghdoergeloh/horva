@@ -8,31 +8,39 @@ import {
   markTaskDone,
   planTask,
   reopenTask,
+  reorderTasks,
   updateTask,
 } from "../services/task.service";
 
 interface ListInput {
   projectId?: number;
   status?: "open" | "done" | "archived" | "deleted";
+  includeStatuses?: ("open" | "done" | "archived" | "deleted")[];
   includeAll?: boolean;
+  taskType?: "task" | "activity";
+  limit?: number;
+  offset?: number;
 }
 
 export async function list({ input, context }: HandlerArgs<ListInput>) {
   const tasks = await listTasks(context.db, {
     projectId: input.projectId,
     status: input.status,
-    includeStatuses: input.includeAll
-      ? ["open", "done", "archived"]
-      : undefined,
+    includeStatuses:
+      input.includeStatuses ??
+      (input.includeAll ? ["open", "done", "archived"] : undefined),
+    taskType: input.taskType,
+    limit: input.limit,
+    offset: input.offset,
   });
   return { tasks };
 }
 
-interface GetInput {
+interface IdInput {
   id: number;
 }
 
-export async function get({ input, context }: HandlerArgs<GetInput>) {
+export async function get({ input, context }: HandlerArgs<IdInput>) {
   const task = await getTask(context.db, input.id);
   return { task: task ?? null };
 }
@@ -77,10 +85,6 @@ export async function update({ input, context }: HandlerArgs<UpdateInput>) {
   return { task: full };
 }
 
-interface IdInput {
-  id: number;
-}
-
 export async function done({ input, context }: HandlerArgs<IdInput>) {
   const t = await markTaskDone(context.db, input.id);
   const full = await getTask(context.db, t.id);
@@ -118,4 +122,13 @@ export async function plan({ input, context }: HandlerArgs<PlanInput>) {
   const full = await getTask(context.db, t.id);
   if (!full) throw new Error("Task not found after plan");
   return { task: full };
+}
+
+interface ReorderInput {
+  orderedIds: number[];
+}
+
+export async function reorder({ input, context }: HandlerArgs<ReorderInput>) {
+  await reorderTasks(context.db, input.orderedIds);
+  return { ok: true };
 }

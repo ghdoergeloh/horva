@@ -39,6 +39,9 @@ export const router = base.router({
         context: { db, session: context.session },
       }),
     ),
+    list: authed.slot.list.handler(({ input, context }) =>
+      handlers.slot.list({ input, context: { db, session: context.session } }),
+    ),
     start: authed.slot.start.handler(({ input, context }) =>
       handlers.slot.start({ input, context: { db, session: context.session } }),
     ),
@@ -48,8 +51,29 @@ export const router = base.router({
     done: authed.slot.done.handler(({ input, context }) =>
       handlers.slot.done({ input, context: { db, session: context.session } }),
     ),
+    assign: authed.slot.assign.handler(({ input, context }) =>
+      handlers.slot.assign({
+        input,
+        context: { db, session: context.session },
+      }),
+    ),
     edit: authed.slot.edit.handler(({ input, context }) =>
       handlers.slot.edit({ input, context: { db, session: context.session } }),
+    ),
+    delete: authed.slot.delete.handler(({ input, context }) =>
+      handlers.slot.delete({
+        input,
+        context: { db, session: context.session },
+      }),
+    ),
+    split: authed.slot.split.handler(({ input, context }) =>
+      handlers.slot.split({ input, context: { db, session: context.session } }),
+    ),
+    insert: authed.slot.insert.handler(({ input, context }) =>
+      handlers.slot.insert({
+        input,
+        context: { db, session: context.session },
+      }),
     ),
   },
 
@@ -95,6 +119,12 @@ export const router = base.router({
     ),
     plan: authed.task.plan.handler(({ input, context }) =>
       handlers.task.plan({ input, context: { db, session: context.session } }),
+    ),
+    reorder: authed.task.reorder.handler(({ input, context }) =>
+      handlers.task.reorder({
+        input,
+        context: { db, session: context.session },
+      }),
     ),
   },
 

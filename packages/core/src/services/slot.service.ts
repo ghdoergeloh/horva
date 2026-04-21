@@ -157,7 +157,10 @@ export async function listSlots(
     ),
     with: {
       task: {
-        with: { project: true },
+        with: {
+          project: true,
+          taskLabels: { with: { label: true } },
+        },
       },
     },
     orderBy: [asc(slot.startedAt)],
@@ -169,7 +172,14 @@ export type SlotWithTask = Awaited<ReturnType<typeof listSlots>>[number];
 export async function getSlot(db: Db, id: number) {
   return db.query.slot.findFirst({
     where: eq(slot.id, id),
-    with: { task: { with: { project: true } } },
+    with: {
+      task: {
+        with: {
+          project: true,
+          taskLabels: { with: { label: true } },
+        },
+      },
+    },
   });
 }
 
@@ -229,7 +239,11 @@ export async function editSlot(
   return db.transaction(async (tx) => {
     const current = await tx.query.slot.findFirst({
       where: eq(slot.id, id),
-      with: { task: { with: { project: true } } },
+      with: {
+        task: {
+          with: { project: true, taskLabels: { with: { label: true } } },
+        },
+      },
     });
     if (!current) throw new Error(`Slot #${id} not found`);
 
@@ -322,7 +336,11 @@ export async function editSlot(
 
     const withTask = await tx.query.slot.findFirst({
       where: eq(slot.id, id),
-      with: { task: { with: { project: true } } },
+      with: {
+        task: {
+          with: { project: true, taskLabels: { with: { label: true } } },
+        },
+      },
     });
     if (!withTask) throw new Error("Slot not found after update");
 
@@ -420,7 +438,11 @@ export async function insertSlot(
 
     const withTask = await tx.query.slot.findFirst({
       where: eq(slot.id, inserted.id),
-      with: { task: { with: { project: true } } },
+      with: {
+        task: {
+          with: { project: true, taskLabels: { with: { label: true } } },
+        },
+      },
     });
     if (!withTask) throw new Error("Slot not found after insert");
 
@@ -432,7 +454,11 @@ export async function splitSlot(db: Db, id: number, at: Date) {
   return db.transaction(async (tx) => {
     const original = await tx.query.slot.findFirst({
       where: eq(slot.id, id),
-      with: { task: { with: { project: true } } },
+      with: {
+        task: {
+          with: { project: true, taskLabels: { with: { label: true } } },
+        },
+      },
     });
     if (!original) throw new Error(`Slot #${id} not found`);
     if (at <= original.startedAt)
