@@ -35,12 +35,12 @@
     },
     "build": {
       "dependsOn": ["^build"],
-      "outputs": [".cache/tsbuildinfo.json", "dist/**", "out/**"]
+      "outputs": ["dist/**", "out/**", ".cache/tsbuildinfo*.json"]
     },
     "dev": {
       "dependsOn": ["^dev"],
       "cache": false,
-      "persistent": true
+      "persistent": false
     },
     "format": {
       "outputs": [".cache/.prettiercache"],
@@ -52,7 +52,7 @@
     },
     "typecheck": {
       "dependsOn": ["^build"],
-      "outputs": [".cache/tsbuildinfo.json"]
+      "outputs": []
     },
     "test:unit": {
       "dependsOn": ["^build"],
@@ -64,7 +64,6 @@
     },
     "pack": {
       "dependsOn": ["build"],
-      "outputs": ["dist-electron/**"],
       "cache": false
     },
     "clean": {
