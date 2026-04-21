@@ -1,4 +1,26 @@
-import { ipcRenderer } from "electron";
+import { contextBridge, ipcRenderer } from "electron";
+
+// Bootstrap (first-launch setup) — deliberately NOT part of the oRPC contract.
+// These calls must work before DATABASE_URL is configured, which is exactly
+// the state the oRPC handler won't accept connections in.
+interface SetupStatus {
+  ready: boolean;
+  defaults: { databaseUrl: string };
+}
+
+interface CompleteSetupInput {
+  name: string;
+  databaseUrl: string;
+}
+
+const setup = {
+  status: (): Promise<SetupStatus> =>
+    ipcRenderer.invoke("setup:status") as Promise<SetupStatus>,
+  complete: (input: CompleteSetupInput): Promise<void> =>
+    ipcRenderer.invoke("setup:complete", input) as Promise<void>,
+};
+
+contextBridge.exposeInMainWorld("setup", setup);
 
 // Forward MessagePort handshake from renderer to main for oRPC transport.
 // The renderer creates a MessageChannel and posts "orpc:init" with one port
@@ -33,3 +55,5 @@ window.addEventListener("message", (event) => {
     }
   ).postMessage("orpc:port", null, [serverPort]);
 });
+
+export type SetupBridge = typeof setup;

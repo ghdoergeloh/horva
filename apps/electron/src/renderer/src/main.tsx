@@ -8,6 +8,7 @@ import {
 import { I18nProvider } from "react-aria-components";
 import { createRoot } from "react-dom/client";
 
+import { SetupGate } from "./components/SetupGate.js";
 import i18n from "./i18n/index.js";
 import { routeTree } from "./routeTree.gen.js";
 
@@ -52,7 +53,9 @@ function App() {
   return (
     <I18nProvider locale={locale}>
       <QueryClientProvider client={queryClient}>
-        <RouterProvider router={router} />
+        <SetupGate>
+          <RouterProvider router={router} />
+        </SetupGate>
       </QueryClientProvider>
     </I18nProvider>
   );

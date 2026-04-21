@@ -3,6 +3,16 @@
     "save": "Speichern",
     "cancel": "Abbrechen"
   },
+  "setup": {
+    "title": "Willkommen bei Horva",
+    "subtitle": "Einrichtung in 30 Sekunden.",
+    "nameLabel": "Dein Name",
+    "namePlaceholder": "Wie sollen wir dich nennen?",
+    "databaseUrlLabel": "PostgreSQL-Verbindungs-URL",
+    "databaseUrlHint": "Wo deine Daten gespeichert werden. Voreingestellt ist eine lokale Docker-Instanz.",
+    "submit": "Loslegen",
+    "submitting": "Einrichten…"
+  },
   "nav": {
     "today": "Heute",
     "timeline": "Timeline",
