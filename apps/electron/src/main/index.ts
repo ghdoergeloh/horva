@@ -7,6 +7,7 @@ import { seed } from "@horva/core";
 
 import { db } from "./db.js";
 import { registerHandlers } from "./ipc/handlers.js";
+import { registerOrpcHandler } from "./orpc/handler.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -47,6 +48,7 @@ function createWindow(): void {
 void app.whenReady().then(async () => {
   await seed(db);
   registerHandlers(ipcMain, db);
+  registerOrpcHandler(ipcMain, db);
   createWindow();
 
   app.on("activate", () => {

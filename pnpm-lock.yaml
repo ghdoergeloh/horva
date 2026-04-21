@@ -119,6 +119,18 @@ importers:
       "@hono/node-server":
         specifier: ^1.19.9
         version: 1.19.9(hono@4.11.9)
+      "@horva/auth":
+        specifier: workspace:*
+        version: link:../../packages/auth
+      "@horva/contract":
+        specifier: workspace:*
+        version: link:../../packages/contract
+      "@horva/core":
+        specifier: workspace:*
+        version: link:../../packages/core
+      "@horva/db":
+        specifier: workspace:*
+        version: link:../../packages/db
       "@opentelemetry/api":
         specifier: ^1.9.0
         version: 1.9.0
@@ -143,18 +155,6 @@ importers:
       "@orpc/server":
         specifier: ^1.13.5
         version: 1.13.5(@opentelemetry/api@1.9.0)(ws@8.20.0(bufferutil@4.1.0))
-      "@horva/auth":
-        specifier: workspace:*
-        version: link:../../packages/auth
-      "@horva/contract":
-        specifier: workspace:*
-        version: link:../../packages/contract
-      "@horva/core":
-        specifier: workspace:*
-        version: link:../../packages/core
-      "@horva/db":
-        specifier: workspace:*
-        version: link:../../packages/db
       dotenv:
         specifier: "catalog:"
         version: 17.3.1
@@ -189,15 +189,15 @@ importers:
 
   apps/cli:
     dependencies:
-      "@inquirer/prompts":
-        specifier: ^7.5.0
-        version: 7.10.1(@types/node@24.10.13)
       "@horva/core":
         specifier: workspace:*
         version: link:../../packages/core
       "@horva/db":
         specifier: workspace:*
         version: link:../../packages/db
+      "@inquirer/prompts":
+        specifier: ^7.5.0
+        version: 7.10.1(@types/node@24.10.13)
       chalk:
         specifier: ^5.4.1
         version: 5.6.2
@@ -250,6 +250,21 @@ importers:
       "@dnd-kit/utilities":
         specifier: ^3.2.2
         version: 3.2.2(react@19.2.4)
+      "@horva/contract":
+        specifier: workspace:*
+        version: link:../../packages/contract
+      "@orpc/client":
+        specifier: ^1.13.14
+        version: 1.13.14(@opentelemetry/api@1.9.0)
+      "@orpc/contract":
+        specifier: ^1.13.5
+        version: 1.13.5(@opentelemetry/api@1.9.0)
+      "@orpc/server":
+        specifier: ^1.13.5
+        version: 1.13.5(@opentelemetry/api@1.9.0)(ws@8.20.0(bufferutil@4.1.0))
+      "@orpc/tanstack-query":
+        specifier: ^1.13.14
+        version: 1.13.14(@opentelemetry/api@1.9.0)(@orpc/client@1.13.14(@opentelemetry/api@1.9.0))(@tanstack/query-core@5.90.20)
       dotenv:
         specifier: "catalog:"
         version: 17.3.1
@@ -272,9 +287,6 @@ importers:
       "@electron-toolkit/utils":
         specifier: ^3.0.0
         version: 3.0.0(electron@35.7.5)
-      "@internationalized/date":
-        specifier: ^3.11.0
-        version: 3.11.0
       "@horva/core":
         specifier: workspace:*
         version: link:../../packages/core
@@ -296,6 +308,9 @@ importers:
       "@horva/ui":
         specifier: workspace:*
         version: link:../../packages/ui
+      "@internationalized/date":
+        specifier: ^3.11.0
+        version: 3.11.0
       "@tailwindcss/vite":
         specifier: "catalog:"
         version: 4.1.18(vite@6.4.1(@types/node@24.10.13)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2))
@@ -362,12 +377,6 @@ importers:
 
   apps/react:
     dependencies:
-      "@orpc/client":
-        specifier: ^1.13.5
-        version: 1.13.5(@opentelemetry/api@1.9.0)
-      "@orpc/react-query":
-        specifier: ^1.13.5
-        version: 1.13.5(@opentelemetry/api@1.9.0)(@orpc/client@1.13.5(@opentelemetry/api@1.9.0))(@tanstack/query-core@5.90.20)(@tanstack/react-query@5.90.21(react@19.2.4))(react@19.2.4)
       "@horva/auth":
         specifier: workspace:*
         version: link:../../packages/auth
@@ -377,6 +386,12 @@ importers:
       "@horva/ui":
         specifier: workspace:*
         version: link:../../packages/ui
+      "@orpc/client":
+        specifier: ^1.13.5
+        version: 1.13.5(@opentelemetry/api@1.9.0)
+      "@orpc/react-query":
+        specifier: ^1.13.5
+        version: 1.13.5(@opentelemetry/api@1.9.0)(@orpc/client@1.13.5(@opentelemetry/api@1.9.0))(@tanstack/query-core@5.90.20)(@tanstack/react-query@5.90.21(react@19.2.4))(react@19.2.4)
       "@tanstack/react-query":
         specifier: ^5.90.21
         version: 5.90.21(react@19.2.4)
@@ -593,9 +608,6 @@ importers:
         specifier: catalog:react19
         version: 19.2.4
     devDependencies:
-      "@react-email/preview-server":
-        specifier: ^5.2.8
-        version: 5.2.8(@opentelemetry/api@1.9.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       "@horva/eslint-config":
         specifier: workspace:*
         version: link:../../tooling/eslint
@@ -605,6 +617,9 @@ importers:
       "@horva/tsconfig":
         specifier: workspace:*
         version: link:../../tooling/typescript
+      "@react-email/preview-server":
+        specifier: ^5.2.8
+        version: 5.2.8(@opentelemetry/api@1.9.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       "@types/nodemailer":
         specifier: ^7.0.10
         version: 7.0.10
@@ -3477,6 +3492,12 @@ packages:
       }
     engines: { node: ">=14" }
 
+  "@orpc/client@1.13.14":
+    resolution:
+      {
+        integrity: sha512-JQf3lO//UGHmmkd8+9fuWuh1gga1lhWuKnsT19cui7F6WizBy0NdFSVQerOsSy2c1kxOthlD7GnicGgSY2rhQA==,
+      }
+
   "@orpc/client@1.13.5":
     resolution:
       {
@@ -3519,6 +3540,17 @@ packages:
       ws:
         optional: true
 
+  "@orpc/shared@1.13.14":
+    resolution:
+      {
+        integrity: sha512-/ri8ttSX+ppoo01d3LdqQ4Xh6VZS5PYRYmHxTvO8tuyiqBJhN18d8P1VtEW4T9hetoK7JZKeU7EAeqVUnCF9WA==,
+      }
+    peerDependencies:
+      "@opentelemetry/api": ">=1.9.0"
+    peerDependenciesMeta:
+      "@opentelemetry/api":
+        optional: true
+
   "@orpc/shared@1.13.5":
     resolution:
       {
@@ -3547,6 +3579,12 @@ packages:
       fastify:
         optional: true
 
+  "@orpc/standard-server-fetch@1.13.14":
+    resolution:
+      {
+        integrity: sha512-k2zkCi98qd3NkvWhUX/Yece/qjB+o07g/gHC509YB5HbOGtBV/da3eseYjFyzBx5LDxMz28BOALI8/q/YDhKZw==,
+      }
+
   "@orpc/standard-server-fetch@1.13.5":
     resolution:
       {
@@ -3559,10 +3597,22 @@ packages:
         integrity: sha512-cFyoKU6kHM2AcLd+fLdty3hohm5h1Sc0wAvXasI7PVZlx9mKxSfV1n4Ej2Una8ik1Jt62AH+o9fMLtPJ6/wvbQ==,
       }
 
+  "@orpc/standard-server-peer@1.13.14":
+    resolution:
+      {
+        integrity: sha512-jinseQ8bn7XQOHjsCXhR1HiF3wAwn1xEQPpnE/av0PoOi4h0ATvhZjDLaRHvRavs8YwrIqwSuAuYT/hDxON58A==,
+      }
+
   "@orpc/standard-server-peer@1.13.5":
     resolution:
       {
         integrity: sha512-pEvnaYtwXaw2Fjy0VJyvfZTma/AprSUGSJlOcnfBySo0TU3ZfsB54vhTlQCCN+WUCGjInZ75vCjIQnGj3Af3gg==,
+      }
+
+  "@orpc/standard-server@1.13.14":
+    resolution:
+      {
+        integrity: sha512-o8PaDERiwREFQpIZO0mQ1PhguchyNzrf1w7m3eK1JB4rPjHu1VJUgqCpy/sV3Id5ji4bX/gKHEC3NZjDX6mEWQ==,
       }
 
   "@orpc/standard-server@1.13.5":
@@ -3570,6 +3620,15 @@ packages:
       {
         integrity: sha512-Upu82h5TlKOWlttcL+TTkIxyJEzjdKWd8Ri9ya8o1+BxYiqd/y3TQnmBQM+pfj8N1w+zI86Q3cLGB8RGtMqf5g==,
       }
+
+  "@orpc/tanstack-query@1.13.14":
+    resolution:
+      {
+        integrity: sha512-5rq1Z1anVTVBseYeNBi5RJSgWPxpD0MqK7MYej3xnt56jjc6mFmWpUGNz9xy0BXPh3KmA/xDTNuB23kKgJ5JmQ==,
+      }
+    peerDependencies:
+      "@orpc/client": 1.13.14
+      "@tanstack/query-core": ">=5.80.2"
 
   "@orpc/tanstack-query@1.13.5":
     resolution:
@@ -14221,6 +14280,15 @@ snapshots:
 
   "@opentelemetry/semantic-conventions@1.39.0": {}
 
+  "@orpc/client@1.13.14(@opentelemetry/api@1.9.0)":
+    dependencies:
+      "@orpc/shared": 1.13.14(@opentelemetry/api@1.9.0)
+      "@orpc/standard-server": 1.13.14(@opentelemetry/api@1.9.0)
+      "@orpc/standard-server-fetch": 1.13.14(@opentelemetry/api@1.9.0)
+      "@orpc/standard-server-peer": 1.13.14(@opentelemetry/api@1.9.0)
+    transitivePeerDependencies:
+      - "@opentelemetry/api"
+
   "@orpc/client@1.13.5(@opentelemetry/api@1.9.0)":
     dependencies:
       "@orpc/shared": 1.13.5(@opentelemetry/api@1.9.0)
@@ -14271,6 +14339,13 @@ snapshots:
       - "@opentelemetry/api"
       - fastify
 
+  "@orpc/shared@1.13.14(@opentelemetry/api@1.9.0)":
+    dependencies:
+      radash: 12.1.1
+      type-fest: 5.4.4
+    optionalDependencies:
+      "@opentelemetry/api": 1.9.0
+
   "@orpc/shared@1.13.5(@opentelemetry/api@1.9.0)":
     dependencies:
       radash: 12.1.1
@@ -14295,6 +14370,13 @@ snapshots:
     transitivePeerDependencies:
       - "@opentelemetry/api"
 
+  "@orpc/standard-server-fetch@1.13.14(@opentelemetry/api@1.9.0)":
+    dependencies:
+      "@orpc/shared": 1.13.14(@opentelemetry/api@1.9.0)
+      "@orpc/standard-server": 1.13.14(@opentelemetry/api@1.9.0)
+    transitivePeerDependencies:
+      - "@opentelemetry/api"
+
   "@orpc/standard-server-fetch@1.13.5(@opentelemetry/api@1.9.0)":
     dependencies:
       "@orpc/shared": 1.13.5(@opentelemetry/api@1.9.0)
@@ -14310,6 +14392,13 @@ snapshots:
     transitivePeerDependencies:
       - "@opentelemetry/api"
 
+  "@orpc/standard-server-peer@1.13.14(@opentelemetry/api@1.9.0)":
+    dependencies:
+      "@orpc/shared": 1.13.14(@opentelemetry/api@1.9.0)
+      "@orpc/standard-server": 1.13.14(@opentelemetry/api@1.9.0)
+    transitivePeerDependencies:
+      - "@opentelemetry/api"
+
   "@orpc/standard-server-peer@1.13.5(@opentelemetry/api@1.9.0)":
     dependencies:
       "@orpc/shared": 1.13.5(@opentelemetry/api@1.9.0)
@@ -14317,9 +14406,23 @@ snapshots:
     transitivePeerDependencies:
       - "@opentelemetry/api"
 
+  "@orpc/standard-server@1.13.14(@opentelemetry/api@1.9.0)":
+    dependencies:
+      "@orpc/shared": 1.13.14(@opentelemetry/api@1.9.0)
+    transitivePeerDependencies:
+      - "@opentelemetry/api"
+
   "@orpc/standard-server@1.13.5(@opentelemetry/api@1.9.0)":
     dependencies:
       "@orpc/shared": 1.13.5(@opentelemetry/api@1.9.0)
+    transitivePeerDependencies:
+      - "@opentelemetry/api"
+
+  "@orpc/tanstack-query@1.13.14(@opentelemetry/api@1.9.0)(@orpc/client@1.13.14(@opentelemetry/api@1.9.0))(@tanstack/query-core@5.90.20)":
+    dependencies:
+      "@orpc/client": 1.13.14(@opentelemetry/api@1.9.0)
+      "@orpc/shared": 1.13.14(@opentelemetry/api@1.9.0)
+      "@tanstack/query-core": 5.90.20
     transitivePeerDependencies:
       - "@opentelemetry/api"
 
