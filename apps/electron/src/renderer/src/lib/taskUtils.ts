@@ -1,10 +1,5 @@
 import i18n from "~/i18n/index.js";
 
-export function toDateInputValue(d: Date | string | null): string {
-  if (!d) return "";
-  return new Date(d).toISOString().slice(0, 10);
-}
-
 export function formatScheduledDate(d: Date | string): string {
   const date = new Date(d);
   const today = new Date();

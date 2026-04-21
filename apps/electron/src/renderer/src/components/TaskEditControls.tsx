@@ -1,7 +1,12 @@
 import type { CalendarDateTime } from "@internationalized/date";
 import type { KeyboardEvent } from "react";
 import { useRef, useState } from "react";
-import { parseDateTime } from "@internationalized/date";
+import {
+  fromDate,
+  getLocalTimeZone,
+  parseDateTime,
+  toZoned,
+} from "@internationalized/date";
 import { Tag } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
@@ -9,7 +14,7 @@ import { Button } from "@timetracker/ui/Button";
 import { DateTimePicker } from "@timetracker/ui/DateTimePicker";
 import { TextField } from "@timetracker/ui/TextField";
 
-import { formatScheduledDate, toDateInputValue } from "~/lib/taskUtils.js";
+import { formatScheduledDate } from "~/lib/taskUtils.js";
 
 export interface LabelRow {
   id: number;
@@ -98,15 +103,16 @@ export function PlanButton({ scheduledDate, onPlan }: PlanButtonProps) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   const closeActionRef = useRef<"none" | "commit" | "cancel">("none");
+  // Track whether the calendar popover is open so onBlur doesn't fire
+  // prematurely when focus moves into the portal (Electron/Chromium behaviour
+  // differs from dev: relatedTarget may be non-null even for portal elements).
+  const isPickerOpenRef = useRef(false);
 
   function toPickerValue(d: Date | string | null): CalendarDateTime | null {
     if (!d) return null;
-    const date = new Date(d);
-    const dateStr = toDateInputValue(date); // YYYY-MM-DD
-    const h = date.getHours();
-    const m = date.getMinutes();
+    const zdt = fromDate(new Date(d), getLocalTimeZone());
     return parseDateTime(
-      `${dateStr}T${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}:00`,
+      `${String(zdt.year)}-${String(zdt.month).padStart(2, "0")}-${String(zdt.day).padStart(2, "0")}T${String(zdt.hour).padStart(2, "0")}:${String(zdt.minute).padStart(2, "0")}:00`,
     );
   }
 
@@ -127,16 +133,7 @@ export function PlanButton({ scheduledDate, onPlan }: PlanButtonProps) {
     if (val === null) {
       onPlan(null);
     } else {
-      const d = new Date(
-        val.year,
-        val.month - 1,
-        val.day,
-        val.hour,
-        val.minute,
-        0,
-        0,
-      );
-      onPlan(d.toISOString());
+      onPlan(toZoned(val, getLocalTimeZone()).toDate().toISOString());
     }
     setOpen(false);
   }
@@ -186,17 +183,18 @@ export function PlanButton({ scheduledDate, onPlan }: PlanButtonProps) {
           value={draftValue}
           onChange={updateDraft}
           onBlur={(e) => {
+            // Skip if focus stayed within the wrapper div
             if (ref.current?.contains(e.relatedTarget as Node)) return;
-            // Also check if focus moved into a portal (popover) by seeing if
-            // relatedTarget exists at all; if it's null the popover button
-            // grabbed focus but portals don't appear inside ref.current.
-            // We rely on onOpenChange to commit after the popover closes.
-            if (e.relatedTarget === null) return;
+            // Skip if the calendar popover is open — focus moved into the
+            // portal overlay (which is outside ref.current in the DOM).
+            // We rely on onOpenChange to commit once the popover closes.
+            if (isPickerOpenRef.current) return;
             setTimeout(() => {
               if (closeActionRef.current === "none") commitAndClose();
             }, 100);
           }}
           onOpenChange={(isOpen) => {
+            isPickerOpenRef.current = isOpen;
             if (!isOpen && closeActionRef.current === "none") {
               // Popover just closed (e.g. user picked a date from calendar)
               commitAndClose();
