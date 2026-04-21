@@ -96,6 +96,7 @@ pnpm db:push           # Apply schema to the database
 pnpm dev                              # Run everything (Turbo)
 pnpm -F @horva/api dev                # API only
 pnpm -F @horva/electron-app dev       # Electron desktop app only
+pnpm -F @horva/web dev                # Web frontend only (port 5173)
 pnpm -F @horva/cli dev                # CLI only
 ```
 
@@ -131,9 +132,10 @@ See [`CLAUDE.md`](./CLAUDE.md) for a deeper walkthrough of conventions, and [`do
 ```
 .
 ├── apps
-│   ├── api          # Hono + oRPC REST API (port 3000)
+│   ├── api          # Hono + oRPC REST API + better-auth (port 3000)
 │   ├── cli          # Commander-based CLI (invokes @horva/core against a local DB)
-│   └── electron     # Electron desktop app (electron-vite + electron-builder)
+│   ├── electron     # Electron desktop app (electron-vite + electron-builder)
+│   └── web          # Web frontend (Vite, reuses the Electron renderer source)
 ├── packages
 │   ├── auth         # better-auth (email/password) w/ Drizzle adapter
 │   ├── contract     # Shared oRPC + Zod API contract

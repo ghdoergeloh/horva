@@ -13,6 +13,20 @@
     "submit": "Loslegen",
     "submitting": "Einrichten…"
   },
+  "auth": {
+    "signInTitle": "Anmelden",
+    "signInSubtitle": "Willkommen zurück.",
+    "signUpTitle": "Konto erstellen",
+    "signUpSubtitle": "Jetzt deine Zeit erfassen.",
+    "nameLabel": "Name",
+    "emailLabel": "E-Mail",
+    "passwordLabel": "Passwort",
+    "signIn": "Anmelden",
+    "signUp": "Registrieren",
+    "submitting": "Einen Moment…",
+    "needAccount": "Noch kein Konto? Registrieren",
+    "haveAccount": "Schon registriert? Anmelden"
+  },
   "nav": {
     "today": "Heute",
     "timeline": "Timeline",

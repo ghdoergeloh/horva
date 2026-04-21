@@ -1,0 +1,20 @@
+{
+  "extends": "@horva/tsconfig/base.json",
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "types": ["vite/client"],
+    "baseUrl": ".",
+    "paths": {
+      "~/lib/orpc": ["src/overrides/orpc.ts"],
+      "~/lib/orpc.js": ["src/overrides/orpc.ts"],
+      "~/components/SetupGate": ["src/overrides/SetupGate.tsx"],
+      "~/components/SetupGate.js": ["src/overrides/SetupGate.tsx"],
+      "~/*": ["../electron/src/renderer/src/*"]
+    },
+    "noEmit": true
+  },
+  "include": ["src/**/*", "../electron/src/renderer/src/**/*"]
+}

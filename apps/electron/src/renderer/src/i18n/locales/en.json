@@ -13,6 +13,20 @@
     "submit": "Get started",
     "submitting": "Setting up…"
   },
+  "auth": {
+    "signInTitle": "Sign in",
+    "signInSubtitle": "Welcome back.",
+    "signUpTitle": "Create your account",
+    "signUpSubtitle": "Start tracking your time.",
+    "nameLabel": "Name",
+    "emailLabel": "Email",
+    "passwordLabel": "Password",
+    "signIn": "Sign in",
+    "signUp": "Sign up",
+    "submitting": "Working…",
+    "needAccount": "Need an account? Sign up",
+    "haveAccount": "Already have one? Sign in"
+  },
   "nav": {
     "today": "Today",
     "timeline": "Timeline",
