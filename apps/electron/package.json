@@ -31,7 +31,7 @@
   },
   "devDependencies": {
     "@electron-toolkit/preload": "^3.0.1",
-    "@electron-toolkit/utils": "^3.0.0",
+    "@electron-toolkit/utils": "^4.0.0",
     "@horva/contract": "workspace:*",
     "@horva/core": "workspace:*",
     "@horva/db": "workspace:*",
