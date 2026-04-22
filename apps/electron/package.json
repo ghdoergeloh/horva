@@ -52,7 +52,7 @@
     "@vitejs/plugin-react": "catalog:",
     "electron": "^35.0.0",
     "electron-builder": "^25.0.0",
-    "electron-vite": "^4.0.1",
+    "electron-vite": "^5.0.0",
     "eslint": "catalog:",
     "lucide-react": "catalog:",
     "prettier": "catalog:",
