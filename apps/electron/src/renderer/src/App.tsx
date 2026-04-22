@@ -4,10 +4,10 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { RouterProvider } from "@tanstack/react-router";
 import { I18nProvider } from "react-aria-components";
 
-import type { AppRouter } from "./router.js";
-import { SetupGate } from "./components/SetupGate.js";
-import i18n from "./i18n/index.js";
-import { queryClient } from "./router.js";
+import type { AppRouter } from "~/router.js";
+import { SetupGate } from "~/components/SetupGate.js";
+import i18n from "~/i18n/index.js";
+import { queryClient } from "~/router.js";
 
 const LOCALE_MAP: Record<string, string> = {
   de: "de-DE",
