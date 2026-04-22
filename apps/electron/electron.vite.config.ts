@@ -8,7 +8,10 @@ export default defineConfig({
   main: {
     plugins: [
       externalizeDepsPlugin({
-        exclude: ["@horva/core", "@horva/db"],
+        // Workspace packages expose `.default` conditions pointing at src/*.ts
+        // (no prebuild step in dev). Electron's main process runs those files
+        // directly through Node, which can't resolve .ts — so bundle them.
+        exclude: ["@horva/contract", "@horva/core", "@horva/db"],
       }),
     ],
     resolve: {
@@ -18,7 +21,7 @@ export default defineConfig({
   preload: {
     plugins: [
       externalizeDepsPlugin({
-        exclude: ["@horva/core", "@horva/db"],
+        exclude: ["@horva/contract", "@horva/core", "@horva/db"],
       }),
     ],
   },

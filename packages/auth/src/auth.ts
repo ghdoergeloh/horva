@@ -21,5 +21,5 @@ export const auth = betterAuth({
       await sendVerificationEmail(user.email, url);
     },
   },
-  trustedOrigins: ["http://localhost:5173"],
+  trustedOrigins: ["http://localhost:5173", "http://localhost:5174"],
 });

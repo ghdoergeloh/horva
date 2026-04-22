@@ -12,7 +12,9 @@ const app = new Hono();
 
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    // 5173 is the Electron renderer in dev (hits the API for auth when run
+    // standalone); 5174 is apps/web. Both are dev-only and harmless on prod.
+    origin: ["http://localhost:5173", "http://localhost:5174"],
     credentials: true,
   }),
 );

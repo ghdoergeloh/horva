@@ -36,6 +36,9 @@ export default defineConfig({
     ],
   },
   server: {
-    port: 5173,
+    // Electron's renderer dev server already uses 5173; web binds 5174 so
+    // both can run side-by-side with `pnpm dev`.
+    port: 5174,
+    strictPort: true,
   },
 });

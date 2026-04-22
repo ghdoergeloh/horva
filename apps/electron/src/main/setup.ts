@@ -1,10 +1,11 @@
 import { randomUUID } from "node:crypto";
 import type { IpcMain } from "electron";
 
-import type { Db } from "@horva/db/client";
 import { readConfig, updateConfig } from "@horva/core/config";
 import { eq } from "@horva/db";
 import { user } from "@horva/db/schema";
+
+import { db } from "./db.js";
 
 const DEFAULT_DATABASE_URL =
   "postgresql://postgres:postgres@localhost:5432/horva";
@@ -78,9 +79,8 @@ export function registerSetupHandlers(
 
       await hooks.onReady(input.databaseUrl, userId);
 
-      // Ensure the local-user row exists with the current display name.
-      // Import lazily so the Pool isn't created until DATABASE_URL is set.
-      const { db } = (await import("./db.js")) as { db: Db };
+      // db is a lazy Proxy over the pool — first access below creates it,
+      // which is safe because we set DATABASE_URL a few lines up.
       const existingRow = await db.query.user.findFirst({
         where: eq(user.id, userId),
       });
