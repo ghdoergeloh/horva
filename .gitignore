@@ -20,7 +20,6 @@ next-env.d.ts
 # electron
 apps/electron/out/
 apps/electron/dist-electron/
-apps/electron/dist-electron/
 
 # nitro
 .nitro/
@@ -32,6 +31,9 @@ expo-env.d.ts
 apps/expo/.gitignore
 apps/expo/ios
 apps/expo/android
+
+# production
+build
 
 # misc
 .DS_Store

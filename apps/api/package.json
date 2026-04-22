@@ -13,7 +13,7 @@
     "with-env": "dotenv -e ../../.env --"
   },
   "dependencies": {
-    "@hono/node-server": "^1.19.9",
+    "@hono/node-server": "catalog:",
     "@horva/auth": "workspace:*",
     "@horva/contract": "workspace:*",
     "@horva/core": "workspace:*",
@@ -25,9 +25,9 @@
     "@opentelemetry/sdk-logs": "^0.57.2",
     "@opentelemetry/sdk-node": "^0.57.2",
     "@opentelemetry/semantic-conventions": "^1.32.0",
-    "@orpc/server": "^1.13.5",
+    "@orpc/server": "catalog:",
     "dotenv": "catalog:",
-    "hono": "^4.11.9"
+    "hono": "catalog:"
   },
   "devDependencies": {
     "@horva/eslint-config": "workspace:*",

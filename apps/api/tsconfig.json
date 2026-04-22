@@ -2,9 +2,13 @@
   "extends": "@horva/tsconfig/compiled-package.json",
   "compilerOptions": {
     "types": ["node"],
-    // Needed so tsx (esbuild) transforms JSX in transitive TSX imports like
-    // @horva/transactional's email templates. The API itself has no JSX,
-    // but tsx applies this mode to the whole loaded module graph.
+    // tsx (esbuild) applies JSX settings to the whole loaded module graph,
+    // including transitively-imported TSX from @horva/transactional. That
+    // package expects the React runtime for react-email templates, so leave
+    // jsxImportSource unset (defaults to "react") and use the automatic
+    // runtime. If the API ever grows its own JSX for Hono server-rendered
+    // HTML, scope that via a /** @jsxImportSource hono/jsx */ pragma at the
+    // top of the specific files rather than making it process-wide.
     "jsx": "react-jsx"
   },
   "include": ["src"],

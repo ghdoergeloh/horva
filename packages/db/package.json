@@ -35,14 +35,14 @@
     "dotenv": "catalog:",
     "drizzle-orm": "catalog:",
     "drizzle-zod": "catalog:",
-    "pg": "^8.18.0",
+    "pg": "catalog:",
     "zod": "catalog:"
   },
   "devDependencies": {
     "@horva/eslint-config": "workspace:*",
     "@horva/prettier-config": "workspace:*",
     "@horva/tsconfig": "workspace:*",
-    "@types/pg": "^8.16.0",
+    "@types/pg": "catalog:",
     "drizzle-kit": "catalog:",
     "eslint": "catalog:",
     "prettier": "catalog:",
