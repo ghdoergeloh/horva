@@ -250,9 +250,6 @@ importers:
       "@dnd-kit/utilities":
         specifier: ^3.2.2
         version: 3.2.2(react@19.2.4)
-      "@horva/contract":
-        specifier: workspace:*
-        version: link:../../packages/contract
       "@orpc/client":
         specifier: ^1.13.14
         version: 1.13.14(@opentelemetry/api@1.9.0)
@@ -287,6 +284,9 @@ importers:
       "@electron-toolkit/utils":
         specifier: ^3.0.0
         version: 3.0.0(electron@35.7.5)
+      "@horva/contract":
+        specifier: workspace:*
+        version: link:../../packages/contract
       "@horva/core":
         specifier: workspace:*
         version: link:../../packages/core
