@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import type { FormEvent, ReactNode } from "react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -50,7 +50,14 @@ function LoginForm() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  async function handleSubmit() {
+  const canSubmit =
+    email.trim().length > 0 &&
+    password.length > 0 &&
+    (mode === "signin" || name.trim().length > 0);
+
+  async function handleSubmit(e: FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    if (!canSubmit || submitting) return;
     setSubmitting(true);
     setError(null);
     try {
@@ -68,21 +75,19 @@ function LoginForm() {
         });
         if (err) throw new Error(err.message ?? "Sign-in failed");
       }
-    } catch (e) {
-      setError(e instanceof Error ? e.message : String(e));
+    } catch (err) {
+      setError(err instanceof Error ? err.message : String(err));
     } finally {
       setSubmitting(false);
     }
   }
 
-  const canSubmit =
-    email.trim().length > 0 &&
-    password.length > 0 &&
-    (mode === "signin" || name.trim().length > 0);
-
   return (
     <div className="flex h-screen items-center justify-center bg-gray-50 p-6">
-      <div className="w-full max-w-md rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+      <form
+        onSubmit={handleSubmit}
+        className="w-full max-w-md rounded-xl border border-gray-200 bg-white p-6 shadow-sm"
+      >
         <h1 className="text-xl font-semibold text-gray-900">
           {mode === "signin" ? t("auth.signInTitle") : t("auth.signUpTitle")}
         </h1>
@@ -94,40 +99,36 @@ function LoginForm() {
 
         <div className="mt-6 space-y-4">
           {mode === "signup" && (
-            <div>
-              <label className="mb-1 block text-xs font-medium text-gray-700">
-                {t("auth.nameLabel")}
-              </label>
-              <TextField
-                autoFocus
-                value={name}
-                onChange={setName}
-                className="w-full"
-              />
-            </div>
-          )}
-          <div>
-            <label className="mb-1 block text-xs font-medium text-gray-700">
-              {t("auth.emailLabel")}
-            </label>
             <TextField
-              autoFocus={mode === "signin"}
-              value={email}
-              onChange={setEmail}
+              autoFocus
+              label={t("auth.nameLabel")}
+              value={name}
+              onChange={setName}
+              autoComplete="name"
               className="w-full"
             />
-          </div>
-          <div>
-            <label className="mb-1 block text-xs font-medium text-gray-700">
-              {t("auth.passwordLabel")}
-            </label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 focus:outline-none"
-            />
-          </div>
+          )}
+          <TextField
+            autoFocus={mode === "signin"}
+            label={t("auth.emailLabel")}
+            type="email"
+            value={email}
+            onChange={setEmail}
+            autoComplete="email"
+            isRequired
+            className="w-full"
+          />
+          <TextField
+            label={t("auth.passwordLabel")}
+            type="password"
+            value={password}
+            onChange={setPassword}
+            autoComplete={
+              mode === "signin" ? "current-password" : "new-password"
+            }
+            isRequired
+            className="w-full"
+          />
         </div>
 
         {error && (
@@ -138,6 +139,7 @@ function LoginForm() {
 
         <div className="mt-6 flex items-center justify-between">
           <Button
+            type="button"
             variant="quiet"
             onPress={() => setMode(mode === "signin" ? "signup" : "signin")}
             className="text-xs text-indigo-600 hover:text-indigo-800"
@@ -145,8 +147,8 @@ function LoginForm() {
             {mode === "signin" ? t("auth.needAccount") : t("auth.haveAccount")}
           </Button>
           <Button
+            type="submit"
             variant="primary"
-            onPress={() => void handleSubmit()}
             isDisabled={!canSubmit || submitting}
           >
             {submitting
@@ -156,7 +158,7 @@ function LoginForm() {
                 : t("auth.signUp")}
           </Button>
         </div>
-      </div>
+      </form>
     </div>
   );
 }
