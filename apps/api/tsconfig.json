@@ -2,8 +2,10 @@
   "extends": "@horva/tsconfig/compiled-package.json",
   "compilerOptions": {
     "types": ["node"],
-    "jsx": "react-jsx",
-    "jsxImportSource": "hono/jsx"
+    // Needed so tsx (esbuild) transforms JSX in transitive TSX imports like
+    // @horva/transactional's email templates. The API itself has no JSX,
+    // but tsx applies this mode to the whole loaded module graph.
+    "jsx": "react-jsx"
   },
   "include": ["src"],
   "exclude": ["node_modules"]

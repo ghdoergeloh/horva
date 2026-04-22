@@ -1,4 +1,3 @@
-/** @jsxImportSource react */
 import { render } from "@react-email/components";
 
 import { ResetPasswordEmail } from "./templates/reset-password-email";
