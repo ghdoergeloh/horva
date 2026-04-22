@@ -1,2 +1,2 @@
 export { sendEmail } from "./transport";
-export { sendVerificationEmail } from "./emails";
+export { sendVerificationEmail, sendPasswordResetEmail } from "./emails";
