@@ -57,6 +57,7 @@
     "DATABASE_URL",
     "BETTER_AUTH_SECRET",
     "BETTER_AUTH_URL",
+    "API_PORT",
     "VITE_API_URL",
     "SMTP_HOST",
     "SMTP_PORT",
