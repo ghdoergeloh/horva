@@ -1,5 +1,27 @@
 # Template for a monorepo
 
+A pnpm + Turborepo starter: Hono API, Vite/React frontend, Commander
+CLI, better-auth with email verification, Drizzle + PostgreSQL, oRPC
+contracts, React Aria Components, Tailwind, Vitest.
+
+## Using this template
+
+1. Clone it (or click "Use this template" on GitHub):
+   ```bash
+   git clone https://github.com/ghdoergeloh/mono-repo-template my-app
+   cd my-app
+   ```
+2. Rename the `@repo` workspace namespace to something project-specific.
+   `@repo` appears in `package.json` files, tsconfig extends, lint
+   configs, imports, and a handful of docs. One sweep handles all of it:
+   ```bash
+   git grep -l '@repo' | xargs sed -i '' 's|@repo|@myapp|g'   # macOS
+   git grep -l '@repo' | xargs sed -i     's|@repo|@myapp|g'   # Linux
+   ```
+3. Copy `.env.example` to `.env` and adjust.
+4. `docker compose up -d` to bring up PostgreSQL + Mailpit.
+5. `pnpm install && pnpm db:push && pnpm dev`.
+
 ## Architecture
 
 ### Project Structure
