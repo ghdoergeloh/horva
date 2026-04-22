@@ -51,7 +51,7 @@
     "@types/react-dom": "catalog:react19",
     "@vitejs/plugin-react": "catalog:",
     "electron": "^35.0.0",
-    "electron-builder": "^25.0.0",
+    "electron-builder": "^26.8.1",
     "electron-vite": "^4.0.1",
     "eslint": "catalog:",
     "lucide-react": "catalog:",
