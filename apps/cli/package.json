@@ -21,7 +21,7 @@
   "dependencies": {
     "@horva/core": "workspace:*",
     "@horva/db": "workspace:*",
-    "@inquirer/prompts": "^7.5.0",
+    "@inquirer/prompts": "^8.4.2",
     "chalk": "^5.4.1",
     "commander": "catalog:",
     "dotenv": "catalog:",
