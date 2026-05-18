@@ -1,4 +1,4 @@
-import type { FormEvent } from "react";
+import type { SubmitEvent } from "react";
 import { useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 
@@ -16,7 +16,7 @@ function SignupPage() {
   const [isPending, setIsPending] = useState(false);
   const [emailSent, setEmailSent] = useState(false);
 
-  async function handleSubmit(e: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(e: SubmitEvent<HTMLFormElement>) {
     e.preventDefault();
     setError(null);
     setIsPending(true);
