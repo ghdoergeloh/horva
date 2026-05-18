@@ -59,6 +59,7 @@
     "BETTER_AUTH_URL",
     "API_PORT",
     "VITE_API_URL",
+    "XDG_CONFIG_HOME",
     "SMTP_HOST",
     "SMTP_PORT",
     "SMTP_SECURE",

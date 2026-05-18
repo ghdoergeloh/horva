@@ -65,7 +65,7 @@ export function TaskSummaryView({ slots }: { slots: SlotRow[] }) {
 
   if (projects.length === 0) {
     return (
-      <p className="px-3 py-2 text-sm text-gray-300">
+      <p className="text-muted-foreground/70 px-3 py-2 text-sm">
         {t("taskSummaryView.noEntries")}
       </p>
     );
@@ -80,10 +80,10 @@ export function TaskSummaryView({ slots }: { slots: SlotRow[] }) {
               className="h-2.5 w-2.5 shrink-0 rounded-sm"
               style={{ backgroundColor: proj.color }}
             />
-            <span className="flex-1 text-sm font-medium text-gray-700">
+            <span className="text-foreground/90 flex-1 text-sm font-medium">
               {proj.projectName}
             </span>
-            <span className="text-xs font-medium text-gray-500">
+            <span className="text-muted-foreground text-xs font-medium">
               <FormattedMs ms={proj.totalMs} />
             </span>
           </div>
@@ -95,10 +95,10 @@ export function TaskSummaryView({ slots }: { slots: SlotRow[] }) {
                   key={task.taskId ?? "no_task"}
                   className="flex items-center gap-2"
                 >
-                  <span className="flex-1 text-sm text-gray-600">
+                  <span className="text-foreground/80 flex-1 text-sm">
                     {task.taskName}
                   </span>
-                  <span className="text-xs text-gray-400">
+                  <span className="text-muted-foreground text-xs">
                     <FormattedMs ms={task.ms} />
                   </span>
                 </div>

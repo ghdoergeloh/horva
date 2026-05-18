@@ -150,16 +150,16 @@ export function InlineSlotRow({
   if (!isEditing) {
     return (
       <tr
-        className="group cursor-pointer hover:bg-gray-50"
+        className="group hover:bg-background cursor-pointer"
         onClick={onStartEdit}
       >
-        <td className="py-1.5 pr-4 font-mono text-gray-600">
+        <td className="text-foreground/80 py-1.5 pr-4 font-mono">
           {fmt(slot.startedAt)}
         </td>
-        <td className="py-1.5 pr-4 font-mono text-gray-600">
+        <td className="text-foreground/80 py-1.5 pr-4 font-mono">
           {slot.endedAt ? fmt(slot.endedAt) : t("inlineSlotRow.running")}
         </td>
-        <td className="py-1.5 pr-6 text-gray-700">
+        <td className="text-foreground/90 py-1.5 pr-6">
           {slot.endedAt ? (
             <FormattedMs
               ms={
@@ -172,7 +172,7 @@ export function InlineSlotRow({
           )}
         </td>
         <td
-          className="max-w-[240px] truncate py-1.5 pr-4 text-gray-800"
+          className="text-foreground max-w-[240px] truncate py-1.5 pr-4"
           title={taskName}
         >
           {taskName}
@@ -195,7 +195,7 @@ export function InlineSlotRow({
   return (
     <tr
       ref={rowRef}
-      className="bg-indigo-50/60"
+      className="bg-sidebar-accent/60"
       onKeyDownCapture={handleKeyDownCapture}
     >
       <td className="py-1 pr-2">
@@ -213,7 +213,7 @@ export function InlineSlotRow({
           className="w-20"
         />
       </td>
-      <td className="py-1 pr-6 text-xs text-gray-400">
+      <td className="text-muted-foreground py-1 pr-6 text-xs">
         {endTime && startTime
           ? (() => {
               const start = applyTimeString(
@@ -259,7 +259,7 @@ export function InlineSlotRow({
             <Button
               variant="quiet"
               onPress={() => setConfirmDelete(false)}
-              className="px-1 py-0.5 text-xs text-gray-400 hover:text-gray-600"
+              className="text-muted-foreground hover:text-foreground/80 px-1 py-0.5 text-xs"
             >
               ✕
             </Button>
@@ -268,7 +268,7 @@ export function InlineSlotRow({
           <Button
             variant="quiet"
             onPress={() => setConfirmDelete(true)}
-            className="rounded p-0.5 text-gray-300 hover:text-red-500"
+            className="text-muted-foreground/70 hover:text-destructive rounded p-0.5"
             aria-label={t("slot.deleteConfirm")}
           >
             <Trash2 className="h-3.5 w-3.5" />

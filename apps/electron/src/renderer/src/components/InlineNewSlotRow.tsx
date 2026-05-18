@@ -104,7 +104,7 @@ export function InlineNewSlotRow({
   return (
     <tr
       ref={rowRef}
-      className="bg-indigo-50/60"
+      className="bg-sidebar-accent/60"
       onKeyDownCapture={handleKeyDownCapture}
     >
       <td className="py-1 pr-2">
@@ -131,7 +131,7 @@ export function InlineNewSlotRow({
           className="w-24"
         />
       </td>
-      <td className="py-1 pr-6 text-xs text-gray-400">
+      <td className="text-muted-foreground py-1 pr-6 text-xs">
         {startTime && endTime
           ? (() => {
               const ms =
@@ -161,7 +161,7 @@ export function InlineNewSlotRow({
         <Button
           variant="quiet"
           onPress={onCancel}
-          className="rounded p-0.5 text-gray-300 hover:text-gray-600"
+          className="text-muted-foreground/70 hover:text-foreground/80 rounded p-0.5"
           aria-label={t("inlineNewSlotRow.cancel")}
         >
           <X className="h-3.5 w-3.5" />

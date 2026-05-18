@@ -37,8 +37,10 @@ export function SlotBar() {
 
   if (!openSlot) {
     return (
-      <div className="flex items-center gap-3 border-b border-gray-200 bg-white px-6 py-3">
-        <span className="text-sm text-gray-500">{t("slotBar.notWorking")}</span>
+      <div className="border-border bg-card flex items-center gap-3 border-b px-6 py-3">
+        <span className="text-muted-foreground text-sm">
+          {t("slotBar.notWorking")}
+        </span>
         <Button
           variant="primary"
           onPress={() => {
@@ -72,7 +74,7 @@ export function SlotBar() {
   const projectColor = task?.project.color ?? "#9ca3af";
 
   return (
-    <div className="flex items-center gap-4 border-b border-gray-200 bg-white px-6 py-3">
+    <div className="border-border bg-card flex items-center gap-4 border-b px-6 py-3">
       {/* Color dot */}
       <div
         className="h-3 w-3 flex-shrink-0 rounded-full"
@@ -83,22 +85,26 @@ export function SlotBar() {
       <div className="min-w-0 flex-1">
         {task ? (
           <div className="flex items-center gap-2">
-            <span className="truncate text-sm font-medium text-gray-900">
+            <span className="text-foreground truncate text-sm font-medium">
               {task.name}
             </span>
-            <span className="text-xs text-gray-400">{task.project.name}</span>
+            <span className="text-muted-foreground text-xs">
+              {task.project.name}
+            </span>
           </div>
         ) : (
-          <span className="text-sm text-gray-500">{t("slotBar.noTask")}</span>
+          <span className="text-muted-foreground text-sm">
+            {t("slotBar.noTask")}
+          </span>
         )}
       </div>
 
       {/* Elapsed */}
-      <span className="font-mono text-sm text-gray-700 tabular-nums">
+      <span className="text-foreground/90 font-mono text-sm tabular-nums">
         {formatDuration(openSlot.startedAt)}
       </span>
 
-      <div className="h-4 w-px bg-gray-200" />
+      <div className="bg-border h-4 w-px" />
       <WorktimeDisplay tick={tick} />
 
       {/* Switch task */}

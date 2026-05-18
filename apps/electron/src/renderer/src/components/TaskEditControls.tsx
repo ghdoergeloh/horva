@@ -51,14 +51,14 @@ export function LabelPicker({
       <Button
         variant="quiet"
         onPress={() => setOpen((v) => !v)}
-        className="flex items-center rounded p-0.5 text-gray-300 opacity-0 transition-opacity group-hover:opacity-100 hover:text-gray-500"
+        className="text-muted-foreground/70 hover:text-muted-foreground flex items-center rounded p-0.5 opacity-0 transition-opacity group-hover:opacity-100"
         aria-label={t("taskEditControls.editLabels")}
       >
         <Tag className="h-3.5 w-3.5" />
       </Button>
 
       {open && (
-        <div className="absolute right-0 bottom-full z-20 mb-1 min-w-36 rounded-lg border border-gray-200 bg-white py-1 shadow-lg">
+        <div className="border-border bg-card absolute right-0 bottom-full z-20 mb-1 min-w-36 rounded-lg border py-1 shadow-lg">
           {allLabels.map((label) => {
             const assigned = assignedLabelIds.includes(label.id);
             return (
@@ -72,13 +72,11 @@ export function LabelPicker({
                     onAdd(label.id);
                   }
                 }}
-                className="flex w-full items-center gap-2 px-3 py-1.5 text-left text-sm hover:bg-gray-50"
+                className="hover:bg-background flex w-full items-center gap-2 px-3 py-1.5 text-left text-sm"
               >
                 <span
                   className={`h-2 w-2 shrink-0 rounded-full border ${
-                    assigned
-                      ? "border-indigo-500 bg-indigo-500"
-                      : "border-gray-300"
+                    assigned ? "border-primary bg-primary" : "border-border"
                   }`}
                 />
                 {label.name}
@@ -170,7 +168,7 @@ export function PlanButton({ scheduledDate, onPlan }: PlanButtonProps) {
             setDraftValue(toPickerValue(scheduledDate));
             setOpen(true);
           }}
-          className="h-7 px-2 text-[11px] text-gray-500 hover:text-gray-700"
+          className="text-muted-foreground hover:text-foreground/90 h-7 px-2 text-[11px]"
           aria-label={t("taskEditControls.planDate")}
         >
           {scheduledDate

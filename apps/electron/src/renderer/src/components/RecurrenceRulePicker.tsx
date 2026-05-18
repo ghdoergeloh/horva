@@ -271,17 +271,17 @@ export function RecurrenceRulePicker({
       <Button
         variant="quiet"
         onPress={toggleEnabled}
-        className="flex items-center gap-2 text-xs text-gray-500 hover:text-gray-700"
+        className="text-muted-foreground hover:text-foreground/90 flex items-center gap-2 text-xs"
       >
         <span
-          className={`inline-block h-3.5 w-3.5 rounded-sm border ${enabled ? "border-indigo-500 bg-indigo-500" : "border-gray-300"}`}
+          className={`inline-block h-3.5 w-3.5 rounded-sm border ${enabled ? "border-primary bg-primary" : "border-border"}`}
         />
         {enabled ? t("recurrence.repeats") : t("recurrence.doesNotRepeat")}
       </Button>
 
       {/* Rule builder */}
       {enabled && (
-        <div className="space-y-3 rounded-lg border border-gray-100 bg-gray-50 p-3">
+        <div className="border-border bg-background space-y-3 rounded-lg border p-3">
           {/* Frequency */}
           <div className="flex flex-wrap gap-1">
             {(["DAILY", "WEEKLY", "MONTHLY", "YEARLY"] as Freq[]).map((f) => (
@@ -298,7 +298,7 @@ export function RecurrenceRulePicker({
 
           {/* Time + Timezone */}
           <div className="flex items-center gap-2">
-            <span className="text-xs text-gray-600">
+            <span className="text-foreground/80 text-xs">
               {t("taskEditControls.planTime")}
             </span>
             <TimeField
@@ -330,7 +330,7 @@ export function RecurrenceRulePicker({
                 type="button"
                 title={t("recurrence.timezone")}
                 onClick={() => setTzExpanded(true)}
-                className="cursor-pointer rounded px-1 py-0.5 text-[10px] text-gray-400 hover:text-gray-600 focus:outline-none"
+                className="text-muted-foreground hover:text-foreground/80 cursor-pointer rounded px-1 py-0.5 text-[10px] focus:outline-none"
               >
                 {tzShortLabel}
               </button>
@@ -339,7 +339,7 @@ export function RecurrenceRulePicker({
 
           {/* Interval */}
           <div className="flex items-center gap-2">
-            <span className="text-xs text-gray-600">
+            <span className="text-foreground/80 text-xs">
               {t("recurrence.every")}
             </span>
             <NumberField
@@ -350,7 +350,7 @@ export function RecurrenceRulePicker({
               onChange={(v) => update({ interval: Math.max(1, v || 1) })}
               className="**:data-[slot=field-group]:h-7 **:data-[slot=field-group]:text-xs [&_input]:w-10 [&_input]:text-center [&_input]:text-xs"
             />
-            <span className="text-xs text-gray-600">
+            <span className="text-foreground/80 text-xs">
               {state.freq === "DAILY"
                 ? t("recurrence.days")
                 : state.freq === "WEEKLY"
@@ -392,12 +392,12 @@ export function RecurrenceRulePicker({
           {/* Monthly: day vs. position */}
           {state.freq === "MONTHLY" && (
             <div className="space-y-2">
-              <label className="flex cursor-pointer items-center gap-2 text-xs text-gray-600">
+              <label className="text-foreground/80 flex cursor-pointer items-center gap-2 text-xs">
                 <input
                   type="radio"
                   checked={state.monthlyMode === "byMonthDay"}
                   onChange={() => update({ monthlyMode: "byMonthDay" })}
-                  className="accent-indigo-500"
+                  className="accent-primary"
                 />
                 <span>{t("recurrence.onDay")}</span>
                 <NumberField
@@ -413,12 +413,12 @@ export function RecurrenceRulePicker({
                 />
               </label>
 
-              <label className="flex cursor-pointer items-center gap-2 text-xs text-gray-600">
+              <label className="text-foreground/80 flex cursor-pointer items-center gap-2 text-xs">
                 <input
                   type="radio"
                   checked={state.monthlyMode === "bySetPos"}
                   onChange={() => update({ monthlyMode: "bySetPos" })}
-                  className="accent-indigo-500"
+                  className="accent-primary"
                 />
                 <span>{t("recurrence.onThe")}</span>
                 <Select<{ id: string; label: string }>

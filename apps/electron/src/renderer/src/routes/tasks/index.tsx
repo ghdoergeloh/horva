@@ -97,7 +97,7 @@ function SortableTaskRow({
         {...attributes}
         {...listeners}
         aria-label={t("tasks.overview.dragHandle")}
-        className="flex cursor-grab items-center px-1 text-gray-300 hover:text-gray-500 active:cursor-grabbing"
+        className="text-muted-foreground/70 hover:text-muted-foreground flex cursor-grab items-center px-1 active:cursor-grabbing"
         type="button"
       >
         <GripVertical className="h-4 w-4" />
@@ -248,16 +248,18 @@ function TasksOverview() {
   return (
     <div className="mx-auto max-w-5xl space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">
+        <h1 className="text-foreground text-2xl font-bold">
           {t("tasks.overview.title")}
         </h1>
-        <p className="mt-1 text-sm text-gray-500">
+        <p className="text-muted-foreground mt-1 text-sm">
           {t("tasks.overview.subtitle")}
         </p>
       </div>
 
       {orderedTasks.length === 0 ? (
-        <p className="text-sm text-gray-400">{t("tasks.overview.empty")}</p>
+        <p className="text-muted-foreground text-sm">
+          {t("tasks.overview.empty")}
+        </p>
       ) : (
         <DndContext
           sensors={sensors}

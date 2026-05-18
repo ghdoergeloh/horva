@@ -49,7 +49,7 @@ interface CollapsibleSectionProps {
 function CollapsibleSection({
   title,
   count,
-  titleClassName = "text-gray-500",
+  titleClassName = "text-muted-foreground",
   defaultOpen = true,
   children,
 }: CollapsibleSectionProps) {
@@ -73,7 +73,7 @@ function CollapsibleSection({
         >
           {title}
         </h2>
-        <span className="text-xs font-normal tracking-normal text-gray-400 normal-case">
+        <span className="text-muted-foreground text-xs font-normal tracking-normal normal-case">
           ({count})
         </span>
       </Button>
@@ -118,7 +118,7 @@ function NewTaskForm({
   return (
     <div
       onKeyDown={handleKeyDown}
-      className="flex items-center gap-2 border-t border-gray-100 px-3 py-2"
+      className="border-border flex items-center gap-2 border-t px-3 py-2"
     >
       <TextField
         autoFocus
@@ -138,7 +138,7 @@ function NewTaskForm({
       <Button
         variant="quiet"
         onPress={onClose}
-        className="flex-shrink-0 rounded p-0.5 text-gray-400 hover:text-gray-600"
+        className="text-muted-foreground hover:text-foreground/80 flex-shrink-0 rounded p-0.5"
       >
         <X className="h-3.5 w-3.5" />
       </Button>
@@ -228,15 +228,15 @@ function DoneTasksSection({
         aria-label={t("tasks.done.title")}
       >
         {open ? (
-          <ChevronDown className="h-3.5 w-3.5 text-gray-400" />
+          <ChevronDown className="text-muted-foreground h-3.5 w-3.5" />
         ) : (
-          <ChevronRight className="h-3.5 w-3.5 text-gray-400" />
+          <ChevronRight className="text-muted-foreground h-3.5 w-3.5" />
         )}
-        <h2 className="text-sm font-semibold tracking-wide text-gray-400 uppercase">
+        <h2 className="text-muted-foreground text-sm font-semibold tracking-wide uppercase">
           {t("tasks.done.title")}
         </h2>
         {accumulated.length > 0 && (
-          <span className="text-xs font-normal tracking-normal text-gray-400 normal-case">
+          <span className="text-muted-foreground text-xs font-normal tracking-normal normal-case">
             ({accumulated.length}
             {hasMore ? "+" : ""})
           </span>
@@ -263,21 +263,23 @@ function DoneTasksSection({
           ))}
 
           {isFetching && (
-            <p className="py-1 text-xs text-gray-400">{t("loading")}</p>
+            <p className="text-muted-foreground py-1 text-xs">{t("loading")}</p>
           )}
 
           {!isFetching && hasMore && (
             <Button
               variant="quiet"
               onPress={handleLoadMore}
-              className="mt-1 text-xs text-indigo-500 hover:text-indigo-700"
+              className="text-primary hover:text-sidebar-accent-foreground mt-1 text-xs"
             >
               {t("tasks.done.loadMore")}
             </Button>
           )}
 
           {!isFetching && accumulated.length === 0 && (
-            <p className="text-sm text-gray-400">{t("tasks.done.none")}</p>
+            <p className="text-muted-foreground text-sm">
+              {t("tasks.done.none")}
+            </p>
           )}
         </div>
       )}
@@ -430,11 +432,11 @@ function ProjectTaskPage() {
               style={{ backgroundColor: project.color }}
             />
           )}
-          <h1 className="text-2xl font-bold text-gray-900">
+          <h1 className="text-foreground text-2xl font-bold">
             {project?.name ?? "Projekt"}
           </h1>
         </div>
-        <p className="mt-1 text-sm text-gray-500">
+        <p className="text-muted-foreground mt-1 text-sm">
           {t("tasks.openCount", {
             count: allTasks.filter((t) => t.status === "open").length,
           })}{" "}
@@ -446,12 +448,14 @@ function ProjectTaskPage() {
       <CollapsibleSection
         title={t("tasks.title")}
         count={allTasks.length}
-        titleClassName="text-gray-700"
+        titleClassName="text-foreground/90"
       >
         <div className="space-y-2">
           {allTasks.map((t) => renderCard(t))}
           {allTasks.length === 0 && addingTaskType !== "task" && (
-            <p className="text-sm text-gray-400">{t("tasks.noTasks")}</p>
+            <p className="text-muted-foreground text-sm">
+              {t("tasks.noTasks")}
+            </p>
           )}
         </div>
         {addingTaskType === "task" ? (
@@ -466,7 +470,7 @@ function ProjectTaskPage() {
           <Button
             variant="quiet"
             onPress={() => setAddingTaskType("task")}
-            className="mt-3 flex items-center gap-1.5 text-sm text-gray-400 hover:text-indigo-500"
+            className="text-muted-foreground hover:text-primary mt-3 flex items-center gap-1.5 text-sm"
           >
             <span className="inline-flex items-center gap-1.5">
               <Plus className="h-3.5 w-3.5" />
@@ -480,12 +484,14 @@ function ProjectTaskPage() {
       <CollapsibleSection
         title={t("tasks.activities")}
         count={allActivities.length}
-        titleClassName="text-gray-700"
+        titleClassName="text-foreground/90"
       >
         <div className="space-y-2">
           {allActivities.map((t) => renderCard(t))}
           {allActivities.length === 0 && addingTaskType !== "activity" && (
-            <p className="text-sm text-gray-400">{t("tasks.noActivities")}</p>
+            <p className="text-muted-foreground text-sm">
+              {t("tasks.noActivities")}
+            </p>
           )}
         </div>
         {addingTaskType === "activity" ? (
@@ -500,7 +506,7 @@ function ProjectTaskPage() {
           <Button
             variant="quiet"
             onPress={() => setAddingTaskType("activity")}
-            className="mt-3 flex items-center gap-1.5 text-sm text-gray-400 hover:text-indigo-500"
+            className="text-muted-foreground hover:text-primary mt-3 flex items-center gap-1.5 text-sm"
           >
             <span className="inline-flex items-center gap-1.5">
               <Plus className="h-3.5 w-3.5" />

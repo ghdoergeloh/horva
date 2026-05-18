@@ -211,7 +211,7 @@ export function LoadingSpinner({ size = 48, label }: LoadingSpinnerProps) {
       </svg>
 
       {label !== undefined && label !== "" && (
-        <p className="text-xs text-gray-400">{label}</p>
+        <p className="text-muted-foreground text-xs">{label}</p>
       )}
     </div>
   );

@@ -44,7 +44,7 @@ interface CollapsibleSectionProps {
 function CollapsibleSection({
   title,
   count,
-  titleClassName = "text-gray-500",
+  titleClassName = "text-muted-foreground",
   defaultOpen = true,
   children,
 }: CollapsibleSectionProps) {
@@ -68,7 +68,7 @@ function CollapsibleSection({
         >
           {title}
         </h2>
-        <span className="text-xs font-normal tracking-normal text-gray-400 normal-case">
+        <span className="text-muted-foreground text-xs font-normal tracking-normal normal-case">
           ({count})
         </span>
       </Button>
@@ -233,10 +233,10 @@ function DailyOverview() {
   return (
     <div className="mx-auto max-w-5xl space-y-8">
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">
+        <h1 className="text-foreground text-2xl font-bold">
           {t("dashboard.title")}
         </h1>
-        <p className="mt-1 text-sm text-gray-500">
+        <p className="text-muted-foreground mt-1 text-sm">
           {now.toLocaleDateString(locale, {
             weekday: "long",
             day: "numeric",
@@ -249,7 +249,9 @@ function DailyOverview() {
       {/* Due now */}
       <CollapsibleSection title={t("dashboard.dueNow")} count={dueNow.length}>
         {dueNow.length === 0 ? (
-          <p className="text-sm text-gray-400">{t("dashboard.noTasksToday")}</p>
+          <p className="text-muted-foreground text-sm">
+            {t("dashboard.noTasksToday")}
+          </p>
         ) : (
           <div className="space-y-2">{dueNow.map((t) => renderCard(t))}</div>
         )}
@@ -279,7 +281,7 @@ function DailyOverview() {
         <CollapsibleSection
           title={t("dashboard.overdue")}
           count={overdue.length}
-          titleClassName="text-red-500"
+          titleClassName="text-destructive"
           defaultOpen={false}
         >
           <div className="space-y-2">

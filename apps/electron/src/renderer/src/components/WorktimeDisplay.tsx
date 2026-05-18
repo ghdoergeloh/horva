@@ -42,17 +42,17 @@ export function WorktimeDisplay({ tick }: { tick: number }) {
   const weekMinutes = committedWeekMinutes + runningMinutes;
 
   return (
-    <div className="flex items-center gap-4 text-xs text-gray-500">
+    <div className="text-muted-foreground flex items-center gap-4 text-xs">
       <div className="flex items-center gap-1.5">
-        <span className="text-gray-400">{t("worktime.today")}</span>
-        <span className="font-mono font-medium text-gray-700 tabular-nums">
+        <span className="text-muted-foreground">{t("worktime.today")}</span>
+        <span className="text-foreground/90 font-mono font-medium tabular-nums">
           <FormattedMinutes minutes={todayMinutes} />
         </span>
       </div>
-      <div className="h-3 w-px bg-gray-200" />
+      <div className="bg-border h-3 w-px" />
       <div className="flex items-center gap-1.5">
-        <span className="text-gray-400">{t("worktime.week")}</span>
-        <span className="font-mono font-medium text-gray-700 tabular-nums">
+        <span className="text-muted-foreground">{t("worktime.week")}</span>
+        <span className="text-foreground/90 font-mono font-medium tabular-nums">
           <FormattedMinutes minutes={weekMinutes} />
         </span>
       </div>

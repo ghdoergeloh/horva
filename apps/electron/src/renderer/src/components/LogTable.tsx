@@ -95,7 +95,7 @@ export function LogTable({
   return (
     <table className="w-full text-sm">
       <thead>
-        <tr className="border-b border-gray-200 text-left text-xs text-gray-400">
+        <tr className="border-border text-muted-foreground border-b text-left text-xs">
           <th className="pr-4 pb-2 font-normal">{t("logTable.from")}</th>
           <th className="pr-4 pb-2 font-normal">{t("logTable.until")}</th>
           <th className="pr-6 pb-2 font-normal">{t("logTable.time")}</th>
@@ -122,7 +122,7 @@ export function LogTable({
         {rows.map((row, i) => {
           if (row.kind === "gap") {
             return (
-              <tr key={`gap-${String(i)}`} className="text-gray-300">
+              <tr key={`gap-${String(i)}`} className="text-muted-foreground/70">
                 <td className="py-1 pr-4 font-mono">{fmt(row.from)}</td>
                 <td className="py-1 pr-4 font-mono">{fmt(row.to)}</td>
                 <td className="py-1 pr-6 italic">

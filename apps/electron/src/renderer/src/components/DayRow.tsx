@@ -75,16 +75,16 @@ export function DayRow({
 
   return (
     <div
-      className={`rounded-lg transition-colors ${isToday ? "bg-indigo-50/60" : expanded ? "bg-gray-50" : ""}`}
+      className={`rounded-lg transition-colors ${isToday ? "bg-sidebar-accent/60" : expanded ? "bg-background" : ""}`}
     >
       {/* Timeline row – click to toggle */}
       <div
-        className={`group flex cursor-pointer items-center gap-4 px-3 py-2 ${!isToday && !expanded ? "hover:bg-gray-50" : ""} rounded-lg`}
+        className={`group flex cursor-pointer items-center gap-4 px-3 py-2 ${!isToday && !expanded ? "hover:bg-background" : ""} rounded-lg`}
         onClick={onToggle}
       >
         {/* Day label */}
         <div
-          className={`w-16 shrink-0 text-right text-sm font-medium ${isToday ? "text-indigo-600" : "text-gray-500"}`}
+          className={`w-16 shrink-0 text-right text-sm font-medium ${isToday ? "text-primary" : "text-muted-foreground"}`}
         >
           {date.toLocaleDateString(locale, {
             weekday: "short",
@@ -93,14 +93,14 @@ export function DayRow({
         </div>
 
         {/* Timeline bar */}
-        <div className="relative h-9 flex-1 overflow-visible rounded-md bg-gray-100">
+        <div className="bg-muted relative h-9 flex-1 overflow-visible rounded-md">
           {Array.from({ length: maxH - minH - 1 }, (_, i) => {
             const left = ((i + 1) / range) * 100;
             return (
               <div
                 key={i}
                 style={{ left: `${String(left)}%` }}
-                className="absolute inset-y-0 w-px bg-white/60"
+                className="bg-card/60 absolute inset-y-0 w-px"
               />
             );
           })}
@@ -152,25 +152,25 @@ export function DayRow({
           {/* Tooltip */}
           {tooltip && (
             <div
-              className="pointer-events-none fixed z-50 -translate-x-1/2 -translate-y-full rounded-lg bg-gray-900 px-3 py-2 text-xs text-white shadow-lg"
+              className="bg-foreground text-background pointer-events-none fixed z-50 -translate-x-1/2 -translate-y-full rounded-lg px-3 py-2 text-xs shadow-lg"
               style={{ left: tooltip.x, top: tooltip.y - 8 }}
             >
               <p className="font-medium">
                 {tooltip.slot.task?.name ?? t("slot.noTask")}
               </p>
               {tooltip.slot.task && (
-                <p className="mt-0.5 text-gray-400">
+                <p className="text-muted-foreground mt-0.5">
                   {tooltip.slot.task.project.name}
                 </p>
               )}
-              <p className="mt-1.5 font-mono text-gray-300">
+              <p className="text-muted-foreground/70 mt-1.5 font-mono">
                 {fmt(tooltip.slot.startedAt)}
                 {" – "}
                 {tooltip.slot.endedAt
                   ? fmt(tooltip.slot.endedAt)
                   : t("slot.running")}
                 {tooltip.slot.endedAt && (
-                  <span className="ml-2 text-gray-400">
+                  <span className="text-muted-foreground ml-2">
                     <FormattedMs
                       ms={
                         new Date(tooltip.slot.endedAt).getTime() -
@@ -180,13 +180,15 @@ export function DayRow({
                   </span>
                 )}
               </p>
-              <p className="mt-1 text-gray-500">{t("taskCard.clickToEdit")}</p>
+              <p className="text-muted-foreground mt-1">
+                {t("taskCard.clickToEdit")}
+              </p>
             </div>
           )}
         </div>
 
         {/* Total duration */}
-        <div className="w-16 shrink-0 text-right text-xs text-gray-400">
+        <div className="text-muted-foreground w-16 shrink-0 text-right text-xs">
           {totalMs > 0 ? <FormattedMs ms={totalMs} /> : ""}
         </div>
       </div>
@@ -195,7 +197,9 @@ export function DayRow({
       {expanded && (
         <div className="pb-3">
           {slots.length === 0 ? (
-            <p className="px-4 text-sm text-gray-300">{t("slot.noEntries")}</p>
+            <p className="text-muted-foreground/70 px-4 text-sm">
+              {t("slot.noEntries")}
+            </p>
           ) : viewMode === "tasks" ? (
             <TaskSummaryView slots={slots} />
           ) : (

@@ -64,11 +64,11 @@ export function StartTaskDialog({
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-      <div className="w-full max-w-md rounded-xl bg-white shadow-xl">
+    <div className="bg-foreground/40 fixed inset-0 z-50 flex items-center justify-center">
+      <div className="bg-card w-full max-w-md rounded-xl shadow-xl">
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-gray-100 px-4 py-3">
-          <h2 className="text-sm font-semibold text-gray-900">
+        <div className="border-border flex items-center justify-between border-b px-4 py-3">
+          <h2 className="text-foreground text-sm font-semibold">
             {switchMode
               ? t("startTaskDialog.titleSwitch")
               : t("startTaskDialog.titleStart")}
@@ -76,7 +76,7 @@ export function StartTaskDialog({
           <Button
             variant="quiet"
             onPress={onClose}
-            className="rounded p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600"
+            className="text-muted-foreground hover:bg-muted hover:text-foreground/80 rounded p-1"
             aria-label={t("startTaskDialog.close")}
           >
             <X className="h-4 w-4" />
@@ -84,7 +84,7 @@ export function StartTaskDialog({
         </div>
 
         {/* Search */}
-        <div className="border-b border-gray-100 px-4 py-3">
+        <div className="border-border border-b px-4 py-3">
           <SearchField
             autoFocus
             value={search}
@@ -101,32 +101,32 @@ export function StartTaskDialog({
               key={task.id}
               variant="quiet"
               onPress={() => void startWithTask(task.id)}
-              className="flex w-full items-center gap-3 px-4 py-2 text-left hover:bg-gray-50"
+              className="hover:bg-background flex w-full items-center gap-3 px-4 py-2 text-left"
             >
               <div
                 className="h-2.5 w-2.5 flex-shrink-0 rounded-full"
                 style={{ backgroundColor: task.project.color }}
               />
-              <span className="flex-1 truncate text-sm text-gray-900">
+              <span className="text-foreground flex-1 truncate text-sm">
                 {task.name}
               </span>
-              <span className="flex-shrink-0 text-xs text-gray-400">
+              <span className="text-muted-foreground flex-shrink-0 text-xs">
                 {task.project.name}
               </span>
             </Button>
           ))}
           {filtered.length === 0 && search && (
-            <p className="px-4 py-3 text-sm text-gray-400">
+            <p className="text-muted-foreground px-4 py-3 text-sm">
               {t("startTaskDialog.noTaskFound")}
             </p>
           )}
         </div>
 
         {/* Create new task */}
-        <div className="border-t border-gray-100 px-4 py-3">
+        <div className="border-border border-t px-4 py-3">
           <div className="flex items-center gap-2">
-            <div className="flex flex-1 items-center gap-2 rounded-lg border border-gray-200 px-3 py-2">
-              <Plus className="h-4 w-4 flex-shrink-0 text-gray-400" />
+            <div className="border-border flex flex-1 items-center gap-2 rounded-lg border px-3 py-2">
+              <Plus className="text-muted-foreground h-4 w-4 flex-shrink-0" />
               <TextField
                 value={newTaskName}
                 onChange={setNewTaskName}
@@ -152,11 +152,11 @@ export function StartTaskDialog({
         </div>
 
         {/* Start without task */}
-        <div className="border-t border-gray-100 px-4 py-3">
+        <div className="border-border border-t px-4 py-3">
           <Button
             variant="secondary"
             onPress={() => void startWithoutTask()}
-            className="w-full py-2 text-sm text-gray-500 hover:bg-gray-50 hover:text-gray-700"
+            className="text-muted-foreground hover:bg-background hover:text-foreground/90 w-full py-2 text-sm"
           >
             {t("startTaskDialog.startWithoutTask")}
           </Button>

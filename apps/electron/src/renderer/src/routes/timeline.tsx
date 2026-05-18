@@ -158,19 +158,19 @@ function Timeline() {
         <Button
           variant="quiet"
           onPress={() => setWeekOffset((o) => o - 1)}
-          className="rounded p-1 hover:bg-gray-100"
+          className="hover:bg-muted rounded p-1"
           aria-label={t("timeline.previousWeek")}
         >
           <ChevronLeft className="h-5 w-5" />
         </Button>
-        <h1 className="w-64 text-center text-lg font-semibold text-gray-900">
+        <h1 className="text-foreground w-64 text-center text-lg font-semibold">
           {formatWeekLabel(weekDays)}
         </h1>
         <Button
           variant="quiet"
           onPress={() => setWeekOffset((o) => o + 1)}
           isDisabled={isCurrentWeek}
-          className="rounded p-1 hover:bg-gray-100"
+          className="hover:bg-muted rounded p-1"
           aria-label={t("timeline.nextWeek")}
         >
           <ChevronRight className="h-5 w-5" />
@@ -226,7 +226,7 @@ function Timeline() {
       </div>
 
       {/* Card */}
-      <div className="flex-1 overflow-auto rounded-xl border border-gray-200 bg-white p-4">
+      <div className="border-border bg-card flex-1 overflow-auto rounded-xl border p-4">
         {/* Hour scale */}
         <div className="mb-2 flex items-center gap-4">
           <div className="w-16 shrink-0" />
@@ -237,7 +237,7 @@ function Timeline() {
                 <span
                   key={h}
                   style={{ position: "absolute", left: `${String(left)}%` }}
-                  className="-translate-x-1/2 text-xs text-gray-400"
+                  className="text-muted-foreground -translate-x-1/2 text-xs"
                 >
                   {String(h).padStart(2, "0")}:00
                 </span>
