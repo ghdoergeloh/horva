@@ -13,21 +13,21 @@
     "with-env": "dotenv -e ../../.env --"
   },
   "dependencies": {
-    "@hono/node-server": "^1.19.12",
+    "@hono/node-server": "^2.0.3",
     "@opentelemetry/api": "^1.9.1",
-    "@opentelemetry/api-logs": "^0.214.0",
-    "@opentelemetry/exporter-logs-otlp-http": "^0.214.0",
-    "@opentelemetry/resources": "^2.6.1",
-    "@opentelemetry/sdk-logs": "^0.214.0",
-    "@opentelemetry/sdk-node": "^0.214.0",
-    "@opentelemetry/semantic-conventions": "^1.40.0",
-    "@orpc/server": "^1.13.13",
+    "@opentelemetry/api-logs": "^0.218.0",
+    "@opentelemetry/exporter-logs-otlp-http": "^0.218.0",
+    "@opentelemetry/resources": "^2.7.1",
+    "@opentelemetry/sdk-logs": "^0.218.0",
+    "@opentelemetry/sdk-node": "^0.218.0",
+    "@opentelemetry/semantic-conventions": "^1.41.1",
+    "@orpc/server": "^1.14.3",
     "@repo/auth": "workspace:*",
     "@repo/contract": "workspace:*",
     "@repo/core": "workspace:*",
     "@repo/db": "workspace:*",
     "dotenv": "catalog:",
-    "hono": "^4.12.10"
+    "hono": "^4.12.19"
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",

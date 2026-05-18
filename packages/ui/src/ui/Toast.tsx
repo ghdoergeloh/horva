@@ -1,6 +1,5 @@
 "use client";
 
-import type { CSSProperties } from "react";
 import type { ToastProps } from "react-aria-components";
 import { XIcon } from "lucide-react";
 import {
@@ -74,7 +73,7 @@ export function MyToast(props: ToastProps<MyToastContent>) {
   return (
     <Toast
       {...props}
-      style={{ viewTransitionName: props.toast.key } as CSSProperties}
+      style={{ viewTransitionName: props.toast.key }}
       className={composeTailwindRenderProps(
         props.className,
         "flex w-[230px] items-center gap-4 rounded-lg bg-blue-600 px-4 py-3 font-sans outline-none [view-transition-class:toast] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 focus-visible:outline-solid forced-colors:outline",
