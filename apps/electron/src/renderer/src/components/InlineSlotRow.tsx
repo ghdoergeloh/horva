@@ -76,6 +76,7 @@ export function InlineSlotRow({
 
   useEffect(() => {
     if (isEditing) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- reset form state when entering edit mode for a different slot
       setStartTime(fmt(slot.startedAt));
       setEndTime(slot.endedAt ? fmt(slot.endedAt) : "");
       setTaskId(slot.taskId);

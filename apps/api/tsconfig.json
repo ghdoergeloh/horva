@@ -3,7 +3,7 @@
   "compilerOptions": {
     "types": ["node"],
     // tsx (esbuild) applies JSX settings to the whole loaded module graph,
-    // including transitively-imported TSX from @repo/transactional. That
+    // including transitively-imported TSX from @horva/transactional. That
     // package expects the React runtime for react-email templates, so leave
     // jsxImportSource unset (defaults to "react") and use the automatic
     // runtime. If the API ever grows its own JSX for Hono server-rendered

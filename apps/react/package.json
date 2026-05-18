@@ -10,6 +10,8 @@
     "format": "prettier --check . --ignore-path ../../.gitignore --ignore-path .prettierignore",
     "lint": "eslint .",
     "preview": "vite preview",
+    "test:unit": "vitest run --passWithNoTests",
+    "test:unit:coverage": "vitest run --coverage --passWithNoTests",
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
   "prettier": "@horva/prettier-config",
@@ -17,11 +19,11 @@
     "@horva/auth": "workspace:*",
     "@horva/contract": "workspace:*",
     "@horva/ui": "workspace:*",
-    "@orpc/client": "^1.13.13",
-    "@orpc/react-query": "^1.13.13",
-    "@tanstack/react-query": "^5.96.2",
-    "@tanstack/react-router": "^1.168.10",
-    "@tanstack/react-router-devtools": "^1.166.11",
+    "@orpc/client": "^1.14.3",
+    "@orpc/react-query": "^1.14.3",
+    "@tanstack/react-query": "^5.100.10",
+    "@tanstack/react-router": "^1.170.4",
+    "@tanstack/react-router-devtools": "^1.167.0",
     "react": "catalog:react19",
     "react-dom": "catalog:react19"
   },
@@ -30,16 +32,19 @@
     "@horva/prettier-config": "workspace:*",
     "@horva/tailwind-config": "workspace:*",
     "@horva/tsconfig": "workspace:*",
+    "@horva/vitest": "workspace:*",
     "@tailwindcss/vite": "catalog:",
-    "@tanstack/router-plugin": "^1.167.12",
+    "@tanstack/router-plugin": "^1.168.6",
     "@types/node": "catalog:",
     "@types/react": "catalog:react19",
     "@types/react-dom": "catalog:react19",
     "@vitejs/plugin-react": "catalog:",
     "eslint": "catalog:",
+    "jsdom": "catalog:",
     "prettier": "catalog:",
     "tailwindcss": "catalog:",
     "typescript": "catalog:",
-    "vite": "catalog:"
+    "vite": "catalog:",
+    "vitest": "catalog:"
   }
 }

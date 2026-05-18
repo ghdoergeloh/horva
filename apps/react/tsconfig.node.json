@@ -4,5 +4,5 @@
     "types": ["node"],
     "tsBuildInfoFile": ".cache/tsbuildinfo.node.json"
   },
-  "include": ["vite.config.ts"]
+  "include": ["vite.config.ts", "vitest.config.ts", "vitest.setup.ts"]
 }

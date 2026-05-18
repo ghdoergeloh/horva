@@ -27,6 +27,8 @@
     "migrate": "pnpm with-env drizzle-kit migrate",
     "push": "pnpm with-env drizzle-kit push",
     "studio": "pnpm with-env drizzle-kit studio",
+    "test:unit": "vitest run --passWithNoTests",
+    "test:unit:coverage": "vitest run --coverage --passWithNoTests",
     "typecheck": "tsc --noEmit --emitDeclarationOnly false",
     "with-env": "dotenv -e ../../.env --"
   },
@@ -35,17 +37,19 @@
     "dotenv": "catalog:",
     "drizzle-orm": "catalog:",
     "drizzle-zod": "catalog:",
-    "pg": "^8.20.0",
+    "pg": "^8.21.0",
     "zod": "catalog:"
   },
   "devDependencies": {
     "@horva/eslint-config": "workspace:*",
     "@horva/prettier-config": "workspace:*",
     "@horva/tsconfig": "workspace:*",
+    "@horva/vitest": "workspace:*",
     "@types/pg": "^8.20.0",
     "drizzle-kit": "catalog:",
     "eslint": "catalog:",
     "prettier": "catalog:",
-    "typescript": "catalog:"
+    "typescript": "catalog:",
+    "vitest": "catalog:"
   }
 }

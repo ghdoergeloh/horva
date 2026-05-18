@@ -41,7 +41,7 @@ export function LabelPicker({
   const ref = useRef<HTMLDivElement>(null);
 
   function handleBlur(e: React.FocusEvent) {
-    if (!ref.current?.contains(e.relatedTarget as Node)) setOpen(false);
+    if (!ref.current?.contains(e.relatedTarget)) setOpen(false);
   }
 
   if (allLabels.length === 0) return null;
@@ -182,7 +182,7 @@ export function PlanButton({ scheduledDate, onPlan }: PlanButtonProps) {
           onChange={updateDraft}
           onBlur={(e) => {
             // Skip if focus stayed within the wrapper div
-            if (ref.current?.contains(e.relatedTarget as Node)) return;
+            if (ref.current?.contains(e.relatedTarget)) return;
             // Skip if the calendar popover is open — focus moved into the
             // portal overlay (which is outside ref.current in the DOM).
             // We rely on onOpenChange to commit once the popover closes.

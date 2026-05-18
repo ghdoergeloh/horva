@@ -1,7 +1,6 @@
 import type { Command } from "commander";
 import { confirm, input } from "@inquirer/prompts";
 
-import type { Db } from "@horva/db/client";
 import { seed } from "@horva/core";
 
 import { configPath, readConfig, writeConfig } from "../lib/config.js";
@@ -44,7 +43,7 @@ export function registerInitCommand(program: Command): void {
         printSuccess(`${sym.checked} Schema applied.`);
 
         // Lazily import db after env is set
-        const dbModule = (await import("../lib/db.js")) as { db: Db };
+        const dbModule = await import("../lib/db.js");
         await seed(dbModule.db);
         printSuccess(`${sym.checked} Database initialized.`);
       } catch (err) {
