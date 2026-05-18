@@ -33,7 +33,7 @@
     "@horva/tsconfig": "workspace:*",
     "@types/node": "catalog:",
     "@types/pg": "catalog:",
-    "esbuild": "^0.25.0",
+    "esbuild": "^0.28.0",
     "eslint": "catalog:",
     "prettier": "catalog:",
     "typescript": "catalog:"
