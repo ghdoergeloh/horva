@@ -10,6 +10,8 @@
     "format": "prettier --check . --ignore-path ../../.gitignore --ignore-path .prettierignore",
     "lint": "eslint .",
     "preview": "vite preview",
+    "test:unit": "vitest run --passWithNoTests",
+    "test:unit:coverage": "vitest run --coverage --passWithNoTests",
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
   "prettier": "@repo/prettier-config",
@@ -30,6 +32,7 @@
     "@repo/prettier-config": "workspace:*",
     "@repo/tailwind-config": "workspace:*",
     "@repo/tsconfig": "workspace:*",
+    "@repo/vitest": "workspace:*",
     "@tailwindcss/vite": "catalog:",
     "@tanstack/router-plugin": "^1.168.6",
     "@types/node": "catalog:",
@@ -41,6 +44,7 @@
     "prettier": "catalog:",
     "tailwindcss": "catalog:",
     "typescript": "catalog:",
-    "vite": "catalog:"
+    "vite": "catalog:",
+    "vitest": "catalog:"
   }
 }
