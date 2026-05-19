@@ -6,7 +6,7 @@ export const viteConfig = defineConfig({
     include: ["src/**/*.spec.ts"],
     coverage: {
       include: ["src/**/*.ts"],
-      exclude: ["src/**/*.spec.ts", "src/index.ts"],
+      exclude: ["src/**/*.spec.ts"],
       reporter: ["text", "cobertura", "json"],
       provider: "istanbul",
       reportsDirectory: "./coverage",
