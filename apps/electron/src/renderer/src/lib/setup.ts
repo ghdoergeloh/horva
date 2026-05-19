@@ -4,6 +4,7 @@
 
 export interface SetupStatus {
   ready: boolean;
+  error: string | null;
   defaults: { databaseUrl: string };
 }
 
@@ -15,6 +16,7 @@ export interface CompleteSetupInput {
 interface SetupBridge {
   status(): Promise<SetupStatus>;
   complete(input: CompleteSetupInput): Promise<void>;
+  retry(): Promise<void>;
 }
 
 declare global {

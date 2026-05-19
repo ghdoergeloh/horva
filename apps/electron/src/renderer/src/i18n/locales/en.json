@@ -13,6 +13,12 @@
     "submit": "Get started",
     "submitting": "Setting up…"
   },
+  "bootError": {
+    "title": "Can't connect to the database",
+    "subtitle": "Horva couldn't reach your PostgreSQL instance. Make sure it's running and reachable, then try again.",
+    "retry": "Retry",
+    "retrying": "Retrying…"
+  },
   "auth": {
     "signInTitle": "Sign in",
     "signInSubtitle": "Welcome back.",

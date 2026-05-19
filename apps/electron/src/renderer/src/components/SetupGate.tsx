@@ -14,6 +14,7 @@ type GateState =
       kind: "needs-setup";
       defaultDatabaseUrl: string;
     }
+  | { kind: "error"; message: string }
   | { kind: "ready" };
 
 interface SetupGateProps {
@@ -24,12 +25,14 @@ export function SetupGate({ children }: SetupGateProps) {
   const { t } = useTranslation();
   const [state, setState] = useState<GateState>({ kind: "loading" });
 
-  useEffect(() => {
+  const fetchStatus = () => {
     void setupBridge
       .status()
       .then((status) => {
         if (status.ready) {
           setState({ kind: "ready" });
+        } else if (status.error) {
+          setState({ kind: "error", message: status.error });
         } else {
           setState({
             kind: "needs-setup",
@@ -39,7 +42,15 @@ export function SetupGate({ children }: SetupGateProps) {
       })
       .catch((err: unknown) => {
         console.error("setup:status failed", err);
+        setState({
+          kind: "error",
+          message: err instanceof Error ? err.message : String(err),
+        });
       });
+  };
+
+  useEffect(() => {
+    fetchStatus();
   }, []);
 
   if (state.kind === "loading") {
@@ -47,6 +58,18 @@ export function SetupGate({ children }: SetupGateProps) {
       <div className="flex h-screen items-center justify-center bg-gray-50">
         <LoadingSpinner size={64} label={t("loading")} />
       </div>
+    );
+  }
+
+  if (state.kind === "error") {
+    return (
+      <SetupError
+        message={state.message}
+        onRetry={() => {
+          setState({ kind: "loading" });
+          fetchStatus();
+        }}
+      />
     );
   }
 
@@ -60,6 +83,51 @@ export function SetupGate({ children }: SetupGateProps) {
   }
 
   return <>{children}</>;
+}
+
+interface SetupErrorProps {
+  message: string;
+  onRetry: () => void;
+}
+
+function SetupError({ message, onRetry }: SetupErrorProps) {
+  const { t } = useTranslation();
+  const [retrying, setRetrying] = useState(false);
+
+  async function handleRetry() {
+    setRetrying(true);
+    try {
+      await setupBridge.retry();
+    } catch {
+      // The next status() call will surface the fresh error message.
+    } finally {
+      setRetrying(false);
+      onRetry();
+    }
+  }
+
+  return (
+    <div className="flex h-screen items-center justify-center bg-gray-50 p-6">
+      <div className="w-full max-w-md rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+        <h1 className="text-xl font-semibold text-gray-900">
+          {t("bootError.title")}
+        </h1>
+        <p className="mt-1 text-sm text-gray-500">{t("bootError.subtitle")}</p>
+        <div className="mt-4 rounded-md bg-red-50 p-3 font-mono text-xs break-all text-red-700">
+          {message}
+        </div>
+        <div className="mt-6 flex justify-end">
+          <Button
+            variant="primary"
+            onPress={() => void handleRetry()}
+            isDisabled={retrying}
+          >
+            {retrying ? t("bootError.retrying") : t("bootError.retry")}
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
 }
 
 interface SetupWizardProps {

@@ -1,6 +1,7 @@
 import { randomUUID } from "node:crypto";
 import type { IpcMain } from "electron";
 
+import { seed } from "@horva/core";
 import { readConfig, updateConfig } from "@horva/core/config";
 import { eq } from "@horva/db";
 import { user } from "@horva/db/schema";
@@ -13,6 +14,7 @@ const LOCAL_USER_EMAIL_SUFFIX = "@horva.local";
 
 export interface SetupStatus {
   ready: boolean;
+  error: string | null;
   defaults: {
     databaseUrl: string;
   };
@@ -30,6 +32,7 @@ export interface CompleteSetupInput {
  * local user row exists.
  */
 let isReady = false;
+let bootError: string | null = null;
 
 export function isSetupReady(): boolean {
   return isReady;
@@ -37,6 +40,11 @@ export function isSetupReady(): boolean {
 
 export function markReady(): void {
   isReady = true;
+  bootError = null;
+}
+
+export function setBootError(message: string): void {
+  bootError = message;
 }
 
 /**
@@ -54,10 +62,26 @@ export function registerSetupHandlers(
     const cfg = readConfig();
     return {
       ready: isReady,
+      error: bootError,
       defaults: {
         databaseUrl: cfg?.databaseUrl ?? DEFAULT_DATABASE_URL,
       },
     };
+  });
+
+  ipcMain.handle("setup:retry", async (): Promise<void> => {
+    const cfg = readConfig();
+    if (!cfg?.userId || !cfg.databaseUrl) {
+      throw new Error("Not configured yet");
+    }
+    process.env["DATABASE_URL"] = cfg.databaseUrl;
+    try {
+      await seed(db);
+      markReady();
+    } catch (err) {
+      bootError = err instanceof Error ? err.message : String(err);
+      throw err;
+    }
   });
 
   ipcMain.handle(

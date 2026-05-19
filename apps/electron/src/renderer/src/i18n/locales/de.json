@@ -13,6 +13,12 @@
     "submit": "Loslegen",
     "submitting": "Einrichten…"
   },
+  "bootError": {
+    "title": "Verbindung zur Datenbank fehlgeschlagen",
+    "subtitle": "Horva konnte die PostgreSQL-Instanz nicht erreichen. Stell sicher, dass sie läuft und erreichbar ist, und versuch es dann erneut.",
+    "retry": "Erneut versuchen",
+    "retrying": "Versuche erneut…"
+  },
   "auth": {
     "signInTitle": "Anmelden",
     "signInSubtitle": "Willkommen zurück.",

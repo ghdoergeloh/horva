@@ -5,6 +5,7 @@ import { contextBridge, ipcRenderer } from "electron";
 // the state the oRPC handler won't accept connections in.
 interface SetupStatus {
   ready: boolean;
+  error: string | null;
   defaults: { databaseUrl: string };
 }
 
@@ -18,6 +19,8 @@ const setup = {
     ipcRenderer.invoke("setup:status") as Promise<SetupStatus>,
   complete: (input: CompleteSetupInput): Promise<void> =>
     ipcRenderer.invoke("setup:complete", input) as Promise<void>,
+  retry: (): Promise<void> =>
+    ipcRenderer.invoke("setup:retry") as Promise<void>,
 };
 
 contextBridge.exposeInMainWorld("setup", setup);

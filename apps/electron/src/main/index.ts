@@ -8,7 +8,7 @@ import { readConfig } from "@horva/core/config";
 
 import { db } from "./db.js";
 import { registerOrpcHandler } from "./orpc/handler.js";
-import { markReady, registerSetupHandlers } from "./setup.js";
+import { markReady, registerSetupHandlers, setBootError } from "./setup.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -64,10 +64,16 @@ void app.whenReady().then(async () => {
   const cfg = readConfig();
   if (cfg?.userId && cfg.databaseUrl) {
     // Already set up — seed idempotently and mark ready before the window
-    // paints so the renderer doesn't flash the wizard.
+    // paints so the renderer doesn't flash the wizard. If seeding fails
+    // (e.g. DB unreachable), capture the error so the renderer can show
+    // an error screen with retry instead of the app failing to appear.
     process.env["DATABASE_URL"] = cfg.databaseUrl;
-    await seed(db);
-    markReady();
+    try {
+      await seed(db);
+      markReady();
+    } catch (err) {
+      setBootError(err instanceof Error ? err.message : String(err));
+    }
   }
 
   createWindow();
