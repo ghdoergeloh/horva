@@ -277,7 +277,6 @@ function DailyOverview() {
           title={t("dashboard.overdue")}
           count={overdue.length}
           titleClassName="text-destructive"
-          defaultOpen={false}
         >
           <div className="space-y-2">
             {overdue.map((t) =>
