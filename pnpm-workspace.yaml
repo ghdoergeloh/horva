@@ -15,6 +15,8 @@ catalog:
   "@trpc/tanstack-react-query": ^11.7.1
   "@types/node": ^25.9.0
   "@vitejs/plugin-react": ^6.0.2
+  "@vitest/coverage-istanbul": ^4.1.6
+  "@vitest/coverage-v8": ^4.1.6
   dotenv: ^17.4.2
   drizzle-kit: ^0.31.10
   drizzle-orm: ^0.45.2
