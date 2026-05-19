@@ -13,7 +13,17 @@
       body {
         margin: 0;
         padding: 0;
-        background: #f9fafb;
+        background: #fafafa;
+      }
+      @media (prefers-color-scheme: dark) {
+        html,
+        body {
+          background: #181520;
+        }
+      }
+      html.dark,
+      html.dark body {
+        background: #181520;
       }
 
       #app-boot-spinner {
@@ -24,7 +34,6 @@
         align-items: center;
         justify-content: center;
         gap: 12px;
-        background: #f9fafb;
         z-index: 9999;
       }
 

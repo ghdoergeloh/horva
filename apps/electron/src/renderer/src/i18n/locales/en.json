@@ -260,6 +260,10 @@
     "timeFormat_hm": "1h 30m",
     "timeFormat_decimal_colon": "1:30 h",
     "timeFormat_decimal_dot": "1,50 h",
+    "theme": "Appearance",
+    "theme_system": "System",
+    "theme_light": "Light",
+    "theme_dark": "Dark",
     "preview": "Example"
   }
 }

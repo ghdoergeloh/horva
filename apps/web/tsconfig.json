@@ -16,5 +16,11 @@
     },
     "noEmit": true
   },
-  "include": ["src/**/*", "../electron/src/renderer/src/**/*"]
+  "include": [
+    "src/**/*",
+    "../electron/src/renderer/src/**/*",
+    "vite.config.ts",
+    "vitest.config.ts",
+    "vitest.setup.ts"
+  ]
 }

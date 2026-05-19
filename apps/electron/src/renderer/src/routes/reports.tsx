@@ -36,16 +36,16 @@ function BarChart({ data }: { data: { label: string; minutes: number }[] }) {
     <div className="space-y-2">
       {data.map((item, i) => (
         <div key={i} className="flex items-center gap-3">
-          <span className="w-16 flex-shrink-0 text-right text-xs text-gray-500">
+          <span className="text-muted-foreground w-16 flex-shrink-0 text-right text-xs">
             {item.label}
           </span>
-          <div className="h-5 flex-1 rounded bg-gray-100">
+          <div className="bg-muted h-5 flex-1 rounded">
             <div
-              className="h-full rounded bg-indigo-400"
+              className="bg-primary/80 h-full rounded"
               style={{ width: `${String((item.minutes / max) * 100)}%` }}
             />
           </div>
-          <span className="w-12 flex-shrink-0 text-right text-xs text-gray-600">
+          <span className="text-foreground/80 w-12 flex-shrink-0 text-right text-xs">
             <FormattedMinutes minutes={item.minutes} />
           </span>
         </div>
@@ -58,39 +58,39 @@ function ProjectRow({ entry }: { entry: SummaryEntry }) {
   const [expanded, setExpanded] = useState(false);
 
   return (
-    <div className="rounded-lg border border-gray-100">
+    <div className="border-border rounded-lg border">
       <Button
         variant="quiet"
         onPress={() => setExpanded((e) => !e)}
-        className="flex w-full items-center gap-3 px-4 py-3 hover:bg-gray-50"
+        className="hover:bg-background flex w-full items-center gap-3 px-4 py-3"
         aria-label={entry.projectName}
       >
         {expanded ? (
-          <ChevronDown className="h-4 w-4 text-gray-400" />
+          <ChevronDown className="text-muted-foreground h-4 w-4" />
         ) : (
-          <ChevronRight className="h-4 w-4 text-gray-400" />
+          <ChevronRight className="text-muted-foreground h-4 w-4" />
         )}
         <div
           className="h-3 w-3 flex-shrink-0 rounded-sm"
           style={{ backgroundColor: entry.projectColor }}
         />
-        <span className="flex-1 text-left text-sm font-medium text-gray-900">
+        <span className="text-foreground flex-1 text-left text-sm font-medium">
           {entry.projectName}
         </span>
-        <span className="text-sm font-semibold text-gray-900">
+        <span className="text-foreground text-sm font-semibold">
           <FormattedMinutes minutes={entry.totalMinutes} />
         </span>
       </Button>
 
       {expanded && (
-        <div className="border-t border-gray-100 px-4 py-3">
+        <div className="border-border border-t px-4 py-3">
           <div className="space-y-1.5">
             {entry.tasks.map((task) => (
               <div key={task.taskId} className="flex items-center gap-2 pl-7">
-                <span className="flex-1 text-sm text-gray-700">
+                <span className="text-foreground/90 flex-1 text-sm">
                   {task.taskName}
                 </span>
-                <span className="text-sm text-gray-500">
+                <span className="text-muted-foreground text-sm">
                   <FormattedMinutes minutes={task.minutes} />
                 </span>
               </div>
@@ -126,7 +126,7 @@ function SplitProjectPie({
   );
   if (total === 0)
     return (
-      <div className="flex h-48 items-center justify-center text-sm text-gray-400">
+      <div className="text-muted-foreground flex h-48 items-center justify-center text-sm">
         {t("reports.noDataShort")}
       </div>
     );
@@ -189,10 +189,10 @@ function SplitProjectPie({
                 className="h-3 w-3 flex-shrink-0 rounded-sm"
                 style={{ backgroundColor: slice.colorWith }}
               />
-              <span className="flex-1 text-sm font-medium text-gray-700">
+              <span className="text-foreground/90 flex-1 text-sm font-medium">
                 {slice.projectName}
               </span>
-              <span className="text-sm text-gray-900">
+              <span className="text-foreground text-sm">
                 <FormattedMinutes
                   minutes={slice.minutesWith + slice.minutesWithout}
                 />
@@ -204,10 +204,10 @@ function SplitProjectPie({
                   className="h-2 w-2 flex-shrink-0 rounded-sm"
                   style={{ backgroundColor: slice.colorWith }}
                 />
-                <span className="flex-1 text-xs text-gray-500">
+                <span className="text-muted-foreground flex-1 text-xs">
                   {t("reports.withLabel")}
                 </span>
-                <span className="text-xs text-gray-700">
+                <span className="text-foreground/90 text-xs">
                   <FormattedMinutes minutes={slice.minutesWith} />
                 </span>
               </div>
@@ -218,10 +218,10 @@ function SplitProjectPie({
                   className="h-2 w-2 flex-shrink-0 rounded-sm"
                   style={{ backgroundColor: lighten(slice.colorWith) }}
                 />
-                <span className="flex-1 text-xs text-gray-400">
+                <span className="text-muted-foreground flex-1 text-xs">
                   {t("reports.withoutLabel")}
                 </span>
-                <span className="text-xs text-gray-400">
+                <span className="text-muted-foreground text-xs">
                   <FormattedMinutes minutes={slice.minutesWithout} />
                 </span>
               </div>
@@ -391,7 +391,7 @@ function Reports() {
     <div className="mx-auto max-w-5xl space-y-8">
       {/* Header + period + label picker */}
       <div className="flex flex-wrap items-start justify-between gap-3">
-        <h1 className="text-2xl font-bold text-gray-900">
+        <h1 className="text-foreground text-2xl font-bold">
           {t("reports.title")}
         </h1>
         <div className="flex flex-wrap items-center gap-2">
@@ -429,13 +429,13 @@ function Reports() {
             <div className="flex items-center gap-1 rounded-lg bg-transparent">
               {filterLabel ? (
                 <>
-                  <span className="text-sm text-gray-700">
+                  <span className="text-foreground/90 text-sm">
                     {filterLabel.name}
                   </span>
                   <Button
                     variant="quiet"
                     onPress={() => setFilterLabelId(null)}
-                    className="ml-1 text-gray-400 hover:text-gray-600"
+                    className="text-muted-foreground hover:text-foreground/80 ml-1"
                     aria-label={t("reports.clearLabelFilter")}
                   >
                     <X className="h-3.5 w-3.5" />
@@ -469,15 +469,15 @@ function Reports() {
       ) : (
         <>
           {/* Total */}
-          <div className="rounded-xl border border-gray-200 bg-white p-6">
-            <p className="text-sm text-gray-500">
+          <div className="border-border bg-card rounded-xl border p-6">
+            <p className="text-muted-foreground text-sm">
               {t("reports.totalWorktime")}
             </p>
-            <p className="mt-1 text-4xl font-bold text-gray-900">
+            <p className="text-foreground mt-1 text-4xl font-bold">
               <FormattedMinutes minutes={totalMinutes} />
             </p>
             {avgDailyMinutes > 0 && (
-              <p className="mt-1 text-sm text-gray-400">
+              <p className="text-muted-foreground mt-1 text-sm">
                 {t("reports.avgPerDay", {
                   time: formatMinutesWithFormat(avgDailyMinutes, timeFormat),
                 })}
@@ -487,11 +487,11 @@ function Reports() {
 
           {/* Pie chart — split if label filter active */}
           {summary.length > 0 && (
-            <div className="rounded-xl border border-gray-200 bg-white p-6">
-              <h2 className="mb-4 text-sm font-semibold text-gray-700">
+            <div className="border-border bg-card rounded-xl border p-6">
+              <h2 className="text-foreground/90 mb-4 text-sm font-semibold">
                 {t("reports.projectShares")}
                 {filterLabel && (
-                  <span className="ml-2 font-normal text-gray-400">
+                  <span className="text-muted-foreground ml-2 font-normal">
                     {t("reports.labelFilter", { name: filterLabel.name })}
                   </span>
                 )}
@@ -506,8 +506,8 @@ function Reports() {
 
           {/* Bar chart */}
           {isMultiDay && (
-            <div className="rounded-xl border border-gray-200 bg-white p-6">
-              <h2 className="mb-4 text-sm font-semibold text-gray-700">
+            <div className="border-border bg-card rounded-xl border p-6">
+              <h2 className="text-foreground/90 mb-4 text-sm font-semibold">
                 {t("reports.hoursPerDay")}
               </h2>
               <BarChart data={dayData} />
@@ -517,13 +517,13 @@ function Reports() {
           {/* Tasks with selected label */}
           {filterLabel && tasksWithLabel.length > 0 && (
             <div className="space-y-2">
-              <h2 className="text-sm font-semibold text-gray-700">
+              <h2 className="text-foreground/90 text-sm font-semibold">
                 {t("reports.tasksWithLabel", { name: filterLabel.name })}
-                <span className="ml-2 font-normal text-gray-400">
+                <span className="text-muted-foreground ml-2 font-normal">
                   <FormattedMinutes minutes={labelTotalMinutes} />
                 </span>
               </h2>
-              <div className="divide-y divide-gray-50 overflow-hidden rounded-xl border border-gray-200 bg-white">
+              <div className="divide-border/50 border-border bg-card divide-y overflow-hidden rounded-xl border">
                 {tasksWithLabel
                   .sort((a, b) => b.minutes - a.minutes)
                   .map((task) => (
@@ -535,13 +535,13 @@ function Reports() {
                         className="h-2.5 w-2.5 flex-shrink-0 rounded-sm"
                         style={{ backgroundColor: task.projectColor }}
                       />
-                      <span className="flex-1 text-sm text-gray-800">
+                      <span className="text-foreground flex-1 text-sm">
                         {task.taskName}
                       </span>
-                      <span className="text-xs text-gray-400">
+                      <span className="text-muted-foreground text-xs">
                         {task.projectName}
                       </span>
-                      <span className="w-16 text-right text-sm font-medium text-gray-700">
+                      <span className="text-foreground/90 w-16 text-right text-sm font-medium">
                         <FormattedMinutes minutes={task.minutes} />
                       </span>
                     </div>
@@ -553,7 +553,7 @@ function Reports() {
           {/* Per-project breakdown */}
           {summary.length > 0 && (
             <div className="space-y-2">
-              <h2 className="text-sm font-semibold text-gray-700">
+              <h2 className="text-foreground/90 text-sm font-semibold">
                 {t("reports.detailsPerProject")}
               </h2>
               {summary
@@ -568,7 +568,7 @@ function Reports() {
           )}
 
           {summary.length === 0 && (
-            <div className="flex items-center justify-center py-20 text-gray-400">
+            <div className="text-muted-foreground flex items-center justify-center py-20">
               {t("reports.noData")}
             </div>
           )}

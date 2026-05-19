@@ -7,6 +7,19 @@ import { createAppRouter } from "./router.js";
 
 import "./styles/globals.css";
 
+// Apply persisted theme synchronously to avoid a light/dark flash on boot.
+(() => {
+  const stored = localStorage.getItem("tt-theme");
+  const pref = stored === "light" || stored === "dark" ? stored : "system";
+  const resolved =
+    pref === "system"
+      ? window.matchMedia("(prefers-color-scheme: dark)").matches
+        ? "dark"
+        : "light"
+      : pref;
+  document.documentElement.classList.toggle("dark", resolved === "dark");
+})();
+
 const router = createAppRouter(createHashHistory());
 
 declare module "@tanstack/react-router" {

@@ -9,6 +9,8 @@
     "format": "prettier --check . --ignore-path ../../.gitignore",
     "lint": "eslint",
     "start": "node dist/index.js",
+    "test:unit": "vitest run --passWithNoTests",
+    "test:unit:coverage": "vitest run --coverage --passWithNoTests",
     "typecheck": "tsc --noEmit",
     "with-env": "dotenv -e ../../.env --"
   },
@@ -18,13 +20,13 @@
     "@horva/contract": "workspace:*",
     "@horva/core": "workspace:*",
     "@horva/db": "workspace:*",
-    "@opentelemetry/api": "^1.9.0",
-    "@opentelemetry/api-logs": "^0.57.2",
-    "@opentelemetry/exporter-logs-otlp-http": "^0.57.2",
-    "@opentelemetry/resources": "^1.30.1",
-    "@opentelemetry/sdk-logs": "^0.57.2",
-    "@opentelemetry/sdk-node": "^0.57.2",
-    "@opentelemetry/semantic-conventions": "^1.32.0",
+    "@opentelemetry/api": "^1.9.1",
+    "@opentelemetry/api-logs": "^0.218.0",
+    "@opentelemetry/exporter-logs-otlp-http": "^0.218.0",
+    "@opentelemetry/resources": "^2.7.1",
+    "@opentelemetry/sdk-logs": "^0.218.0",
+    "@opentelemetry/sdk-node": "^0.218.0",
+    "@opentelemetry/semantic-conventions": "^1.41.1",
     "@orpc/server": "catalog:",
     "dotenv": "catalog:",
     "hono": "catalog:"
@@ -33,10 +35,12 @@
     "@horva/eslint-config": "workspace:*",
     "@horva/prettier-config": "workspace:*",
     "@horva/tsconfig": "workspace:*",
+    "@horva/vitest": "workspace:*",
     "@types/node": "catalog:",
     "eslint": "catalog:",
     "prettier": "catalog:",
     "tsx": "catalog:",
-    "typescript": "catalog:"
+    "typescript": "catalog:",
+    "vitest": "catalog:"
   }
 }

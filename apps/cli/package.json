@@ -15,13 +15,15 @@
     "format": "prettier --check . --ignore-path ../../.gitignore",
     "lint": "eslint",
     "pack": "node build.mjs && cd dist && pnpm pack --pack-destination ..",
+    "test:unit": "vitest run --passWithNoTests",
+    "test:unit:coverage": "vitest run --coverage --passWithNoTests",
     "typecheck": "tsc"
   },
   "prettier": "@horva/prettier-config",
   "dependencies": {
     "@horva/core": "workspace:*",
     "@horva/db": "workspace:*",
-    "@inquirer/prompts": "^7.5.0",
+    "@inquirer/prompts": "^8.4.3",
     "chalk": "^5.4.1",
     "commander": "catalog:",
     "dotenv": "catalog:",
@@ -31,11 +33,13 @@
     "@horva/eslint-config": "workspace:*",
     "@horva/prettier-config": "workspace:*",
     "@horva/tsconfig": "workspace:*",
+    "@horva/vitest": "workspace:*",
     "@types/node": "catalog:",
     "@types/pg": "catalog:",
-    "esbuild": "^0.25.0",
+    "esbuild": "^0.28.0",
     "eslint": "catalog:",
     "prettier": "catalog:",
-    "typescript": "catalog:"
+    "typescript": "catalog:",
+    "vitest": "catalog:"
   }
 }

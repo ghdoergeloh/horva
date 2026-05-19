@@ -71,19 +71,19 @@ function LabelsPage() {
   return (
     <div className="mx-auto max-w-2xl space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">
+        <h1 className="text-foreground text-2xl font-bold">
           {t("labels.title")}
         </h1>
-        <p className="mt-1 text-sm text-gray-500">
+        <p className="text-muted-foreground mt-1 text-sm">
           {labels.length === 1
             ? t("labels.countSingular", { count: labels.length })
             : t("labels.countPlural", { count: labels.length })}
         </p>
       </div>
 
-      <div className="overflow-hidden rounded-xl border border-gray-200 bg-white">
+      <div className="border-border bg-card overflow-hidden rounded-xl border">
         {labels.length > 0 && (
-          <div className="divide-y divide-gray-50 px-1 py-1">
+          <div className="divide-border/50 divide-y px-1 py-1">
             {labels.map((label) => {
               const count = labelTaskCounts.get(label.id);
               return (
@@ -91,18 +91,18 @@ function LabelsPage() {
                   key={label.id}
                   className="flex items-center gap-3 rounded-lg px-3 py-2"
                 >
-                  <Tag className="h-3.5 w-3.5 flex-shrink-0 text-gray-300" />
-                  <span className="flex-1 text-sm text-gray-800">
+                  <Tag className="text-muted-foreground/70 h-3.5 w-3.5 flex-shrink-0" />
+                  <span className="text-foreground flex-1 text-sm">
                     {label.name}
                   </span>
                   {count !== undefined && (
-                    <span className="text-xs text-gray-400">
+                    <span className="text-muted-foreground text-xs">
                       {t("labels.tasks", { count })}
                     </span>
                   )}
                   {confirmDeleteId === label.id ? (
                     <div className="flex items-center gap-1">
-                      <span className="text-xs text-gray-400">
+                      <span className="text-muted-foreground text-xs">
                         {t("labels.deleteConfirm")}
                       </span>
                       <Button
@@ -128,7 +128,7 @@ function LabelsPage() {
                     <Button
                       variant="quiet"
                       onPress={() => setConfirmDeleteId(label.id)}
-                      className="text-gray-300 hover:text-red-400"
+                      className="text-muted-foreground/70 hover:text-destructive/80"
                       aria-label={t("labels.deleteTitle")}
                     >
                       <Trash2 className="h-3.5 w-3.5" />
@@ -141,7 +141,7 @@ function LabelsPage() {
         )}
 
         <div
-          className={`flex items-center gap-2 px-3 py-2 ${labels.length > 0 ? "border-t border-gray-50" : ""}`}
+          className={`flex items-center gap-2 px-3 py-2 ${labels.length > 0 ? "border-border/50 border-t" : ""}`}
         >
           <TextField
             value={newName}

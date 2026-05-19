@@ -100,16 +100,16 @@ export function EditSlotDialog({ slot, onClose }: EditSlotDialogProps) {
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-      <div className="w-full max-w-sm rounded-xl bg-white shadow-xl">
-        <div className="flex items-center justify-between border-b border-gray-100 px-4 py-3">
-          <h2 className="text-sm font-semibold text-gray-900">
+    <div className="bg-foreground/40 fixed inset-0 z-50 flex items-center justify-center">
+      <div className="bg-card w-full max-w-sm rounded-xl shadow-xl">
+        <div className="border-border flex items-center justify-between border-b px-4 py-3">
+          <h2 className="text-foreground text-sm font-semibold">
             {t("slot.edit")}
           </h2>
           <Button
             variant="quiet"
             onPress={onClose}
-            className="rounded p-1 text-gray-400 hover:bg-gray-100"
+            className="text-muted-foreground hover:bg-muted rounded p-1"
             aria-label={t("slot.cancel")}
           >
             <X className="h-4 w-4" />
@@ -139,7 +139,7 @@ export function EditSlotDialog({ slot, onClose }: EditSlotDialogProps) {
 
           {/* Task */}
           <div>
-            <label className="mb-1 block text-xs font-medium text-gray-700">
+            <label className="text-foreground/90 mb-1 block text-xs font-medium">
               {t("logTable.task")}
             </label>
             <Select
@@ -158,17 +158,17 @@ export function EditSlotDialog({ slot, onClose }: EditSlotDialogProps) {
 
           {/* Neighbor warning */}
           {warning && (
-            <div className="flex items-start gap-2 rounded-lg bg-amber-50 p-3 text-xs text-amber-800">
+            <div className="bg-warning/10 text-warning flex items-start gap-2 rounded-lg p-3 text-xs">
               <AlertTriangle className="mt-0.5 h-3.5 w-3.5 flex-shrink-0" />
               {warning}
             </div>
           )}
         </div>
 
-        <div className="flex items-center justify-between border-t border-gray-100 px-4 py-3">
+        <div className="border-border flex items-center justify-between border-t px-4 py-3">
           {confirmDelete ? (
             <div className="flex items-center gap-2">
-              <span className="text-xs text-gray-500">
+              <span className="text-muted-foreground text-xs">
                 {t("slot.deleteConfirm")}
               </span>
               <Button
@@ -185,7 +185,7 @@ export function EditSlotDialog({ slot, onClose }: EditSlotDialogProps) {
               <Button
                 variant="secondary"
                 onPress={() => setConfirmDelete(false)}
-                className="px-3 py-2 text-sm text-gray-600 hover:bg-gray-50"
+                className="text-foreground/80 hover:bg-background px-3 py-2 text-sm"
               >
                 {t("slot.cancel")}
               </Button>
@@ -194,7 +194,7 @@ export function EditSlotDialog({ slot, onClose }: EditSlotDialogProps) {
             <Button
               variant="quiet"
               onPress={() => setConfirmDelete(true)}
-              className="rounded-lg p-2 text-gray-400 hover:bg-red-50 hover:text-red-500"
+              className="text-muted-foreground hover:bg-destructive/10 hover:text-destructive rounded-lg p-2"
               aria-label={t("slot.deleteConfirm")}
             >
               <Trash2 className="h-4 w-4" />
@@ -206,7 +206,7 @@ export function EditSlotDialog({ slot, onClose }: EditSlotDialogProps) {
               <Button
                 variant="secondary"
                 onPress={onClose}
-                className="px-3 py-2 text-sm text-gray-600 hover:bg-gray-50"
+                className="text-foreground/80 hover:bg-background px-3 py-2 text-sm"
               >
                 {t("slot.cancel")}
               </Button>

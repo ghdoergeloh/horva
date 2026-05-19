@@ -72,20 +72,20 @@ function NewProjectModal({ onClose }: { onClose: () => void }) {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/30"
+      className="bg-foreground/30 fixed inset-0 z-50 flex items-center justify-center"
       onClick={(e) => {
         if (e.target === e.currentTarget) onClose();
       }}
     >
-      <div className="w-80 rounded-xl border border-gray-200 bg-white p-5 shadow-xl">
+      <div className="border-border bg-card w-80 rounded-xl border p-5 shadow-xl">
         <div className="mb-4 flex items-center justify-between">
-          <h2 className="text-sm font-semibold text-gray-900">
+          <h2 className="text-foreground text-sm font-semibold">
             {t("project.new")}
           </h2>
           <Button
             variant="quiet"
             onPress={onClose}
-            className="rounded p-0.5 text-gray-400 hover:text-gray-600"
+            className="text-muted-foreground hover:text-foreground/80 rounded p-0.5"
             aria-label={t("project.cancel")}
           >
             <X className="h-4 w-4" />
@@ -105,7 +105,7 @@ function NewProjectModal({ onClose }: { onClose: () => void }) {
           />
         </div>
         <div className="mb-4">
-          <span className="mb-1.5 block text-xs text-gray-500">
+          <span className="text-muted-foreground mb-1.5 block text-xs">
             {t("project.color")}
           </span>
           <div className="flex flex-wrap items-center gap-1.5">
@@ -115,7 +115,7 @@ function NewProjectModal({ onClose }: { onClose: () => void }) {
                 variant="quiet"
                 onPress={() => setColor(c)}
                 className={`h-5 w-5 rounded-full transition-transform hover:scale-110 ${
-                  color === c ? "ring-2 ring-gray-400 ring-offset-1" : ""
+                  color === c ? "ring-ring ring-2 ring-offset-1" : ""
                 }`}
                 style={{ backgroundColor: c }}
                 aria-label={t("project.color")}
@@ -171,10 +171,12 @@ class RouteErrorBoundary extends Component<
     if (this.state.hasError) {
       return (
         <div className="flex flex-col items-center justify-center p-12 text-center">
-          <p className="text-sm font-semibold text-red-600">
+          <p className="text-destructive text-sm font-semibold">
             {i18n.t("error.occurred")}
           </p>
-          <p className="mt-1 text-xs text-gray-400">{this.state.message}</p>
+          <p className="text-muted-foreground mt-1 text-xs">
+            {this.state.message}
+          </p>
           <Button
             variant="secondary"
             className="mt-4"
@@ -215,17 +217,17 @@ function AppShell() {
   return (
     <SettingsProvider>
       <ActiveSlotProvider>
-        <div className="flex h-screen bg-gray-50">
+        <div className="bg-background flex h-screen">
           {showNewProject && (
             <NewProjectModal onClose={() => setShowNewProject(false)} />
           )}
 
           {/* Sidebar */}
-          <aside className="flex w-48 flex-col border-r border-gray-200 bg-white">
-            <div className="border-b border-gray-200 px-4 py-4">
+          <aside className="border-sidebar-border bg-sidebar text-sidebar-foreground flex w-48 flex-col border-r">
+            <div className="border-sidebar-border border-b px-4 py-4">
               <div className="flex items-center gap-3">
                 <AppIcon size={34} />
-                <span className="text-sm font-semibold tracking-tight text-gray-900">
+                <span className="text-sidebar-foreground text-sm font-semibold tracking-tight">
                   {t("app.title")}
                 </span>
               </div>
@@ -240,8 +242,8 @@ function AppShell() {
                     href={`#${to}`}
                     className={`mb-1 flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors ${
                       isActive
-                        ? "bg-indigo-50 font-medium text-indigo-700"
-                        : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
+                        ? "bg-sidebar-accent text-sidebar-accent-foreground font-medium"
+                        : "text-foreground/80 hover:bg-muted hover:text-foreground"
                     }`}
                   >
                     <Icon className="h-4 w-4" />
@@ -255,10 +257,10 @@ function AppShell() {
                 <div
                   className={`flex items-center rounded-md text-sm transition-colors ${
                     isTasksOverview
-                      ? "bg-indigo-50 font-medium text-indigo-700"
+                      ? "bg-sidebar-accent text-sidebar-accent-foreground font-medium"
                       : isTasksActive
-                        ? "font-medium text-indigo-700"
-                        : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
+                        ? "text-sidebar-accent-foreground font-medium"
+                        : "text-foreground/80 hover:bg-muted hover:text-foreground"
                   }`}
                 >
                   <a
@@ -285,7 +287,7 @@ function AppShell() {
                 </div>
 
                 {tasksOpen && (
-                  <div className="mt-0.5 ml-3 space-y-0.5 border-l border-gray-100 pl-3">
+                  <div className="border-sidebar-border mt-0.5 ml-3 space-y-0.5 border-l pl-3">
                     {projects.map((project) => {
                       const isProjectActive =
                         location.pathname === `/tasks/${String(project.id)}`;
@@ -295,8 +297,8 @@ function AppShell() {
                           href={`#/tasks/${String(project.id)}`}
                           className={`flex items-center gap-2 rounded-md px-2 py-1.5 text-sm transition-colors ${
                             isProjectActive
-                              ? "bg-indigo-50 font-medium text-indigo-700"
-                              : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
+                              ? "bg-sidebar-accent text-sidebar-accent-foreground font-medium"
+                              : "text-foreground/80 hover:bg-muted hover:text-foreground"
                           }`}
                         >
                           <span
@@ -329,8 +331,8 @@ function AppShell() {
                     href={`#${to}`}
                     className={`mb-1 flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors ${
                       isActive
-                        ? "bg-indigo-50 font-medium text-indigo-700"
-                        : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
+                        ? "bg-sidebar-accent text-sidebar-accent-foreground font-medium"
+                        : "text-foreground/80 hover:bg-muted hover:text-foreground"
                     }`}
                   >
                     <Icon className="h-4 w-4" />
@@ -347,8 +349,8 @@ function AppShell() {
                     href="#/labels"
                     className={`mb-1 flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors ${
                       isActive
-                        ? "bg-indigo-50 font-medium text-indigo-700"
-                        : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
+                        ? "bg-sidebar-accent text-sidebar-accent-foreground font-medium"
+                        : "text-foreground/80 hover:bg-muted hover:text-foreground"
                     }`}
                   >
                     <Tag className="h-4 w-4" />
@@ -359,7 +361,7 @@ function AppShell() {
             </nav>
 
             {/* Settings link */}
-            <div className="border-t border-gray-100 p-2">
+            <div className="border-sidebar-border border-t p-2">
               {(() => {
                 const isActive = location.pathname === "/settings";
                 return (
@@ -367,8 +369,8 @@ function AppShell() {
                     href="#/settings"
                     className={`flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors ${
                       isActive
-                        ? "bg-indigo-50 font-medium text-indigo-700"
-                        : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
+                        ? "bg-sidebar-accent text-sidebar-accent-foreground font-medium"
+                        : "text-foreground/80 hover:bg-muted hover:text-foreground"
                     }`}
                   >
                     <Settings className="h-4 w-4" />

@@ -38,7 +38,7 @@ export function ProjectPie({ data, size = 200 }: ProjectPieProps) {
   const total = data.reduce((sum, s) => sum + s.totalMinutes, 0);
   if (total === 0) {
     return (
-      <div className="flex h-48 items-center justify-center text-sm text-gray-400">
+      <div className="text-muted-foreground flex h-48 items-center justify-center text-sm">
         Keine Daten
       </div>
     );
@@ -86,13 +86,13 @@ export function ProjectPie({ data, size = 200 }: ProjectPieProps) {
               className="h-3 w-3 flex-shrink-0 rounded-sm"
               style={{ backgroundColor: slice.projectColor }}
             />
-            <span className="flex-1 text-sm text-gray-700">
+            <span className="text-foreground/90 flex-1 text-sm">
               {slice.projectName}
             </span>
-            <span className="text-sm font-medium text-gray-900">
+            <span className="text-foreground text-sm font-medium">
               <FormattedMinutes minutes={slice.totalMinutes} />
             </span>
-            <span className="text-xs text-gray-400">
+            <span className="text-muted-foreground text-xs">
               {Math.round((slice.totalMinutes / total) * 100)}%
             </span>
           </div>

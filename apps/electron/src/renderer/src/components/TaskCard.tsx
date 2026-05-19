@@ -68,8 +68,8 @@ function RecurrenceModal({
         variant="quiet"
         className={`shrink-0 rounded p-0.5 transition-colors ${
           recurrenceRule
-            ? "text-indigo-400 hover:text-indigo-600"
-            : "text-gray-300 opacity-0 group-hover:opacity-100 hover:text-indigo-400"
+            ? "text-primary/80 hover:text-primary"
+            : "text-muted-foreground/70 hover:text-primary/80 opacity-0 group-hover:opacity-100"
         }`}
         aria-label={t("taskCard.recurring")}
       >
@@ -109,7 +109,7 @@ function RecurrenceModalContent({
     <>
       <Heading
         slot="title"
-        className="mb-4 text-base font-semibold text-gray-900"
+        className="text-foreground mb-4 text-base font-semibold"
       >
         {t("taskCard.recurrenceModalTitle")}
       </Heading>
@@ -193,10 +193,10 @@ export function TaskCard({
 
   return (
     <div
-      className={`group flex items-center gap-3 rounded-lg border bg-white p-3 transition-colors hover:shadow-sm ${
+      className={`group bg-card flex items-center gap-3 rounded-lg border p-3 transition-colors hover:shadow-sm ${
         isRunning
-          ? "border-indigo-300 ring-2 ring-indigo-200"
-          : "border-gray-200 hover:border-gray-300"
+          ? "border-primary/50 ring-primary/30 ring-2"
+          : "border-border hover:border-border"
       } ${dimmed ? "opacity-60" : ""}`}
     >
       {/* Done / unschedule button */}
@@ -206,8 +206,8 @@ export function TaskCard({
           onPress={onMarkDone}
           className={`shrink-0 ${
             isDone
-              ? "text-green-500 hover:text-gray-300"
-              : "text-gray-300 hover:text-green-500"
+              ? "text-success hover:text-muted-foreground/70"
+              : "text-muted-foreground/70 hover:text-success"
           }`}
           aria-label={
             isActivity
@@ -247,7 +247,7 @@ export function TaskCard({
             <span
               onClick={canEdit && onRename ? startEditing : undefined}
               title={onRename ? t("taskCard.clickToEdit") : undefined}
-              className={`truncate text-sm font-medium text-gray-900 ${onRename ? "cursor-text hover:text-indigo-700" : ""}`}
+              className={`text-foreground truncate text-sm font-medium ${onRename ? "hover:text-sidebar-accent-foreground cursor-text" : ""}`}
             >
               {name}
             </span>
@@ -260,7 +260,7 @@ export function TaskCard({
             )}
             {scheduledTime && (
               <span
-                className={`text-xs ${overdue ? "font-medium text-red-500" : "text-gray-400"}`}
+                className={`text-xs ${overdue ? "text-destructive font-medium" : "text-muted-foreground"}`}
               >
                 {scheduledTime}
               </span>
@@ -280,13 +280,13 @@ export function TaskCard({
           {labels.map((l) => (
             <span
               key={l.id}
-              className="rounded bg-gray-100 px-1.5 py-0.5 text-xs text-gray-600"
+              className="bg-muted text-foreground/80 rounded px-1.5 py-0.5 text-xs"
             >
               {l.name}
             </span>
           ))}
           {totalMinutes > 0 && (
-            <span className="text-xs text-gray-400">
+            <span className="text-muted-foreground text-xs">
               {t("taskCard.totalTime", {
                 time: formatMinutesWithFormat(totalMinutes, timeFormat),
               })}
@@ -317,7 +317,7 @@ export function TaskCard({
         <Button
           variant="secondary"
           onPress={() => void handleStop()}
-          className="w-24 shrink-0 bg-amber-50 px-3 py-1.5 text-sm font-medium text-amber-700 transition-colors hover:bg-amber-100"
+          className="bg-warning/10 text-warning hover:bg-warning/20 w-24 shrink-0 px-3 py-1.5 text-sm font-medium transition-colors"
         >
           <span className="inline-flex items-center justify-center gap-1">
             <Pause className="h-3 w-3" />
@@ -328,7 +328,7 @@ export function TaskCard({
         <Button
           variant="primary"
           onPress={() => void handleStart()}
-          className="w-24 shrink-0 px-3 py-1.5 text-sm font-medium text-white opacity-0 transition-opacity group-hover:opacity-100 hover:bg-indigo-700"
+          className="text-primary-foreground hover:bg-primary w-24 shrink-0 px-3 py-1.5 text-sm font-medium opacity-0 transition-opacity group-hover:opacity-100"
         >
           <span className="inline-flex items-center justify-center gap-1">
             <Play className="h-3 w-3" />

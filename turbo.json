@@ -59,6 +59,14 @@
       "dependsOn": ["build"],
       "cache": false
     },
+    "test:unit": {
+      "dependsOn": ["^topo", "^build"],
+      "outputs": []
+    },
+    "test:unit:coverage": {
+      "dependsOn": ["^topo", "^build"],
+      "outputs": ["coverage/**"]
+    },
     "clean": {
       "cache": false
     },

@@ -11,7 +11,19 @@ export default defineConfig({
         // Workspace packages expose `.default` conditions pointing at src/*.ts
         // (no prebuild step in dev). Electron's main process runs those files
         // directly through Node, which can't resolve .ts — so bundle them.
-        exclude: ["@horva/contract", "@horva/core", "@horva/db"],
+        //
+        // We also bundle @orpc/* because their transitive deps (radash,
+        // type-fest) live under pnpm's nested node_modules and electron-builder
+        // misses them when copying production deps into app.asar.
+        exclude: [
+          "@horva/contract",
+          "@horva/core",
+          "@horva/db",
+          "@orpc/client",
+          "@orpc/contract",
+          "@orpc/server",
+          "@orpc/tanstack-query",
+        ],
       }),
     ],
     resolve: {
@@ -21,7 +33,15 @@ export default defineConfig({
   preload: {
     plugins: [
       externalizeDepsPlugin({
-        exclude: ["@horva/contract", "@horva/core", "@horva/db"],
+        exclude: [
+          "@horva/contract",
+          "@horva/core",
+          "@horva/db",
+          "@orpc/client",
+          "@orpc/contract",
+          "@orpc/server",
+          "@orpc/tanstack-query",
+        ],
       }),
     ],
   },

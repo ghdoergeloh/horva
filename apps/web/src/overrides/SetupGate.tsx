@@ -1,5 +1,5 @@
 import type { ReactNode, SyntheticEvent } from "react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import { initAuthClient } from "@horva/auth/client";
@@ -230,17 +230,14 @@ function LoginForm() {
 
 function ResetPasswordForm() {
   const { t } = useTranslation();
-  const [token, setToken] = useState<string | null>(null);
+  const [token] = useState<string | null>(() =>
+    new URLSearchParams(window.location.search).get("token"),
+  );
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [done, setDone] = useState(false);
-
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    setToken(params.get("token"));
-  }, []);
 
   const canSubmit = !!token && password.length > 0 && password === confirm;
 

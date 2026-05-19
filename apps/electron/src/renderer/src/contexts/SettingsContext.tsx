@@ -1,22 +1,37 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 
 export type TimeFormat = "hm" | "decimal-colon" | "decimal-dot";
+export type ThemePreference = "light" | "dark" | "system";
 
-const STORAGE_KEY = "tt-time-format";
+const TIME_FORMAT_KEY = "tt-time-format";
+const THEME_KEY = "tt-theme";
 const DEFAULT_FORMAT: TimeFormat = "hm";
+const DEFAULT_THEME: ThemePreference = "system";
 
 interface SettingsContextValue {
   timeFormat: TimeFormat;
   setTimeFormat: (fmt: TimeFormat) => void;
+  theme: ThemePreference;
+  setTheme: (theme: ThemePreference) => void;
 }
 
 const SettingsContext = createContext<SettingsContextValue | undefined>(
   undefined,
 );
 
+function applyTheme(theme: ThemePreference) {
+  const resolved =
+    theme === "system"
+      ? window.matchMedia("(prefers-color-scheme: dark)").matches
+        ? "dark"
+        : "light"
+      : theme;
+  document.documentElement.classList.toggle("dark", resolved === "dark");
+}
+
 export function SettingsProvider({ children }: { children: React.ReactNode }) {
   const [timeFormat, setTimeFormatState] = useState<TimeFormat>(() => {
-    const stored = localStorage.getItem(STORAGE_KEY);
+    const stored = localStorage.getItem(TIME_FORMAT_KEY);
     if (
       stored === "hm" ||
       stored === "decimal-colon" ||
@@ -27,13 +42,35 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
     return DEFAULT_FORMAT;
   });
 
+  const [theme, setThemeState] = useState<ThemePreference>(() => {
+    const stored = localStorage.getItem(THEME_KEY);
+    if (stored === "light" || stored === "dark" || stored === "system") {
+      return stored;
+    }
+    return DEFAULT_THEME;
+  });
+
+  useEffect(() => {
+    applyTheme(theme);
+    if (theme !== "system") return;
+    const media = window.matchMedia("(prefers-color-scheme: dark)");
+    const handler = () => applyTheme("system");
+    media.addEventListener("change", handler);
+    return () => media.removeEventListener("change", handler);
+  }, [theme]);
+
   function setTimeFormat(fmt: TimeFormat) {
     setTimeFormatState(fmt);
-    localStorage.setItem(STORAGE_KEY, fmt);
+    localStorage.setItem(TIME_FORMAT_KEY, fmt);
+  }
+
+  function setTheme(next: ThemePreference) {
+    setThemeState(next);
+    localStorage.setItem(THEME_KEY, next);
   }
 
   return (
-    <SettingsContext value={{ timeFormat, setTimeFormat }}>
+    <SettingsContext value={{ timeFormat, setTimeFormat, theme, setTheme }}>
       {children}
     </SettingsContext>
   );

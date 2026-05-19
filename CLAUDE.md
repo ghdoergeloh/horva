@@ -82,6 +82,14 @@ When adding a new API endpoint:
 - `.env` at repo root (copy from `.env.example`): `DATABASE_URL`, `BETTER_AUTH_SECRET`, `BETTER_AUTH_URL`, `API_PORT`, `VITE_API_URL`
 - Docker Compose provides PostgreSQL and Mailpit
 
+### Theming & Tailwind
+
+Design tokens live in `tooling/tailwind/theme.css` (CSS variables + `@theme inline` + class‑based `dark` variant). `packages/ui` and all apps consume them via `@repo/tailwind-config/theme`.
+
+**Hard rule for all UI code: use semantic tokens (`bg-primary`, `text-foreground`, `border-border`, …), never raw Tailwind palette colors (`bg-gray-*`, `text-indigo-*`, …).** Tokens carry dark‑mode behaviour; raw palettes don't. The available tokens are the variables declared in `theme.css`.
+
+For wiring Tailwind into a new app, adding new tokens, or fixing missing‑class / dark‑mode‑flash issues, see the `tailwind-app-setup` skill.
+
 ## Post-Change Quality Checks
 
 After making any code changes, always run the following checks on affected packages before considering the task done:
