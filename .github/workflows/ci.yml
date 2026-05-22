@@ -40,16 +40,23 @@ jobs:
       - name: Run Vitest Tests
         run: pnpm test:unit:coverage
 
+      - name: Collect non-empty cobertura reports
+        id: cov
+        run: |
+          files=$(grep -l '<package ' apps/*/coverage/cobertura-coverage.xml packages/*/coverage/cobertura-coverage.xml 2>/dev/null | paste -sd, -)
+          echo "files=$files" >> "$GITHUB_OUTPUT"
+
       - name: Code Coverage Summary Report
+        if: steps.cov.outputs.files != ''
         uses: irongut/CodeCoverageSummary@v1.3.0
         with:
-          filename: "apps/*/coverage/cobertura-coverage.xml,packages/*/coverage/cobertura-coverage.xml"
+          filename: ${{ steps.cov.outputs.files }}
           badge: true
           format: markdown
           output: both
 
       - name: Add Coverage PR Comment
-        if: github.event_name == 'pull_request'
+        if: github.event_name == 'pull_request' && steps.cov.outputs.files != ''
         uses: marocchino/sticky-pull-request-comment@v2
         with:
           path: code-coverage-results.md
