@@ -9,6 +9,7 @@ import { Button } from "@horva/ui/Button";
 
 import { LoadingSpinner } from "~/components/LoadingSpinner.js";
 import { TaskCard } from "~/components/TaskCard.js";
+import { useDetailDrawer } from "~/contexts/DetailDrawerContext.js";
 import i18n from "~/i18n/index.js";
 import { client } from "~/lib/orpc.js";
 
@@ -69,6 +70,7 @@ function CollapsibleSection({
 
 function DailyOverview() {
   const { t } = useTranslation();
+  const { openTask } = useDetailDrawer();
   const now = new Date();
   const tz = getLocalTimeZone();
   const todayDate = today(tz);
@@ -212,6 +214,7 @@ function DailyOverview() {
         onRemoveLabel={(labelId) =>
           removeLabelMutation.mutate({ taskId: t.id, labelId })
         }
+        onOpenDetails={() => openTask(t.id)}
         {...opts}
       />
     );
