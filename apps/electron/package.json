@@ -9,6 +9,7 @@
     "clean": "git clean -xdf .cache .turbo out node_modules",
     "dev": "electron-vite dev",
     "format": "prettier --check . --ignore-path ../../.gitignore --ignore-path .prettierignore",
+    "postinstall": "install-electron",
     "lint": "eslint .",
     "pack": "electron-vite build && electron-builder",
     "start": "electron-vite preview",

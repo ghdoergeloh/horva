@@ -48,6 +48,9 @@ export const project = pgTable("project", {
   color: text("color").notNull().default("#6366f1"),
   status: projectStatusEnum("status").notNull().default("active"),
   isDefault: boolean("is_default").notNull().default(false),
+  // Moco integration: linked Moco project + its default activity ("Leistung").
+  mocoProjectId: integer("moco_project_id"),
+  mocoDefaultTaskId: integer("moco_default_task_id"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at")
     .defaultNow()
@@ -105,6 +108,15 @@ export const taskLabel = pgTable(
   (t) => [primaryKey({ columns: [t.taskId, t.labelId] })],
 );
 
+// Per-task override mapping a Horva task to a specific Moco activity
+// ("Leistung"). When absent, the project's mocoDefaultTaskId is used.
+export const taskMocoMapping = pgTable("task_moco_mapping", {
+  taskId: integer("task_id")
+    .primaryKey()
+    .references(() => task.id, { onDelete: "cascade" }),
+  mocoTaskId: integer("moco_task_id").notNull(),
+});
+
 export const slot = pgTable("slot", {
   id: integer("id")
     .primaryKey()
@@ -130,7 +142,21 @@ export const taskRelations = relations(task, ({ one, many }) => ({
   }),
   taskLabels: many(taskLabel),
   slots: many(slot),
+  mocoMapping: one(taskMocoMapping, {
+    fields: [task.id],
+    references: [taskMocoMapping.taskId],
+  }),
 }));
+
+export const taskMocoMappingRelations = relations(
+  taskMocoMapping,
+  ({ one }) => ({
+    task: one(task, {
+      fields: [taskMocoMapping.taskId],
+      references: [task.id],
+    }),
+  }),
+);
 
 export const labelRelations = relations(label, ({ many }) => ({
   taskLabels: many(taskLabel),

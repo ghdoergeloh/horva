@@ -3,9 +3,17 @@ import { homedir } from "node:os";
 import { join } from "node:path";
 import { z } from "zod";
 
+export const mocoConfigSchema = z.object({
+  apiKey: z.string().min(1),
+  subdomain: z.string().min(1), // {account} in https://{account}.mocoapp.com
+});
+
+export type MocoConfig = z.infer<typeof mocoConfigSchema>;
+
 export const configSchema = z.object({
   databaseUrl: z.string().min(1),
   userId: z.string().min(1).optional(),
+  moco: mocoConfigSchema.optional(),
 });
 
 export type Config = z.infer<typeof configSchema>;
@@ -46,4 +54,12 @@ export function updateConfig(patch: Partial<Config>): Config {
   const next = configSchema.parse({ ...existing, ...patch });
   writeConfig(next);
   return next;
+}
+
+export function getMocoConfig(): MocoConfig | null {
+  return readConfig()?.moco ?? null;
+}
+
+export function setMocoConfig(moco: MocoConfig): Config {
+  return updateConfig({ moco });
 }

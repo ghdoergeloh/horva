@@ -7,6 +7,7 @@ import type {
   ThemePreference,
   TimeFormat,
 } from "~/contexts/SettingsContext.js";
+import { MocoSettings } from "~/components/MocoSettings.js";
 import {
   formatMinutesWithFormat,
   useSettings,
@@ -92,6 +93,8 @@ function Settings() {
           </span>
         </div>
       </div>
+
+      <MocoSettings />
     </div>
   );
 }

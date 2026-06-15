@@ -4,7 +4,7 @@ import { useState } from "react";
 import { getLocalTimeZone, today } from "@internationalized/date";
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
-import { ChevronDown, ChevronRight, X } from "lucide-react";
+import { ChevronDown, ChevronRight, Upload, X } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
 import type { Period } from "@horva/core";
@@ -15,6 +15,7 @@ import { Tab, TabList, Tabs } from "@horva/ui/Tabs";
 
 import { FormattedMinutes } from "~/components/FormattedMinutes.js";
 import { LoadingSpinner } from "~/components/LoadingSpinner.js";
+import { MocoSyncModal } from "~/components/MocoSyncModal.js";
 import { ProjectPie } from "~/components/ProjectPie.js";
 import {
   formatMinutesWithFormat,
@@ -243,6 +244,46 @@ function calendarDateToDate(date: CalendarDate, endOfDay = false): Date {
   return d;
 }
 
+// Mirrors @horva/core getPeriodRange; kept local to avoid pulling a
+// server-only module into the renderer bundle.
+function periodToRange(period: Period): { from: Date; to: Date } {
+  const now = new Date();
+  const start = (d: Date) => {
+    const c = new Date(d);
+    c.setHours(0, 0, 0, 0);
+    return c;
+  };
+  const end = (d: Date) => {
+    const c = new Date(d);
+    c.setHours(23, 59, 59, 999);
+    return c;
+  };
+  switch (period) {
+    case "today":
+      return { from: start(now), to: end(now) };
+    case "yesterday": {
+      const y = new Date(now);
+      y.setDate(y.getDate() - 1);
+      return { from: start(y), to: end(y) };
+    }
+    case "week": {
+      const day = now.getDay();
+      const monday = new Date(now);
+      monday.setDate(now.getDate() - ((day + 6) % 7));
+      const sunday = new Date(monday);
+      sunday.setDate(monday.getDate() + 6);
+      return { from: start(monday), to: end(sunday) };
+    }
+    case "month": {
+      const from = new Date(now.getFullYear(), now.getMonth(), 1);
+      const to = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+      return { from: start(from), to: end(to) };
+    }
+    case "all":
+      return { from: new Date(0), to: new Date(8640000000000000) };
+  }
+}
+
 function Reports() {
   const { t } = useTranslation();
   const timeFormat = useTimeFormat();
@@ -252,8 +293,21 @@ function Reports() {
     end: today(getLocalTimeZone()),
   });
   const [filterLabelId, setFilterLabelId] = useState<number | null>(null);
+  const [showMocoSync, setShowMocoSync] = useState(false);
 
   const isCustom = period === "custom";
+
+  const { data: mocoStatus } = useQuery({
+    queryKey: ["moco", "config"],
+    queryFn: () => client.moco.config.get(),
+  });
+
+  const syncRange = isCustom
+    ? {
+        from: calendarDateToDate(customRange.start),
+        to: calendarDateToDate(customRange.end, true),
+      }
+    : periodToRange(period);
 
   const periodLabels: Partial<Record<Period, string>> = {
     today: t("reports.today"),
@@ -459,8 +513,26 @@ function Reports() {
               )}
             </div>
           )}
+
+          {/* Moco sync */}
+          {mocoStatus?.configured && (
+            <Button variant="secondary" onPress={() => setShowMocoSync(true)}>
+              <span className="inline-flex items-center gap-2">
+                <Upload className="h-3.5 w-3.5" />
+                {t("moco.syncButton")}
+              </span>
+            </Button>
+          )}
         </div>
       </div>
+
+      {showMocoSync && (
+        <MocoSyncModal
+          from={syncRange.from}
+          to={syncRange.to}
+          onClose={() => setShowMocoSync(false)}
+        />
+      )}
 
       {isLoading ? (
         <div className="flex items-center justify-center py-20">

@@ -11,6 +11,8 @@ export const projectSchema = z.object({
   color: z.string(),
   status: projectStatusSchema,
   isDefault: z.boolean(),
+  mocoProjectId: z.number().nullable(),
+  mocoDefaultTaskId: z.number().nullable(),
   createdAt: z.date(),
   updatedAt: z.date(),
   deletedAt: z.date().nullable(),

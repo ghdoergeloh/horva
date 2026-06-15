@@ -21,8 +21,10 @@ import { ColorPicker } from "@horva/ui/ColorPicker";
 import { TextField } from "@horva/ui/TextField";
 
 import { AppIcon } from "~/components/AppIcon.js";
+import { DetailDrawerHost } from "~/components/DetailDrawerHost.js";
 import { SlotBar } from "~/components/SlotBar.js";
 import { ActiveSlotProvider } from "~/contexts/ActiveSlotContext.js";
+import { DetailDrawerProvider } from "~/contexts/DetailDrawerContext.js";
 import { SettingsProvider } from "~/contexts/SettingsContext.js";
 import i18n from "~/i18n/index.js";
 import { client } from "~/lib/orpc.js";
@@ -217,180 +219,183 @@ function AppShell() {
   return (
     <SettingsProvider>
       <ActiveSlotProvider>
-        <div className="bg-background flex h-screen">
-          {showNewProject && (
-            <NewProjectModal onClose={() => setShowNewProject(false)} />
-          )}
+        <DetailDrawerProvider>
+          <div className="bg-background flex h-screen">
+            {showNewProject && (
+              <NewProjectModal onClose={() => setShowNewProject(false)} />
+            )}
 
-          {/* Sidebar */}
-          <aside className="border-sidebar-border bg-sidebar text-sidebar-foreground flex w-48 flex-col border-r">
-            <div className="border-sidebar-border border-b px-4 py-4">
-              <div className="flex items-center gap-3">
-                <AppIcon size={34} />
-                <span className="text-sidebar-foreground text-sm font-semibold tracking-tight">
-                  {t("app.title")}
-                </span>
+            {/* Sidebar */}
+            <aside className="border-sidebar-border bg-sidebar text-sidebar-foreground flex w-48 flex-col border-r">
+              <div className="border-sidebar-border border-b px-4 py-4">
+                <div className="flex items-center gap-3">
+                  <AppIcon size={34} />
+                  <span className="text-sidebar-foreground text-sm font-semibold tracking-tight">
+                    {t("app.title")}
+                  </span>
+                </div>
               </div>
-            </div>
-            <nav className="flex-1 overflow-y-auto p-2">
-              {/* Today */}
-              {(() => {
-                const { to, label, icon: Icon } = topNavItems[0];
-                const isActive = location.pathname === "/";
-                return (
-                  <a
-                    href={`#${to}`}
-                    className={`mb-1 flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors ${
-                      isActive
+              <nav className="flex-1 overflow-y-auto p-2">
+                {/* Today */}
+                {(() => {
+                  const { to, label, icon: Icon } = topNavItems[0];
+                  const isActive = location.pathname === "/";
+                  return (
+                    <a
+                      href={`#${to}`}
+                      className={`mb-1 flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors ${
+                        isActive
+                          ? "bg-sidebar-accent text-sidebar-accent-foreground font-medium"
+                          : "text-foreground/80 hover:bg-muted hover:text-foreground"
+                      }`}
+                    >
+                      <Icon className="h-4 w-4" />
+                      {label}
+                    </a>
+                  );
+                })()}
+
+                {/* Tasks collapsible section */}
+                <div className="mb-1">
+                  <div
+                    className={`flex items-center rounded-md text-sm transition-colors ${
+                      isTasksOverview
                         ? "bg-sidebar-accent text-sidebar-accent-foreground font-medium"
-                        : "text-foreground/80 hover:bg-muted hover:text-foreground"
+                        : isTasksActive
+                          ? "text-sidebar-accent-foreground font-medium"
+                          : "text-foreground/80 hover:bg-muted hover:text-foreground"
                     }`}
                   >
-                    <Icon className="h-4 w-4" />
-                    {label}
-                  </a>
-                );
-              })()}
-
-              {/* Tasks collapsible section */}
-              <div className="mb-1">
-                <div
-                  className={`flex items-center rounded-md text-sm transition-colors ${
-                    isTasksOverview
-                      ? "bg-sidebar-accent text-sidebar-accent-foreground font-medium"
-                      : isTasksActive
-                        ? "text-sidebar-accent-foreground font-medium"
-                        : "text-foreground/80 hover:bg-muted hover:text-foreground"
-                  }`}
-                >
-                  <a
-                    href="#/tasks"
-                    className="flex flex-1 items-center gap-3 px-3 py-2"
-                  >
-                    <CheckSquare className="h-4 w-4 flex-shrink-0" />
-                    {t("nav.tasks")}
-                  </a>
-                  <Button
-                    variant="quiet"
-                    onPress={() => setTasksOpen((v) => !v)}
-                    className="px-2 py-2 opacity-50 hover:opacity-100"
-                    aria-label={
-                      tasksOpen ? t("project.collapse") : t("project.expand")
-                    }
-                  >
-                    {tasksOpen ? (
-                      <ChevronDown className="h-3.5 w-3.5" />
-                    ) : (
-                      <ChevronRight className="h-3.5 w-3.5" />
-                    )}
-                  </Button>
-                </div>
-
-                {tasksOpen && (
-                  <div className="border-sidebar-border mt-0.5 ml-3 space-y-0.5 border-l pl-3">
-                    {projects.map((project) => {
-                      const isProjectActive =
-                        location.pathname === `/tasks/${String(project.id)}`;
-                      return (
-                        <a
-                          key={project.id}
-                          href={`#/tasks/${String(project.id)}`}
-                          className={`flex items-center gap-2 rounded-md px-2 py-1.5 text-sm transition-colors ${
-                            isProjectActive
-                              ? "bg-sidebar-accent text-sidebar-accent-foreground font-medium"
-                              : "text-foreground/80 hover:bg-muted hover:text-foreground"
-                          }`}
-                        >
-                          <span
-                            className="h-2.5 w-2.5 flex-shrink-0 rounded-full"
-                            style={{ backgroundColor: project.color }}
-                          />
-                          <span className="truncate">{project.name}</span>
-                        </a>
-                      );
-                    })}
+                    <a
+                      href="#/tasks"
+                      className="flex flex-1 items-center gap-3 px-3 py-2"
+                    >
+                      <CheckSquare className="h-4 w-4 flex-shrink-0" />
+                      {t("nav.tasks")}
+                    </a>
                     <Button
                       variant="quiet"
-                      onPress={() => setShowNewProject(true)}
+                      onPress={() => setTasksOpen((v) => !v)}
+                      className="px-2 py-2 opacity-50 hover:opacity-100"
+                      aria-label={
+                        tasksOpen ? t("project.collapse") : t("project.expand")
+                      }
                     >
-                      <span className="inline-flex items-center gap-2">
-                        <Plus className="h-3 w-3" />
-                        {t("nav.newProject")}
-                      </span>
+                      {tasksOpen ? (
+                        <ChevronDown className="h-3.5 w-3.5" />
+                      ) : (
+                        <ChevronRight className="h-3.5 w-3.5" />
+                      )}
                     </Button>
                   </div>
-                )}
+
+                  {tasksOpen && (
+                    <div className="border-sidebar-border mt-0.5 ml-3 space-y-0.5 border-l pl-3">
+                      {projects.map((project) => {
+                        const isProjectActive =
+                          location.pathname === `/tasks/${String(project.id)}`;
+                        return (
+                          <a
+                            key={project.id}
+                            href={`#/tasks/${String(project.id)}`}
+                            className={`flex items-center gap-2 rounded-md px-2 py-1.5 text-sm transition-colors ${
+                              isProjectActive
+                                ? "bg-sidebar-accent text-sidebar-accent-foreground font-medium"
+                                : "text-foreground/80 hover:bg-muted hover:text-foreground"
+                            }`}
+                          >
+                            <span
+                              className="h-2.5 w-2.5 flex-shrink-0 rounded-full"
+                              style={{ backgroundColor: project.color }}
+                            />
+                            <span className="truncate">{project.name}</span>
+                          </a>
+                        );
+                      })}
+                      <Button
+                        variant="quiet"
+                        onPress={() => setShowNewProject(true)}
+                      >
+                        <span className="inline-flex items-center gap-2">
+                          <Plus className="h-3 w-3" />
+                          {t("nav.newProject")}
+                        </span>
+                      </Button>
+                    </div>
+                  )}
+                </div>
+
+                {/* Timeline + Reports */}
+                {topNavItems.slice(1).map(({ to, label, icon: Icon }) => {
+                  const isActive = location.pathname === to;
+                  return (
+                    <a
+                      key={to}
+                      href={`#${to}`}
+                      className={`mb-1 flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors ${
+                        isActive
+                          ? "bg-sidebar-accent text-sidebar-accent-foreground font-medium"
+                          : "text-foreground/80 hover:bg-muted hover:text-foreground"
+                      }`}
+                    >
+                      <Icon className="h-4 w-4" />
+                      {label}
+                    </a>
+                  );
+                })}
+
+                {/* Labels */}
+                {(() => {
+                  const isActive = location.pathname === "/labels";
+                  return (
+                    <a
+                      href="#/labels"
+                      className={`mb-1 flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors ${
+                        isActive
+                          ? "bg-sidebar-accent text-sidebar-accent-foreground font-medium"
+                          : "text-foreground/80 hover:bg-muted hover:text-foreground"
+                      }`}
+                    >
+                      <Tag className="h-4 w-4" />
+                      {t("nav.labels")}
+                    </a>
+                  );
+                })()}
+              </nav>
+
+              {/* Settings link */}
+              <div className="border-sidebar-border border-t p-2">
+                {(() => {
+                  const isActive = location.pathname === "/settings";
+                  return (
+                    <a
+                      href="#/settings"
+                      className={`flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors ${
+                        isActive
+                          ? "bg-sidebar-accent text-sidebar-accent-foreground font-medium"
+                          : "text-foreground/80 hover:bg-muted hover:text-foreground"
+                      }`}
+                    >
+                      <Settings className="h-4 w-4" />
+                      {t("nav.settings")}
+                    </a>
+                  );
+                })()}
               </div>
+            </aside>
 
-              {/* Timeline + Reports */}
-              {topNavItems.slice(1).map(({ to, label, icon: Icon }) => {
-                const isActive = location.pathname === to;
-                return (
-                  <a
-                    key={to}
-                    href={`#${to}`}
-                    className={`mb-1 flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors ${
-                      isActive
-                        ? "bg-sidebar-accent text-sidebar-accent-foreground font-medium"
-                        : "text-foreground/80 hover:bg-muted hover:text-foreground"
-                    }`}
-                  >
-                    <Icon className="h-4 w-4" />
-                    {label}
-                  </a>
-                );
-              })}
-
-              {/* Labels */}
-              {(() => {
-                const isActive = location.pathname === "/labels";
-                return (
-                  <a
-                    href="#/labels"
-                    className={`mb-1 flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors ${
-                      isActive
-                        ? "bg-sidebar-accent text-sidebar-accent-foreground font-medium"
-                        : "text-foreground/80 hover:bg-muted hover:text-foreground"
-                    }`}
-                  >
-                    <Tag className="h-4 w-4" />
-                    {t("nav.labels")}
-                  </a>
-                );
-              })()}
-            </nav>
-
-            {/* Settings link */}
-            <div className="border-sidebar-border border-t p-2">
-              {(() => {
-                const isActive = location.pathname === "/settings";
-                return (
-                  <a
-                    href="#/settings"
-                    className={`flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors ${
-                      isActive
-                        ? "bg-sidebar-accent text-sidebar-accent-foreground font-medium"
-                        : "text-foreground/80 hover:bg-muted hover:text-foreground"
-                    }`}
-                  >
-                    <Settings className="h-4 w-4" />
-                    {t("nav.settings")}
-                  </a>
-                );
-              })()}
+            {/* Main content */}
+            <div className="flex flex-1 flex-col overflow-hidden">
+              <SlotBar />
+              <main className="flex-1 overflow-auto p-6">
+                <RouteErrorBoundary>
+                  <Outlet />
+                </RouteErrorBoundary>
+              </main>
             </div>
-          </aside>
-
-          {/* Main content */}
-          <div className="flex flex-1 flex-col overflow-hidden">
-            <SlotBar />
-            <main className="flex-1 overflow-auto p-6">
-              <RouteErrorBoundary>
-                <Outlet />
-              </RouteErrorBoundary>
-            </main>
+            <DetailDrawerHost />
           </div>
-        </div>
+        </DetailDrawerProvider>
       </ActiveSlotProvider>
     </SettingsProvider>
   );

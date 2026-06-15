@@ -24,6 +24,7 @@ import { useTranslation } from "react-i18next";
 import type { LabelRow } from "~/components/TaskEditControls.js";
 import { LoadingSpinner } from "~/components/LoadingSpinner.js";
 import { TaskCard } from "~/components/TaskCard.js";
+import { useDetailDrawer } from "~/contexts/DetailDrawerContext.js";
 import { client } from "~/lib/orpc.js";
 
 type TaskRow = Awaited<ReturnType<typeof client.task.list>>["tasks"][number];
@@ -63,6 +64,7 @@ function SortableTaskRow({
   onRemoveLabel,
 }: SortableTaskRowProps) {
   const { t } = useTranslation();
+  const { openTask } = useDetailDrawer();
   const {
     attributes,
     listeners,
@@ -111,6 +113,7 @@ function SortableTaskRow({
           }
           onAddLabel={(labelId) => onAddLabel(task.id, labelId)}
           onRemoveLabel={(labelId) => onRemoveLabel(task.id, labelId)}
+          onOpenDetails={() => openTask(task.id)}
         />
       </div>
     </div>
