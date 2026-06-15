@@ -2,7 +2,7 @@ import type { KeyboardEvent } from "react";
 import { useEffect, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, useParams } from "@tanstack/react-router";
-import { ChevronDown, ChevronRight, Plus, X } from "lucide-react";
+import { ChevronDown, ChevronRight, Plus, Settings2, X } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
 import { Button } from "@horva/ui/Button";
@@ -12,6 +12,7 @@ import { TextField } from "@horva/ui/TextField";
 import type { LabelRow } from "~/components/TaskEditControls.js";
 import { LoadingSpinner } from "~/components/LoadingSpinner.js";
 import { TaskCard } from "~/components/TaskCard.js";
+import { useDetailDrawer } from "~/contexts/DetailDrawerContext.js";
 import { client } from "~/lib/orpc.js";
 
 type TaskRow = Awaited<ReturnType<typeof client.task.list>>["tasks"][number];
@@ -285,6 +286,7 @@ function ProjectTaskPage() {
   const { projectId: projectIdStr } = useParams({ from: "/tasks/$projectId" });
   const projectId = parseInt(projectIdStr, 10);
   const queryClient = useQueryClient();
+  const { openProject, openTask } = useDetailDrawer();
 
   const [addingTaskType, setAddingTaskType] = useState<
     "task" | "activity" | null
@@ -404,6 +406,7 @@ function ProjectTaskPage() {
         onRemoveLabel={(labelId) =>
           removeLabelMutation.mutate({ taskId: t.id, labelId })
         }
+        onOpenDetails={() => openTask(t.id)}
       />
     );
   }
@@ -431,6 +434,16 @@ function ProjectTaskPage() {
           <h1 className="text-foreground text-2xl font-bold">
             {project?.name ?? "Projekt"}
           </h1>
+          {project && (
+            <Button
+              variant="quiet"
+              onPress={() => openProject(project.id)}
+              className="text-muted-foreground hover:text-foreground/80 rounded p-1"
+              aria-label={t("drawer.projectTitle")}
+            >
+              <Settings2 className="h-4 w-4" />
+            </Button>
+          )}
         </div>
         <p className="text-muted-foreground mt-1 text-sm">
           {t("tasks.openCount", {

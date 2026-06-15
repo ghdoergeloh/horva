@@ -202,6 +202,63 @@ export const router = base.router({
       }),
     ),
   },
+
+  moco: {
+    config: {
+      get: authed.moco.config.get.handler(({ context }) =>
+        handlers.moco.configGet({
+          input: undefined,
+          context: { db, session: context.session },
+        }),
+      ),
+      set: authed.moco.config.set.handler(({ input, context }) =>
+        handlers.moco.configSet({
+          input,
+          context: { db, session: context.session },
+        }),
+      ),
+    },
+    remoteProjects: authed.moco.remoteProjects.handler(({ context }) =>
+      handlers.moco.remoteProjects({
+        input: undefined,
+        context: { db, session: context.session },
+      }),
+    ),
+    link: {
+      set: authed.moco.link.set.handler(({ input, context }) =>
+        handlers.moco.linkSet({
+          input,
+          context: { db, session: context.session },
+        }),
+      ),
+    },
+    taskMapping: {
+      get: authed.moco.taskMapping.get.handler(({ input, context }) =>
+        handlers.moco.taskMappingGet({
+          input,
+          context: { db, session: context.session },
+        }),
+      ),
+      set: authed.moco.taskMapping.set.handler(({ input, context }) =>
+        handlers.moco.taskMappingSet({
+          input,
+          context: { db, session: context.session },
+        }),
+      ),
+    },
+    preview: authed.moco.preview.handler(({ input, context }) =>
+      handlers.moco.preview({
+        input,
+        context: { db, session: context.session },
+      }),
+    ),
+    sync: authed.moco.sync.handler(({ input, context }) =>
+      handlers.moco.sync({
+        input,
+        context: { db, session: context.session },
+      }),
+    ),
+  },
 });
 
 export type Router = typeof router;

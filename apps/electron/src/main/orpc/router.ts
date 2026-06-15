@@ -124,4 +124,37 @@ export const router = base.router({
       handlers.log.summary({ input, context }),
     ),
   },
+
+  moco: {
+    config: {
+      get: base.moco.config.get.handler(({ context }) =>
+        handlers.moco.configGet({ input: undefined, context }),
+      ),
+      set: base.moco.config.set.handler(({ input, context }) =>
+        handlers.moco.configSet({ input, context }),
+      ),
+    },
+    remoteProjects: base.moco.remoteProjects.handler(({ context }) =>
+      handlers.moco.remoteProjects({ input: undefined, context }),
+    ),
+    link: {
+      set: base.moco.link.set.handler(({ input, context }) =>
+        handlers.moco.linkSet({ input, context }),
+      ),
+    },
+    taskMapping: {
+      get: base.moco.taskMapping.get.handler(({ input, context }) =>
+        handlers.moco.taskMappingGet({ input, context }),
+      ),
+      set: base.moco.taskMapping.set.handler(({ input, context }) =>
+        handlers.moco.taskMappingSet({ input, context }),
+      ),
+    },
+    preview: base.moco.preview.handler(({ input, context }) =>
+      handlers.moco.preview({ input, context }),
+    ),
+    sync: base.moco.sync.handler(({ input, context }) =>
+      handlers.moco.sync({ input, context }),
+    ),
+  },
 });

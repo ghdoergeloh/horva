@@ -1,5 +1,6 @@
 import * as label from "./label";
 import * as log from "./log";
+import * as moco from "./moco";
 import * as project from "./project";
 import * as slot from "./slot";
 import * as task from "./task";
@@ -14,4 +15,5 @@ export const handlers = {
   project,
   label,
   log,
+  moco,
 };

@@ -32,6 +32,8 @@ const projectSchema = z.object({
   color: z.string(),
   status: z.enum(["active", "archived", "deleted"]),
   isDefault: z.boolean(),
+  mocoProjectId: z.number().nullable(),
+  mocoDefaultTaskId: z.number().nullable(),
   createdAt: z.date(),
   updatedAt: z.date(),
   deletedAt: z.date().nullable(),
@@ -96,6 +98,34 @@ const rangeSchema = z.union([
   z.object({ period: periodSchema }),
   z.object({ from: z.date(), to: z.date() }),
 ]);
+
+const mocoTaskSchema = z.object({
+  id: z.number(),
+  name: z.string(),
+  active: z.boolean(),
+  billable: z.boolean(),
+});
+
+const mocoProjectSchema = z.object({
+  id: z.number(),
+  name: z.string(),
+  tasks: z.array(mocoTaskSchema),
+});
+
+const syncPreviewLineSchema = z.object({
+  date: z.string(),
+  projectId: z.number().nullable(),
+  projectName: z.string(),
+  taskId: z.number().nullable(),
+  taskName: z.string(),
+  seconds: z.number(),
+  status: z.enum(["syncable", "skipped"]),
+  reason: z
+    .enum(["no_task", "project_not_linked", "no_task_mapping"])
+    .optional(),
+  mocoProjectId: z.number().optional(),
+  mocoTaskId: z.number().optional(),
+});
 
 const summaryEntrySchema = z.object({
   projectId: z.number().nullable(),
@@ -368,6 +398,74 @@ export const contract = oc.router({
       .route({ method: "GET", path: "/log/summary" })
       .input(rangeSchema.optional())
       .output(z.object({ summary: z.array(summaryEntrySchema) })),
+  }),
+
+  moco: oc.router({
+    config: oc.router({
+      get: oc.route({ method: "GET", path: "/moco/config" }).output(
+        z.object({
+          configured: z.boolean(),
+          subdomain: z.string().nullable(),
+        }),
+      ),
+      set: oc
+        .route({ method: "POST", path: "/moco/config" })
+        .input(
+          z.object({
+            apiKey: z.string().min(1),
+            subdomain: z.string().min(1),
+          }),
+        )
+        .output(z.object({ ok: z.boolean() })),
+    }),
+    remoteProjects: oc
+      .route({ method: "GET", path: "/moco/remote-projects" })
+      .output(z.object({ projects: z.array(mocoProjectSchema) })),
+    link: oc.router({
+      set: oc
+        .route({ method: "POST", path: "/moco/link" })
+        .input(
+          z.object({
+            projectId: z.number(),
+            mocoProjectId: z.number().nullable(),
+            mocoDefaultTaskId: z.number().nullable(),
+          }),
+        )
+        .output(z.object({ ok: z.boolean() })),
+    }),
+    taskMapping: oc.router({
+      get: oc
+        .route({ method: "GET", path: "/moco/task-mapping/{taskId}" })
+        .input(z.object({ taskId: z.number() }))
+        .output(z.object({ mocoTaskId: z.number().nullable() })),
+      set: oc
+        .route({ method: "POST", path: "/moco/task-mapping" })
+        .input(
+          z.object({
+            taskId: z.number(),
+            mocoTaskId: z.number().nullable(),
+          }),
+        )
+        .output(z.object({ ok: z.boolean() })),
+    }),
+    preview: oc
+      .route({ method: "GET", path: "/moco/preview" })
+      .input(z.object({ from: z.date(), to: z.date() }))
+      .output(z.object({ lines: z.array(syncPreviewLineSchema) })),
+    sync: oc
+      .route({ method: "POST", path: "/moco/sync" })
+      .input(z.object({ from: z.date(), to: z.date() }))
+      .output(
+        z.object({
+          created: z.number(),
+          failed: z.array(
+            z.object({
+              line: syncPreviewLineSchema,
+              error: z.string(),
+            }),
+          ),
+        }),
+      ),
   }),
 });
 

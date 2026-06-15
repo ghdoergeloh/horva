@@ -2,6 +2,7 @@ import { useState } from "react";
 import {
   CheckCircle2,
   Circle,
+  PanelRightOpen,
   Pause,
   Play,
   RefreshCw,
@@ -49,6 +50,7 @@ interface TaskCardProps {
   onSetRecurrence?: (rule: string | null) => void;
   onAddLabel?: (labelId: number) => void;
   onRemoveLabel?: (labelId: number) => void;
+  onOpenDetails?: () => void;
 }
 
 function RecurrenceModal({
@@ -157,6 +159,7 @@ export function TaskCard({
   onSetRecurrence,
   onAddLabel,
   onRemoveLabel,
+  onOpenDetails,
 }: TaskCardProps) {
   const { t } = useTranslation();
   const timeFormat = useTimeFormat();
@@ -296,7 +299,7 @@ export function TaskCard({
       </div>
 
       {/* Edit controls (label picker + plan button) — only when editing is enabled */}
-      {canEdit && (
+      {(canEdit || onOpenDetails) && (
         <div className="flex shrink-0 items-center gap-1">
           {allLabels && onAddLabel && onRemoveLabel && (
             <LabelPicker
@@ -308,6 +311,16 @@ export function TaskCard({
           )}
           {onPlan && (
             <PlanButton scheduledDate={scheduledAt ?? null} onPlan={onPlan} />
+          )}
+          {onOpenDetails && (
+            <Button
+              variant="quiet"
+              onPress={onOpenDetails}
+              className="text-muted-foreground/70 hover:text-foreground flex items-center rounded p-0.5 opacity-0 transition-opacity group-hover:opacity-100"
+              aria-label={t("taskCard.openDetails")}
+            >
+              <PanelRightOpen className="h-3.5 w-3.5" />
+            </Button>
           )}
         </div>
       )}
