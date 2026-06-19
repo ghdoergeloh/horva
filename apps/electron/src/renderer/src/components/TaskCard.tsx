@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { getLocalTimeZone, today, toZoned } from "@internationalized/date";
 import {
   CheckCircle2,
   Circle,
@@ -7,6 +8,7 @@ import {
   Play,
   RefreshCw,
   Repeat,
+  Sun,
 } from "lucide-react";
 import { DialogTrigger, Heading } from "react-aria-components";
 import { useTranslation } from "react-i18next";
@@ -20,13 +22,13 @@ import { RecurrenceRulePicker } from "~/components/RecurrenceRulePicker.js";
 import {
   InlineRenameInput,
   LabelPicker,
-  PlanButton,
 } from "~/components/TaskEditControls.js";
 import { useActiveSlot } from "~/contexts/ActiveSlotContext.js";
 import {
   formatMinutesWithFormat,
   useTimeFormat,
 } from "~/contexts/SettingsContext.js";
+import { startOfDay } from "~/lib/dateUtils.js";
 import { client } from "~/lib/orpc.js";
 
 interface TaskCardProps {
@@ -193,6 +195,10 @@ export function TaskCard({
   }
 
   const assignedLabelIds = labels.map((l) => l.id);
+  const isScheduledToday = scheduledAt
+    ? startOfDay(new Date(scheduledAt)).getTime() ===
+      startOfDay(new Date()).getTime()
+    : false;
 
   return (
     <div
@@ -310,7 +316,21 @@ export function TaskCard({
             />
           )}
           {onPlan && (
-            <PlanButton scheduledDate={scheduledAt ?? null} onPlan={onPlan} />
+            <Button
+              variant="quiet"
+              onPress={() => {
+                const tz = getLocalTimeZone();
+                onPlan(toZoned(today(tz), tz).toDate().toISOString());
+              }}
+              className={`flex items-center rounded p-0.5 transition-colors ${
+                isScheduledToday
+                  ? "text-primary/80 hover:text-primary"
+                  : "text-muted-foreground/70 hover:text-foreground opacity-0 transition-opacity group-hover:opacity-100"
+              }`}
+              aria-label={t("taskEditControls.planToday")}
+            >
+              <Sun className="h-3.5 w-3.5" />
+            </Button>
           )}
           {onOpenDetails && (
             <Button
