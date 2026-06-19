@@ -454,7 +454,18 @@ export const contract = oc.router({
       .output(z.object({ lines: z.array(syncPreviewLineSchema) })),
     sync: oc
       .route({ method: "POST", path: "/moco/sync" })
-      .input(z.object({ from: z.date(), to: z.date() }))
+      .input(
+        z.object({
+          from: z.date(),
+          to: z.date(),
+          // Optional allow-list of preview rows to transfer, identified by
+          // their (date, taskId) aggregation key. When omitted, all syncable
+          // rows in the range are transferred (backwards compatible).
+          select: z
+            .array(z.object({ date: z.string(), taskId: z.number() }))
+            .optional(),
+        }),
+      )
       .output(
         z.object({
           created: z.number(),

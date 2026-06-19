@@ -154,12 +154,23 @@ function toLineBase(g: Aggregate) {
  */
 export async function runSync(
   db: Db,
-  range: { from: Date; to: Date },
+  range: {
+    from: Date;
+    to: Date;
+    /** Optional allow-list of rows by (date, taskId). Omit = transfer all. */
+    select?: { date: string; taskId: number }[];
+  },
 ): Promise<SyncResult> {
   const cfg = getMocoConfig();
   if (!cfg) throw new Error("Moco is not configured");
 
   const lines = await buildSyncPreview(db, range);
+
+  // Build the selection set once; null means "no filter, transfer everything".
+  const selected =
+    range.select === undefined
+      ? null
+      : new Set(range.select.map((s) => `${s.date}|${String(s.taskId)}`));
 
   const result: SyncResult = { created: 0, failed: [] };
 
@@ -169,6 +180,14 @@ export async function runSync(
       line.status !== "syncable" ||
       line.mocoProjectId === undefined ||
       line.mocoTaskId === undefined
+    ) {
+      continue;
+    }
+    // Skip rows not in the explicit selection (when one was provided).
+    if (
+      selected !== null &&
+      (line.taskId === null ||
+        !selected.has(`${line.date}|${String(line.taskId)}`))
     ) {
       continue;
     }

@@ -305,6 +305,8 @@
     "previewError": "Could not load preview",
     "noData": "No time entries in the selected period.",
     "summary": "{{syncable}} syncable, {{skipped}} skipped",
+    "selectAll": "Select all",
+    "selectionSummary": "{{selected}} of {{syncable}} selected · {{skipped}} skipped",
     "confirmSync": "Sync {{count}} entries",
     "syncDone": "{{created}} synced, {{failed}} failed",
     "syncError": "Sync failed",

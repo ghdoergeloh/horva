@@ -305,6 +305,8 @@
     "previewError": "Vorschau konnte nicht geladen werden",
     "noData": "Keine Zeiten im gewählten Zeitraum.",
     "summary": "{{syncable}} übertragbar, {{skipped}} übersprungen",
+    "selectAll": "Alle auswählen",
+    "selectionSummary": "{{selected}} von {{syncable}} ausgewählt · {{skipped}} übersprungen",
     "confirmSync": "{{count}} Einträge übertragen",
     "syncDone": "{{created}} übertragen, {{failed}} fehlgeschlagen",
     "syncError": "Übertragung fehlgeschlagen",

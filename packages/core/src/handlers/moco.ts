@@ -74,7 +74,11 @@ export async function preview({ input, context }: HandlerArgs<RangeInput>) {
   return { lines };
 }
 
-export async function sync({ input, context }: HandlerArgs<RangeInput>) {
+interface SyncInput extends RangeInput {
+  select?: { date: string; taskId: number }[];
+}
+
+export async function sync({ input, context }: HandlerArgs<SyncInput>) {
   const result = await runSync(context.db, input);
   return result;
 }

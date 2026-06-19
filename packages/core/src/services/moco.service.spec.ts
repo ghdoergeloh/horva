@@ -1,8 +1,12 @@
-import { describe, expect, it } from "vitest";
+import { mkdtempSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import type { Db } from "@horva/db/client";
 
-import { buildSyncPreview, getTaskMapping } from "./moco.service.js";
+import { writeConfig } from "../config/config.js";
+import { buildSyncPreview, getTaskMapping, runSync } from "./moco.service.js";
 
 // Minimal slot-with-task shape getLog returns (only the fields the preview
 // reads). Each slot belongs to a project that may or may not be Moco-linked.
@@ -165,6 +169,95 @@ describe("buildSyncPreview", () => {
     const lines = await buildSyncPreview(db, range);
 
     expect(lines).toHaveLength(0);
+  });
+});
+
+describe("runSync select filter", () => {
+  let prevXdg: string | undefined;
+
+  beforeEach(() => {
+    prevXdg = process.env["XDG_CONFIG_HOME"];
+    const dir = mkdtempSync(join(tmpdir(), "horva-moco-test-"));
+    process.env["XDG_CONFIG_HOME"] = dir;
+    writeConfig({
+      databaseUrl: "postgres://x",
+      moco: { apiKey: "k", subdomain: "acme" },
+    });
+  });
+
+  afterEach(() => {
+    if (prevXdg === undefined) delete process.env["XDG_CONFIG_HOME"];
+    else process.env["XDG_CONFIG_HOME"] = prevXdg;
+    vi.unstubAllGlobals();
+  });
+
+  // Two linked tasks on the same day → two syncable rows.
+  function twoRowDb(): Db {
+    const project = linkedProject;
+    return makeDb([
+      slot("2026-06-10T09:00:00", "2026-06-10T10:00:00", {
+        id: 10,
+        name: "Build",
+        project,
+      }),
+      slot("2026-06-10T11:00:00", "2026-06-10T12:00:00", {
+        id: 11,
+        name: "Review",
+        project,
+      }),
+    ]);
+  }
+
+  it("transfers only the selected (date, taskId) rows", async () => {
+    const posted: { task_id: number }[] = [];
+    vi.stubGlobal(
+      "fetch",
+      vi.fn((_url: string, init: RequestInit) => {
+        const body = JSON.parse(init.body as string) as { task_id: number };
+        posted.push(body);
+        return Promise.resolve(
+          new Response(JSON.stringify({ id: 1 }), { status: 200 }),
+        );
+      }),
+    );
+
+    const result = await runSync(twoRowDb(), {
+      ...range,
+      select: [{ date: "2026-06-10", taskId: 11 }],
+    });
+
+    expect(result.created).toBe(1);
+    expect(posted).toHaveLength(1);
+    // Task 11 maps to the project's default activity (900).
+    expect(posted[0]?.task_id).toBe(900);
+  });
+
+  it("transfers all syncable rows when no select is given", async () => {
+    let calls = 0;
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(() => {
+        calls += 1;
+        return Promise.resolve(
+          new Response(JSON.stringify({ id: 1 }), { status: 200 }),
+        );
+      }),
+    );
+
+    const result = await runSync(twoRowDb(), range);
+
+    expect(result.created).toBe(2);
+    expect(calls).toBe(2);
+  });
+
+  it("transfers nothing when select is empty", async () => {
+    const fetchMock = vi.fn();
+    vi.stubGlobal("fetch", fetchMock);
+
+    const result = await runSync(twoRowDb(), { ...range, select: [] });
+
+    expect(result.created).toBe(0);
+    expect(fetchMock).not.toHaveBeenCalled();
   });
 });
 
