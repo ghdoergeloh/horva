@@ -84,8 +84,7 @@ export async function pickTask(
   const regularTasks = tasks.filter((t) => t.taskType === "task");
 
   type Choice =
-    | { name: string; value: number | null }
-    | InstanceType<typeof Separator>;
+    { name: string; value: number | null } | InstanceType<typeof Separator>;
   const choices: Choice[] = [];
 
   if (activities.length > 0) {
