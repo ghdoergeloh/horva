@@ -21,7 +21,7 @@
   "prettier": "@horva/prettier-config",
   "dependencies": {
     "@react-email/components": "^1.0.12",
-    "nodemailer": "^8.0.7",
+    "nodemailer": "^9.0.3",
     "react": "catalog:react19"
   },
   "devDependencies": {
@@ -29,7 +29,7 @@
     "@horva/prettier-config": "workspace:*",
     "@horva/tsconfig": "workspace:*",
     "@react-email/preview-server": "^5.2.10",
-    "@types/nodemailer": "^8.0.0",
+    "@types/nodemailer": "^8.0.1",
     "@types/react": "catalog:react19",
     "eslint": "catalog:",
     "prettier": "catalog:",
