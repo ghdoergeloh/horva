@@ -184,7 +184,12 @@ function TasksOverview() {
 
   const markDoneMutation = useMutation({
     mutationFn: (taskId: number) => client.task.done({ id: taskId }),
-    onSuccess: invalidateTasks,
+    onSuccess: () => {
+      invalidateTasks();
+      // Completing a running task stops its slot and starts a new empty one,
+      // so the active-slot UI needs to refresh too.
+      void queryClient.invalidateQueries({ queryKey: ["slots"] });
+    },
   });
 
   const renameMutation = useMutation({
