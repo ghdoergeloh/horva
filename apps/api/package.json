@@ -26,7 +26,7 @@
     "@opentelemetry/resources": "^2.9.0",
     "@opentelemetry/sdk-logs": "^0.220.0",
     "@opentelemetry/sdk-node": "^0.220.0",
-    "@opentelemetry/semantic-conventions": "^1.42.0",
+    "@opentelemetry/semantic-conventions": "^1.43.0",
     "@orpc/server": "catalog:",
     "dotenv": "catalog:",
     "hono": "catalog:"
