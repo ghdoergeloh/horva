@@ -299,24 +299,18 @@
     "syncTitle": "Nach Moco übertragen",
     "close": "Schließen",
     "date": "Datum",
-    "project": "Projekt",
     "task": "Aufgabe",
+    "mocoTask": "Leistung",
     "duration": "Dauer",
-    "status": "Status",
-    "willSync": "Wird übertragen",
     "previewError": "Vorschau konnte nicht geladen werden",
     "noData": "Keine Zeiten im gewählten Zeitraum.",
+    "noSyncable": "Keine übertragbaren Einträge im gewählten Zeitraum.",
     "summary": "{{syncable}} übertragbar, {{skipped}} übersprungen",
     "selectAll": "Alle auswählen",
     "selectionSummary": "{{selected}} von {{syncable}} ausgewählt · {{skipped}} übersprungen",
     "confirmSync": "{{count}} Einträge übertragen",
     "syncDone": "{{created}} übertragen, {{failed}} fehlgeschlagen",
     "syncError": "Übertragung fehlgeschlagen",
-    "skip": {
-      "noTask": "Keine Aufgabe zugeordnet",
-      "projectNotLinked": "Projekt nicht verknüpft",
-      "noTaskMapping": "Keine Leistung zugeordnet"
-    },
     "linkingMovedHint": "Die Projekt-Verknüpfung findest du jetzt direkt im Detail-Panel des jeweiligen Projekts."
   },
   "drawer": {

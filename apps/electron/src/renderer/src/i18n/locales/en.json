@@ -299,24 +299,18 @@
     "syncTitle": "Sync to Moco",
     "close": "Close",
     "date": "Date",
-    "project": "Project",
     "task": "Task",
+    "mocoTask": "Activity",
     "duration": "Duration",
-    "status": "Status",
-    "willSync": "Will sync",
     "previewError": "Could not load preview",
     "noData": "No time entries in the selected period.",
+    "noSyncable": "No syncable entries in the selected period.",
     "summary": "{{syncable}} syncable, {{skipped}} skipped",
     "selectAll": "Select all",
     "selectionSummary": "{{selected}} of {{syncable}} selected · {{skipped}} skipped",
     "confirmSync": "Sync {{count}} entries",
     "syncDone": "{{created}} synced, {{failed}} failed",
     "syncError": "Sync failed",
-    "skip": {
-      "noTask": "No task assigned",
-      "projectNotLinked": "Project not linked",
-      "noTaskMapping": "No activity mapped"
-    },
     "linkingMovedHint": "Project linking now lives in each project's detail panel."
   },
   "drawer": {

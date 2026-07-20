@@ -1,6 +1,6 @@
-import { useMemo, useState } from "react";
+import React, { useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { X } from "lucide-react";
+import { ArrowRight, X } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
 import { Button } from "@horva/ui/Button";
@@ -16,6 +16,13 @@ type PreviewLine = Awaited<
 /** Stable per-row key matching the server's (date, taskId) aggregation. */
 function rowKey(line: PreviewLine): string {
   return `${line.date}|${line.taskId === null ? "no_task" : String(line.taskId)}`;
+}
+
+interface ProjectGroup {
+  key: string;
+  projectName: string;
+  mocoProjectId: number | undefined;
+  lines: PreviewLine[];
 }
 
 export function MocoSyncModal({
@@ -39,6 +46,33 @@ export function MocoSyncModal({
     queryKey: ["moco", "preview", from.toISOString(), to.toISOString()],
     queryFn: async () => (await client.moco.preview({ from, to })).lines,
   });
+
+  // Moco projects with their activities, to resolve target names.
+  const { data: remoteProjects = [], isPending: remotePending } = useQuery({
+    queryKey: ["moco", "remoteProjects"],
+    queryFn: async () => (await client.moco.remoteProjects()).projects,
+    staleTime: 60_000,
+  });
+
+  const mocoProjectNames = useMemo(
+    () => new Map(remoteProjects.map((p) => [p.id, p.name])),
+    [remoteProjects],
+  );
+  const mocoTaskNames = useMemo(
+    () =>
+      new Map(
+        remoteProjects.flatMap((p) =>
+          p.tasks.map((task) => [task.id, task.name] as const),
+        ),
+      ),
+    [remoteProjects],
+  );
+
+  function mocoName(map: Map<number, string>, id: number | undefined): string {
+    if (id === undefined) return "—";
+    if (remotePending) return "…";
+    return map.get(id) ?? `#${String(id)}`;
+  }
 
   // Selected row keys. Default: nothing selected (user opts in).
   const [selected, setSelected] = useState<Set<string>>(new Set());
@@ -69,14 +103,22 @@ export function MocoSyncModal({
   const selectedCount = syncable.filter((l) => selected.has(rowKey(l))).length;
   const allSelected = syncable.length > 0 && selectedCount === syncable.length;
 
-  // Group syncable rows by project for the project-level toggles.
+  // Only syncable rows are shown, grouped by their Horva project.
   const projectGroups = useMemo(() => {
-    const map = new Map<string, { projectName: string; keys: string[] }>();
+    const map = new Map<string, ProjectGroup>();
     for (const l of syncable) {
-      const id = String(l.projectId ?? "none");
-      const g = map.get(id) ?? { projectName: l.projectName, keys: [] };
-      g.keys.push(rowKey(l));
-      map.set(id, g);
+      const key = String(l.projectId ?? "none");
+      let group = map.get(key);
+      if (!group) {
+        group = {
+          key,
+          projectName: l.projectName,
+          mocoProjectId: l.mocoProjectId,
+          lines: [],
+        };
+        map.set(key, group);
+      }
+      group.lines.push(l);
     }
     return [...map.values()];
   }, [syncable]);
@@ -99,19 +141,6 @@ export function MocoSyncModal({
       }
       return next;
     });
-  }
-
-  function reasonLabel(line: PreviewLine): string {
-    switch (line.reason) {
-      case "no_task":
-        return t("moco.skip.noTask");
-      case "project_not_linked":
-        return t("moco.skip.projectNotLinked");
-      case "no_task_mapping":
-        return t("moco.skip.noTaskMapping");
-      default:
-        return "";
-    }
   }
 
   const result = syncMutation.data;
@@ -154,39 +183,30 @@ export function MocoSyncModal({
             <p className="text-muted-foreground text-sm">{t("moco.noData")}</p>
           )}
 
-          {lines.length > 0 && (
+          {!isLoading &&
+            !isError &&
+            lines.length > 0 &&
+            syncable.length === 0 && (
+              <p className="text-muted-foreground text-sm">
+                {t("moco.noSyncable")}
+              </p>
+            )}
+
+          {syncable.length > 0 && (
             <>
-              {/* Select-all + per-project toggles */}
-              {syncable.length > 0 && (
-                <div className="mb-3 flex flex-wrap items-center gap-x-4 gap-y-1.5">
-                  <Checkbox
-                    isSelected={allSelected}
-                    onChange={(on) =>
-                      setMany(
-                        syncable.map((l) => rowKey(l)),
-                        on,
-                      )
-                    }
-                  >
-                    {t("moco.selectAll")}
-                  </Checkbox>
-                  {projectGroups.length > 1 &&
-                    projectGroups.map((g) => {
-                      const on = g.keys.every((k) => selected.has(k));
-                      return (
-                        <Checkbox
-                          key={g.projectName}
-                          isSelected={on}
-                          onChange={(next) => setMany(g.keys, next)}
-                        >
-                          <span className="text-muted-foreground">
-                            {g.projectName}
-                          </span>
-                        </Checkbox>
-                      );
-                    })}
-                </div>
-              )}
+              <div className="mb-3">
+                <Checkbox
+                  isSelected={allSelected}
+                  onChange={(on) =>
+                    setMany(
+                      syncable.map((l) => rowKey(l)),
+                      on,
+                    )
+                  }
+                >
+                  {t("moco.selectAll")}
+                </Checkbox>
+              </div>
 
               <table className="w-full text-sm">
                 <thead>
@@ -196,61 +216,87 @@ export function MocoSyncModal({
                       {t("moco.date")}
                     </th>
                     <th className="py-1.5 pr-3 font-medium">
-                      {t("moco.project")}
-                    </th>
-                    <th className="py-1.5 pr-3 font-medium">
                       {t("moco.task")}
                     </th>
-                    <th className="py-1.5 pr-3 text-right font-medium">
+                    <th className="py-1.5 pr-3 font-medium">
+                      {t("moco.mocoTask")}
+                    </th>
+                    <th className="py-1.5 text-right font-medium">
                       {t("moco.duration")}
                     </th>
-                    <th className="py-1.5 font-medium">{t("moco.status")}</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {lines.map((line) => {
-                    const isSkipped = line.status === "skipped";
-                    const key = rowKey(line);
+                  {projectGroups.map((group) => {
+                    const groupKeys = group.lines.map((l) => rowKey(l));
+                    const groupOn = groupKeys.every((k) => selected.has(k));
+                    const groupSeconds = group.lines.reduce(
+                      (s, l) => s + l.seconds,
+                      0,
+                    );
                     return (
-                      <tr
-                        key={key}
-                        className={`border-border/50 border-b ${
-                          isSkipped
-                            ? "text-muted-foreground"
-                            : "text-foreground"
-                        }`}
-                      >
-                        <td className="py-1.5">
-                          {!isSkipped && (
+                      <React.Fragment key={group.key}>
+                        <tr className="border-border/50 border-b">
+                          <td className="py-2">
                             <Checkbox
-                              aria-label={`${line.date} ${line.taskName}`}
-                              isSelected={selected.has(key)}
-                              onChange={() => toggleRow(key)}
+                              aria-label={group.projectName}
+                              isSelected={groupOn}
+                              onChange={(on) => setMany(groupKeys, on)}
                             />
-                          )}
-                        </td>
-                        <td className="py-1.5 pr-3 whitespace-nowrap tabular-nums">
-                          {line.date}
-                        </td>
-                        <td className="py-1.5 pr-3">
-                          {line.projectName || "—"}
-                        </td>
-                        <td className="py-1.5 pr-3">{line.taskName || "—"}</td>
-                        <td className="py-1.5 pr-3 text-right tabular-nums">
-                          <FormattedMinutes
-                            minutes={Math.round(line.seconds / 60)}
-                          />
-                        </td>
-                        <td className="py-1.5">
-                          {isSkipped ? (
-                            <span className="text-xs">{reasonLabel(line)}</span>
-                          ) : (
-                            <span className="text-xs text-green-600 dark:text-green-400">
-                              {t("moco.willSync")}
+                          </td>
+                          <td colSpan={3} className="py-2 pr-3">
+                            <span className="text-foreground inline-flex items-center gap-2 font-medium">
+                              {group.projectName}
+                              <ArrowRight
+                                aria-hidden
+                                className="text-muted-foreground h-3.5 w-3.5"
+                              />
+                              <span className="font-normal">
+                                {mocoName(
+                                  mocoProjectNames,
+                                  group.mocoProjectId,
+                                )}
+                              </span>
                             </span>
-                          )}
-                        </td>
-                      </tr>
+                          </td>
+                          <td className="text-foreground py-2 text-right font-medium tabular-nums">
+                            <FormattedMinutes
+                              minutes={Math.round(groupSeconds / 60)}
+                            />
+                          </td>
+                        </tr>
+                        {group.lines.map((line) => {
+                          const key = rowKey(line);
+                          return (
+                            <tr
+                              key={key}
+                              className="border-border/50 text-foreground border-b"
+                            >
+                              <td className="py-1.5">
+                                <Checkbox
+                                  aria-label={`${line.date} ${line.taskName}`}
+                                  isSelected={selected.has(key)}
+                                  onChange={() => toggleRow(key)}
+                                />
+                              </td>
+                              <td className="py-1.5 pr-3 whitespace-nowrap tabular-nums">
+                                {line.date}
+                              </td>
+                              <td className="py-1.5 pr-3">
+                                {line.taskName || "—"}
+                              </td>
+                              <td className="text-muted-foreground py-1.5 pr-3">
+                                {mocoName(mocoTaskNames, line.mocoTaskId)}
+                              </td>
+                              <td className="py-1.5 text-right tabular-nums">
+                                <FormattedMinutes
+                                  minutes={Math.round(line.seconds / 60)}
+                                />
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </React.Fragment>
                     );
                   })}
                 </tbody>
