@@ -1,17 +1,25 @@
 import type { CalendarDate } from "@internationalized/date";
 import type { RangeValue } from "react-aria-components";
 import { useState } from "react";
-import { getLocalTimeZone, today } from "@internationalized/date";
+import {
+  endOfMonth,
+  endOfWeek,
+  endOfYear,
+  getLocalTimeZone,
+  startOfMonth,
+  startOfWeek,
+  startOfYear,
+  today,
+} from "@internationalized/date";
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { ChevronDown, ChevronRight, Upload, X } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
-import type { Period } from "@horva/core";
+import type { DateRangePreset } from "@horva/ui/DateRangePicker";
 import { Button } from "@horva/ui/Button";
 import { DateRangePicker } from "@horva/ui/DateRangePicker";
 import { Select, SelectItem } from "@horva/ui/Select";
-import { Tab, TabList, Tabs } from "@horva/ui/Tabs";
 
 import { FormattedMinutes } from "~/components/FormattedMinutes.js";
 import { LoadingSpinner } from "~/components/LoadingSpinner.js";
@@ -28,8 +36,6 @@ import { client } from "~/lib/orpc.js";
 type SummaryEntry = Awaited<
   ReturnType<typeof client.log.summary>
 >["summary"][number];
-
-const PERIOD_VALUES: Period[] = ["today", "yesterday", "week", "month"];
 
 function BarChart({ data }: { data: { label: string; minutes: number }[] }) {
   const max = Math.max(...data.map((d) => d.minutes), 1);
@@ -244,76 +250,78 @@ function calendarDateToDate(date: CalendarDate, endOfDay = false): Date {
   return d;
 }
 
-// Mirrors @horva/core getPeriodRange; kept local to avoid pulling a
-// server-only module into the renderer bundle.
-function periodToRange(period: Period): { from: Date; to: Date } {
-  const now = new Date();
-  const start = (d: Date) => {
-    const c = new Date(d);
-    c.setHours(0, 0, 0, 0);
-    return c;
-  };
-  const end = (d: Date) => {
-    const c = new Date(d);
-    c.setHours(23, 59, 59, 999);
-    return c;
-  };
-  switch (period) {
-    case "today":
-      return { from: start(now), to: end(now) };
-    case "yesterday": {
-      const y = new Date(now);
-      y.setDate(y.getDate() - 1);
-      return { from: start(y), to: end(y) };
-    }
-    case "week": {
-      const day = now.getDay();
-      const monday = new Date(now);
-      monday.setDate(now.getDate() - ((day + 6) % 7));
-      const sunday = new Date(monday);
-      sunday.setDate(monday.getDate() + 6);
-      return { from: start(monday), to: end(sunday) };
-    }
-    case "month": {
-      const from = new Date(now.getFullYear(), now.getMonth(), 1);
-      const to = new Date(now.getFullYear(), now.getMonth() + 1, 0);
-      return { from: start(from), to: end(to) };
-    }
-    case "all":
-      return { from: new Date(0), to: new Date(8640000000000000) };
-  }
+// Predefined ranges for the picker popover. Weeks start on Monday to match
+// the timeline and the core period logic.
+function buildPresets(
+  t: (key: string) => string,
+  locale: string,
+): DateRangePreset[] {
+  const now = today(getLocalTimeZone());
+  const yesterday = now.subtract({ days: 1 });
+  const lastWeek = now.subtract({ weeks: 1 });
+  const lastMonth = now.subtract({ months: 1 });
+  return [
+    { id: "today", label: t("reports.today"), range: { start: now, end: now } },
+    {
+      id: "yesterday",
+      label: t("reports.yesterday"),
+      range: { start: yesterday, end: yesterday },
+    },
+    {
+      id: "thisWeek",
+      label: t("reports.thisWeek"),
+      range: {
+        start: startOfWeek(now, locale, "mon"),
+        end: endOfWeek(now, locale, "mon"),
+      },
+    },
+    {
+      id: "lastWeek",
+      label: t("reports.lastWeek"),
+      range: {
+        start: startOfWeek(lastWeek, locale, "mon"),
+        end: endOfWeek(lastWeek, locale, "mon"),
+      },
+    },
+    {
+      id: "thisMonth",
+      label: t("reports.thisMonth"),
+      range: { start: startOfMonth(now), end: endOfMonth(now) },
+    },
+    {
+      id: "lastMonth",
+      label: t("reports.lastMonth"),
+      range: { start: startOfMonth(lastMonth), end: endOfMonth(lastMonth) },
+    },
+    {
+      id: "thisYear",
+      label: t("reports.thisYear"),
+      range: { start: startOfYear(now), end: endOfYear(now) },
+    },
+  ];
 }
 
 function Reports() {
   const { t } = useTranslation();
   const timeFormat = useTimeFormat();
-  const [period, setPeriod] = useState<Period | "custom">("today");
-  const [customRange, setCustomRange] = useState<RangeValue<CalendarDate>>({
+  const [range, setRange] = useState<RangeValue<CalendarDate>>({
     start: today(getLocalTimeZone()),
     end: today(getLocalTimeZone()),
   });
   const [filterLabelId, setFilterLabelId] = useState<number | null>(null);
   const [showMocoSync, setShowMocoSync] = useState(false);
 
-  const isCustom = period === "custom";
-
   const { data: mocoStatus } = useQuery({
     queryKey: ["moco", "config"],
     queryFn: () => client.moco.config.get(),
   });
 
-  const syncRange = isCustom
-    ? {
-        from: calendarDateToDate(customRange.start),
-        to: calendarDateToDate(customRange.end, true),
-      }
-    : periodToRange(period);
+  const locale = i18n.language === "de" ? "de-DE" : "en-US";
+  const presets = buildPresets(t, locale);
 
-  const periodLabels: Partial<Record<Period, string>> = {
-    today: t("reports.today"),
-    yesterday: t("reports.yesterday"),
-    week: t("reports.thisWeek"),
-    month: t("reports.thisMonth"),
+  const syncRange = {
+    from: calendarDateToDate(range.start),
+    to: calendarDateToDate(range.end, true),
   };
 
   const { data: allLabels = [] } = useQuery({
@@ -325,29 +333,17 @@ function Reports() {
   });
 
   const { data: summary = [], isLoading } = useQuery({
-    queryKey: ["log", "summary", period, isCustom ? customRange : null],
+    queryKey: ["log", "summary", range],
     queryFn: async () => {
-      if (period === "custom") {
-        const from = calendarDateToDate(customRange.start);
-        const to = calendarDateToDate(customRange.end, true);
-        const res = await client.log.summary({ from, to });
-        return res.summary;
-      }
-      const res = await client.log.summary({ period });
+      const res = await client.log.summary(syncRange);
       return res.summary;
     },
   });
 
   const { data: logSlots = [] } = useQuery({
-    queryKey: ["log", "raw", period, isCustom ? customRange : null],
+    queryKey: ["log", "raw", range],
     queryFn: async () => {
-      if (period === "custom") {
-        const from = calendarDateToDate(customRange.start);
-        const to = calendarDateToDate(customRange.end, true);
-        const res = await client.log.entries({ from, to });
-        return res.slots;
-      }
-      const res = await client.log.entries({ period });
+      const res = await client.log.entries(syncRange);
       return res.slots;
     },
   });
@@ -355,7 +351,6 @@ function Reports() {
   const totalMinutes = summary.reduce((s, e) => s + e.totalMinutes, 0);
 
   // Per-day totals for bar chart
-  const locale = i18n.language === "de" ? "de-DE" : "en-US";
   const dayMap = new Map<string, number>();
   for (const s of logSlots) {
     if (!s.endedAt) continue;
@@ -449,34 +444,14 @@ function Reports() {
           {t("reports.title")}
         </h1>
         <div className="flex flex-wrap items-center gap-2">
-          <Tabs
-            selectedKey={period}
-            onSelectionChange={(key) => setPeriod(key as Period | "custom")}
-            className="flex-row items-center gap-1"
-          >
-            <TabList
-              aria-label={t("reports.period")}
-              className="m-0 flex-row gap-1 p-0"
-            >
-              {PERIOD_VALUES.map((value) => (
-                <Tab key={value} id={value} className="px-2.5 py-1 text-xs">
-                  {periodLabels[value] ?? value}
-                </Tab>
-              ))}
-              <Tab id="custom" className="px-2.5 py-1 text-xs">
-                {t("reports.custom")}
-              </Tab>
-            </TabList>
-          </Tabs>
-          {isCustom && (
-            <DateRangePicker
-              aria-label={t("reports.dateRange")}
-              value={customRange}
-              onChange={(range) => {
-                if (range) setCustomRange(range);
-              }}
-            />
-          )}
+          <DateRangePicker
+            aria-label={t("reports.dateRange")}
+            value={range}
+            onChange={(next) => {
+              if (next) setRange(next);
+            }}
+            presets={presets}
+          />
 
           {/* Label filter */}
           {allLabels.length > 0 && (
