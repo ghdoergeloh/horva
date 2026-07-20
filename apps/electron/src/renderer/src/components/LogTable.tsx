@@ -74,14 +74,15 @@ export function LogTable({
     if (!hideGaps && i > 0) {
       const prev = slots[i - 1];
       if (prev?.endedAt) {
-        const gapMs =
-          new Date(slot.startedAt).getTime() - new Date(prev.endedAt).getTime();
-        if (gapMs > 60000) {
-          rows.push({
-            kind: "gap",
-            from: new Date(prev.endedAt),
-            to: new Date(slot.startedAt),
-          });
+        // Times are displayed truncated to the minute, so the gap has to be
+        // computed on that precision too: end 11:26, next start 11:27 must
+        // show a one-minute gap, while touching slots (end === start) don't.
+        const from = new Date(prev.endedAt);
+        from.setSeconds(0, 0);
+        const to = new Date(slot.startedAt);
+        to.setSeconds(0, 0);
+        if (to.getTime() - from.getTime() >= 60000) {
+          rows.push({ kind: "gap", from, to });
         }
       }
     }
