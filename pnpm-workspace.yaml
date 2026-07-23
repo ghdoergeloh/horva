@@ -3,50 +3,70 @@ packages:
   - packages/*
   - tooling/*
 
+allowBuilds:
+  "@prisma/client": false
+  "@prisma/engines": false
+  "@tailwindcss/oxide": true
+  better-sqlite3: false
+  bufferutil: false
+  esbuild: true
+  prisma: false
+  protobufjs: false
+  sharp: false
+  unrs-resolver: false
+
 catalog:
   "@better-auth/cli": ^1.4.21
-  "@better-auth/expo": ^1.4.18
-  "@tailwindcss/postcss": ^4.3.0
-  "@tailwindcss/vite": ^4.3.0
-  "@tanstack/react-form": ^1.23.8
-  "@tanstack/react-query": ^5.90.8
-  "@trpc/client": ^11.7.1
-  "@trpc/server": ^11.7.1
-  "@trpc/tanstack-react-query": ^11.7.1
-  "@types/node": ^25.9.0
-  "@vitejs/plugin-react": ^6.0.2
-  "@vitest/coverage-istanbul": ^4.1.6
-  "@vitest/coverage-v8": ^4.1.6
+  "@better-auth/expo": ^1.6.25
+  "@tailwindcss/postcss": ^4.3.3
+  "@tailwindcss/vite": ^4.3.3
+  "@tanstack/react-form": ^1.33.2
+  "@tanstack/react-query": ^5.101.4
+  "@trpc/client": ^11.18.0
+  "@trpc/server": ^11.18.0
+  "@trpc/tanstack-react-query": ^11.18.0
+  "@types/node": ^26.1.1
+  "@vitejs/plugin-react": ^6.0.4
+  "@vitest/coverage-istanbul": ^4.1.10
+  "@vitest/coverage-v8": ^4.1.10
   dotenv: ^17.4.2
   drizzle-kit: ^0.31.10
   drizzle-orm: ^0.45.2
   drizzle-zod: ^0.8.3
-  eslint: ^9.39.4
+  eslint: ^9.39.5
   jsdom: ^29.1.1
-  postcss: ^8.5.14
-  prettier: ^3.8.3
-  tailwindcss: ^4.3.0
-  tsx: ^4.22.2
+  postcss: ^8.5.22
+  prettier: ^3.9.6
+  tailwindcss: ^4.3.3
+  tsx: ^4.23.1
   typescript: ^6.0.3
-  vite: ^8.0.13
-  vitest: ^4.1.6
+  vite: ^8.1.5
+  vitest: ^4.1.10
   zod: ^4.4.3
 
 catalogs:
   react19:
-    "@types/react": ^19.2.14
+    "@types/react": ^19.2.17
     "@types/react-dom": ^19.2.3
-    react: ^19.2.6
-    react-dom: ^19.2.6
+    react: ^19.2.8
+    react-dom: ^19.2.8
 
 linkWorkspacePackages: true
 
-onlyBuiltDependencies:
-  - "@tailwindcss/oxide"
-  - esbuild
+minimumReleaseAgeExclude:
+  - "@better-auth/core@1.6.25"
+  - "@better-auth/drizzle-adapter@1.6.25"
+  - "@better-auth/kysely-adapter@1.6.25"
+  - "@better-auth/memory-adapter@1.6.25"
+  - "@better-auth/mongo-adapter@1.6.25"
+  - "@better-auth/prisma-adapter@1.6.25"
+  - "@better-auth/telemetry@1.6.25"
+  - better-auth@1.6.25
+  - lint-staged@17.2.0
+  - lucide-react@1.26.0
 
 overrides:
-  lightningcss: ^1.30.2
+  lightningcss: ^1.33.0
 
 publicHoistPattern:
   - "@ianvs/prettier-plugin-sort-imports"

@@ -19,7 +19,7 @@
   },
   "prettier": "@repo/prettier-config",
   "dependencies": {
-    "@orpc/contract": "^1.14.3",
+    "@orpc/contract": "^1.14.8",
     "zod": "catalog:"
   },
   "devDependencies": {

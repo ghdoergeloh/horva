@@ -20,7 +20,7 @@
   "dependencies": {
     "@repo/db": "workspace:*",
     "@repo/transactional": "workspace:*",
-    "better-auth": "^1.6.11",
+    "better-auth": "^1.6.25",
     "zod": "catalog:"
   },
   "devDependencies": {
