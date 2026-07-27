@@ -44,6 +44,8 @@ yarn-error.log*
 # local env files
 .env*
 !.env.example
+# Devcontainer infra addresses (service names, no secrets) — committed on purpose
+!.devcontainer/.env.container
 
 # vercel
 .vercel

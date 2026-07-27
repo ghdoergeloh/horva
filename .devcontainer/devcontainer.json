@@ -1,0 +1,74 @@
+{
+  "name": "monorepo-template (sandboxed, remote docker host)",
+  "dockerComposeFile": ["compose.yml"],
+  "service": "workspace",
+  "workspaceFolder": "/workspace",
+
+  // Keep the stack running when VS Code disconnects or is closed, so builds, dev
+  // servers and long-running agent sessions continue. Combined with
+  // `restart: unless-stopped` in compose.yml the containers also come back after a
+  // remote-host reboot. Stop them explicitly with:
+  //   docker compose -f .devcontainer/compose.yml down
+  "shutdownAction": "none",
+
+  // /workspace is a named volume on the remote Docker host, not a bind mount of a
+  // local checkout — so the sources are cloned in on first create. Runs once per
+  // volume; idempotent (see bootstrap-workspace.sh).
+  "onCreateCommand": "/usr/local/bin/bootstrap-workspace.sh",
+
+  // Install dependencies after the clone.
+  //
+  // The egress firewall is NOT set up here: it is installed by the container's root
+  // entrypoint (entrypoint.sh) before any user process starts, and therefore also on
+  // every restart — iptables rules are not persistent. That closes the window a
+  // postStartCommand would leave open, and means the dev user needs no sudo at all.
+  "postCreateCommand": "pnpm install --frozen-lockfile",
+
+  // Forwarded over the VS Code Remote SSH tunnel — nothing is published on the
+  // remote host's network. These are ports in the workspace's network namespace
+  // (which it shares with the firewall sidecar).
+  "forwardPorts": [3000, 5173, 4983, 8025],
+  "portsAttributes": {
+    "3000": { "label": "API (Hono + oRPC)" },
+    "5173": { "label": "React (Vite dev server)" },
+    "4983": { "label": "Drizzle Studio" },
+    "8025": { "label": "Mailpit inbox" }
+  },
+
+  "remoteUser": "node",
+
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "anthropic.claude-code",
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode",
+        "bradlc.vscode-tailwindcss",
+        "ms-azuretools.vscode-docker",
+        "redhat.vscode-yaml",
+        "vitest.explorer"
+      ],
+      "settings": {
+        "editor.formatOnSave": true,
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
+        "editor.codeActionsOnSave": {
+          "source.fixAll.eslint": "explicit"
+        },
+        "eslint.useFlatConfig": true,
+        "typescript.tsdk": "node_modules/typescript/lib",
+        "typescript.enablePromptUseWorkspaceTsdk": true,
+        // Tailwind v4 + the cva/cn helpers used across packages/ui
+        "tailwindCSS.experimental.classRegex": [
+          ["cva\\(([^)]*)\\)", "[\"'`]([^\"'`]*).*?[\"'`]"],
+          ["cn\\(([^)]*)\\)", "[\"'`]([^\"'`]*).*?[\"'`]"]
+        ],
+        "files.watcherExclude": {
+          "**/node_modules/**": true,
+          "**/.turbo/**": true,
+          "**/dist/**": true,
+          "**/.pnpm-store/**": true
+        }
+      }
+    }
+  }
+}
