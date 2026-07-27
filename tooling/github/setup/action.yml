@@ -9,8 +9,10 @@ runs:
       with:
         node-version-file: ".nvmrc"
 
-    - shell: bash
-      run: pnpm add -g turbo
-
+    # No global turbo install: pnpm 11 derives the global bin dir by appending
+    # /bin to PNPM_HOME, which pnpm/action-setup points at ".../node_modules/.bin".
+    # The resulting ".../node_modules/.bin/bin" is not in PATH, so `pnpm add -g`
+    # fails. It was redundant anyway — turbo is a root devDependency and every CI
+    # step invokes it through a `pnpm <script>`, which resolves it locally.
     - shell: bash
       run: pnpm install
