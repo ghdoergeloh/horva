@@ -75,20 +75,33 @@ itself enough for the processes inside them:
 > terminal and closing VS Code ends that session — the container survives, the agent
 > does not.
 
-The fix is to run it inside **tmux**, which is owned by no client:
+The fix is **tmux**, which is owned by no client — and it is wired up automatically:
 
 ```bash
-agent            # in a VS Code terminal: creates or reattaches the session
-claude           # start Claude INSIDE tmux
+claude           # just start it; the terminal is already inside tmux
 ```
 
-Now close VS Code whenever you like. Claude keeps working in the container. To pick
-it up again, open a terminal in the container and run `agent` — you land back in the
-live session with its scrollback intact.
+Every VS Code terminal opens directly in the shared `agent` tmux session
+(`terminal.integrated.defaultProfile.linux`), so there is nothing to remember. Close
+VS Code whenever you like; Claude keeps working in the container. Reopen a terminal
+and you are back in the live session with its scrollback intact.
 
-`Ctrl-b d` detaches on purpose without stopping anything. `agent --list` shows the
-running sessions, `agent -n build` opens a second, independent one (e.g. to keep a
-dev server separate from the agent).
+Each terminal gets its **own window** in that session. Reopening reuses a window
+whose shell is idle, so windows do not pile up, and a window running Claude or a dev
+server is never taken over.
+
+`Ctrl-b d` detaches on purpose without stopping anything; `Ctrl-b c` opens a new
+window, `Ctrl-b n`/`Ctrl-b p` cycle. `agent --list` shows the running sessions and
+`agent -n build` opens a second, independent one. `agent` itself still works for
+attaching from outside VS Code.
+
+Need a shell _without_ tmux (debugging the setup, say)? Pick the **bash (no tmux)**
+profile from the terminal dropdown. Such a shell prints a reminder, because work
+started there dies when it closes.
+
+> Auto-attach is configured as a VS Code terminal profile, not in `.bashrc`. That is
+> deliberate: `.bashrc` is also sourced by non-interactive shells, where attaching to
+> tmux would break lifecycle commands, git hooks and `docker exec … some-script`.
 
 Without VS Code at all — straight from the remote host or over SSH:
 
@@ -160,6 +173,7 @@ forwarding works. Credentials and general config stay in the root `.env`.
 | `init-firewall.sh`       | the egress rules + self-verification (fails closed)              |
 | `bootstrap-workspace.sh` | clones the repo into the empty volume on first create            |
 | `agent-session.sh`       | the `agent` command: tmux session that survives disconnects      |
+| `tmux-shell.sh`          | default terminal profile — auto-attaches VS Code terminals       |
 | `tmux.conf`              | tmux defaults (100k scrollback, mouse, 24-bit colour)            |
 | `.env.container`         | infra addresses + clone settings                                 |
 

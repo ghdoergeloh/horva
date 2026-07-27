@@ -49,6 +49,27 @@
         "vitest.explorer"
       ],
       "settings": {
+        // Integrated terminals open directly in the long-lived tmux session, so
+        // anything started in them (claude above all) survives closing VS Code.
+        // Each terminal gets its own window in that shared session.
+        //
+        // Set here rather than in .bashrc on purpose: .bashrc is also sourced by
+        // non-interactive shells, where auto-attaching to tmux would break lifecycle
+        // commands, git hooks and `docker exec ... some-script`.
+        //
+        // Use the "bash (no tmux)" profile when you explicitly want a plain shell.
+        "terminal.integrated.defaultProfile.linux": "tmux (agent session)",
+        "terminal.integrated.profiles.linux": {
+          "tmux (agent session)": {
+            "path": "/usr/local/bin/tmux-shell.sh",
+            "icon": "terminal-tmux"
+          },
+          "bash (no tmux)": {
+            "path": "/bin/bash",
+            "args": ["-l"],
+            "icon": "terminal-bash"
+          }
+        },
         "editor.formatOnSave": true,
         "editor.defaultFormatter": "esbenp.prettier-vscode",
         "editor.codeActionsOnSave": {

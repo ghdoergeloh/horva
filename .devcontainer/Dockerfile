@@ -46,6 +46,7 @@ COPY bootstrap-workspace.sh /usr/local/bin/bootstrap-workspace.sh
 # `agent` attaches to (or creates) the long-lived tmux session that survives VS Code
 # disconnects. Shipped in the image rather than the repo so it works before the clone.
 COPY agent-session.sh /usr/local/bin/agent-session.sh
+COPY tmux-shell.sh /usr/local/bin/tmux-shell.sh
 COPY tmux.conf /etc/tmux.conf
 
 # Final root layer: permissions, the volume mount points, and the setuid strip.
@@ -63,6 +64,7 @@ COPY tmux.conf /etc/tmux.conf
 # `docker exec`, which is pinned to `user: node`.
 RUN chmod 0755 /usr/local/bin/bootstrap-workspace.sh \
                 /usr/local/bin/agent-session.sh \
+                /usr/local/bin/tmux-shell.sh \
     && ln -s /usr/local/bin/agent-session.sh /usr/local/bin/agent \
     && mkdir -p /home/${USERNAME}/.claude \
                 /home/${USERNAME}/.local/bin \
@@ -95,12 +97,13 @@ RUN corepack enable --install-directory /home/${USERNAME}/.local/bin \
 ENV CLAUDE_CONFIG_DIR="/home/${USERNAME}/.claude"
 RUN curl -fsSL https://claude.ai/install.sh | bash
 
-# Remind about `agent` in interactive shells that are NOT already inside tmux — the
-# failure mode this prevents (starting claude in a plain VS Code terminal, then losing
-# it on disconnect) is silent and costly, so it is worth one line of noise.
+# VS Code terminals auto-attach to tmux via the default profile, so a shell that is
+# interactive yet OUTSIDE tmux means the plain-bash profile, `docker exec`, or an SSH
+# login. Warn there, because work started in such a shell dies on disconnect — the
+# exact silent failure the tmux setup exists to prevent.
 RUN printf '%s\n' \
     'if [ -z "$TMUX" ] && [ -t 1 ]; then' \
-    '  printf "\\033[2mTip: run \\033[0m\\033[1magent\\033[0m\\033[2m to work in a tmux session that survives closing VS Code.\\033[0m\\n"' \
+    '  printf "\033[2mNot in tmux — work started here stops when this shell closes. Run \033[0m\033[1magent\033[0m\033[2m to use the persistent session.\033[0m\n"' \
     'fi' \
     >> /home/${USERNAME}/.bashrc
 
