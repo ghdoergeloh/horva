@@ -64,19 +64,63 @@ Then point VS Code at the remote Docker host and reopen in the container:
 `pnpm install --frozen-lockfile` runs. Both are idempotent — a rebuild that reuses
 the volume only does a `git fetch`.
 
-## Work keeps running when you close VS Code
+## Running Claude in the background
 
 `shutdownAction: "none"` (devcontainer.json) plus `restart: unless-stopped`
-(compose.yml) mean the containers stay up when VS Code disconnects, and come back
-after a remote-host reboot. Long builds, dev servers and agent sessions survive.
+(compose.yml) keep the **containers** up when VS Code disconnects. That is not by
+itself enough for the processes inside them:
 
-Start something detached so it outlives your session:
+> **VS Code kills its integrated terminals when the client disconnects.** They are
+> children of the container-side VS Code server, so starting `claude` in a normal
+> terminal and closing VS Code ends that session — the container survives, the agent
+> does not.
+
+The fix is to run it inside **tmux**, which is owned by no client:
+
+```bash
+agent            # in a VS Code terminal: creates or reattaches the session
+claude           # start Claude INSIDE tmux
+```
+
+Now close VS Code whenever you like. Claude keeps working in the container. To pick
+it up again, open a terminal in the container and run `agent` — you land back in the
+live session with its scrollback intact.
+
+`Ctrl-b d` detaches on purpose without stopping anything. `agent --list` shows the
+running sessions, `agent -n build` opens a second, independent one (e.g. to keep a
+dev server separate from the agent).
+
+Without VS Code at all — straight from the remote host or over SSH:
+
+```bash
+docker compose -f .devcontainer/compose.yml exec -u node workspace agent
+```
+
+For non-interactive jobs tmux is optional; `nohup` is enough:
 
 ```bash
 nohup pnpm dev > /tmp/dev.log 2>&1 &
 ```
 
-Reattach later by reopening the folder in the container. To stop the stack:
+### What survives what
+
+| Event                            | Container | tmux session | Claude process   |
+| -------------------------------- | --------- | ------------ | ---------------- |
+| Close VS Code / lose the network | ✅ up     | ✅ alive     | ✅ keeps working |
+| `Ctrl-b d` (detach)              | ✅ up     | ✅ alive     | ✅ keeps working |
+| Container restart / host reboot  | ✅ up     | ❌ gone      | ❌ stopped       |
+
+Processes are not persistent across a container restart — nothing can make them so.
+What does survive is Claude's state: `~/.claude` is a named volume and
+`CLAUDE_CONFIG_DIR` points into it, so the OAuth login, settings and session history
+are all still there. Resume the conversation with:
+
+```bash
+agent
+claude --continue        # or: claude --resume <session>
+```
+
+To stop the whole stack:
 
 ```bash
 docker compose -f .devcontainer/compose.yml down
@@ -115,6 +159,8 @@ forwarding works. Credentials and general config stay in the root `.env`.
 | `firewall-entrypoint.sh` | applies the rules, signals readiness, holds the namespace open   |
 | `init-firewall.sh`       | the egress rules + self-verification (fails closed)              |
 | `bootstrap-workspace.sh` | clones the repo into the empty volume on first create            |
+| `agent-session.sh`       | the `agent` command: tmux session that survives disconnects      |
+| `tmux.conf`              | tmux defaults (100k scrollback, mouse, 24-bit colour)            |
 | `.env.container`         | infra addresses + clone settings                                 |
 
 ## Verifying the sandbox

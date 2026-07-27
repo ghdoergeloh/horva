@@ -21,12 +21,18 @@ ARG USERNAME=node
 
 # Development ergonomics. git/curl/ca-certificates already ship in the base image;
 # jq is used by the Claude Code hooks, postgresql-client for psql against postgres:5432.
+#
+# tmux is essential here, not a nicety: VS Code runs integrated terminals as children
+# of its container-side server and kills them when the client disconnects. Anything
+# interactive that should outlive a disconnect — an agent session above all — has to
+# run inside a tmux session, which is owned by no client. See README.
 RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     --mount=type=cache,target=/var/lib/apt,sharing=locked \
     rm -f /etc/apt/apt.conf.d/docker-clean \
     && echo 'Binary::apt::APT::Keep-Downloaded-Packages "true";' > /etc/apt/apt.conf.d/keep-cache \
     && apt-get update \
     && apt-get install -y --no-install-recommends \
+        tmux \
         jq \
         less \
         procps \
@@ -36,6 +42,11 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
 # The build context is .devcontainer/ — the repository is NOT part of the image, it
 # arrives via git clone at runtime, so no sources need to exist on the remote host.
 COPY bootstrap-workspace.sh /usr/local/bin/bootstrap-workspace.sh
+
+# `agent` attaches to (or creates) the long-lived tmux session that survives VS Code
+# disconnects. Shipped in the image rather than the repo so it works before the clone.
+COPY agent-session.sh /usr/local/bin/agent-session.sh
+COPY tmux.conf /etc/tmux.conf
 
 # Final root layer: permissions, the volume mount points, and the setuid strip.
 #
@@ -51,6 +62,8 @@ COPY bootstrap-workspace.sh /usr/local/bin/bootstrap-workspace.sh
 # `cap_drop: ALL` in compose.yml nothing inside can become root — including via
 # `docker exec`, which is pinned to `user: node`.
 RUN chmod 0755 /usr/local/bin/bootstrap-workspace.sh \
+                /usr/local/bin/agent-session.sh \
+    && ln -s /usr/local/bin/agent-session.sh /usr/local/bin/agent \
     && mkdir -p /home/${USERNAME}/.claude \
                 /home/${USERNAME}/.local/bin \
                 /home/${USERNAME}/.local/share/pnpm \
@@ -81,5 +94,14 @@ RUN corepack enable --install-directory /home/${USERNAME}/.local/bin \
 # every rebuild forces a fresh login, even though tokens survive in the volume.
 ENV CLAUDE_CONFIG_DIR="/home/${USERNAME}/.claude"
 RUN curl -fsSL https://claude.ai/install.sh | bash
+
+# Remind about `agent` in interactive shells that are NOT already inside tmux — the
+# failure mode this prevents (starting claude in a plain VS Code terminal, then losing
+# it on disconnect) is silent and costly, so it is worth one line of noise.
+RUN printf '%s\n' \
+    'if [ -z "$TMUX" ] && [ -t 1 ]; then' \
+    '  printf "\\033[2mTip: run \\033[0m\\033[1magent\\033[0m\\033[2m to work in a tmux session that survives closing VS Code.\\033[0m\\n"' \
+    'fi' \
+    >> /home/${USERNAME}/.bashrc
 
 WORKDIR /workspace
