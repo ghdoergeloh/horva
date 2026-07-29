@@ -41,6 +41,11 @@ const cell = tv({
     isDisabled: {
       true: "text-neutral-300 dark:text-neutral-600 forced-colors:text-[GrayText]",
     },
+    // Ring stays visible on top of the range fill, so today remains
+    // identifiable even when it falls inside the selected range.
+    isToday: {
+      true: "ring-2 ring-blue-600 ring-inset dark:ring-blue-400 forced-colors:ring-[ButtonBorder]",
+    },
   },
 });
 
@@ -72,6 +77,7 @@ export function RangeCalendar<T extends DateValue>({
                 isSelectionEnd,
                 isFocusVisible,
                 isDisabled,
+                isToday,
               }) => (
                 <span
                   className={cell({
@@ -83,6 +89,7 @@ export function RangeCalendar<T extends DateValue>({
                           : "none",
                     isDisabled,
                     isFocusVisible,
+                    isToday,
                   })}
                 >
                   {formattedDate}

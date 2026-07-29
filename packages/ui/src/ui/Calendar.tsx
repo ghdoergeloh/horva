@@ -34,6 +34,11 @@ const cellStyles = tv({
     isDisabled: {
       true: "text-neutral-300 dark:text-neutral-600 forced-colors:text-[GrayText]",
     },
+    // Ring stays visible on top of the selected fill, so today remains
+    // identifiable even when another date is selected.
+    isToday: {
+      true: "ring-2 ring-blue-600 ring-inset dark:ring-blue-400 forced-colors:ring-[ButtonBorder]",
+    },
   },
 });
 
@@ -60,7 +65,12 @@ export function Calendar<T extends DateValue>({
       <CalendarGrid className="border-spacing-0">
         <CalendarGridHeader />
         <CalendarGridBody>
-          {(date) => <CalendarCell date={date} className={cellStyles} />}
+          {(date) => (
+            <CalendarCell
+              date={date}
+              className={(renderProps) => cellStyles(renderProps)}
+            />
+          )}
         </CalendarGridBody>
       </CalendarGrid>
       {errorMessage && (
