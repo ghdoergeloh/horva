@@ -1,0 +1,193 @@
+# Dev container stack for the monorepo template — REMOTE Docker host.
+#
+# `workspace` is the container VS Code / Claude Code runs in; postgres and mailpit
+# are the dev infra, reachable inside the compose network by SERVICE NAME on their
+# internal ports (postgres:5432, mailpit:1025). That is why the workspace never
+# needs to talk to the host — the egress firewall (init-firewall.sh) blocks the
+# host machine and the LAN while leaving the public internet fully open.
+#
+# Remote-host specifics:
+#   * /workspace is a NAMED VOLUME, not a bind mount. There is no local checkout on
+#     the remote host; bootstrap-workspace.sh clones the repo into the volume on
+#     first create.
+#   * No `ports:` are published. VS Code Remote forwards ports over its SSH tunnel,
+#     so nothing is exposed on the remote host's network.
+#   * `restart: unless-stopped` + shutdownAction "none" (devcontainer.json) keep the
+#     containers running when VS Code disconnects, so long jobs continue.
+#
+# The build context is this directory (.devcontainer/) — the repository is NOT part
+# of the build context, so no source needs to exist on the remote host to build.
+#
+# The repository root ../compose.yml stays untouched and keeps working for plain
+# local host development (`docker compose up -d` + `pnpm dev`).
+name: horva-dev
+
+# Hardening: the workspace runs an AI coding agent, so the whole stack is treated
+# as a sandbox. `no-new-privileges` blocks setuid escalation; all capabilities are
+# dropped unless a service demonstrably needs them.
+x-hardened: &hardened
+  security_opt:
+    - no-new-privileges:true
+  cap_drop:
+    - ALL
+
+# Minimal capability set for images whose entrypoint starts as root and drops
+# privileges via gosu/su-exec (the postgres pattern).
+x-hardened-root-init: &hardened-root-init
+  security_opt:
+    - no-new-privileges:true
+  cap_drop:
+    - ALL
+  cap_add:
+    - CHOWN
+    - DAC_OVERRIDE
+    - FOWNER
+    - SETGID
+    - SETUID
+
+services:
+  # ---------------------------------------------------------------------------
+  # Firewall sidecar: installs the egress rules into the SHARED network namespace
+  # (see `network_mode: service:firewall` on the workspace) and exits.
+  #
+  # Why a separate container: the rules need NET_ADMIN as root, but the workspace
+  # must NOT have either — otherwise `docker exec` into it (which bypasses the
+  # workspace's entrypoint and lands as the image's USER) would be a way to flush
+  # the firewall. Isolating the privilege here means the workspace container runs
+  # unprivileged as `node` with cap_drop: ALL and literally cannot tamper with the
+  # rules, while they still govern all of its traffic.
+  #
+  # It also owns the network namespace, so it must start first and its restart
+  # policy must re-apply the rules whenever the namespace comes back.
+  # ---------------------------------------------------------------------------
+  firewall:
+    build:
+      context: .
+      dockerfile: firewall.Dockerfile
+    restart: on-failure
+    cap_drop:
+      - ALL
+    cap_add:
+      - NET_ADMIN
+      - NET_RAW
+    # The namespace this container creates is shared with the workspace, so the
+    # published-port story and DNS live here. No ports are published on purpose
+    # (VS Code forwards over SSH).
+    healthcheck:
+      # Marks the sidecar healthy once the rules are in place, so the workspace's
+      # depends_on gate cannot start it during an open-egress window.
+      test: ["CMD-SHELL", "test -f /run/firewall-ready"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+      start_period: 5s
+
+  # ---------------------------------------------------------------------------
+  # Workspace: unprivileged, no docker socket, no host filesystem, no access to
+  # the Docker host or its network (enforced by the firewall sidecar above).
+  # The sources live in the workspace volume.
+  # ---------------------------------------------------------------------------
+  workspace:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: sleep infinity
+    init: true
+    # Share the sidecar's network namespace: the egress rules above apply to every
+    # connection this container makes, but it holds no capability to change them.
+    network_mode: "service:firewall"
+    # Survive VS Code disconnects and remote-host reboots so background work
+    # (builds, dev servers, long agent runs) keeps going. Combined with
+    # "shutdownAction": "none" in devcontainer.json.
+    restart: unless-stopped
+    # Fully unprivileged: NO capabilities at all (the firewall lives in the sidecar)
+    # and no escalation path — the image ships no sudo and no setuid binaries.
+    # This also holds for `docker exec`, which bypasses entrypoints.
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    user: node
+    pids_limit: 4096
+    # No `ports:` on purpose — VS Code Remote tunnels forwarded ports over SSH.
+    # Publishing here would expose the dev servers on the remote host's network.
+    volumes:
+      # The repository, as a named volume on the remote host. Populated by
+      # bootstrap-workspace.sh (git clone) on first create.
+      - workspace:/workspace
+      # Claude Code state (memory, settings, sessions, OAuth) survives rebuilds.
+      - claude-state:/home/node/.claude
+      # pnpm global dir (corepack/pnpm binaries, global installs).
+      - pnpm-home:/home/node/.local/share/pnpm
+    working_dir: /workspace
+    environment:
+      # Marker for scripts that need to know they run inside the devcontainer.
+      DEVCONTAINER: "true"
+      # Keep the pnpm content-addressable store on the SAME filesystem as
+      # node_modules (the workspace volume) so pnpm can hardlink instead of
+      # copying. .pnpm-store is git-ignored.
+      PNPM_CONFIG_STORE_DIR: /workspace/.pnpm-store
+    env_file:
+      # Container-specific config: infra addresses (service names instead of
+      # localhost) plus the WORKSPACE_REPO_* clone settings. There is no
+      # ../.env on the remote host — the repo-root .env is created inside the
+      # volume by bootstrap-workspace.sh from .env.example.
+      - path: .env.container
+        required: true
+    depends_on:
+      # Gate on the firewall being fully applied: the workspace shares its network
+      # namespace, so starting earlier would mean running with open egress.
+      firewall:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+      mailpit:
+        condition: service_started
+
+  # ---------------------------------------------------------------------------
+  # PostgreSQL — reached from the workspace as postgres:5432
+  # ---------------------------------------------------------------------------
+  postgres:
+    image: postgres:18-alpine
+    restart: unless-stopped
+    <<: *hardened-root-init
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      POSTGRES_DB: ${POSTGRES_DB:-horva}
+    # Not published: only the workspace talks to it, over the compose network.
+    # Use `psql` inside the container, or forward 5432 via VS Code / SSH.
+    volumes:
+      - postgres-data:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  # ---------------------------------------------------------------------------
+  # Mailpit — SMTP sink + inbox UI.
+  #
+  # Joins the workspace's network namespace so both are addressable as localhost:
+  # the app sends mail to localhost:1025 and the inbox UI on localhost:8025 is
+  # picked up by VS Code's port forwarding like any other dev server. Its egress
+  # is governed by the same firewall rules, which is fine — a mail sink needs none.
+  # ---------------------------------------------------------------------------
+  mailpit:
+    image: axllent/mailpit
+    restart: unless-stopped
+    <<: *hardened
+    network_mode: "service:firewall"
+    depends_on:
+      firewall:
+        condition: service_healthy
+    volumes:
+      - mailpit-data:/data
+
+volumes:
+  # The repository checkout — the reason no host bind mount is needed.
+  workspace:
+  claude-state:
+  pnpm-home:
+  postgres-data:
+  mailpit-data:

@@ -60,6 +60,9 @@ export const orpc = new Proxy(
   {
     get(_, prop) {
       const { orpc: o } = initOrpc();
+      // The proxy forwards property access verbatim; returning the raw value is
+      // the intended behaviour, so unbound-method does not apply here.
+      // eslint-disable-next-line @typescript-eslint/unbound-method
       return o[
         prop as keyof ReturnType<
           typeof createTanstackQueryUtils<ContractRouterClient<Contract>>

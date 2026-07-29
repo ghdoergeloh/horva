@@ -44,7 +44,13 @@ export const db: Db = new Proxy<Db>({} as Db, {
         _connection = undefined;
       };
     }
-    return getDb()[prop];
+    const db = getDb();
+    // The Proxy forwards arbitrary members of the drizzle instance. Methods are
+    // re-bound to `db` below so `this` is preserved; the rule can't see through
+    // the dynamic access, so the unbound-method warning is a false positive here.
+    // eslint-disable-next-line @typescript-eslint/unbound-method
+    const value = db[prop];
+    return typeof value === "function" ? value.bind(db) : value;
   },
 });
 

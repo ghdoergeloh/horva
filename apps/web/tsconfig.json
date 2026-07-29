@@ -6,12 +6,11 @@
     "module": "ESNext",
     "moduleResolution": "Bundler",
     "types": ["vite/client"],
-    "baseUrl": ".",
     "paths": {
-      "~/lib/orpc": ["src/overrides/orpc.ts"],
-      "~/lib/orpc.js": ["src/overrides/orpc.ts"],
-      "~/components/SetupGate": ["src/overrides/SetupGate.tsx"],
-      "~/components/SetupGate.js": ["src/overrides/SetupGate.tsx"],
+      "~/lib/orpc": ["./src/overrides/orpc.ts"],
+      "~/lib/orpc.js": ["./src/overrides/orpc.ts"],
+      "~/components/SetupGate": ["./src/overrides/SetupGate.tsx"],
+      "~/components/SetupGate.js": ["./src/overrides/SetupGate.tsx"],
       "~/*": ["../electron/src/renderer/src/*"]
     },
     "noEmit": true
