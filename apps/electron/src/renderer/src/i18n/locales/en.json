@@ -100,7 +100,8 @@
       "title": "All Tasks",
       "subtitle": "Prioritize via drag & drop",
       "empty": "No open tasks.",
-      "dragHandle": "Drag to reorder"
+      "dragHandle": "Drag to reorder",
+      "dragToProject": "Drag onto a project to move"
     },
     "taskType": {
       "task": "Task",
@@ -317,6 +318,7 @@
     "projectTitle": "Project properties",
     "taskTitle": "Task properties",
     "name": "Name",
+    "project": "Project",
     "color": "Color",
     "customColor": "Custom color",
     "labels": "Labels",

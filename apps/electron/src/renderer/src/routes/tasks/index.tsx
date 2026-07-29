@@ -1,17 +1,8 @@
 import type { DragEndEvent } from "@dnd-kit/core";
-import { useEffect, useMemo, useState } from "react";
-import {
-  closestCenter,
-  DndContext,
-  KeyboardSensor,
-  PointerSensor,
-  useSensor,
-  useSensors,
-} from "@dnd-kit/core";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   arrayMove,
   SortableContext,
-  sortableKeyboardCoordinates,
   useSortable,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
@@ -22,9 +13,11 @@ import { GripVertical } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
 import type { LabelRow } from "~/components/TaskEditControls.js";
+import type { TaskDragData } from "~/contexts/TaskDragContext.js";
 import { LoadingSpinner } from "~/components/LoadingSpinner.js";
 import { TaskCard } from "~/components/TaskCard.js";
 import { useDetailDrawer } from "~/contexts/DetailDrawerContext.js";
+import { useTaskDrag } from "~/contexts/TaskDragContext.js";
 import { client } from "~/lib/orpc.js";
 
 type TaskRow = Awaited<ReturnType<typeof client.task.list>>["tasks"][number];
@@ -72,7 +65,17 @@ function SortableTaskRow({
     transform,
     transition,
     isDragging,
-  } = useSortable({ id: task.id });
+  } = useSortable({
+    id: task.id,
+    // Payload lets the app-shell drop handler move the task onto a project
+    // without knowing which list it came from.
+    data: {
+      type: "task",
+      taskId: task.id,
+      name: task.name,
+      projectId: task.project.id,
+    } satisfies TaskDragData,
+  });
   const isActivity = task.taskType === "activity";
 
   return (
@@ -222,23 +225,33 @@ function TasksOverview() {
     onSuccess: invalidateTasks,
   });
 
-  const sensors = useSensors(
-    useSensor(PointerSensor, { activationConstraint: { distance: 4 } }),
-    useSensor(KeyboardSensor, {
-      coordinateGetter: sortableKeyboardCoordinates,
-    }),
-  );
+  // The DndContext lives in the app shell so tasks can be dropped onto the
+  // sidebar; reordering stays here and is invoked for non-project drops.
+  const { registerReorderHandler } = useTaskDrag();
 
-  function handleDragEnd(event: DragEndEvent) {
-    const { active, over } = event;
-    if (!over || active.id === over.id) return;
-    const oldIndex = orderedIds.indexOf(active.id as number);
-    const newIndex = orderedIds.indexOf(over.id as number);
-    if (oldIndex < 0 || newIndex < 0) return;
-    const next = arrayMove(orderedIds, oldIndex, newIndex);
-    setOrderedIds(next);
-    reorderMutation.mutate(next);
-  }
+  // Latest order + mutation, kept in a ref so the registered handler identity
+  // stays stable — re-subscribing on every render risks losing a drop mid-drag.
+  const reorderStateRef = useRef({ orderedIds, reorderMutation });
+  useEffect(() => {
+    reorderStateRef.current = { orderedIds, reorderMutation };
+  }, [orderedIds, reorderMutation]);
+
+  useEffect(() => {
+    return registerReorderHandler((event: DragEndEvent) => {
+      const { active, over } = event;
+      if (!over || active.id === over.id) return;
+      // Sortable rows use numeric ids; anything else belongs to another list.
+      if (typeof active.id !== "number" || typeof over.id !== "number") return;
+      const { orderedIds: ids, reorderMutation: mutation } =
+        reorderStateRef.current;
+      const oldIndex = ids.indexOf(active.id);
+      const newIndex = ids.indexOf(over.id);
+      if (oldIndex < 0 || newIndex < 0) return;
+      const next = arrayMove(ids, oldIndex, newIndex);
+      setOrderedIds(next);
+      mutation.mutate(next);
+    });
+  }, [registerReorderHandler]);
 
   if (isLoading) {
     return (
@@ -264,38 +277,32 @@ function TasksOverview() {
           {t("tasks.overview.empty")}
         </p>
       ) : (
-        <DndContext
-          sensors={sensors}
-          collisionDetection={closestCenter}
-          onDragEnd={handleDragEnd}
+        <SortableContext
+          items={orderedIds}
+          strategy={verticalListSortingStrategy}
         >
-          <SortableContext
-            items={orderedIds}
-            strategy={verticalListSortingStrategy}
-          >
-            <div className="space-y-2">
-              {orderedTasks.map((task) => (
-                <SortableTaskRow
-                  key={task.id}
-                  task={task}
-                  allLabels={allLabels}
-                  onMarkDone={(id) => markDoneMutation.mutate(id)}
-                  onRename={(id, name) => renameMutation.mutate({ id, name })}
-                  onPlan={(id, date) => planMutation.mutate({ id, date })}
-                  onSetRecurrence={(id, rule) =>
-                    setRecurrenceMutation.mutate({ id, rule })
-                  }
-                  onAddLabel={(taskId, labelId) =>
-                    addLabelMutation.mutate({ taskId, labelId })
-                  }
-                  onRemoveLabel={(taskId, labelId) =>
-                    removeLabelMutation.mutate({ taskId, labelId })
-                  }
-                />
-              ))}
-            </div>
-          </SortableContext>
-        </DndContext>
+          <div className="space-y-2">
+            {orderedTasks.map((task) => (
+              <SortableTaskRow
+                key={task.id}
+                task={task}
+                allLabels={allLabels}
+                onMarkDone={(id) => markDoneMutation.mutate(id)}
+                onRename={(id, name) => renameMutation.mutate({ id, name })}
+                onPlan={(id, date) => planMutation.mutate({ id, date })}
+                onSetRecurrence={(id, rule) =>
+                  setRecurrenceMutation.mutate({ id, rule })
+                }
+                onAddLabel={(taskId, labelId) =>
+                  addLabelMutation.mutate({ taskId, labelId })
+                }
+                onRemoveLabel={(taskId, labelId) =>
+                  removeLabelMutation.mutate({ taskId, labelId })
+                }
+              />
+            ))}
+          </div>
+        </SortableContext>
       )}
     </div>
   );

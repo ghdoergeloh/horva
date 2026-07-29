@@ -58,6 +58,12 @@ function TaskDrawerBody({
     queryFn: async () => (await client.label.list()).labels,
   });
 
+  // Same key/fn as the sidebar, so this shares its cache entry.
+  const { data: projects = [] } = useQuery({
+    queryKey: ["projects"],
+    queryFn: async () => (await client.project.list({})).projects,
+  });
+
   const mocoConfigured = useMocoConfigured();
 
   const [name, setName] = useState(task.name);
@@ -112,6 +118,12 @@ function TaskDrawerBody({
     }
   }
 
+  // project.list() omits archived projects; keep the task's current project in
+  // the options so an archived one still renders instead of showing blank.
+  const projectOptions = projects.some((p) => p.id === task.project.id)
+    ? projects
+    : [task.project, ...projects];
+
   const assignedLabelIds = new Set(task.taskLabels.map((tl) => tl.label.id));
   const links = task.links;
   const isActivity = task.taskType === "activity";
@@ -131,15 +143,33 @@ function TaskDrawerBody({
         />
       </div>
 
-      {/* Project (read-only) */}
-      <div className="flex items-center gap-2">
-        <span
-          className="h-3 w-3 flex-shrink-0 rounded-sm"
-          style={{ backgroundColor: task.project.color }}
-        />
-        <span className="text-muted-foreground text-sm">
-          {task.project.name}
-        </span>
+      {/* Project */}
+      <div className="space-y-1">
+        <p className="text-foreground text-sm font-medium">
+          {t("drawer.project")}
+        </p>
+        <Select
+          aria-label={t("drawer.project")}
+          value={String(task.project.id)}
+          onChange={(value) => {
+            const projectId = Number(value);
+            if (projectId !== task.project.id) {
+              updateMutation.mutate({ id, projectId });
+            }
+          }}
+        >
+          {projectOptions.map((project) => (
+            <SelectItem key={project.id} id={String(project.id)}>
+              <span className="inline-flex items-center gap-2">
+                <span
+                  className="h-2.5 w-2.5 shrink-0 rounded-sm"
+                  style={{ backgroundColor: project.color }}
+                />
+                <span>{project.name}</span>
+              </span>
+            </SelectItem>
+          ))}
+        </Select>
       </div>
 
       {/* Labels */}

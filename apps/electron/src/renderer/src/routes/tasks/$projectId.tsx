@@ -10,6 +10,7 @@ import { Select, SelectItem } from "@horva/ui/Select";
 import { TextField } from "@horva/ui/TextField";
 
 import type { LabelRow } from "~/components/TaskEditControls.js";
+import { DraggableTask } from "~/components/DraggableTask.js";
 import { LoadingSpinner } from "~/components/LoadingSpinner.js";
 import { TaskCard } from "~/components/TaskCard.js";
 import { useDetailDrawer } from "~/contexts/DetailDrawerContext.js";
@@ -386,33 +387,42 @@ function ProjectTaskPage() {
   function renderCard(t: TaskRow) {
     const isActivity = t.taskType === "activity";
     return (
-      <TaskCard
+      <DraggableTask
         key={t.id}
-        id={t.id}
-        name={t.name}
-        project={t.project}
-        labels={t.taskLabels.map((tl) => tl.label)}
-        totalMinutes={calcTotalMinutes(t.slots)}
-        isActivity={isActivity}
-        scheduledAt={t.scheduledAt}
-        recurrenceRule={t.recurrenceRule}
-        onMarkDone={() => markDoneMutation.mutate(t.id)}
-        allLabels={allLabels}
-        onRename={(name) => renameMutation.mutate({ id: t.id, name })}
-        onPlan={(date) => planMutation.mutate({ id: t.id, date })}
-        onSetRecurrence={
-          isActivity
-            ? (rule) => setRecurrenceMutation.mutate({ id: t.id, rule })
-            : undefined
-        }
-        onAddLabel={(labelId) =>
-          addLabelMutation.mutate({ taskId: t.id, labelId })
-        }
-        onRemoveLabel={(labelId) =>
-          removeLabelMutation.mutate({ taskId: t.id, labelId })
-        }
-        onOpenDetails={() => openTask(t.id)}
-      />
+        task={{
+          type: "task",
+          taskId: t.id,
+          name: t.name,
+          projectId: t.project.id,
+        }}
+      >
+        <TaskCard
+          id={t.id}
+          name={t.name}
+          project={t.project}
+          labels={t.taskLabels.map((tl) => tl.label)}
+          totalMinutes={calcTotalMinutes(t.slots)}
+          isActivity={isActivity}
+          scheduledAt={t.scheduledAt}
+          recurrenceRule={t.recurrenceRule}
+          onMarkDone={() => markDoneMutation.mutate(t.id)}
+          allLabels={allLabels}
+          onRename={(name) => renameMutation.mutate({ id: t.id, name })}
+          onPlan={(date) => planMutation.mutate({ id: t.id, date })}
+          onSetRecurrence={
+            isActivity
+              ? (rule) => setRecurrenceMutation.mutate({ id: t.id, rule })
+              : undefined
+          }
+          onAddLabel={(labelId) =>
+            addLabelMutation.mutate({ taskId: t.id, labelId })
+          }
+          onRemoveLabel={(labelId) =>
+            removeLabelMutation.mutate({ taskId: t.id, labelId })
+          }
+          onOpenDetails={() => openTask(t.id)}
+        />
+      </DraggableTask>
     );
   }
 

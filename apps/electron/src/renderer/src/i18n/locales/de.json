@@ -100,7 +100,8 @@
       "title": "Alle Aufgaben",
       "subtitle": "Per Drag & Drop priorisieren",
       "empty": "Keine offenen Aufgaben.",
-      "dragHandle": "Ziehen zum Neuordnen"
+      "dragHandle": "Ziehen zum Neuordnen",
+      "dragToProject": "Auf Projekt ziehen zum Verschieben"
     },
     "taskType": {
       "task": "Aufgabe",
@@ -317,6 +318,7 @@
     "projectTitle": "Projekt-Eigenschaften",
     "taskTitle": "Aufgaben-Eigenschaften",
     "name": "Name",
+    "project": "Projekt",
     "color": "Farbe",
     "customColor": "Eigene Farbe",
     "labels": "Labels",
