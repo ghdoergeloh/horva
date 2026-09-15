@@ -10,5 +10,11 @@
     "emitDeclarationOnly": true,
     "outDir": "out"
   },
-  "include": ["src/main/**/*", "src/preload/**/*", "electron.vite.config.ts"]
+  "include": [
+    "src/main/**/*",
+    "src/preload/**/*",
+    "electron.vite.config.ts",
+    "playwright.config.ts",
+    "e2e/**/*"
+  ]
 }

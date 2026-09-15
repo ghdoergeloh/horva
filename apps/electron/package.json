@@ -13,6 +13,7 @@
     "lint": "eslint .",
     "pack": "electron-vite build && electron-builder",
     "start": "electron-vite preview",
+    "test:e2e": "playwright test",
     "test:unit": "vitest run --passWithNoTests",
     "test:unit:coverage": "vitest run --coverage --passWithNoTests",
     "typecheck": "tsc --noEmit --emitDeclarationOnly false -p tsconfig.node.json && tsc --noEmit --emitDeclarationOnly false -p tsconfig.web.json"
@@ -44,6 +45,7 @@
     "@horva/tsconfig": "workspace:*",
     "@horva/ui": "workspace:*",
     "@internationalized/date": "catalog:",
+    "@playwright/test": "^1.63.0",
     "@tailwindcss/vite": "catalog:",
     "@tanstack/react-query": "catalog:",
     "@tanstack/react-router": "catalog:",

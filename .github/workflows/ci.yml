@@ -40,6 +40,17 @@ jobs:
       - name: Run Vitest Tests
         run: pnpm test:unit:coverage
 
+      - name: Install Electron E2E system dependencies
+        run: sudo apt-get update && sudo apt-get install -y xvfb
+
+      - name: Run Electron E2E Tests
+        # New (first cut): the Electron app has never been exercised by
+        # Playwright's _electron on a GitHub-hosted runner before this.
+        # continue-on-error until that's confirmed a few times — flip to a
+        # real gate once it's proven stable there.
+        continue-on-error: true
+        run: xvfb-run --auto-servernum -- pnpm test:e2e
+
       - name: CRAP Score Report
         # Report-only: complexity × missing coverage, derived from the
         # coverage-final.json files the previous step just wrote. Does not

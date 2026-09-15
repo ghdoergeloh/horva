@@ -21,6 +21,7 @@
     "prepare": "husky",
     "preview:emails": "pnpm -F @horva/transactional preview",
     "test": "vitest --passWithNoTests",
+    "test:e2e": "turbo run test:e2e",
     "test:unit": "turbo run test:unit",
     "test:unit:coverage": "turbo run test:unit:coverage",
     "typecheck": "turbo run typecheck"
