@@ -21,6 +21,10 @@ pnpm lint:fix                     # Lint and auto-fix
 pnpm format                       # Check formatting
 pnpm format:fix                   # Fix formatting
 
+# Test coverage quality
+pnpm test:unit:coverage           # Run tests with coverage (enforces each package's coverage ratchet)
+pnpm crap                         # Report CRAP score (complexity × missing coverage) per function; run after test:unit:coverage
+
 # Database (requires DATABASE_URL in .env)
 pnpm db:push                      # Push schema to database
 pnpm db:generate                  # Generate migrations

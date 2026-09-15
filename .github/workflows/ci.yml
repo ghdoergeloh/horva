@@ -40,6 +40,13 @@ jobs:
       - name: Run Vitest Tests
         run: pnpm test:unit:coverage
 
+      - name: CRAP Score Report
+        # Report-only: complexity × missing coverage, derived from the
+        # coverage-final.json files the previous step just wrote. Does not
+        # gate the build (see tooling/quality/crap-score.mjs).
+        continue-on-error: true
+        run: pnpm crap
+
       - name: Collect non-empty cobertura reports
         id: cov
         run: |
