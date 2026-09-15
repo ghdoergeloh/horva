@@ -37,6 +37,16 @@ jobs:
       - name: ESLint Check
         run: pnpm lint
 
+      - name: Dependency Cruiser (circular imports)
+        run: pnpm depcruise
+
+      - name: Knip (unused files/deps/exports)
+        # Report-only for now: real findings exist (see notes/session-2026-09-15),
+        # but deciding what's safe to remove is a separate cleanup pass, not
+        # something this gate should block on yet.
+        continue-on-error: true
+        run: pnpm knip
+
       - name: Run Vitest Tests
         run: pnpm test:unit:coverage
 

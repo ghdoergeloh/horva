@@ -89,6 +89,7 @@ minimumReleaseAgeExclude:
   - lint-staged@17.2.0
   - lucide-react@1.26.0
   - eslint-plugin-sonarjs@4.2.1
+  - dependency-cruiser@18.3.1
 
 onlyBuiltDependencies:
   - "@tailwindcss/oxide"
