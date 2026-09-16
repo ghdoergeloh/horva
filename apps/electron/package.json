@@ -29,12 +29,10 @@
     "@orpc/tanstack-query": "catalog:",
     "dotenv": "catalog:",
     "i18next": "catalog:",
-    "pg": "catalog:",
     "react-i18next": "catalog:",
     "rrule": "catalog:"
   },
   "devDependencies": {
-    "@electron-toolkit/preload": "^3.0.2",
     "@electron-toolkit/utils": "^4.0.0",
     "@horva/contract": "workspace:*",
     "@horva/core": "workspace:*",
@@ -51,7 +49,6 @@
     "@tanstack/react-router": "catalog:",
     "@tanstack/router-plugin": "catalog:",
     "@types/node": "catalog:",
-    "@types/pg": "catalog:",
     "@types/react": "catalog:react19",
     "@types/react-dom": "catalog:react19",
     "@vitejs/plugin-react": "catalog:",

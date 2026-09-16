@@ -38,11 +38,9 @@
     "prettier": "catalog:",
     "react": "catalog:react19",
     "typescript": "catalog:",
-    "vitest": "catalog:",
-    "zod": "catalog:"
+    "vitest": "catalog:"
   },
   "peerDependencies": {
-    "react": "catalog:react19",
-    "zod": "catalog:"
+    "react": "catalog:react19"
   }
 }

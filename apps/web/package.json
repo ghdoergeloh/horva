@@ -27,7 +27,6 @@
     "@orpc/tanstack-query": "catalog:",
     "@tanstack/react-query": "catalog:",
     "@tanstack/react-router": "catalog:",
-    "@tanstack/react-router-devtools": "catalog:",
     "i18next": "catalog:",
     "react": "catalog:react19",
     "react-dom": "catalog:react19",
