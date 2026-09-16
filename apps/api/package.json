@@ -14,21 +14,14 @@
     "typecheck": "tsc --noEmit",
     "with-env": "dotenv -e ../../.env --"
   },
+  "prettier": "@horva/prettier-config",
   "dependencies": {
     "@hono/node-server": "catalog:",
     "@horva/auth": "workspace:*",
     "@horva/contract": "workspace:*",
     "@horva/core": "workspace:*",
     "@horva/db": "workspace:*",
-    "@opentelemetry/api": "^1.9.1",
-    "@opentelemetry/api-logs": "^0.222.0",
-    "@opentelemetry/exporter-logs-otlp-http": "^0.222.0",
-    "@opentelemetry/resources": "^2.11.0",
-    "@opentelemetry/sdk-logs": "^0.222.0",
-    "@opentelemetry/sdk-node": "^0.222.0",
-    "@opentelemetry/semantic-conventions": "^1.43.0",
     "@orpc/server": "catalog:",
-    "dotenv": "catalog:",
     "hono": "catalog:"
   },
   "devDependencies": {

@@ -36,9 +36,7 @@
   "dependencies": {
     "dotenv": "catalog:",
     "drizzle-orm": "catalog:",
-    "drizzle-zod": "catalog:",
-    "pg": "catalog:",
-    "zod": "catalog:"
+    "pg": "catalog:"
   },
   "devDependencies": {
     "@horva/eslint-config": "workspace:*",

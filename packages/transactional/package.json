@@ -31,12 +31,12 @@
     "@horva/prettier-config": "workspace:*",
     "@horva/tsconfig": "workspace:*",
     "@horva/vitest": "workspace:*",
-    "@react-email/preview-server": "^5.2.10",
+    "@react-email/ui": "6.9.5",
     "@types/node": "catalog:",
     "@types/react": "catalog:react19",
     "eslint": "catalog:",
     "prettier": "catalog:",
-    "react-email": "^6.9.5",
+    "react-email": "6.9.5",
     "typescript": "catalog:",
     "vitest": "catalog:"
   }

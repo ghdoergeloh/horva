@@ -24,10 +24,7 @@
     "SMTP_SECURE",
     "SMTP_USER",
     "SMTP_PASS",
-    "SMTP_FROM",
-    "OTEL_SERVICE_NAME",
-    "OTEL_EXPORTER_OTLP_ENDPOINT",
-    "OTEL_EXPORTER_OTLP_HEADERS"
+    "SMTP_FROM"
   ],
   "globalPassThroughEnv": ["npm_lifecycle_event"],
   "tasks": {
