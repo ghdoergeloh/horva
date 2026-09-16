@@ -15,7 +15,7 @@ import {
   sym,
 } from "../lib/display";
 
-function parsePeriod(str: string | undefined): Period {
+export function parsePeriod(str: string | undefined): Period {
   if (!str) return "today";
   const valid = ["today", "yesterday", "week", "month", "all"];
   if (valid.includes(str)) return str as Period;
