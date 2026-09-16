@@ -58,6 +58,7 @@ async function mocoFetch(
       `Moco request failed (${method} ${path}): ${
         cause instanceof Error ? cause.message : String(cause)
       }`,
+      { cause },
     );
   }
 
