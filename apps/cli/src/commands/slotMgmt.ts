@@ -23,7 +23,7 @@ import {
 } from "../lib/display.js";
 import { askChange, pickSlot, pickTask } from "../lib/pickers.js";
 
-function parseTime(timeStr: string, referenceDate?: Date): Date {
+export function parseTime(timeStr: string, referenceDate?: Date): Date {
   const base = referenceDate ? new Date(referenceDate) : new Date();
   const parts = timeStr.trim().split(/\s+/);
   // If two parts, second is a date like "2026-02-19"
@@ -38,7 +38,7 @@ function parseTime(timeStr: string, referenceDate?: Date): Date {
   return base;
 }
 
-function getPeriodRange(period: string): { from: Date; to: Date } {
+export function getPeriodRange(period: string): { from: Date; to: Date } {
   const now = new Date();
   const today = new Date(now);
   today.setHours(0, 0, 0, 0);
@@ -75,12 +75,15 @@ function getPeriodRange(period: string): { from: Date; to: Date } {
   return { from: today, to: todayEnd };
 }
 
-function slotDuration(s: { startedAt: Date; endedAt: Date | null }): number {
+export function slotDuration(s: {
+  startedAt: Date;
+  endedAt: Date | null;
+}): number {
   if (!s.endedAt) return 0;
   return Math.round((s.endedAt.getTime() - s.startedAt.getTime()) / 60000);
 }
 
-function formatSlotRow(
+export function formatSlotRow(
   s: {
     id: number;
     startedAt: Date;

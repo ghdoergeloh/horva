@@ -27,13 +27,13 @@ import {
 } from "../lib/display.js";
 import { askChange, pickProject, pickTask } from "../lib/pickers.js";
 
-function parseId(ref: string): number {
+export function parseId(ref: string): number {
   const id = parseInt(ref.replace(/^#/, ""), 10);
   if (isNaN(id)) throw new Error(`Invalid ID: ${ref}`);
   return id;
 }
 
-function parseDate(str: string): Date {
+export function parseDate(str: string): Date {
   const lower = str.toLowerCase().trim();
   const now = new Date();
   if (lower === "today") {
