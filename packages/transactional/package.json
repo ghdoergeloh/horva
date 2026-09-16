@@ -32,11 +32,11 @@
     "@horva/tsconfig": "workspace:*",
     "@horva/vitest": "workspace:*",
     "@react-email/preview-server": "^5.2.10",
-    "@types/nodemailer": "^8.0.1",
+    "@types/nodemailer": "^8.0.2",
     "@types/react": "catalog:react19",
     "eslint": "catalog:",
     "prettier": "catalog:",
-    "react-email": "^6.9.0",
+    "react-email": "^6.9.5",
     "typescript": "catalog:",
     "vitest": "catalog:"
   }
