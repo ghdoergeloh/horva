@@ -33,7 +33,6 @@
     "@horva/vitest": "workspace:*",
     "@react-email/preview-server": "^5.2.10",
     "@types/node": "catalog:",
-    "@types/nodemailer": "^8.0.1",
     "@types/react": "catalog:react19",
     "eslint": "catalog:",
     "prettier": "catalog:",
