@@ -12,5 +12,10 @@
     "emitDeclarationOnly": true,
     "outDir": "out"
   },
-  "include": ["src/renderer/**/*", "src/renderer/**/*.json"]
+  "include": [
+    "src/renderer/**/*",
+    "src/renderer/**/*.json",
+    "vitest.config.ts",
+    "vitest.setup.ts"
+  ]
 }

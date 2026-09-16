@@ -37,8 +37,36 @@ jobs:
       - name: ESLint Check
         run: pnpm lint
 
+      - name: Dependency Cruiser (circular imports)
+        run: pnpm depcruise
+
+      - name: Knip (unused files/deps/exports)
+        # Report-only for now: real findings exist (see notes/session-2026-09-15),
+        # but deciding what's safe to remove is a separate cleanup pass, not
+        # something this gate should block on yet.
+        continue-on-error: true
+        run: pnpm knip
+
       - name: Run Vitest Tests
         run: pnpm test:unit:coverage
+
+      - name: Install Electron E2E system dependencies
+        run: sudo apt-get update && sudo apt-get install -y xvfb
+
+      - name: Run Electron E2E Tests
+        # New (first cut): the Electron app has never been exercised by
+        # Playwright's _electron on a GitHub-hosted runner before this.
+        # continue-on-error until that's confirmed a few times — flip to a
+        # real gate once it's proven stable there.
+        continue-on-error: true
+        run: xvfb-run --auto-servernum -- pnpm test:e2e
+
+      - name: CRAP Score Report
+        # Report-only: complexity × missing coverage, derived from the
+        # coverage-final.json files the previous step just wrote. Does not
+        # gate the build (see tooling/quality/crap-score.mjs).
+        continue-on-error: true
+        run: pnpm crap
 
       - name: Collect non-empty cobertura reports
         id: cov
