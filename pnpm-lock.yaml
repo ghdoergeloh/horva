@@ -611,14 +611,14 @@ importers:
         version: link:../transactional
       better-auth:
         specifier: "catalog:"
-        version: 1.7.5(@opentelemetry/api@1.9.1)(@prisma/client@5.22.0(prisma@5.22.0))(drizzle-kit@0.31.10)(drizzle-orm@0.41.0(@opentelemetry/api@1.9.1)(@prisma/client@5.22.0(prisma@5.22.0))(@types/better-sqlite3@7.6.13)(@types/pg@8.20.0)(@vercel/postgres@0.10.0)(better-sqlite3@12.10.0)(kysely@0.28.17)(pg@8.22.0)(postgres@3.4.8)(prisma@5.22.0))(next@16.1.7(@babel/core@7.29.0(supports-color@7.2.0))(@opentelemetry/api@1.9.1)(@playwright/test@1.63.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0))(pg@8.22.0)(prisma@5.22.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(vitest@5.0.1)
+        version: 1.7.5(@opentelemetry/api@1.9.1)(@prisma/client@5.22.0(prisma@5.22.0))(drizzle-kit@0.31.10)(drizzle-orm@0.41.0(@opentelemetry/api@1.9.1)(@prisma/client@5.22.0(prisma@5.22.0))(@types/better-sqlite3@7.6.13)(@types/pg@8.20.0)(@vercel/postgres@0.10.0)(better-sqlite3@12.10.0)(kysely@0.28.17)(pg@8.22.0)(postgres@3.4.8)(prisma@5.22.0))(next@16.1.7(@babel/core@7.29.7(supports-color@7.2.0))(@opentelemetry/api@1.9.1)(@playwright/test@1.63.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0))(pg@8.22.0)(prisma@5.22.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(vitest@5.0.1)
       zod:
         specifier: "catalog:"
         version: 4.6.5
     devDependencies:
       "@better-auth/cli":
         specifier: "catalog:"
-        version: 1.4.21(@better-fetch/fetch@1.1.21)(@opentelemetry/api@1.9.1)(@types/better-sqlite3@7.6.13)(@vercel/postgres@0.10.0)(better-call@1.1.8(zod@4.6.5))(drizzle-kit@0.31.10)(jose@6.2.3)(kysely@0.28.17)(magicast@0.5.5)(nanostores@1.3.0)(next@16.1.7(@babel/core@7.29.0(supports-color@7.2.0))(@opentelemetry/api@1.9.1)(@playwright/test@1.63.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0))(postgres@3.4.8)(prisma@5.22.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(supports-color@7.2.0)(vitest@5.0.1)
+        version: 1.4.21(@better-fetch/fetch@1.1.21)(@opentelemetry/api@1.9.1)(@types/better-sqlite3@7.6.13)(@vercel/postgres@0.10.0)(better-call@1.1.8(zod@4.6.5))(drizzle-kit@0.31.10)(jose@6.2.3)(kysely@0.28.17)(magicast@0.5.5)(nanostores@1.3.0)(next@16.1.7(@babel/core@7.29.7(supports-color@7.2.0))(@opentelemetry/api@1.9.1)(@playwright/test@1.63.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0))(postgres@3.4.8)(prisma@5.22.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(supports-color@7.2.0)(vitest@5.0.1)
       "@horva/eslint-config":
         specifier: workspace:*
         version: link:../../tooling/eslint
@@ -773,8 +773,8 @@ importers:
         specifier: ^1.0.12
         version: 1.0.12(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
       nodemailer:
-        specifier: ^9.0.3
-        version: 9.0.3
+        specifier: ^10.0.10
+        version: 10.0.10
       react:
         specifier: catalog:react19
         version: 19.3.0
@@ -794,9 +794,9 @@ importers:
       "@react-email/preview-server":
         specifier: ^5.2.10
         version: 5.2.10(@babel/core@8.0.5)(@opentelemetry/api@1.9.1)(@playwright/test@1.63.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      "@types/nodemailer":
-        specifier: ^8.0.2
-        version: 8.0.2
+      "@types/node":
+        specifier: "catalog:"
+        version: 26.1.1
       "@types/react":
         specifier: catalog:react19
         version: 19.3.0
@@ -6090,12 +6090,6 @@ packages:
         integrity: sha512-nxAkRSVkN1Y0JC1W8ky/fTfkGsMmcrRsbx+3XoZE+rMOX71kLYTV7fLXpqud1GpbpP5TuffXFqfX7fH2GgZREw==,
       }
 
-  "@types/nodemailer@8.0.2":
-    resolution:
-      {
-        integrity: sha512-c7M5ox8p0nEOfbJ2E9Qcmt8/QCu/VzsiAhzBiZbvky2PhKZDHpKB3sQHBM5MEZNkCfBOaS6S9//AGPRTNB7IaA==,
-      }
-
   "@types/pg@8.11.6":
     resolution:
       {
@@ -10306,12 +10300,12 @@ packages:
         integrity: sha512-5WUyunoPMsvvEhS8AxHtRzP+oA8UCkJ7YRxatWKjngndhDGLiqEVAQKWjFAiAiuL8zMRGzGSJxFnLetoa43qGQ==,
       }
 
-  nodemailer@9.0.3:
+  nodemailer@10.0.10:
     resolution:
       {
-        integrity: sha512-n+YP+NKwR5zRWa60k3GiQ6Q3B4KXCoAw40dAKeCtYn020iNN74aWK2liXIC3ZEATeGql7we3tE3t8QwhY0eskw==,
+        integrity: sha512-He9XskOFms62SyAKkLu8CcGcYHAo+BSHSsORI8s4PJH8qZgZY4L4lDfvyN0twvmbpyG+eGrxpyBlskj9d9rJ8A==,
       }
-    engines: { node: ">=6.0.0" }
+    engines: { node: ">=20.0.0" }
 
   nopt@9.0.0:
     resolution:
@@ -10403,12 +10397,6 @@ packages:
     resolution:
       {
         integrity: sha512-PX1wu0AmAdPqOL1mWhqmlOd8kOIZQwGZw6rh7uby9fTc5lhaOWFLX3I6R1hrF9k3zUY40e6igsLGkDXK92LJNg==,
-      }
-
-  obug@2.1.1:
-    resolution:
-      {
-        integrity: sha512-uTqF9MuPraAQ+IsnPf366RG4cP9RtUi7MLO1N3KEc+wb0a6yKpeL0lmk2IB1jY5KHPAlTc6T/JRdC/YqxHNwkQ==,
       }
 
   obug@2.2.1:
@@ -12944,7 +12932,7 @@ snapshots:
       gensync: 1.0.0-beta.2
       import-meta-resolve: 4.2.0
       json5: 2.2.3
-      obug: 2.1.1
+      obug: 2.2.1
       verkit: 0.3.2
 
   "@babel/generator@7.29.1":
@@ -13267,7 +13255,7 @@ snapshots:
       "@babel/parser": 8.0.5
       "@babel/template": 8.0.0
       "@babel/types": 8.0.5
-      obug: 2.1.1
+      obug: 2.2.1
 
   "@babel/types@7.29.0":
     dependencies:
@@ -13286,7 +13274,7 @@ snapshots:
 
   "@bcoe/v8-coverage@1.0.2": {}
 
-  "@better-auth/cli@1.4.21(@better-fetch/fetch@1.1.21)(@opentelemetry/api@1.9.1)(@types/better-sqlite3@7.6.13)(@vercel/postgres@0.10.0)(better-call@1.1.8(zod@4.6.5))(drizzle-kit@0.31.10)(jose@6.2.3)(kysely@0.28.17)(magicast@0.5.5)(nanostores@1.3.0)(next@16.1.7(@babel/core@7.29.0(supports-color@7.2.0))(@opentelemetry/api@1.9.1)(@playwright/test@1.63.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0))(postgres@3.4.8)(prisma@5.22.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(supports-color@7.2.0)(vitest@5.0.1)":
+  "@better-auth/cli@1.4.21(@better-fetch/fetch@1.1.21)(@opentelemetry/api@1.9.1)(@types/better-sqlite3@7.6.13)(@vercel/postgres@0.10.0)(better-call@1.1.8(zod@4.6.5))(drizzle-kit@0.31.10)(jose@6.2.3)(kysely@0.28.17)(magicast@0.5.5)(nanostores@1.3.0)(next@16.1.7(@babel/core@7.29.7(supports-color@7.2.0))(@opentelemetry/api@1.9.1)(@playwright/test@1.63.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0))(postgres@3.4.8)(prisma@5.22.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(supports-color@7.2.0)(vitest@5.0.1)":
     dependencies:
       "@babel/core": 7.29.0(supports-color@7.2.0)
       "@babel/preset-react": 7.28.5(@babel/core@7.29.0(supports-color@7.2.0))(supports-color@7.2.0)
@@ -13298,7 +13286,7 @@ snapshots:
       "@mrleebo/prisma-ast": 0.13.1
       "@prisma/client": 5.22.0(prisma@5.22.0)
       "@types/pg": 8.20.0
-      better-auth: 1.4.21(@prisma/client@5.22.0(prisma@5.22.0))(better-sqlite3@12.10.0)(drizzle-kit@0.31.10)(drizzle-orm@0.41.0(@opentelemetry/api@1.9.1)(@prisma/client@5.22.0(prisma@5.22.0))(@types/better-sqlite3@7.6.13)(@types/pg@8.20.0)(@vercel/postgres@0.10.0)(better-sqlite3@12.10.0)(kysely@0.28.17)(pg@8.22.0)(postgres@3.4.8)(prisma@5.22.0))(next@16.1.7(@babel/core@7.29.0(supports-color@7.2.0))(@opentelemetry/api@1.9.1)(@playwright/test@1.63.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0))(pg@8.22.0)(prisma@5.22.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(vitest@5.0.1)
+      better-auth: 1.4.21(@prisma/client@5.22.0(prisma@5.22.0))(better-sqlite3@12.10.0)(drizzle-kit@0.31.10)(drizzle-orm@0.41.0(@opentelemetry/api@1.9.1)(@prisma/client@5.22.0(prisma@5.22.0))(@types/better-sqlite3@7.6.13)(@types/pg@8.20.0)(@vercel/postgres@0.10.0)(better-sqlite3@12.10.0)(kysely@0.28.17)(pg@8.22.0)(postgres@3.4.8)(prisma@5.22.0))(next@16.1.7(@babel/core@7.29.7(supports-color@7.2.0))(@opentelemetry/api@1.9.1)(@playwright/test@1.63.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0))(pg@8.22.0)(prisma@5.22.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(vitest@5.0.1)
       better-sqlite3: 12.10.0
       c12: 3.3.4(magicast@0.5.5)
       chalk: 5.6.2
@@ -14628,7 +14616,7 @@ snapshots:
 
   "@jridgewell/gen-mapping@0.3.13":
     dependencies:
-      "@jridgewell/sourcemap-codec": 1.5.5
+      "@jridgewell/sourcemap-codec": 1.6.0
       "@jridgewell/trace-mapping": 0.3.31
 
   "@jridgewell/gen-mapping@0.4.0-beta.0":
@@ -14656,7 +14644,7 @@ snapshots:
   "@jridgewell/trace-mapping@0.3.31":
     dependencies:
       "@jridgewell/resolve-uri": 3.1.2
-      "@jridgewell/sourcemap-codec": 1.5.5
+      "@jridgewell/sourcemap-codec": 1.6.0
 
   "@js-sdsl/ordered-map@4.4.2": {}
 
@@ -15775,10 +15763,6 @@ snapshots:
     dependencies:
       undici-types: 8.3.0
 
-  "@types/nodemailer@8.0.2":
-    dependencies:
-      "@types/node": 26.1.1
-
   "@types/pg@8.11.6":
     dependencies:
       "@types/node": 26.1.1
@@ -16286,7 +16270,7 @@ snapshots:
 
   baseline-browser-mapping@2.10.30: {}
 
-  better-auth@1.4.21(@prisma/client@5.22.0(prisma@5.22.0))(better-sqlite3@12.10.0)(drizzle-kit@0.31.10)(drizzle-orm@0.41.0(@opentelemetry/api@1.9.1)(@prisma/client@5.22.0(prisma@5.22.0))(@types/better-sqlite3@7.6.13)(@types/pg@8.20.0)(@vercel/postgres@0.10.0)(better-sqlite3@12.10.0)(kysely@0.28.17)(pg@8.22.0)(postgres@3.4.8)(prisma@5.22.0))(next@16.1.7(@babel/core@7.29.0(supports-color@7.2.0))(@opentelemetry/api@1.9.1)(@playwright/test@1.63.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0))(pg@8.22.0)(prisma@5.22.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(vitest@5.0.1):
+  better-auth@1.4.21(@prisma/client@5.22.0(prisma@5.22.0))(better-sqlite3@12.10.0)(drizzle-kit@0.31.10)(drizzle-orm@0.41.0(@opentelemetry/api@1.9.1)(@prisma/client@5.22.0(prisma@5.22.0))(@types/better-sqlite3@7.6.13)(@types/pg@8.20.0)(@vercel/postgres@0.10.0)(better-sqlite3@12.10.0)(kysely@0.28.17)(pg@8.22.0)(postgres@3.4.8)(prisma@5.22.0))(next@16.1.7(@babel/core@7.29.7(supports-color@7.2.0))(@opentelemetry/api@1.9.1)(@playwright/test@1.63.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0))(pg@8.22.0)(prisma@5.22.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(vitest@5.0.1):
     dependencies:
       "@better-auth/core": 1.4.21(@better-auth/utils@0.3.0)(@better-fetch/fetch@1.1.21)(better-call@1.1.8(zod@4.6.5))(jose@6.2.3)(kysely@0.28.17)(nanostores@1.3.0)
       "@better-auth/telemetry": 1.4.21(@better-auth/core@1.4.21(@better-auth/utils@0.3.0)(@better-fetch/fetch@1.1.21)(better-call@1.1.8(zod@4.6.5))(jose@6.2.3)(kysely@0.28.17)(nanostores@1.3.0))
@@ -16305,14 +16289,14 @@ snapshots:
       better-sqlite3: 12.10.0
       drizzle-kit: 0.31.10
       drizzle-orm: 0.41.0(@opentelemetry/api@1.9.1)(@prisma/client@5.22.0(prisma@5.22.0))(@types/better-sqlite3@7.6.13)(@types/pg@8.20.0)(@vercel/postgres@0.10.0)(better-sqlite3@12.10.0)(kysely@0.28.17)(pg@8.22.0)(postgres@3.4.8)(prisma@5.22.0)
-      next: 16.1.7(@babel/core@7.29.0(supports-color@7.2.0))(@opentelemetry/api@1.9.1)(@playwright/test@1.63.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
+      next: 16.1.7(@babel/core@7.29.7(supports-color@7.2.0))(@opentelemetry/api@1.9.1)(@playwright/test@1.63.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
       pg: 8.22.0
       prisma: 5.22.0
       react: 19.3.0
       react-dom: 19.3.0(react@19.3.0)
       vitest: 5.0.1(@opentelemetry/api@1.9.1)(@types/node@26.1.1)(@vitest/coverage-istanbul@5.0.1)(@vitest/coverage-v8@5.0.1)(jsdom@30.0.1(@noble/hashes@2.2.0))(vite@8.3.0(@types/node@26.1.1)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.46.0)(tsx@4.23.13)(yaml@2.9.0))
 
-  better-auth@1.7.5(@opentelemetry/api@1.9.1)(@prisma/client@5.22.0(prisma@5.22.0))(drizzle-kit@0.31.10)(drizzle-orm@0.41.0(@opentelemetry/api@1.9.1)(@prisma/client@5.22.0(prisma@5.22.0))(@types/better-sqlite3@7.6.13)(@types/pg@8.20.0)(@vercel/postgres@0.10.0)(better-sqlite3@12.10.0)(kysely@0.28.17)(pg@8.22.0)(postgres@3.4.8)(prisma@5.22.0))(next@16.1.7(@babel/core@7.29.0(supports-color@7.2.0))(@opentelemetry/api@1.9.1)(@playwright/test@1.63.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0))(pg@8.22.0)(prisma@5.22.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(vitest@5.0.1):
+  better-auth@1.7.5(@opentelemetry/api@1.9.1)(@prisma/client@5.22.0(prisma@5.22.0))(drizzle-kit@0.31.10)(drizzle-orm@0.41.0(@opentelemetry/api@1.9.1)(@prisma/client@5.22.0(prisma@5.22.0))(@types/better-sqlite3@7.6.13)(@types/pg@8.20.0)(@vercel/postgres@0.10.0)(better-sqlite3@12.10.0)(kysely@0.28.17)(pg@8.22.0)(postgres@3.4.8)(prisma@5.22.0))(next@16.1.7(@babel/core@7.29.7(supports-color@7.2.0))(@opentelemetry/api@1.9.1)(@playwright/test@1.63.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0))(pg@8.22.0)(prisma@5.22.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(vitest@5.0.1):
     dependencies:
       "@better-auth/core": 1.7.5(@better-auth/utils@0.4.2)(@better-fetch/fetch@1.3.2)(@opentelemetry/api@1.9.1)(better-call@1.4.0(zod@4.6.5))(jose@6.2.3)(kysely@0.28.17)(nanostores@1.3.0)
       "@better-auth/drizzle-adapter": 1.7.5(@better-auth/core@1.7.5(@better-auth/utils@0.4.2)(@better-fetch/fetch@1.3.2)(@opentelemetry/api@1.9.1)(better-call@1.4.0(zod@4.6.5))(jose@6.2.3)(kysely@0.28.17)(nanostores@1.3.0))(@better-auth/utils@0.4.2)(drizzle-orm@0.41.0(@opentelemetry/api@1.9.1)(@prisma/client@5.22.0(prisma@5.22.0))(@types/better-sqlite3@7.6.13)(@types/pg@8.20.0)(@vercel/postgres@0.10.0)(better-sqlite3@12.10.0)(kysely@0.28.17)(pg@8.22.0)(postgres@3.4.8)(prisma@5.22.0))
@@ -16335,7 +16319,7 @@ snapshots:
       "@prisma/client": 5.22.0(prisma@5.22.0)
       drizzle-kit: 0.31.10
       drizzle-orm: 0.41.0(@opentelemetry/api@1.9.1)(@prisma/client@5.22.0(prisma@5.22.0))(@types/better-sqlite3@7.6.13)(@types/pg@8.20.0)(@vercel/postgres@0.10.0)(better-sqlite3@12.10.0)(kysely@0.28.17)(pg@8.22.0)(postgres@3.4.8)(prisma@5.22.0)
-      next: 16.1.7(@babel/core@7.29.0(supports-color@7.2.0))(@opentelemetry/api@1.9.1)(@playwright/test@1.63.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
+      next: 16.1.7(@babel/core@7.29.7(supports-color@7.2.0))(@opentelemetry/api@1.9.1)(@playwright/test@1.63.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
       pg: 8.22.0
       prisma: 5.22.0
       react: 19.3.0
@@ -18414,7 +18398,7 @@ snapshots:
 
   negotiator@0.6.3: {}
 
-  next@16.1.7(@babel/core@7.29.0(supports-color@7.2.0))(@opentelemetry/api@1.9.1)(@playwright/test@1.63.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0):
+  next@16.1.7(@babel/core@7.29.7(supports-color@7.2.0))(@opentelemetry/api@1.9.1)(@playwright/test@1.63.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0):
     dependencies:
       "@next/env": 16.1.7
       "@swc/helpers": 0.5.15
@@ -18423,7 +18407,7 @@ snapshots:
       postcss: 8.4.31
       react: 19.3.0
       react-dom: 19.3.0(react@19.3.0)
-      styled-jsx: 5.1.6(@babel/core@7.29.0(supports-color@7.2.0))(react@19.3.0)
+      styled-jsx: 5.1.6(@babel/core@7.29.7(supports-color@7.2.0))(react@19.3.0)
     optionalDependencies:
       "@next/swc-darwin-arm64": 16.1.7
       "@next/swc-darwin-x64": 16.1.7
@@ -18506,7 +18490,7 @@ snapshots:
 
   node-releases@2.0.44: {}
 
-  nodemailer@9.0.3: {}
+  nodemailer@10.0.10: {}
 
   nopt@9.0.0:
     dependencies:
@@ -18566,8 +18550,6 @@ snapshots:
 
   obuf@1.1.2:
     optional: true
-
-  obug@2.1.1: {}
 
   obug@2.2.1: {}
 
@@ -19569,12 +19551,12 @@ snapshots:
 
   stubborn-utils@1.0.2: {}
 
-  styled-jsx@5.1.6(@babel/core@7.29.0(supports-color@7.2.0))(react@19.3.0):
+  styled-jsx@5.1.6(@babel/core@7.29.7(supports-color@7.2.0))(react@19.3.0):
     dependencies:
       client-only: 0.0.1
       react: 19.3.0
     optionalDependencies:
-      "@babel/core": 7.29.0(supports-color@7.2.0)
+      "@babel/core": 7.29.7(supports-color@7.2.0)
     optional: true
 
   styled-jsx@5.1.6(@babel/core@8.0.5)(react@19.3.0):
