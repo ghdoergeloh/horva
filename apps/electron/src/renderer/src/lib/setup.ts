@@ -2,13 +2,13 @@
 // first-launch bootstrap; once setup is complete the renderer talks to the
 // main process exclusively via oRPC.
 
-export interface SetupStatus {
+interface SetupStatus {
   ready: boolean;
   error: string | null;
   defaults: { databaseUrl: string };
 }
 
-export interface CompleteSetupInput {
+interface CompleteSetupInput {
   name: string;
   databaseUrl: string;
 }

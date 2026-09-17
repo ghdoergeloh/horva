@@ -12,7 +12,7 @@ const DEFAULT_DATABASE_URL =
   "postgresql://postgres:postgres@localhost:5432/horva";
 const LOCAL_USER_EMAIL_SUFFIX = "@horva.local";
 
-export interface SetupStatus {
+interface SetupStatus {
   ready: boolean;
   error: string | null;
   defaults: {
@@ -20,7 +20,7 @@ export interface SetupStatus {
   };
 }
 
-export interface CompleteSetupInput {
+interface CompleteSetupInput {
   name: string;
   databaseUrl: string;
 }
@@ -33,10 +33,6 @@ export interface CompleteSetupInput {
  */
 let isReady = false;
 let bootError: string | null = null;
-
-export function isSetupReady(): boolean {
-  return isReady;
-}
 
 export function markReady(): void {
   isReady = true;

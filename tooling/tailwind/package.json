@@ -16,7 +16,6 @@
   "prettier": "@horva/prettier-config",
   "dependencies": {
     "@tailwindcss/postcss": "catalog:",
-    "postcss": "catalog:",
     "tailwindcss": "catalog:",
     "tailwindcss-animate": "^1.0.7",
     "tailwindcss-react-aria-components": "^2.2.0"

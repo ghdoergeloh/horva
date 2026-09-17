@@ -1,10 +1,8 @@
 import { input, select, Separator } from "@inquirer/prompts";
 
 import {
-  createLabel,
   createProject,
   createTask,
-  listLabels,
   listProjects,
   listSlots,
   listTasks,
@@ -121,7 +119,7 @@ export async function pickTask(
   return result;
 }
 
-export async function createProjectInline(
+async function createProjectInline(
   db: Db,
   prefill?: { name?: string; color?: string },
 ): Promise<number> {
@@ -146,30 +144,6 @@ export async function pickProject(db: Db, message: string): Promise<number> {
 
   const result = await select({ message, choices });
   if (result === -1) return createProjectInline(db);
-  return result;
-}
-
-export async function createLabelInline(
-  db: Db,
-  prefill?: { name?: string },
-): Promise<number> {
-  const name = prefill?.name ?? (await input({ message: "Label name:" }));
-  const label = await createLabel(db, name);
-  return label.id;
-}
-
-export async function pickLabel(db: Db, message: string): Promise<number> {
-  const labels = await listLabels(db);
-  const choices: { name: string; value: number }[] = labels.map((l) => ({
-    name: l.name,
-    value: l.id,
-  }));
-  choices.push({ name: "Create new label...", value: -1 });
-
-  if (choices.length === 1) return createLabelInline(db);
-
-  const result = await select({ message, choices });
-  if (result === -1) return createLabelInline(db);
   return result;
 }
 
@@ -214,11 +188,4 @@ export async function askChange(
   }
 
   return select({ message: label, choices });
-}
-
-export async function promptOptionalString(
-  message: string,
-  defaultValue: string,
-): Promise<string> {
-  return input({ message, default: defaultValue });
 }

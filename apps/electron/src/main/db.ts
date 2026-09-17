@@ -29,4 +29,3 @@ if (!process.env["DATABASE_URL"]) {
 }
 
 export { db } from "@horva/db/client";
-export type { Db } from "@horva/db/client";

@@ -42,7 +42,7 @@ export function formatDuration(minutes: number): string {
   return `${h}:${String(m).padStart(2, "0")}h`;
 }
 
-export function formatDurationMs(ms: number): string {
+function formatDurationMs(ms: number): string {
   return formatDuration(Math.round(ms / 60000));
 }
 

@@ -26,7 +26,7 @@ pnpm test:unit:coverage           # Run tests with coverage (enforces each packa
 pnpm crap                         # Report CRAP score (complexity × missing coverage) per function; run after test:unit:coverage
 pnpm test:e2e                     # Playwright E2E (currently: apps/electron smoke test)
 pnpm depcruise                    # Check for circular imports (apps + packages)
-pnpm knip                         # Report unused files/dependencies/exports (report-only, not a gate)
+pnpm knip                         # Report unused files/dependencies/exports (CI gate)
 
 # Database (requires DATABASE_URL in .env)
 pnpm db:push                      # Push schema to database
