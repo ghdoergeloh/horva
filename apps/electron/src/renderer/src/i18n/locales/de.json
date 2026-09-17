@@ -255,7 +255,8 @@
     "from": "Von",
     "until": "Bis",
     "time": "Zeit",
-    "task": "Task"
+    "task": "Task",
+    "addEntry": "Eintrag hinzufügen"
   },
   "loading": "Laden…",
   "language": {

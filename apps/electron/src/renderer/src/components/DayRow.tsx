@@ -196,15 +196,16 @@ export function DayRow({
       {/* Expanded panel */}
       {expanded && (
         <div className="pb-3">
-          {slots.length === 0 ? (
-            <p className="text-muted-foreground/70 px-4 text-sm">
-              {t("slot.noEntries")}
-            </p>
-          ) : viewMode === "tasks" ? (
+          {viewMode === "tasks" ? (
             <TaskSummaryView slots={slots} />
           ) : (
             <div className="px-4">
-              <LogTable slots={slots} allTasks={allTasks} hideGaps={hideGaps} />
+              <LogTable
+                slots={slots}
+                allTasks={allTasks}
+                referenceDate={date}
+                hideGaps={hideGaps}
+              />
             </div>
           )}
         </div>
