@@ -113,6 +113,20 @@ Write English that is easy to read for people who did not grow up with the langu
 
 Do not translate code, identifiers, file paths, log output, or error messages — quote them exactly as they are.
 
+## Code Comments
+
+Comments are written in the same plain English as everything above.
+
+Write only comments that increase maintainability — on public methods and module exports, and on non-obvious code blocks. A comment describes the current state and purpose. It must be change-independent: do not describe what the code was before, why it was changed, or how it relates to a previous version. Keep them short.
+
+```ts
+// Bad: describes a change, and is stale the moment someone reads it
+// Switched from useEffect to useMemo because the list kept flickering.
+
+// Good: describes what holds now
+// Memoised: the parent rerenders on every timer tick.
+```
+
 ## Post-Change Quality Checks
 
 After making any code changes, always run the following checks on affected packages before considering the task done:
