@@ -1,139 +1,34 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+Instructions for Claude Code in this repository.
 
-## Commands
+Keep this file short. It holds rules that cannot be read off the code, and nothing else — no architecture tour, no command list, no restating of what the configs already say. Repository overviews measurably do not help an agent and cost tokens on every request ([arXiv:2602.11988](https://arxiv.org/abs/2602.11988)). Anything an agent can find by reading the repo belongs in the repo, and `README.md` / `CONTRIBUTING.md` carry the prose for humans.
 
-```bash
-# Development
-pnpm dev                          # Start all apps/packages in watch mode (Turbo)
-pnpm -F @horva/api dev             # Start only the API
-pnpm -F react dev                 # Start only the React frontend
+## Repository Rules
 
-# Build & Type Check
-pnpm build                        # Build all workspaces
-pnpm typecheck                    # Type-check all workspaces
-pnpm -F @horva/db build            # Build a single package (use -F <package-name>)
+- Business logic lives in `packages/core/src/services/*`. Handlers and routes only wire things up.
+- A new API endpoint starts in `packages/contract/src/index.ts`, then a handler in `packages/core/src/handlers/`, then one line in `apps/api/src/router.ts`.
+- Dependency versions come from the `pnpm-workspace.yaml` catalogs. Write `catalog:` (or `catalog:react19`) in `package.json`, never a literal version.
+- `pnpm -F <pkg> pack` runs pnpm's builtin pack command, not the package script. Use `pnpm --filter <pkg> run pack`.
+- After changing the better-auth config, run `pnpm -F @horva/auth generate` to regenerate `packages/db/src/schema/auth-schema.ts`.
+- Scaffold a package with `pnpm turbo gen init`, a UI component with `pnpm -F @horva/ui ui-add`.
 
-# Lint & Format
-pnpm lint                         # Lint all workspaces
-pnpm lint:fix                     # Lint and auto-fix
-pnpm format                       # Check formatting
-pnpm format:fix                   # Fix formatting
+## Styling
 
-# Test coverage & quality
-pnpm test:unit:coverage           # Run tests with coverage (enforces each package's coverage ratchet)
-pnpm crap                         # Report CRAP score (complexity × missing coverage) per function; run after test:unit:coverage
-pnpm test:e2e                     # Playwright E2E (currently: apps/electron smoke test)
-pnpm depcruise                    # Check for circular imports (apps + packages)
-pnpm knip                         # Report unused files/dependencies/exports (CI gate)
+Use semantic tokens (`bg-primary`, `text-foreground`, `border-border`, …), never raw palette colors (`bg-gray-*`, `text-indigo-*`, …). Tokens carry dark mode behaviour, raw palettes do not. The tokens are the variables in `tooling/tailwind/theme.css`.
 
-# Database (requires DATABASE_URL in .env)
-pnpm db:push                      # Push schema to database
-pnpm db:generate                  # Generate migrations
-pnpm db:migrate                   # Run migrations
-pnpm db:studio                    # Open Drizzle Studio
-
-# Auth schema (after changing better-auth config)
-pnpm -F @horva/auth generate       # Regenerate auth tables into packages/db/src/schema/auth-schema.ts
-
-# Docker (PostgreSQL + Mailpit)
-docker compose up -d              # Start local services
-
-# Scaffold a new package
-pnpm turbo gen init               # Interactive generator for new packages
-
-# Add UI components (shadcn-style)
-pnpm -F @horva/ui ui-add           # Add a new UI component
-```
-
-## Architecture
-
-This is a **pnpm monorepo** with **Turborepo** for build orchestration. All packages use ESM (`"type": "module"`) and strict TypeScript.
-
-### Workspaces
-
-- **`apps/api`** - Hono REST API with oRPC handlers. Runs on port 3000. Entry: `src/index.ts` -> `src/app.ts` -> `src/router.ts`.
-- **`apps/electron`** - Electron desktop app. `src/main` runs the Node side (DB access, IPC handlers), `src/renderer` is the Vite + React 19 + TanStack Router/Query frontend. Path alias: `~/` maps to `src/renderer/src/`.
-- **`apps/cli`** - Commander-based CLI application. Invokes `@horva/core` services directly against a local database.
-- **`packages/contract`** - oRPC contract defining the API schema with Zod. Shared between API (implements via `@horva/core` handlers) and future web frontend (consumes as client).
-- **`packages/auth`** - better-auth configuration with email/password. Uses Drizzle adapter with PostgreSQL. Exports `./auth` (server) and `./client` (browser).
-- **`packages/db`** - Drizzle ORM + PostgreSQL (node-postgres). Exports `./client` (db instance), `./schema` (table definitions). Uses `with-env` script (`dotenv -e ../../.env --`) to load root `.env`.
-- **`packages/core`** - Shared business logic and transport-agnostic oRPC handlers. Services in `src/services/*` do the actual work; handlers in `src/handlers/*` wrap them with `{ input, context: { db, session } }` so both the HTTP API and the Electron IPC transport can mount the same functions. Also exposes `./config` for the shared `$XDG_CONFIG_HOME/horva/config.json` schema.
-- **`packages/ui`** - React Aria Components with Tailwind CSS and class-variance-authority. Shadcn-compatible CLI for adding components.
-- **`tooling/*`** - Shared configs for ESLint, Prettier, TypeScript, Tailwind, Vitest.
-
-### Data Flow
-
-The **contract** package is central: `packages/contract` defines the API shape -> `@horva/core/handlers` implements it as transport-agnostic functions -> `apps/api` mounts them over HTTP via `@orpc/server` -> the Electron renderer (eventually) and any future web frontend consume them via `@orpc/client` + `@orpc/react-query`. This gives end-to-end type safety across every client.
-
-When adding a new API endpoint:
-
-1. Define the route in `packages/contract/src/index.ts` (schema + method + path)
-2. Implement the handler in `packages/core/src/handlers/<section>.ts`
-3. Wire it into `apps/api/src/router.ts` (one line)
-4. Consumers pick it up with full type inference
-
-### Key Conventions
-
-- **Imports**: Auto-sorted by Prettier — order is: types, react, third-party, `@horva/*` workspace packages, local (`~/`, `../`, `./`). Tailwind classes sorted in `cn()` and `cva()` calls.
-- **TypeScript**: Strict mode with `noUncheckedIndexedAccess`, `verbatimModuleSyntax` (use `import type` for type-only imports). Base config in `tooling/typescript/base.json`.
-- **ESLint**: Flat config (v9). Configs exported from `tooling/eslint` as `./base`, `./react`. Route files in the Electron renderer's `src/routes/` have `react-refresh/only-export-components` disabled.
-- **Dependencies**: Versions centralized in `pnpm-workspace.yaml` catalogs. Use `catalog:` or `catalog:react19` in package.json version fields.
-- **Commits**: Conventional commits enforced via commitlint + husky pre-commit hook (lint-staged runs Prettier on staged files).
-- **Package exports**: Workspace packages use conditional exports with `types` + `default` fields pointing to `dist/` and `src/` respectively.
-
-### Environment
-
-- Node.js ^24.13.0, pnpm ^10.28.2
-- `.env` at repo root (copy from `.env.example`): `DATABASE_URL`, `BETTER_AUTH_SECRET`, `BETTER_AUTH_URL`, `API_PORT`, `VITE_API_URL`
-- Docker Compose provides PostgreSQL and Mailpit
-
-### Theming & Tailwind
-
-Design tokens live in `tooling/tailwind/theme.css` (CSS variables + `@theme inline` + class‑based `dark` variant). `packages/ui` and all apps consume them via `@repo/tailwind-config/theme`.
-
-**Hard rule for all UI code: use semantic tokens (`bg-primary`, `text-foreground`, `border-border`, …), never raw Tailwind palette colors (`bg-gray-*`, `text-indigo-*`, …).** Tokens carry dark‑mode behaviour; raw palettes don't. The available tokens are the variables declared in `theme.css`.
-
-For wiring Tailwind into a new app, adding new tokens, or fixing missing‑class / dark‑mode‑flash issues, see the `tailwind-app-setup` skill.
+For wiring Tailwind into a new app, adding tokens, or missing-class and dark-mode-flash problems, use the `tailwind-app-setup` skill.
 
 ## Language on GitHub
 
-**Everything that ends up on GitHub is written in English, always.** This covers pull request titles and descriptions, issue titles and bodies, review comments and replies, commit messages, and release notes.
+Everything that ends up on GitHub is English: pull request titles and descriptions, issues, review comments and replies, commit messages, release notes. This holds whatever language the conversation with Claude is in.
 
-This holds no matter what language the conversation with Claude is in. A chat in German still produces an English pull request — translate the content, do not switch the language of the output.
-
-Write English that is easy to read for people who did not grow up with the language:
-
-- Short sentences. One idea per sentence.
-- Common words instead of rare ones: "use" over "leverage", "start" over "initiate", "about" over "regarding".
-- No idioms, no slang, no metaphors, no references that only make sense in one country ("out of the box", "low-hanging fruit", "ballpark", "cut corners").
-- Spell out an abbreviation the first time it appears, unless it is a well-known technical term (API, CI, PR).
-- Prefer the active voice and a plain structure: what changed, why, what to watch out for.
-
-Do not translate code, identifiers, file paths, log output, or error messages — quote them exactly as they are.
+Write plain English for readers who do not speak it as a first language: short sentences, common words, no idioms, no slang, no references that only make sense in one country, abbreviations spelled out on first use. Never translate code, identifiers, paths, log output or error messages.
 
 ## Code Comments
 
-Comments are written in the same plain English as everything above.
+Same plain English. Write only comments that increase maintainability — on public methods and module exports, and on non-obvious code blocks. A comment describes the current state and purpose. It must be change-independent: do not describe what the code was before, why it was changed, or how it relates to a previous version. Keep them short.
 
-Write only comments that increase maintainability — on public methods and module exports, and on non-obvious code blocks. A comment describes the current state and purpose. It must be change-independent: do not describe what the code was before, why it was changed, or how it relates to a previous version. Keep them short.
+## Before Calling a Task Done
 
-```ts
-// Bad: describes a change, and is stale the moment someone reads it
-// Switched from useEffect to useMemo because the list kept flickering.
-
-// Good: describes what holds now
-// Memoised: the parent rerenders on every timer tick.
-```
-
-## Post-Change Quality Checks
-
-After making any code changes, always run the following checks on affected packages before considering the task done:
-
-1. **Format**: `pnpm format` — apply Prettier formatting across the workspace
-2. **Lint**: `pnpm --filter <package> lint` — run ESLint on each changed package
-3. **Typecheck**: `pnpm --filter <package> typecheck` — verify TypeScript types on each changed package
-4. **Unit tests**: `pnpm --filter <package> test:unit` — run unit tests on each changed package
-
-Use `pnpm lint`, `pnpm typecheck` and `pnpm build` for workspace-wide verification when changes span multiple packages. Fix any errors before marking the task complete.
+Run `pnpm format`, then `lint`, `typecheck` and `test:unit` for every changed package (`pnpm --filter <package> <script>`), or the workspace-wide scripts when a change spans packages. Fix what they report.
