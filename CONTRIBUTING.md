@@ -105,7 +105,7 @@ pnpm -F @horva/db typecheck
 - **Comments** should explain _why_, not _what_. Most code doesn't need them.
 - **UI changes** should be verified in a running dev server, not just by passing typecheck.
 
-See [`CLAUDE.md`](./CLAUDE.md) for a deeper tour of conventions.
+See [`AGENTS.md`](./AGENTS.md) for the rules coding agents follow here — they apply to human contributors just as well.
 
 ## Commit messages
 

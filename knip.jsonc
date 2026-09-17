@@ -13,8 +13,8 @@
       // `orpc` (the tanstack-query utils bridge) and the `initOrpc` it depends
       // on are unused by any current component - every call site still talks
       // to the API via raw `client.x()` calls. Kept as the documented,
-      // eventual `@orpc/react-query` entry point (see root CLAUDE.md's Data
-      // Flow section) rather than deleted and re-added later.
+      // eventual `@orpc/react-query` entry point (see the Architecture
+      // section of the README) rather than deleted and re-added later.
       "entry": ["src/renderer/src/lib/orpc.ts"],
     },
     "apps/web": {
