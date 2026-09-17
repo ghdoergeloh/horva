@@ -1,5 +1,8 @@
 import React, { useState } from "react";
+import { Plus } from "lucide-react";
 import { useTranslation } from "react-i18next";
+
+import { Button } from "@horva/ui/Button";
 
 import { FormattedMs } from "~/components/FormattedMinutes.js";
 import { InlineNewSlotRow } from "~/components/InlineNewSlotRow.js";
@@ -29,10 +32,13 @@ interface TaskOption {
 export function LogTable({
   slots,
   allTasks,
+  referenceDate,
   hideGaps = false,
 }: {
   slots: SlotRow[];
   allTasks: TaskOption[];
+  /** The day this table belongs to – new slots are created on this date. */
+  referenceDate: Date;
   hideGaps?: boolean;
 }) {
   const { t } = useTranslation();
@@ -40,8 +46,6 @@ export function LogTable({
   const [insertingAfterIndex, setInsertingAfterIndex] = useState<number | null>(
     null,
   );
-
-  const referenceDate = slots[0] ? new Date(slots[0].startedAt) : new Date();
 
   function openInsert(afterIndex: number) {
     setEditingId(null);
@@ -92,6 +96,26 @@ export function LogTable({
   }
 
   const totalSlots = slotIndex;
+
+  // An empty day has no rows to hover, so the hidden InsertSeparatorRow would
+  // be a dead end – offer a visible entry point instead.
+  if (totalSlots === 0 && insertingAfterIndex !== -1) {
+    return (
+      <div className="flex items-center gap-3">
+        <p className="text-muted-foreground/70 text-sm">
+          {t("slot.noEntries")}
+        </p>
+        <Button
+          variant="secondary"
+          onPress={() => openInsert(-1)}
+          className="h-7 gap-1.5 px-2.5 text-xs"
+        >
+          <Plus className="h-3.5 w-3.5" />
+          {t("logTable.addEntry")}
+        </Button>
+      </div>
+    );
+  }
 
   return (
     <table className="w-full text-sm">
@@ -165,16 +189,6 @@ export function LogTable({
             </React.Fragment>
           );
         })}
-
-        {totalSlots > 0 && insertingAfterIndex === totalSlots - 1
-          ? null
-          : totalSlots === 0 && (
-              <>
-                {insertingAfterIndex === -1 ? null : (
-                  <InsertSeparatorRow onInsert={() => openInsert(-1)} />
-                )}
-              </>
-            )}
       </tbody>
     </table>
   );
