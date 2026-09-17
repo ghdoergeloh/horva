@@ -1,8 +1,6 @@
 # AGENTS.md
 
-Instructions for coding agents working in this repository.
-
-Keep this file short. It holds rules that cannot be read off the code, and nothing else — no architecture tour, no command list, no restating of what the configs already say. Repository overviews measurably do not help an agent and cost tokens on every request ([arXiv:2602.11988](https://arxiv.org/abs/2602.11988)). Anything an agent can find by reading the repo belongs in the repo, and `README.md` / `CONTRIBUTING.md` carry the prose for humans.
+Instructions for coding agents in this repository. Only rules that cannot be read off the code belong here. Overviews, command lists and anything the configs already enforce go in `README.md` or `CONTRIBUTING.md`.
 
 ## Repository Rules
 
