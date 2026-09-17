@@ -1,9 +1,1 @@
-export {
-  configDir,
-  configPath,
-  readConfig,
-  writeConfig,
-  updateConfig,
-  configSchema,
-} from "@horva/core/config";
-export type { Config } from "@horva/core/config";
+export { configPath, readConfig, writeConfig } from "@horva/core/config";

@@ -67,10 +67,6 @@ jobs:
         run: pnpm depcruise
 
       - name: Knip (unused files/deps/exports)
-        # Report-only for now: it already surfaces real findings (unused
-        # deps, dead exports, ...), but deciding what's safe to remove is a
-        # separate cleanup pass, not something this gate should block on yet.
-        continue-on-error: true
         run: pnpm knip
 
       - name: Run Vitest Tests

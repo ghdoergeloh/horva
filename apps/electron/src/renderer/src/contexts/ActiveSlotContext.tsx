@@ -5,7 +5,7 @@ import { client } from "~/lib/orpc";
 
 type OpenSlotResponse = Awaited<ReturnType<typeof client.slot.status>>["slot"];
 
-export type ActiveSlot = NonNullable<OpenSlotResponse>;
+type ActiveSlot = NonNullable<OpenSlotResponse>;
 
 interface ActiveSlotContextValue {
   openSlot: ActiveSlot | null | undefined;

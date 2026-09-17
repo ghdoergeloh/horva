@@ -40,7 +40,7 @@ export interface TaskDragData {
 /** Marks a droppable as a project target. Drop routing keys off this tag
  * rather than the id or payload shape, so adding droppables elsewhere can
  * never be mistaken for a project. */
-export const PROJECT_DROP_TYPE = "project";
+const PROJECT_DROP_TYPE = "project";
 
 /** Droppable id for a sidebar project. Namespaced to avoid colliding with the
  * numeric task ids used by the sortable list on the overview page. */
@@ -53,7 +53,7 @@ export function projectDropData(projectId: number) {
   return { type: PROJECT_DROP_TYPE, projectId };
 }
 
-export function isTaskDragData(value: unknown): value is TaskDragData {
+function isTaskDragData(value: unknown): value is TaskDragData {
   return (
     typeof value === "object" &&
     value !== null &&

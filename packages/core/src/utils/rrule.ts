@@ -35,4 +35,4 @@ function fromString(str: string): RRuleType {
   return RRule.fromString(str);
 }
 
-export { RRule, fromString as rruleFromString };
+export { fromString as rruleFromString };

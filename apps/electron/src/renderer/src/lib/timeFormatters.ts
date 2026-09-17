@@ -11,13 +11,6 @@ export function fmtDuration(ms: number): string {
   return m === 0 ? `${String(h)}h` : `${String(h)}h ${String(m)}min`;
 }
 
-export function formatMinutes(minutes: number): string {
-  const h = Math.floor(minutes / 60);
-  const m = minutes % 60;
-  if (h === 0) return `${String(m)}m`;
-  return m > 0 ? `${String(h)}h ${String(m)}m` : `${String(h)}h`;
-}
-
 export function applyTimeString(base: string, time: string): string {
   const d = new Date(base);
   const [hStr, mStr] = time.split(":");

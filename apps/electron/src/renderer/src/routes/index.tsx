@@ -13,17 +13,9 @@ import { TaskCard } from "~/components/TaskCard.js";
 import { useDetailDrawer } from "~/contexts/DetailDrawerContext.js";
 import i18n from "~/i18n/index.js";
 import { client } from "~/lib/orpc.js";
+import { calcTotalMinutes } from "~/lib/taskUtils.js";
 
 type TaskRow = Awaited<ReturnType<typeof client.task.list>>["tasks"][number];
-
-function calcTotalMinutes(slots: TaskRow["slots"]): number {
-  return slots.reduce((sum, s) => {
-    if (!s.endedAt) return sum;
-    return (
-      sum + Math.round((s.endedAt.getTime() - s.startedAt.getTime()) / 60000)
-    );
-  }, 0);
-}
 
 interface CollapsibleSectionProps {
   title: string;
