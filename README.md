@@ -125,7 +125,7 @@ pnpm -F @horva/electron-app pack      # Package a distributable (.dmg / .exe / .
 pnpm turbo gen init
 ```
 
-See [`CLAUDE.md`](./CLAUDE.md) for a deeper walkthrough of conventions, and [`docs/`](./docs) for feature specs.
+See [`AGENTS.md`](./AGENTS.md) for the repository rules and [`docs/`](./docs) for feature specs.
 
 ## Project structure
 
