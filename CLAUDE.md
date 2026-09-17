@@ -97,6 +97,22 @@ Design tokens live in `tooling/tailwind/theme.css` (CSS variables + `@theme inli
 
 For wiring Tailwind into a new app, adding new tokens, or fixing missing‑class / dark‑mode‑flash issues, see the `tailwind-app-setup` skill.
 
+## Language on GitHub
+
+**Everything that ends up on GitHub is written in English, always.** This covers pull request titles and descriptions, issue titles and bodies, review comments and replies, commit messages, and release notes.
+
+This holds no matter what language the conversation with Claude is in. A chat in German still produces an English pull request — translate the content, do not switch the language of the output.
+
+Write English that is easy to read for people who did not grow up with the language:
+
+- Short sentences. One idea per sentence.
+- Common words instead of rare ones: "use" over "leverage", "start" over "initiate", "about" over "regarding".
+- No idioms, no slang, no metaphors, no references that only make sense in one country ("out of the box", "low-hanging fruit", "ballpark", "cut corners").
+- Spell out an abbreviation the first time it appears, unless it is a well-known technical term (API, CI, PR).
+- Prefer the active voice and a plain structure: what changed, why, what to watch out for.
+
+Do not translate code, identifiers, file paths, log output, or error messages — quote them exactly as they are.
+
 ## Post-Change Quality Checks
 
 After making any code changes, always run the following checks on affected packages before considering the task done:
