@@ -10,6 +10,7 @@ Instructions for coding agents in this repository. Only rules that cannot be rea
 - `pnpm -F <pkg> pack` runs pnpm's builtin pack command, not the package script. Use `pnpm --filter <pkg> run pack`.
 - After changing the better-auth config, run `pnpm -F @horva/auth generate` to regenerate `packages/db/src/schema/auth-schema.ts`.
 - Scaffold a package with `pnpm turbo gen init`, a UI component with `pnpm -F @horva/ui ui-add`.
+- Versions, tags and `CHANGELOG.md` entries come from release-please. Never write them by hand.
 
 ## Styling
 

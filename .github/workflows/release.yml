@@ -4,11 +4,31 @@ on:
   push:
     tags:
       - "v*"
+  # Called by release-please.yml once it has cut a release. A tag created with
+  # the GITHUB_TOKEN does not trigger the `push` event above, so the release
+  # workflow has to be invoked directly.
+  workflow_call:
+    inputs:
+      tag:
+        description: "Release tag the installers are attached to (e.g. v0.1.0)."
+        required: true
+        type: string
+      ref:
+        description: "Ref or SHA to build. Defaults to the tag; release-please passes a SHA because its draft release has no tag ref yet."
+        required: false
+        type: string
+        default: ""
   workflow_dispatch:
     inputs:
       tag:
         description: "Tag to build (e.g. v0.1.0). Leave empty to build current ref without publishing."
         required: false
+        type: string
+        default: ""
+      ref:
+        description: "Ref or SHA to build. Defaults to the tag, or to the current ref."
+        required: false
+        type: string
         default: ""
 
 permissions:
@@ -25,7 +45,7 @@ jobs:
     steps:
       - uses: actions/checkout@v7
         with:
-          ref: ${{ github.event.inputs.tag || github.ref }}
+          ref: ${{ inputs.ref || inputs.tag || github.ref }}
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v6
@@ -85,7 +105,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v7
         with:
-          ref: ${{ github.event.inputs.tag || github.ref }}
+          ref: ${{ inputs.ref || inputs.tag || github.ref }}
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v6
@@ -105,9 +125,14 @@ jobs:
         run: pnpm build
 
       - name: Package Electron app
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: pnpm -F @horva/electron-app pack
+        # `run pack`, not `pack`: pnpm has a builtin `pack` command (npm-style
+        # tarball), and `pnpm -F <pkg> pack` resolves to that builtin instead of
+        # the package script — it never reaches electron-builder.
+        #
+        # --publish never: electron-builder would otherwise upload to the
+        # release on its own (publish defaults to onTagOrDraft), racing the
+        # upload step below.
+        run: pnpm --filter @horva/electron-app run pack -- --publish never
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v7
@@ -120,8 +145,10 @@ jobs:
   release:
     name: Publish GitHub Release
     needs: build
-    if: startsWith(github.ref, 'refs/tags/v')
+    if: startsWith(github.ref, 'refs/tags/v') || inputs.tag != ''
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
 
     steps:
       - name: Download all artifacts
@@ -132,11 +159,23 @@ jobs:
       - name: List artifacts
         run: find artifacts -type f | sort
 
-      - name: Create GitHub Release
-        uses: softprops/action-gh-release@v3
-        with:
-          tag_name: ${{ github.ref_name }}
-          name: ${{ github.ref_name }}
-          draft: true
-          generate_release_notes: true
-          files: artifacts/**/*
+      - name: Attach installers and publish the release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+          TAG: ${{ inputs.tag || github.ref_name }}
+        run: |
+          set -euo pipefail
+
+          # release-please has already created a draft release holding the
+          # changelog. A hand-pushed tag has not, so create one to attach to.
+          if ! gh release view "$TAG" >/dev/null 2>&1; then
+            gh release create "$TAG" --draft --title "$TAG" --generate-notes
+          fi
+
+          find artifacts -type f -print0 \
+            | xargs -0 --no-run-if-empty gh release upload "$TAG" --clobber
+
+          # Undrafting is what creates the tag for a release-please draft, so
+          # the tag appears exactly when the installers are downloadable.
+          gh release edit "$TAG" --draft=false
