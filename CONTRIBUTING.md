@@ -174,9 +174,30 @@ Small, well-scoped requests are much more likely to get picked up.
 
 ## Releases
 
-- The Electron desktop app is built and attached to [GitHub Releases](https://github.com/ghdoergeloh/horva/releases) automatically when a tag matching `v*` is pushed.
-- Release artifacts cover macOS (`.dmg`), Windows (`.exe` via NSIS), and Linux (`.AppImage`).
-- Maintainers cut releases; contributors don't need to create tags.
+Releases are versioned automatically from the Conventional Commits on `main` — nobody picks a version number by hand.
+
+**How it works**
+
+1. Every merge into `main` runs [release-please](https://github.com/googleapis/release-please), which opens or updates a single release PR titled `chore(main): release <version>`. That PR carries the next version (in `package.json`, `apps/electron/package.json` and `.release-please-manifest.json`) and the `CHANGELOG.md` entries for everything merged since the last release. Merging into `main` never releases on its own.
+2. Merging the release PR creates the tag and a draft GitHub Release holding the changelog.
+3. That in turn builds the Electron installers for macOS (`.dmg`), Windows (`.exe` via NSIS) and Linux (`.AppImage`), attaches them to the release and publishes it. The tag only becomes visible once the installers are downloadable.
+
+**Which commit bumps what** (while the version is below `1.0.0`):
+
+| Commit                            | Bump                            |
+| --------------------------------- | ------------------------------- |
+| `fix: …`                          | patch — `0.1.0` → `0.1.1`       |
+| `feat: …`                         | minor — `0.1.1` → `0.2.0`       |
+| `feat!: …` / `BREAKING CHANGE:`   | minor — majors start at `1.0.0` |
+| `chore: …`, `ci: …`, `test: …`, … | no release                      |
+
+Only `feat`, `fix`, `perf`, `revert`, `docs` and `refactor` appear in the changelog; the remaining types stay out of it.
+
+**Notes for maintainers**
+
+- Since PRs are squash-merged, the **PR title** becomes the commit on `main` and is therefore what the version is computed from. A workflow validates it against Conventional Commits — commitlint only ever sees the branch commits.
+- A release can also be built by hand: push a `v*` tag, or run the _Release Electron App_ workflow with a tag as input.
+- Contributors don't need to create tags or touch version numbers.
 
 ## License
 

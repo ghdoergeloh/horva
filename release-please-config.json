@@ -1,0 +1,35 @@
+{
+  "$schema": "https://raw.githubusercontent.com/googleapis/release-please/main/schemas/config.json",
+  "release-type": "node",
+  "packages": {
+    ".": {
+      "package-name": "horva",
+      "changelog-path": "CHANGELOG.md",
+      "extra-files": [
+        {
+          "type": "json",
+          "path": "apps/electron/package.json",
+          "jsonpath": "$.version"
+        }
+      ]
+    }
+  },
+  "include-component-in-tag": false,
+  "separate-pull-requests": false,
+  "bump-minor-pre-major": true,
+  "draft": true,
+  "changelog-sections": [
+    { "type": "feat", "section": "Features" },
+    { "type": "fix", "section": "Bug Fixes" },
+    { "type": "perf", "section": "Performance" },
+    { "type": "revert", "section": "Reverts" },
+    { "type": "docs", "section": "Documentation" },
+    { "type": "refactor", "section": "Refactors" },
+    { "type": "deps", "section": "Dependencies" },
+    { "type": "build", "section": "Build System", "hidden": true },
+    { "type": "chore", "section": "Chores", "hidden": true },
+    { "type": "ci", "section": "CI", "hidden": true },
+    { "type": "style", "section": "Styling", "hidden": true },
+    { "type": "test", "section": "Tests", "hidden": true }
+  ]
+}
