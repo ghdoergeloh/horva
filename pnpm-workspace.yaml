@@ -39,7 +39,7 @@ catalog:
   "@vitest/coverage-v8": ^5.0.1
   better-auth: ^1.7.5
   commander: ^15.0.0
-  dotenv: ^17.4.2
+  dotenv: ^18.0.0
   drizzle-kit: ^0.31.10
   drizzle-orm: ^0.45.2
   eslint: ^9.39.5
