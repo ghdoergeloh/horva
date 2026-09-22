@@ -2,6 +2,7 @@ import * as path from "node:path";
 import { includeIgnoreFile } from "@eslint/compat";
 import eslint from "@eslint/js";
 import importPlugin from "eslint-plugin-import";
+import sonarjs from "eslint-plugin-sonarjs";
 import turbo from "eslint-plugin-turbo";
 import { defineConfig } from "eslint/config";
 import tseslint from "typescript-eslint";
@@ -52,6 +53,7 @@ export const baseConfig = defineConfig(
       ...tseslint.configs.recommendedTypeChecked,
       ...tseslint.configs.stylisticTypeChecked,
     ],
+    plugins: { sonarjs },
     rules: {
       "@typescript-eslint/no-deprecated": "warn",
       "@typescript-eslint/no-unused-vars": [
@@ -74,6 +76,16 @@ export const baseConfig = defineConfig(
       ],
       "@typescript-eslint/no-non-null-assertion": "error",
       "import/consistent-type-specifier-style": ["error", "prefer-top-level"],
+      // Complexity signals, introduced loose (warn only) so existing code
+      // isn't broken; tighten thresholds and/or promote to "error" as the
+      // codebase's actual complexity comes down.
+      complexity: ["warn", 25],
+      "max-depth": ["warn", 6],
+      "max-lines-per-function": [
+        "warn",
+        { max: 300, skipBlankLines: true, skipComments: true },
+      ],
+      "sonarjs/cognitive-complexity": ["warn", 30],
     },
     linterOptions: { reportUnusedDisableDirectives: true },
     languageOptions: {

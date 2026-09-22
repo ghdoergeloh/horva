@@ -1,0 +1,22 @@
+{
+  "$schema": "https://unpkg.com/knip@6/schema.json",
+  "workspaces": {
+    ".": {
+      // Loaded by `turbo gen` (plop-style), not imported by any source file.
+      "entry": ["turbo/generators/config.ts"],
+    },
+    "tooling/prettier": {
+      // Referenced by name in index.js's `plugins` array, not imported.
+      "ignoreDependencies": ["prettier-plugin-packagejson"],
+    },
+    "tooling/tailwind": {
+      // Referenced by name in postcss-config.js's `plugins` object, not imported.
+      "ignoreDependencies": ["@tailwindcss/postcss"],
+    },
+    "tooling/eslint": {
+      // Enabled via the "typescript" string in base.js's import/resolver
+      // setting (eslint-import-resolver-* convention), not imported directly.
+      "ignoreDependencies": ["eslint-import-resolver-typescript"],
+    },
+  },
+}
