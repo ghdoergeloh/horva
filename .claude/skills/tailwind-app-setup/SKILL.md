@@ -106,13 +106,13 @@ Every renderer's entry CSS file (e.g. `src/index.css`, `src/renderer/src/styles/
 
 The `@source` directive is **mandatory** in Tailwind v4. Without it the bundler doesn't scan `@repo/ui`, and classes that appear only in shared components silently disappear from production. Adjust the relative path so it points at the symlink in the app's `node_modules`.
 
-Reference implementations: `apps/react/src/index.css`, `apps/electron/src/renderer/src/styles/globals.css`.
+Reference implementation: `apps/react/src/index.css`. It also paints `body` with `bg-background text-foreground`.
 
 ### 4. Mount the theme on `<html>`
 
 The dark variant is class‑based: `@variant dark` triggers when `<html class="dark">` is set. Apps own the toggle.
 
-Canonical wiring (see `apps/electron/src/renderer/src/contexts/SettingsContext.tsx`):
+Canonical wiring (see `apps/react/src/lib/theme.ts` and `apps/react/src/components/ThemeToggle.tsx`):
 
 - `localStorage` key, e.g. `"<app>-theme"`, value `"light" | "dark" | "system"`
 - React effect calls `document.documentElement.classList.toggle("dark", resolved === "dark")`

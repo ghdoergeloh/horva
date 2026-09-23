@@ -1,0 +1,32 @@
+# AGENTS.md
+
+Instructions for coding agents in this repository. Only rules that cannot be read off the code belong here. Overviews and command lists go in `README.md`. Rules that a config already enforces do not need to be repeated.
+
+## Repository Rules
+
+- Business logic lives in `packages/core/src/services/*`. Handlers in `packages/core/src/handlers/*` and the routes in `apps/api` only wire things up. `.dependency-cruiser.cjs` enforces the package boundaries.
+- A new API endpoint starts in `packages/contract/src/index.ts`, then a handler in `packages/core/src/handlers/`, then one line in `apps/api/src/router.ts`.
+- Dependency versions come from the `pnpm-workspace.yaml` catalogs. Write `catalog:` (or `catalog:react19`) in `package.json`, never a literal version.
+- `pnpm -F <pkg> pack` runs pnpm's builtin pack command, not the package script. Use `pnpm --filter <pkg> run pack`.
+- After changing the better-auth config, run `pnpm -F @repo/auth generate` to regenerate `packages/db/src/schema/auth-schema.ts`.
+- Scaffold a package with `pnpm turbo gen init`, a UI component with `pnpm -F @repo/ui ui-add`.
+
+## Styling
+
+Use semantic tokens (`bg-primary`, `text-foreground`, `border-border`, …), never raw palette colors (`bg-gray-*`, `text-indigo-*`, …). Tokens carry dark mode behaviour, raw palettes do not. The tokens are the variables in `tooling/tailwind/theme.css`. Components added with `ui-add` come with raw palette colors. Convert them to tokens.
+
+For wiring Tailwind into a new app, adding tokens, or missing-class and dark-mode-flash problems, follow `.claude/skills/tailwind-app-setup/SKILL.md`.
+
+## Language on GitHub
+
+Everything that ends up on GitHub is English: pull request titles and descriptions, issues, review comments and replies, commit messages, release notes. This holds whatever language the conversation with the agent is in.
+
+Write plain English for readers who do not speak it as a first language: short sentences, common words, no idioms, no slang, no references that only make sense in one country, abbreviations spelled out on first use. Never translate code, identifiers, paths, log output or error messages.
+
+## Code Comments
+
+Same plain English. Write only comments that increase maintainability — on public methods and module exports, and on non-obvious code blocks. A comment describes the current state and purpose. It must be change-independent: do not describe what the code was before, why it was changed, or how it relates to a previous version. Keep them short.
+
+## Before Calling a Task Done
+
+Run `pnpm format:fix`, then `lint`, `typecheck` and `test:unit` for every changed package (`pnpm --filter <package> <script>`), or the workspace-wide scripts when a change spans packages. Fix what they report. Run `pnpm knip` and `pnpm depcruise` when dependencies or imports between packages changed.
