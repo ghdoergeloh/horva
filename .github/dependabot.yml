@@ -14,8 +14,20 @@ updates:
           - "minor"
           - "patch"
     ignore:
-      # Keep @types/node on the current LTS major version
+      # Keep @types/node on the Node.js major in .nvmrc
       - dependency-name: "@types/node"
+        update-types:
+          - "version-update:semver-major"
+      # ESLint 10: eslint-plugin-react, eslint-plugin-import and
+      # eslint-plugin-jsx-a11y do not support it yet
+      - dependency-name: "eslint"
+        update-types:
+          - "version-update:semver-major"
+      - dependency-name: "@eslint/js"
+        update-types:
+          - "version-update:semver-major"
+      # TypeScript 7: typescript-eslint supports only TypeScript < 6.1
+      - dependency-name: "typescript"
         update-types:
           - "version-update:semver-major"
     labels:

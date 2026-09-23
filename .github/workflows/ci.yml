@@ -21,7 +21,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
 
       - uses: ./tooling/github/setup
 
@@ -41,13 +41,7 @@ jobs:
         run: pnpm depcruise
 
       - name: Knip (unused files/deps/exports)
-        # Report-only for now: several findings need a product decision
-        # (e.g. is the OpenTelemetry/zod/oRPC scaffolding in apps/api,
-        # apps/react and packages/{auth,core,db,ui} still meant to be wired
-        # up, or safe to remove?) rather than something this gate should
-        # block on. Promote to a real gate once those are resolved.
-        continue-on-error: true
-        run: DATABASE_URL=postgresql://knip:knip@localhost:5432/knip pnpm knip
+        run: pnpm knip
 
       - name: Run Vitest Tests
         run: pnpm test:unit:coverage
@@ -76,6 +70,6 @@ jobs:
 
       - name: Add Coverage PR Comment
         if: github.event_name == 'pull_request' && steps.cov.outputs.files != ''
-        uses: marocchino/sticky-pull-request-comment@v2
+        uses: marocchino/sticky-pull-request-comment@v3
         with:
           path: code-coverage-results.md
