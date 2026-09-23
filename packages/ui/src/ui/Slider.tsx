@@ -21,9 +21,8 @@ const trackStyles = tv({
       vertical: "h-full w-[6px] ml-[50%] -translate-x-[50%]",
     },
     isDisabled: {
-      false:
-        "bg-neutral-300 dark:bg-neutral-700 forced-colors:bg-[ButtonBorder]",
-      true: "bg-neutral-200 dark:bg-neutral-800 forced-colors:bg-[ButtonBorder]",
+      false: "bg-border forced-colors:bg-[ButtonBorder]",
+      true: "bg-border/50 forced-colors:bg-[ButtonBorder]",
     },
   },
 });
@@ -37,21 +36,21 @@ const fillStyles = tv({
         "h-(--size) w-[6px] bottom-(--start,0) ml-[50%] -translate-x-[50%]",
     },
     isDisabled: {
-      false: "bg-blue-500 forced-colors:bg-[Highlight]",
-      true: "bg-neutral-300 dark:bg-neutral-600 forced-colors:bg-[GrayText]",
+      false: "bg-primary forced-colors:bg-[Highlight]",
+      true: "bg-border forced-colors:bg-[GrayText]",
     },
   },
 });
 
 const thumbStyles = tv({
   extend: focusRing,
-  base: "w-4.5 h-4.5 group-orientation-horizontal:mt-5 group-orientation-vertical:ml-2.5 rounded-full bg-neutral-50 dark:bg-neutral-900 border border-neutral-700 dark:border-neutral-300",
+  base: "w-4.5 h-4.5 group-orientation-horizontal:mt-5 group-orientation-vertical:ml-2.5 rounded-full bg-background border border-primary",
   variants: {
     isDragging: {
-      true: "bg-neutral-700 dark:bg-neutral-300 forced-colors:bg-[ButtonBorder]",
+      true: "bg-primary forced-colors:bg-[ButtonBorder]",
     },
     isDisabled: {
-      true: "border-neutral-300 dark:border-neutral-700 forced-colors:border-[GrayText]",
+      true: "border-border forced-colors:border-[GrayText]",
     },
   },
 });
@@ -75,7 +74,7 @@ export function Slider<T extends number | number[]>({
       )}
     >
       <Label>{label}</Label>
-      <SliderOutput className="orientation-vertical:hidden text-sm text-neutral-500 dark:text-neutral-400">
+      <SliderOutput className="orientation-vertical:hidden text-muted-foreground text-sm">
         {({ state }) =>
           state.values.map((_, i) => state.getThumbValueLabel(i)).join(" – ")
         }

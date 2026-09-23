@@ -40,7 +40,7 @@ export function Breadcrumb(
         <>
           <Link variant="secondary" {...props} />
           {!isCurrent && (
-            <ChevronRight className="h-3 w-3 text-neutral-600 dark:text-neutral-400" />
+            <ChevronRight className="text-muted-foreground h-3 w-3" />
           )}
         </>
       )}

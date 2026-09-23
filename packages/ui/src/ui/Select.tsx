@@ -24,12 +24,12 @@ import { Popover } from "./Popover";
 
 const styles = tv({
   extend: focusRing,
-  base: "flex items-center text-start gap-4 w-full font-sans border border-black/10 dark:border-white/10 cursor-default rounded-lg pl-3 pr-2 h-9 min-w-[180px] transition bg-neutral-50 dark:bg-neutral-700 [-webkit-tap-highlight-color:transparent]",
+  base: "flex items-center text-start gap-4 w-full font-sans border border-border cursor-default rounded-lg pl-3 pr-2 h-9 min-w-[180px] transition bg-secondary [-webkit-tap-highlight-color:transparent]",
   variants: {
     isDisabled: {
       false:
-        "text-neutral-800 dark:text-neutral-300 hover:bg-neutral-100 pressed:bg-neutral-200 dark:hover:bg-neutral-600 dark:pressed:bg-neutral-500 group-invalid:outline group-invalid:outline-red-600 forced-colors:group-invalid:outline-[Mark]",
-      true: "border-transparent dark:border-transparent text-neutral-200 dark:text-neutral-600 forced-colors:text-[GrayText] bg-neutral-100 dark:bg-neutral-800",
+        "text-secondary-foreground hover:bg-secondary/80 pressed:bg-secondary/60 group-invalid:outline group-invalid:outline-destructive forced-colors:group-invalid:outline-[Mark]",
+      true: "border-transparent text-muted-foreground/50 forced-colors:text-[GrayText] bg-muted",
     },
   },
 });
@@ -70,7 +70,7 @@ export function Select<T extends object>({
         </SelectValue>
         <ChevronDown
           aria-hidden
-          className="h-4 w-4 text-neutral-600 group-disabled:text-neutral-200 dark:text-neutral-400 dark:group-disabled:text-neutral-600 forced-colors:text-[ButtonText] forced-colors:group-disabled:text-[GrayText]"
+          className="text-muted-foreground group-disabled:text-muted-foreground/50 h-4 w-4 forced-colors:text-[ButtonText] forced-colors:group-disabled:text-[GrayText]"
         />
       </Button>
       {description && <Description>{description}</Description>}

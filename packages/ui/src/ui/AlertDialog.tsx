@@ -38,7 +38,7 @@ export function AlertDialog({
             {title}
           </Heading>
           <div
-            className={`absolute top-6 right-6 h-6 w-6 stroke-2 ${variant === "destructive" ? "text-red-500" : "text-blue-500"}`}
+            className={`absolute top-6 right-6 h-6 w-6 stroke-2 ${variant === "destructive" ? "text-destructive" : "text-primary"}`}
           >
             {variant === "destructive" ? (
               <AlertCircleIcon aria-hidden />
@@ -46,9 +46,7 @@ export function AlertDialog({
               <InfoIcon aria-hidden />
             )}
           </div>
-          <p className="mt-3 text-neutral-500 dark:text-neutral-400">
-            {children}
-          </p>
+          <p className="text-muted-foreground mt-3">{children}</p>
           <div className="mt-6 flex justify-end gap-2">
             <Button variant="secondary" onPress={close}>
               {cancelLabel ?? "Cancel"}
