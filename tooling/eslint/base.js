@@ -76,16 +76,16 @@ export const baseConfig = defineConfig(
       ],
       "@typescript-eslint/no-non-null-assertion": "error",
       "import/consistent-type-specifier-style": ["error", "prefer-top-level"],
-      // Complexity signals, introduced loose (warn only) so existing code
-      // isn't broken; tighten thresholds and/or promote to "error" as the
-      // codebase's actual complexity comes down.
-      complexity: ["warn", 25],
-      "max-depth": ["warn", 6],
+      // Complexity signals. Enforced as hard errors from the start: a fresh
+      // template has no existing complexity debt to accommodate, so there's
+      // no reason to let it accumulate before these start blocking.
+      complexity: ["error", 25],
+      "max-depth": ["error", 6],
       "max-lines-per-function": [
-        "warn",
+        "error",
         { max: 300, skipBlankLines: true, skipComments: true },
       ],
-      "sonarjs/cognitive-complexity": ["warn", 30],
+      "sonarjs/cognitive-complexity": ["error", 30],
     },
     linterOptions: { reportUnusedDisableDirectives: true },
     languageOptions: {
