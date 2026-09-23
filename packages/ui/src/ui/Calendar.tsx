@@ -27,12 +27,11 @@ const cellStyles = tv({
   base: "w-[calc(100cqw/7)] aspect-square text-sm cursor-default rounded-full flex items-center justify-center forced-color-adjust-none [-webkit-tap-highlight-color:transparent]",
   variants: {
     isSelected: {
-      false:
-        "text-neutral-900 dark:text-neutral-200 hover:bg-neutral-200 dark:hover:bg-neutral-700 pressed:bg-neutral-300 dark:pressed:bg-neutral-600",
-      true: "bg-blue-600 invalid:bg-red-600 text-white forced-colors:bg-[Highlight] forced-colors:invalid:bg-[Mark] forced-colors:text-[HighlightText]",
+      false: "text-foreground hover:bg-accent pressed:bg-muted-foreground/20",
+      true: "bg-primary invalid:bg-destructive text-primary-foreground forced-colors:bg-[Highlight] forced-colors:invalid:bg-[Mark] forced-colors:text-[HighlightText]",
     },
     isDisabled: {
-      true: "text-neutral-300 dark:text-neutral-600 forced-colors:text-[GrayText]",
+      true: "text-muted-foreground/50 forced-colors:text-[GrayText]",
     },
   },
 });
@@ -64,7 +63,7 @@ export function Calendar<T extends DateValue>({
         </CalendarGridBody>
       </CalendarGrid>
       {errorMessage && (
-        <Text slot="errorMessage" className="text-sm text-red-600">
+        <Text slot="errorMessage" className="text-destructive text-sm">
           {errorMessage}
         </Text>
       )}
@@ -84,7 +83,7 @@ export function CalendarHeader() {
           <ChevronLeft aria-hidden size={18} />
         )}
       </Button>
-      <Heading className="mx-2 my-0 flex-1 text-center font-sans text-base font-semibold text-neutral-900 [font-variation-settings:normal] dark:text-neutral-200" />
+      <Heading className="text-foreground mx-2 my-0 flex-1 text-center font-sans text-base font-semibold [font-variation-settings:normal]" />
       <Button variant="quiet" slot="next">
         {direction === "rtl" ? (
           <ChevronLeft aria-hidden size={18} />
@@ -100,7 +99,7 @@ export function CalendarGridHeader() {
   return (
     <AriaCalendarGridHeader>
       {(day) => (
-        <CalendarHeaderCell className="text-xs font-semibold text-neutral-500">
+        <CalendarHeaderCell className="text-muted-foreground text-xs font-semibold">
           {day}
         </CalendarHeaderCell>
       )}

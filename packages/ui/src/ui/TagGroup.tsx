@@ -23,12 +23,12 @@ import { focusRing } from "@repo/ui";
 import { Description, Label } from "./Field";
 
 const colors = {
-  gray: "bg-white text-neutral-600 border-neutral-200 hover:border-neutral-300 dark:bg-neutral-900 dark:text-neutral-300 dark:border-neutral-600 dark:hover:border-neutral-500",
+  gray: "bg-background text-muted-foreground border-border hover:border-muted-foreground ",
   green:
-    "bg-green-100 text-green-700 border-green-200 hover:border-green-300 dark:bg-green-300/20 dark:text-green-400 dark:border-green-300/10 dark:hover:border-green-300/20",
+    "bg-success/15 text-success border-success/30 hover:border-success/60 ",
   yellow:
-    "bg-yellow-100 text-yellow-700 border-yellow-200 hover:border-yellow-300 dark:bg-yellow-300/20 dark:text-yellow-400 dark:border-yellow-300/10 dark:hover:border-yellow-300/20",
-  blue: "bg-blue-100 text-blue-700 border-blue-200 hover:border-blue-300 dark:bg-blue-400/20 dark:text-blue-300 dark:border-blue-400/10 dark:hover:border-blue-400/20",
+    "bg-warning/20 text-warning-foreground border-warning/40 hover:border-warning/70 ",
+  blue: "bg-primary/10 text-primary border-primary/20 hover:border-primary/50 ",
 };
 
 type Color = keyof typeof colors;
@@ -48,10 +48,10 @@ const tagStyles = tv({
       true: "pr-1",
     },
     isSelected: {
-      true: "bg-blue-600 text-white border-transparent forced-colors:bg-[Highlight] forced-colors:text-[HighlightText] forced-color-adjust-none",
+      true: "bg-primary text-primary-foreground border-transparent forced-colors:bg-[Highlight] forced-colors:text-[HighlightText] forced-color-adjust-none",
     },
     isDisabled: {
-      true: "bg-neutral-100 dark:bg-transparent dark:border-white/20 text-neutral-300 dark:text-neutral-600 forced-colors:text-[GrayText]",
+      true: "bg-muted text-muted-foreground/50 forced-colors:text-[GrayText]",
     },
   },
   compoundVariants: (Object.keys(colors) as Color[]).map((color) => ({
@@ -102,7 +102,7 @@ export function TagGroup<T extends object>({
       </ColorContext.Provider>
       {description && <Description>{description}</Description>}
       {errorMessage && (
-        <Text slot="errorMessage" className="text-sm text-red-600">
+        <Text slot="errorMessage" className="text-destructive text-sm">
           {errorMessage}
         </Text>
       )}
@@ -112,7 +112,7 @@ export function TagGroup<T extends object>({
 
 const removeButtonStyles = tv({
   extend: focusRing,
-  base: "cursor-default rounded-full transition-[background-color] p-0.5 flex items-center justify-center bg-transparent text-[inherit] border-0 hover:bg-black/10 dark:hover:bg-white/10 pressed:bg-black/20 dark:pressed:bg-white/20",
+  base: "cursor-default rounded-full transition-[background-color] p-0.5 flex items-center justify-center bg-transparent text-[inherit] border-0 hover:bg-foreground/10 pressed:bg-foreground/20",
 });
 
 export function Tag({ children, color, ...props }: TagProps) {

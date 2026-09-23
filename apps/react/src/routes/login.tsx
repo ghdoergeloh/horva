@@ -71,11 +71,11 @@ function LoginPage() {
         <h1 className="text-2xl font-bold">Sign In</h1>
         {error && (
           <div className="space-y-2">
-            <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
+            <p className="text-destructive text-sm">{error}</p>
             {showResend && (
               <div>
                 {resendSuccess ? (
-                  <p className="text-sm text-green-600 dark:text-green-400">
+                  <p className="text-success text-sm">
                     Verification email sent! Check your inbox.
                   </p>
                 ) : (

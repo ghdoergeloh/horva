@@ -65,10 +65,10 @@ export function TabList<T extends object>(props: TabListProps<T>) {
 
 const tabProps = tv({
   extend: focusRing,
-  base: "group relative flex items-center cursor-default rounded-full px-3 py-1.5 text-sm font-medium transition forced-color-adjust-none [-webkit-tap-highlight-color:transparent]",
+  base: "group relative isolate flex items-center cursor-default rounded-full text-foreground selected:text-primary-foreground forced-colors:selected:text-[HighlightText] px-3 py-1.5 text-sm font-medium transition forced-color-adjust-none [-webkit-tap-highlight-color:transparent]",
   variants: {
     isDisabled: {
-      true: "text-neutral-200 dark:text-neutral-600 forced-colors:text-[GrayText] selected:text-white dark:selected:text-neutral-500 forced-colors:selected:text-[HighlightText] selected:bg-neutral-200 dark:selected:bg-neutral-600 forced-colors:selected:bg-[GrayText]",
+      true: "text-muted-foreground/50 forced-colors:text-[GrayText] selected:text-muted-foreground forced-colors:selected:text-[HighlightText]",
     },
   },
 });
@@ -84,7 +84,7 @@ export function Tab(props: TabProps) {
       {composeRenderProps(props.children, (children) => (
         <>
           {children}
-          <SelectionIndicator className="absolute top-0 left-0 z-10 h-full w-full rounded-full bg-white mix-blend-difference group-disabled:-z-1 group-disabled:bg-neutral-400 group-disabled:mix-blend-normal motion-safe:transition-[translate,width,height] group-disabled:dark:bg-neutral-600" />
+          <SelectionIndicator className="bg-primary group-disabled:bg-muted absolute top-0 left-0 -z-1 h-full w-full rounded-full motion-safe:transition-[translate,width,height] forced-colors:bg-[Highlight] forced-colors:group-disabled:bg-[GrayText]" />
         </>
       ))}
     </RACTab>
@@ -105,7 +105,7 @@ export function TabPanels<T extends object>(props: TabPanelsProps<T>) {
 
 const tabPanelStyles = tv({
   extend: focusRing,
-  base: "flex-1 box-border p-4 text-sm text-neutral-900 dark:text-neutral-100 transition entering:opacity-0 exiting:opacity-0 exiting:absolute exiting:top-0 exiting:left-0 exiting:w-full",
+  base: "flex-1 box-border p-4 text-sm text-foreground transition entering:opacity-0 exiting:opacity-0 exiting:absolute exiting:top-0 exiting:left-0 exiting:w-full",
 });
 
 export function TabPanel(props: TabPanelProps) {

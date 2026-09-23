@@ -25,7 +25,7 @@ export function GridList<T extends object>({
       {...props}
       className={composeTailwindRenderProps(
         props.className,
-        "relative w-[200px] overflow-auto rounded-lg border border-neutral-300 bg-white font-sans empty:flex empty:items-center empty:justify-center empty:text-sm empty:italic dark:border-neutral-700 dark:bg-neutral-900",
+        "border-border bg-background relative w-[200px] overflow-auto rounded-lg border font-sans empty:flex empty:items-center empty:justify-center empty:text-sm empty:italic",
       )}
     >
       {children}
@@ -35,15 +35,14 @@ export function GridList<T extends object>({
 
 const itemStyles = tv({
   extend: focusRing,
-  base: "relative flex gap-3 cursor-default select-none py-2 px-3 text-sm text-neutral-900 dark:text-neutral-200 border-t dark:border-t-neutral-700 border-transparent first:border-t-0 first:rounded-t-lg last:rounded-b-lg last:mb-0 -outline-offset-2",
+  base: "relative flex gap-3 cursor-default select-none py-2 px-3 text-sm text-foreground border-t border-transparent first:border-t-0 first:rounded-t-lg last:rounded-b-lg last:mb-0 -outline-offset-2",
   variants: {
     isSelected: {
-      false:
-        "hover:bg-neutral-100 pressed:bg-neutral-100 dark:hover:bg-neutral-700/60 dark:pressed:bg-neutral-700/60",
-      true: "bg-blue-100 dark:bg-blue-700/30 hover:bg-blue-200 pressed:bg-blue-200 dark:hover:bg-blue-700/40 dark:pressed:bg-blue-700/40 border-y-blue-200 dark:border-y-blue-900 z-20",
+      false: "hover:bg-accent pressed:bg-accent ",
+      true: "bg-primary/10 hover:bg-primary/20 pressed:bg-primary/20 border-y-primary/20 z-20",
     },
     isDisabled: {
-      true: "text-neutral-300 dark:text-neutral-600 forced-colors:text-[GrayText] z-10",
+      true: "text-muted-foreground/50 forced-colors:text-[GrayText] z-10",
     },
   },
 });
@@ -77,7 +76,7 @@ export function GridListHeader({
     <AriaGridListHeader
       {...props}
       className={twMerge(
-        "z-10 -mt-px border-y border-y-neutral-200 bg-neutral-100/60 px-4 py-1 text-sm font-semibold text-neutral-500 backdrop-blur-md supports-[-moz-appearance:none]:bg-neutral-100 dark:border-y-neutral-700 dark:bg-neutral-700/60 dark:text-neutral-300",
+        "border-y-border bg-muted/60 text-muted-foreground supports-[-moz-appearance:none]:bg-muted z-10 -mt-px border-y px-4 py-1 text-sm font-semibold backdrop-blur-md",
         props.className,
       )}
     >

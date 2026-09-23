@@ -13,6 +13,12 @@
       // Referenced by name in postcss-config.js's `plugins` object, not imported.
       "ignoreDependencies": ["@tailwindcss/postcss"],
     },
+    "packages/db": {
+      // The Drizzle plugin would execute drizzle.config.ts, which needs
+      // DATABASE_URL. The config is read by drizzle-kit, not imported.
+      "drizzle": false,
+      "entry": ["drizzle.config.ts"],
+    },
     "tooling/eslint": {
       // Enabled via the "typescript" string in base.js's import/resolver
       // setting (eslint-import-resolver-* convention), not imported directly.

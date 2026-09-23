@@ -2,6 +2,8 @@ import { implement } from "@orpc/server";
 
 import { auth } from "@repo/auth/auth";
 import { contract } from "@repo/contract";
+import { handlers } from "@repo/core";
+import { db } from "@repo/db/client";
 
 const base = implement(contract).$context<{ request: Request }>();
 
@@ -16,21 +18,17 @@ const authed = base.use(authMiddleware);
 
 export const router = base.router({
   user: {
-    me: authed.user.me.handler(({ context }) => {
-      if (!context.session) {
-        return { user: null };
-      }
-      return {
-        user: {
-          id: context.session.user.id,
-          email: context.session.user.email,
-          name: context.session.user.name,
-        },
-      };
-    }),
-    hello: authed.user.hello.handler(({ context }) => {
-      const name = context.session?.user.name ?? "Guest";
-      return { message: `Hello, ${name}!` };
-    }),
+    me: authed.user.me.handler(({ context }) =>
+      handlers.user.me({
+        input: undefined,
+        context: { db, session: context.session },
+      }),
+    ),
+    hello: authed.user.hello.handler(({ context }) =>
+      handlers.user.hello({
+        input: undefined,
+        context: { db, session: context.session },
+      }),
+    ),
   },
 });

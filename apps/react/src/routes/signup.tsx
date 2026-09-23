@@ -63,9 +63,7 @@ function SignupPage() {
     <div className="flex min-h-screen items-center justify-center">
       <div className="w-full max-w-sm space-y-6">
         <h1 className="text-2xl font-bold">Sign Up</h1>
-        {error && (
-          <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
-        )}
+        {error && <p className="text-destructive text-sm">{error}</p>}
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <TextField label="Name" name="name" isRequired autoComplete="name" />
           <TextField

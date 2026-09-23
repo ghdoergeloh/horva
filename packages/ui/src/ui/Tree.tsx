@@ -19,15 +19,14 @@ import { Checkbox } from "./Checkbox";
 
 const itemStyles = tv({
   extend: focusRing,
-  base: "relative font-sans flex group gap-3 cursor-default select-none py-1 px-3 text-sm text-neutral-900 dark:text-neutral-200 bg-white dark:bg-neutral-900 border-t dark:border-t-neutral-700 border-transparent first:border-t-0 -outline-offset-2 first:rounded-t-lg last:rounded-b-lg",
+  base: "relative font-sans flex group gap-3 cursor-default select-none py-1 px-3 text-sm text-foreground bg-background border-t border-transparent first:border-t-0 -outline-offset-2 first:rounded-t-lg last:rounded-b-lg",
   variants: {
     isSelected: {
-      false:
-        "hover:bg-neutral-100 pressed:bg-neutral-100 dark:hover:bg-neutral-800 dark:pressed:bg-neutral-800",
-      true: "bg-blue-100 dark:bg-blue-700/30 hover:bg-blue-200 pressed:bg-blue-200 dark:hover:bg-blue-700/40 dark:pressed:bg-blue-700/40 border-y-blue-200 dark:border-y-blue-900 z-20",
+      false: "hover:bg-accent pressed:bg-accent ",
+      true: "bg-primary/10 hover:bg-primary/20 pressed:bg-primary/20 border-y-primary/20 z-20",
     },
     isDisabled: {
-      true: "text-neutral-300 dark:text-neutral-600 forced-colors:text-[GrayText] z-10",
+      true: "text-muted-foreground/50 forced-colors:text-[GrayText] z-10",
     },
   },
 });
@@ -38,7 +37,7 @@ export function Tree<T extends object>({ children, ...props }: TreeProps<T>) {
       {...props}
       className={composeTailwindRenderProps(
         props.className,
-        "relative w-48 max-w-full overflow-auto rounded-lg border border-neutral-200 dark:border-neutral-700",
+        "border-border relative w-48 max-w-full overflow-auto rounded-lg border",
       )}
     >
       {children}
@@ -51,19 +50,19 @@ const expandButton = tv({
   base: "border-0 p-0 bg-transparent shrink-0 w-8 h-8 rounded-lg flex items-center justify-center text-start cursor-default [-webkit-tap-highlight-color:transparent]",
   variants: {
     isDisabled: {
-      true: "text-neutral-300 dark:text-neutral-600 forced-colors:text-[GrayText]",
+      true: "text-muted-foreground/50 forced-colors:text-[GrayText]",
     },
   },
 });
 
 const chevron = tv({
-  base: "w-4.5 h-4.5 text-neutral-500 dark:text-neutral-400 transition-transform duration-200 ease-in-out",
+  base: "w-4.5 h-4.5 text-muted-foreground transition-transform duration-200 ease-in-out",
   variants: {
     isExpanded: {
       true: "transform rotate-90",
     },
     isDisabled: {
-      true: "text-neutral-300 dark:text-neutral-600 forced-colors:text-[GrayText]",
+      true: "text-muted-foreground/50 forced-colors:text-[GrayText]",
     },
   },
 });

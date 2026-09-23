@@ -8,6 +8,7 @@ import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
 
 import { Button } from "@repo/ui/Button";
 
+import { ThemeToggle } from "~/components/ThemeToggle";
 import { authClient } from "~/lib/auth";
 
 const RootLayout = () => {
@@ -26,6 +27,7 @@ const RootLayout = () => {
           </Link>
         </div>
         <div className="flex items-center gap-2">
+          <ThemeToggle />
           {isPending ? null : session?.user ? (
             <>
               <span className="text-sm">{session.user.email}</span>
@@ -44,7 +46,7 @@ const RootLayout = () => {
           )}
         </div>
       </div>
-      <hr />
+      <hr className="border-border" />
       <Outlet />
       <TanStackRouterDevtools />
     </>

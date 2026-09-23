@@ -44,7 +44,7 @@ export function DateRangePicker<T extends DateValue>({
           <DateInput slot="start" className="ps-3 pe-2 text-sm" />
           <span
             aria-hidden="true"
-            className="text-neutral-800 group-disabled:text-neutral-200 dark:text-neutral-200 dark:group-disabled:text-neutral-600 forced-colors:text-[ButtonText] forced-colors:group-disabled:text-[GrayText]"
+            className="text-foreground group-disabled:text-muted-foreground/50 forced-colors:text-[ButtonText] forced-colors:group-disabled:text-[GrayText]"
           >
             –
           </span>
