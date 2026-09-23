@@ -1,3 +1,7 @@
+// Pins the JSX runtime. Tools such as tsx may compile this file with the
+// tsconfig of the importing app, which can have other JSX settings.
+/** @jsxRuntime automatic */
+/** @jsxImportSource react */
 import {
   Body,
   Button,
@@ -8,7 +12,7 @@ import {
   Preview,
   Section,
   Text,
-} from "@react-email/components";
+} from "react-email";
 
 interface VerificationEmailProps {
   url: string;
