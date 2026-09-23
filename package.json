@@ -29,23 +29,23 @@
   },
   "prettier": "@repo/prettier-config",
   "devDependencies": {
-    "@commitlint/cli": "^21.2.1",
-    "@commitlint/config-conventional": "^21.2.0",
+    "@commitlint/cli": "catalog:",
+    "@commitlint/config-conventional": "catalog:",
     "@repo/prettier-config": "workspace:*",
-    "@turbo/gen": "^2.10.6",
-    "dependency-cruiser": "^18.3.1",
-    "dotenv-cli": "^11.0.0",
-    "husky": "^9.1.7",
-    "knip": "^6.35.1",
-    "lint-staged": "^17.2.0",
+    "@turbo/gen": "catalog:",
+    "dependency-cruiser": "catalog:",
+    "dotenv-cli": "catalog:",
+    "husky": "catalog:",
+    "knip": "catalog:",
+    "lint-staged": "catalog:",
     "prettier": "catalog:",
-    "turbo": "^2.10.6",
+    "turbo": "catalog:",
     "typescript": "catalog:",
     "vitest": "catalog:"
   },
-  "packageManager": "pnpm@11.16.0",
+  "packageManager": "pnpm@12.5.1",
   "engines": {
-    "node": "^24.13.0",
-    "pnpm": "^11.16.0"
+    "node": "^24.21.0",
+    "pnpm": "^12.5.1"
   }
 }

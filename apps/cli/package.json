@@ -2,19 +2,24 @@
   "name": "@repo/cli",
   "private": true,
   "type": "module",
+  "bin": {
+    "cli": "./dist/index.js"
+  },
   "scripts": {
-    "build": "tsc",
+    "build": "node build.mjs",
     "clean": "git clean -xdf .cache .turbo dist node_modules",
     "dev": "tsc",
     "format": "prettier --check . --ignore-path ../../.gitignore",
     "lint": "eslint",
+    "start": "node dist/index.js",
     "test:unit": "vitest run --passWithNoTests",
     "test:unit:coverage": "vitest run --coverage --passWithNoTests",
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
   "prettier": "@repo/prettier-config",
   "dependencies": {
-    "commander": "^15.0.0"
+    "@repo/core": "workspace:*",
+    "commander": "catalog:"
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
@@ -22,6 +27,7 @@
     "@repo/tsconfig": "workspace:*",
     "@repo/vitest": "workspace:*",
     "@types/node": "catalog:",
+    "esbuild": "catalog:",
     "eslint": "catalog:",
     "prettier": "catalog:",
     "typescript": "catalog:",

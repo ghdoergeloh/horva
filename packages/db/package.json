@@ -32,18 +32,16 @@
   },
   "prettier": "@repo/prettier-config",
   "dependencies": {
-    "dotenv": "catalog:",
     "drizzle-orm": "catalog:",
-    "drizzle-zod": "catalog:",
-    "pg": "^8.22.0",
-    "zod": "catalog:"
+    "pg": "catalog:"
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
     "@repo/prettier-config": "workspace:*",
     "@repo/tsconfig": "workspace:*",
     "@repo/vitest": "workspace:*",
-    "@types/pg": "^8.20.0",
+    "@types/node": "catalog:",
+    "@types/pg": "catalog:",
     "drizzle-kit": "catalog:",
     "eslint": "catalog:",
     "prettier": "catalog:",

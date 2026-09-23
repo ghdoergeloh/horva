@@ -10,7 +10,7 @@
   "scripts": {
     "clean": "git clean -xdf .cache .turbo dist node_modules",
     "format": "prettier --check . --ignore-path ../../.gitignore",
-    "generate": "dotenv -e ../../.env -- pnpx @better-auth/cli generate --output ../db/src/schema/auth-schema.ts",
+    "generate": "dotenv -e ../../.env -- auth generate --config src/auth.ts --output ../db/src/schema/auth-schema.ts --yes",
     "lint": "eslint",
     "test:unit": "vitest run --passWithNoTests",
     "test:unit:coverage": "vitest run --coverage --passWithNoTests",
@@ -20,18 +20,21 @@
   "dependencies": {
     "@repo/db": "workspace:*",
     "@repo/transactional": "workspace:*",
-    "better-auth": "^1.6.25",
-    "zod": "catalog:"
+    "better-auth": "catalog:"
   },
   "devDependencies": {
-    "@better-auth/cli": "catalog:",
     "@repo/eslint-config": "workspace:*",
     "@repo/prettier-config": "workspace:*",
     "@repo/tsconfig": "workspace:*",
     "@repo/vitest": "workspace:*",
+    "auth": "catalog:",
     "eslint": "catalog:",
     "prettier": "catalog:",
+    "react": "catalog:react19",
     "typescript": "catalog:",
     "vitest": "catalog:"
+  },
+  "peerDependencies": {
+    "react": "catalog:react19"
   }
 }
