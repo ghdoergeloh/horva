@@ -53,5 +53,3 @@ export const db: Db = new Proxy<Db>({} as Db, {
     return typeof value === "function" ? value.bind(db) : value;
   },
 });
-
-export default db;

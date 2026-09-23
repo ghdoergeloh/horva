@@ -1,0 +1,17 @@
+{
+  "name": "@repo/quality",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "clean": "git clean -xdf .cache .turbo node_modules",
+    "format": "prettier --check . --ignore-path ../../.gitignore",
+    "lint": "eslint"
+  },
+  "prettier": "@repo/prettier-config",
+  "devDependencies": {
+    "@repo/eslint-config": "workspace:*",
+    "@repo/prettier-config": "workspace:*",
+    "eslint": "catalog:",
+    "prettier": "catalog:"
+  }
+}

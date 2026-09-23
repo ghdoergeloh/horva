@@ -1,3 +1,4 @@
+import jsxA11y from "eslint-plugin-jsx-a11y";
 import reactPlugin from "eslint-plugin-react";
 import reactHooks from "eslint-plugin-react-hooks";
 import reactRefresh from "eslint-plugin-react-refresh";
@@ -12,6 +13,7 @@ export const reactConfig = defineConfig({
     reactPlugin.configs.flat["jsx-runtime"],
     reactHooks.configs.flat["recommended-latest"],
     reactRefresh.configs.vite,
+    jsxA11y.flatConfigs.recommended,
   ],
   settings: {
     react: {

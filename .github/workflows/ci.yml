@@ -37,8 +37,27 @@ jobs:
       - name: ESLint Check
         run: pnpm lint
 
+      - name: Dependency Cruiser (circular imports)
+        run: pnpm depcruise
+
+      - name: Knip (unused files/deps/exports)
+        # Report-only for now: several findings need a product decision
+        # (e.g. is the OpenTelemetry/zod/oRPC scaffolding in apps/api,
+        # apps/react and packages/{auth,core,db,ui} still meant to be wired
+        # up, or safe to remove?) rather than something this gate should
+        # block on. Promote to a real gate once those are resolved.
+        continue-on-error: true
+        run: DATABASE_URL=postgresql://knip:knip@localhost:5432/knip pnpm knip
+
       - name: Run Vitest Tests
         run: pnpm test:unit:coverage
+
+      - name: CRAP Score Report
+        # Report-only: complexity × missing coverage, derived from the
+        # coverage-final.json files the previous step just wrote. Does not
+        # gate the build (see tooling/quality/crap-score.mjs).
+        continue-on-error: true
+        run: pnpm crap
 
       - name: Collect non-empty cobertura reports
         id: cov
