@@ -55,6 +55,11 @@ export function AlertDialog({
             </Button>
             <Button
               variant={variant === "destructive" ? "destructive" : "primary"}
+              // The dialog just opened in response to a user action; moving
+              // focus to its default action follows the WAI-ARIA Alert
+              // Dialog pattern, not the page-load anti-pattern this rule
+              // targets.
+              // eslint-disable-next-line jsx-a11y/no-autofocus
               autoFocus
               onPress={chain(onAction, close)}
             >
