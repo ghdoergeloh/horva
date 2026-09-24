@@ -18,15 +18,8 @@ updates:
       - dependency-name: "@types/node"
         update-types:
           - "version-update:semver-major"
-      # ESLint 10: eslint-plugin-react, eslint-plugin-import and
-      # eslint-plugin-jsx-a11y do not support it yet
-      - dependency-name: "eslint"
-        update-types:
-          - "version-update:semver-major"
-      - dependency-name: "@eslint/js"
-        update-types:
-          - "version-update:semver-major"
-      # TypeScript 7: typescript-eslint supports only TypeScript < 6.1
+      # TypeScript 7 is a new native compiler. Test all tools with it
+      # before the upgrade.
       - dependency-name: "typescript"
         update-types:
           - "version-update:semver-major"

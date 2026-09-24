@@ -6,15 +6,12 @@
     "build": "node build.mjs",
     "clean": "git clean -xdf .cache .turbo dist node_modules",
     "dev": "dotenv -e ../../.env -- tsx watch src/index.ts",
-    "format": "prettier --check . --ignore-path ../../.gitignore",
-    "lint": "eslint",
     "start": "node --enable-source-maps dist/index.js",
     "test:unit": "vitest run --passWithNoTests",
     "test:unit:coverage": "vitest run --coverage --passWithNoTests",
     "typecheck": "tsc --noEmit",
     "with-env": "dotenv -e ../../.env --"
   },
-  "prettier": "@repo/prettier-config",
   "dependencies": {
     "@hono/node-server": "catalog:",
     "@orpc/server": "catalog:",
@@ -25,14 +22,10 @@
     "hono": "catalog:"
   },
   "devDependencies": {
-    "@repo/eslint-config": "workspace:*",
-    "@repo/prettier-config": "workspace:*",
     "@repo/tsconfig": "workspace:*",
     "@repo/vitest": "workspace:*",
     "@types/node": "catalog:",
     "esbuild": "catalog:",
-    "eslint": "catalog:",
-    "prettier": "catalog:",
     "tsx": "catalog:",
     "typescript": "catalog:",
     "vitest": "catalog:"

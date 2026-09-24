@@ -42,8 +42,8 @@ pnpm -F @repo/api dev             # Only the API
 pnpm -F @repo/react dev           # Only the React frontend
 
 # Quality checks (CI runs all of them)
-pnpm format                       # Check formatting (format:fix writes)
-pnpm lint                         # ESLint (lint:fix fixes)
+pnpm format                       # Check formatting with Oxfmt (format:fix writes)
+pnpm lint                         # Oxlint, type-aware (lint:fix fixes)
 pnpm typecheck                    # TypeScript
 pnpm test:unit                    # Vitest (test:unit:coverage with coverage)
 pnpm build                        # Build all workspaces
@@ -81,9 +81,7 @@ pnpm preview:emails               # Preview the email templates
 │   ├── transactional   -> Transactional emails (React Email, Nodemailer)
 │   └── ui              -> UI components based on React Aria Components (installed via shadcn CLI)
 ├── tooling
-│   ├── eslint          -> Shared ESLint configs
 │   ├── github          -> Shared GitHub Actions setup
-│   ├── prettier        -> Shared Prettier config
 │   ├── quality         -> CRAP score script
 │   ├── tailwind        -> Theme (design tokens) and PostCSS config
 │   ├── typescript      -> Shared tsconfigs
@@ -100,7 +98,11 @@ pnpm preview:emails               # Preview the email templates
 - All packages are ESM and use strict TypeScript (`tooling/typescript/base.json`).
 - Dependency versions live in the catalogs in `pnpm-workspace.yaml`.
   `package.json` files reference them with `catalog:` or `catalog:react19`.
-- Imports and Tailwind classes are sorted by Prettier.
+- Oxlint lints all packages with one root config (`.oxlintrc.json`),
+  including type-aware rules. The React rules apply through an `overrides`
+  entry: add new React workspaces to its `files` list.
+- Oxfmt formats all files and sorts imports, Tailwind classes and
+  `package.json` keys (`.oxfmtrc.json`).
 - Commits follow Conventional Commits (commitlint + husky). lint-staged
   formats staged files.
 - UI code uses the semantic tokens from `tooling/tailwind/theme.css`, not

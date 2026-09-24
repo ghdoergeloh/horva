@@ -7,14 +7,11 @@
     "build": "tsc -b && vite build",
     "clean": "git clean -xdf .cache .turbo dist node_modules",
     "dev": "vite",
-    "format": "prettier --check . --ignore-path ../../.gitignore --ignore-path .prettierignore",
-    "lint": "eslint .",
     "preview": "vite preview",
     "test:unit": "vitest run --passWithNoTests",
     "test:unit:coverage": "vitest run --coverage --passWithNoTests",
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
-  "prettier": "@repo/prettier-config",
   "dependencies": {
     "@orpc/client": "catalog:",
     "@orpc/contract": "catalog:",
@@ -29,8 +26,6 @@
     "react-dom": "catalog:react19"
   },
   "devDependencies": {
-    "@repo/eslint-config": "workspace:*",
-    "@repo/prettier-config": "workspace:*",
     "@repo/tailwind-config": "workspace:*",
     "@repo/tsconfig": "workspace:*",
     "@repo/vitest": "workspace:*",
@@ -40,9 +35,7 @@
     "@types/react": "catalog:react19",
     "@types/react-dom": "catalog:react19",
     "@vitejs/plugin-react": "catalog:",
-    "eslint": "catalog:",
     "jsdom": "catalog:",
-    "prettier": "catalog:",
     "tailwindcss": "catalog:",
     "typescript": "catalog:",
     "vite": "catalog:",

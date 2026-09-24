@@ -8,7 +8,7 @@ export const Route = createFileRoute("/")({
   beforeLoad: async () => {
     const { data: session } = await authClient.getSession();
     if (!session) {
-      // eslint-disable-next-line @typescript-eslint/only-throw-error
+      // oxlint-disable-next-line typescript/only-throw-error
       throw redirect({ to: "/login" });
     }
   },

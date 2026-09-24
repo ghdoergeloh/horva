@@ -25,7 +25,7 @@ jobs:
 
       - uses: ./tooling/github/setup
 
-      - name: Prettier Check
+      - name: Format Check
         run: pnpm format
 
       - name: Build
@@ -34,7 +34,7 @@ jobs:
       - name: Type Check
         run: pnpm typecheck
 
-      - name: ESLint Check
+      - name: Lint
         run: pnpm lint
 
       - name: Dependency Cruiser (circular imports)
