@@ -154,7 +154,7 @@ function DoneTasksSection({
   const [accumulated, setAccumulated] = useState<TaskRow[]>([]);
 
   // Reset when navigating to a different project
-  /* eslint-disable react-hooks/set-state-in-effect */
+  /* oxlint-disable react-hooks/set-state-in-effect */
   useEffect(() => {
     setOpen(false);
     setPage(0);
@@ -185,7 +185,7 @@ function DoneTasksSection({
       return [...prev, ...newItems];
     });
   }, [fetched]);
-  /* eslint-enable react-hooks/set-state-in-effect */
+  /* oxlint-enable react-hooks/set-state-in-effect */
 
   const hasMore = (fetched?.length ?? 0) === PAGE_SIZE;
 

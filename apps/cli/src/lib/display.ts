@@ -28,7 +28,7 @@ export function colorProject(name: string, color: string): string {
 /** Pad a string to `width` visible characters, ignoring ANSI escape codes. */
 export function padVisible(str: string, width: number): string {
   // Strip ANSI codes to measure visible length
-  // eslint-disable-next-line no-control-regex
+  // oxlint-disable-next-line no-control-regex
   const visible = str.replace(/\u001B\[[0-9;]*m/g, "");
   const pad = Math.max(0, width - visible.length);
   return str + " ".repeat(pad);

@@ -9,11 +9,8 @@
   },
   "scripts": {
     "clean": "git clean -xdf .cache .turbo node_modules",
-    "format": "prettier --check . --ignore-path ../../.gitignore",
-    "lint": "eslint",
     "typecheck": "tsc --noEmit"
   },
-  "prettier": "@horva/prettier-config",
   "dependencies": {
     "@vitejs/plugin-react": "catalog:",
     "@vitest/coverage-istanbul": "catalog:",
@@ -22,11 +19,7 @@
     "vitest": "catalog:"
   },
   "devDependencies": {
-    "@horva/eslint-config": "workspace:*",
-    "@horva/prettier-config": "workspace:*",
     "@horva/tsconfig": "workspace:*",
-    "eslint": "catalog:",
-    "prettier": "catalog:",
     "typescript": "catalog:"
   }
 }

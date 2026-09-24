@@ -40,14 +40,6 @@
       "cache": false,
       "persistent": false
     },
-    "format": {
-      "outputs": [".cache/.prettiercache"],
-      "outputLogs": "new-only"
-    },
-    "lint": {
-      "dependsOn": ["^build"],
-      "outputs": [".cache/.eslintcache"]
-    },
     "typecheck": {
       "dependsOn": ["^build"],
       "outputs": []
@@ -74,26 +66,6 @@
     },
     "//#clean": {
       "cache": false
-    },
-    "push": {
-      "cache": false,
-      "interactive": true
-    },
-    "generate": {
-      "cache": false,
-      "interactive": true
-    },
-    "migrate": {
-      "cache": false,
-      "interactive": true
-    },
-    "studio": {
-      "cache": false,
-      "persistent": true
-    },
-    "ui-add": {
-      "cache": false,
-      "interactive": true
     }
   }
 }

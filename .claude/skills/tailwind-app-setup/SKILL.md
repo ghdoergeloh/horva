@@ -169,4 +169,4 @@ Use OKLCH for new colours (matches the existing palette and gives perceptually u
 
 ## Lint guard (optional)
 
-To prevent regressions, an ESLint rule via `no-restricted-syntax` can flag `className` strings that contain `(gray|indigo|red|amber|green|blue|sky|slate|zinc)-[0-9]`. Not currently enabled in this repo. If asked to add one, place it in `tooling/eslint/react.js` so it applies to all React workspaces.
+To prevent regressions, a lint rule can flag `className` strings that contain `(gray|indigo|red|amber|green|blue|sky|slate|zinc)-[0-9]`. Not currently enabled in this repo. Oxlint has no `no-restricted-syntax`, so this needs a small JavaScript plugin, registered under `jsPlugins` in `.oxlintrc.json`.
