@@ -1,4 +1,8 @@
-import { render } from "@react-email/components";
+// Pins the JSX runtime. Tools such as tsx may compile this file with the
+// tsconfig of the importing app, which can have other JSX settings.
+/** @jsxRuntime automatic */
+/** @jsxImportSource react */
+import { render } from "react-email";
 
 import { ResetPasswordEmail } from "./templates/reset-password-email";
 import { VerificationEmail } from "./templates/verification-email";

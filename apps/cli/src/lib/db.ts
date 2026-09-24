@@ -1,6 +1,8 @@
-import "dotenv/config";
+import { config } from "dotenv";
 
 import { readConfig } from "./config.js";
+
+config({ quiet: true });
 
 // Fall back to config file if env var not set
 if (!process.env["DATABASE_URL"]) {

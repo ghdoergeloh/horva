@@ -20,7 +20,7 @@ import { Popover } from "./Popover";
 
 const buttonStyles = tv({
   extend: focusRing,
-  base: "border-0 bg-transparent flex gap-2 items-center cursor-default rounded-xs font-sans text-sm text-neutral-800 dark:text-neutral-200 [-webkit-tap-highlight-color:transparent]",
+  base: "border-0 bg-transparent flex gap-2 items-center cursor-default rounded-xs font-sans text-sm text-foreground [-webkit-tap-highlight-color:transparent]",
 });
 
 export interface ColorPickerProps extends Omit<

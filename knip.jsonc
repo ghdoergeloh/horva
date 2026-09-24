@@ -13,7 +13,7 @@
       // `orpc` (the tanstack-query utils bridge) and the `initOrpc` it depends
       // on are unused by any current component - every call site still talks
       // to the API via raw `client.x()` calls. Kept as the documented,
-      // eventual `@orpc/react-query` entry point (see the Architecture
+      // eventual `@orpc/tanstack-query` entry point (see the Architecture
       // section of the README) rather than deleted and re-added later.
       "entry": ["src/renderer/src/lib/orpc.ts"],
     },
@@ -39,6 +39,12 @@
         "react-aria-components",
         "tailwindcss",
       ],
+    },
+    "packages/db": {
+      // The Drizzle plugin would execute drizzle.config.ts, which needs
+      // DATABASE_URL. The config is read by drizzle-kit, not imported.
+      "drizzle": false,
+      "entry": ["drizzle.config.ts"],
     },
     "tooling/prettier": {
       // Referenced by name in index.js's `plugins` array, not imported.

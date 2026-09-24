@@ -33,7 +33,6 @@ Horva is a time tracking suite built around the idea that your day is a sequence
 - **CLI** — scriptable access to your data, works both locally and against a remote API.
 - **End-to-end typed** — a shared oRPC contract means the API, web app, and CLI can't drift out of sync.
 - **Self-hosted by default** — bring your own PostgreSQL; no third-party services required.
-- **OpenTelemetry-ready** — structured logging and wide events for observability.
 
 ## Downloads
 
@@ -64,8 +63,8 @@ The desktop app bundles its own renderer; no separate web server is required for
 
 ### Prerequisites
 
-- **Node.js** `^24.13.0`
-- **pnpm** `^10.28.2`
+- **Node.js** `^24.21.0`
+- **pnpm** `^12.5.1`
 - **Docker** + Docker Compose (for PostgreSQL and Mailpit)
 
 ### 1. Clone and install
@@ -195,11 +194,10 @@ flowchart LR
 - **Monorepo**: pnpm workspaces + Turborepo
 - **API**: [Hono](https://hono.dev/) + [oRPC](https://orpc.unnoq.com/)
 - **Web**: React 19, Vite, TanStack Router, TanStack Query, Tailwind CSS 4
-- **Desktop**: Electron 35 + electron-vite + electron-builder
+- **Desktop**: Electron 44 + electron-vite + electron-builder
 - **Database**: PostgreSQL + [Drizzle ORM](https://orm.drizzle.team/)
 - **Auth**: [better-auth](https://www.better-auth.com/) with Drizzle adapter
-- **Testing**: Vitest
-- **Observability**: OpenTelemetry (OTLP-compatible exporters)
+- **Testing**: Vitest, Playwright (Electron end-to-end)
 
 ## Contributing
 

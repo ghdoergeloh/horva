@@ -11,10 +11,12 @@ const { default: dotenv } = await import("dotenv");
 if (is.dev) {
   dotenv.config({
     path: new URL("../../../../.env", import.meta.url).pathname,
+    quiet: true,
   });
 } else {
   dotenv.config({
     path: new URL(".env", `file://${app.getPath("userData")}/`).pathname,
+    quiet: true,
   });
 }
 

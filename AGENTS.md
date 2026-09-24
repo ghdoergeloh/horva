@@ -1,10 +1,10 @@
 # AGENTS.md
 
-Instructions for coding agents in this repository. Only rules that cannot be read off the code belong here. Overviews, command lists and anything the configs already enforce go in `README.md` or `CONTRIBUTING.md`.
+Instructions for coding agents in this repository. Only rules that cannot be read off the code belong here. Overviews and command lists go in `README.md` or `CONTRIBUTING.md`. Rules that a config already enforces do not need to be repeated.
 
 ## Repository Rules
 
-- Business logic lives in `packages/core/src/services/*`. Handlers and routes only wire things up.
+- Business logic lives in `packages/core/src/services/*`. Handlers in `packages/core/src/handlers/*` and the routes in `apps/api` only wire things up. `.dependency-cruiser.cjs` enforces the package boundaries.
 - A new API endpoint starts in `packages/contract/src/index.ts`, then a handler in `packages/core/src/handlers/`, then one line in `apps/api/src/router.ts`.
 - Dependency versions come from the `pnpm-workspace.yaml` catalogs. Write `catalog:` (or `catalog:react19`) in `package.json`, never a literal version.
 - `pnpm -F <pkg> pack` runs pnpm's builtin pack command, not the package script. Use `pnpm --filter <pkg> run pack`.
@@ -13,7 +13,7 @@ Instructions for coding agents in this repository. Only rules that cannot be rea
 
 ## Styling
 
-Use semantic tokens (`bg-primary`, `text-foreground`, `border-border`, …), never raw palette colors (`bg-gray-*`, `text-indigo-*`, …). Tokens carry dark mode behaviour, raw palettes do not. The tokens are the variables in `tooling/tailwind/theme.css`.
+Use semantic tokens (`bg-primary`, `text-foreground`, `border-border`, …), never raw palette colors (`bg-gray-*`, `text-indigo-*`, …). Tokens carry dark mode behaviour, raw palettes do not. The tokens are the variables in `tooling/tailwind/theme.css`. Components added with `ui-add` come with raw palette colors. Convert them to tokens.
 
 For wiring Tailwind into a new app, adding tokens, or missing-class and dark-mode-flash problems, follow `.claude/skills/tailwind-app-setup/SKILL.md`.
 
@@ -29,4 +29,4 @@ Same plain English. Write only comments that increase maintainability — on pub
 
 ## Before Calling a Task Done
 
-Run `pnpm format`, then `lint`, `typecheck` and `test:unit` for every changed package (`pnpm --filter <package> <script>`), or the workspace-wide scripts when a change spans packages. Fix what they report.
+Run `pnpm format:fix`, then `lint`, `typecheck` and `test:unit` for every changed package (`pnpm --filter <package> <script>`), or the workspace-wide scripts when a change spans packages. Fix what they report. Run `pnpm knip` and `pnpm depcruise` when dependencies or imports between packages changed.
