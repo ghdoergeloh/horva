@@ -37,6 +37,9 @@ jobs:
       - name: ESLint Check
         run: pnpm lint
 
+      - name: Oxlint Check
+        run: pnpm lint:oxlint
+
       - name: Dependency Cruiser (circular imports)
         run: pnpm depcruise
 

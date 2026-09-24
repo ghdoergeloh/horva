@@ -1,0 +1,8 @@
+{
+  "$schema": "../../node_modules/oxlint/configuration_schema.json",
+  "extends": ["../../.oxlintrc.json", "../../tooling/eslint/oxlint-react.json"],
+  "rules": {
+    "react/only-export-components": "off",
+    "typescript/no-empty-object-type": "off"
+  }
+}

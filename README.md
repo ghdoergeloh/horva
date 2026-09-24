@@ -44,6 +44,7 @@ pnpm -F @repo/react dev           # Only the React frontend
 # Quality checks (CI runs all of them)
 pnpm format                       # Check formatting with Oxfmt (format:fix writes)
 pnpm lint                         # ESLint (lint:fix fixes)
+pnpm lint:oxlint                  # Oxlint, runs next to ESLint for now
 pnpm typecheck                    # TypeScript
 pnpm test:unit                    # Vitest (test:unit:coverage with coverage)
 pnpm build                        # Build all workspaces

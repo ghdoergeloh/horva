@@ -66,6 +66,8 @@ catalog:
   lucide-react: ^1.47.0
   nodemailer: ^10.0.10
   oxfmt: ^0.70.0
+  oxlint: ^1.85.0
+  oxlint-tsgolint: ^7.0.2002
   pg: ^8.23.0
   react-aria: ^3.52.1
   react-aria-components: ^1.21.1
