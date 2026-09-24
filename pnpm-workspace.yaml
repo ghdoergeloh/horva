@@ -21,7 +21,6 @@ catalog:
   "@eslint/compat": ^2.1.1
   "@eslint/js": ^9.39.5
   "@hono/node-server": ^2.1.1
-  "@ianvs/prettier-plugin-sort-imports": ^4.7.1
   "@orpc/client": ^1.15.3
   "@orpc/contract": ^1.15.3
   "@orpc/server": ^1.15.3
@@ -66,10 +65,8 @@ catalog:
   lint-staged: ^17.5.1
   lucide-react: ^1.47.0
   nodemailer: ^10.0.10
+  oxfmt: ^0.70.0
   pg: ^8.23.0
-  prettier: ^3.9.8
-  prettier-plugin-packagejson: ^3.0.2
-  prettier-plugin-tailwindcss: ^0.8.1
   react-aria: ^3.52.1
   react-aria-components: ^1.21.1
   react-email: 6.9.5
@@ -99,8 +96,3 @@ linkWorkspacePackages: true
 # uses. One shared version avoids two copies of the native binary.
 overrides:
   lightningcss: ^1.33.0
-
-publicHoistPattern:
-  - "@ianvs/prettier-plugin-sort-imports"
-  - prettier-plugin-packagejson
-  - prettier-plugin-tailwindcss

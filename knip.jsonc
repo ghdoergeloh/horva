@@ -5,10 +5,6 @@
       // Loaded by `turbo gen` (plop-style), not imported by any source file.
       "entry": ["turbo/generators/config.ts"],
     },
-    "tooling/prettier": {
-      // Referenced by name in index.js's `plugins` array, not imported.
-      "ignoreDependencies": ["prettier-plugin-packagejson"],
-    },
     "tooling/tailwind": {
       // Referenced by name in postcss-config.js's `plugins` object, not imported.
       "ignoreDependencies": ["@tailwindcss/postcss"],

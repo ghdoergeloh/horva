@@ -13,13 +13,13 @@
     "db:studio": "turbo -F @repo/db studio",
     "depcruise": "depcruise apps packages --config .dependency-cruiser.cjs",
     "dev": "turbo watch dev --continue",
-    "format": "turbo run format --continue -- --cache --cache-location .cache/.prettiercache",
-    "format:fix": "turbo run format --continue -- --write --cache --cache-location .cache/.prettiercache",
-    "postinstall": "pnpm lint:ws",
+    "format": "oxfmt --check",
+    "format:fix": "oxfmt",
     "knip": "knip",
     "lint": "turbo run lint --continue -- --cache --cache-location .cache/.eslintcache",
     "lint:fix": "turbo run lint --continue -- --fix --cache --cache-location .cache/.eslintcache",
     "lint:ws": "pnpm dlx sherif@latest",
+    "postinstall": "pnpm lint:ws",
     "prepare": "husky",
     "preview:emails": "pnpm -F @repo/transactional preview",
     "test": "vitest --passWithNoTests",
@@ -27,25 +27,23 @@
     "test:unit:coverage": "turbo run test:unit:coverage",
     "typecheck": "turbo run typecheck"
   },
-  "prettier": "@repo/prettier-config",
   "devDependencies": {
     "@commitlint/cli": "catalog:",
     "@commitlint/config-conventional": "catalog:",
-    "@repo/prettier-config": "workspace:*",
     "@turbo/gen": "catalog:",
     "dependency-cruiser": "catalog:",
     "dotenv-cli": "catalog:",
     "husky": "catalog:",
     "knip": "catalog:",
     "lint-staged": "catalog:",
-    "prettier": "catalog:",
+    "oxfmt": "catalog:",
     "turbo": "catalog:",
     "typescript": "catalog:",
     "vitest": "catalog:"
   },
-  "packageManager": "pnpm@12.5.1",
   "engines": {
     "node": "^24.21.0",
     "pnpm": "^12.5.1"
-  }
+  },
+  "packageManager": "pnpm@12.5.1"
 }

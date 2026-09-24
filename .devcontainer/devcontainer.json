@@ -42,7 +42,7 @@
       "extensions": [
         "anthropic.claude-code",
         "dbaeumer.vscode-eslint",
-        "esbenp.prettier-vscode",
+        "oxc.oxc-vscode",
         "bradlc.vscode-tailwindcss",
         "ms-azuretools.vscode-docker",
         "redhat.vscode-yaml",
@@ -71,7 +71,7 @@
           }
         },
         "editor.formatOnSave": true,
-        "editor.defaultFormatter": "esbenp.prettier-vscode",
+        "editor.defaultFormatter": "oxc.oxc-vscode",
         "editor.codeActionsOnSave": {
           "source.fixAll.eslint": "explicit"
         },

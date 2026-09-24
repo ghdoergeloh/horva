@@ -14,10 +14,6 @@
       "cache": false,
       "persistent": false
     },
-    "format": {
-      "outputs": [".cache/.prettiercache"],
-      "outputLogs": "new-only"
-    },
     "lint": {
       "dependsOn": ["^topo", "^build"],
       "outputs": [".cache/.eslintcache"]
