@@ -16,7 +16,7 @@ await build({
   external: ["pg-native"],
   // Makes the bundle executable and lets bundled CommonJS code call `require`.
   banner: {
-    js: "#!/usr/bin/env node\nimport { createRequire } from 'node:module'; const require = createRequire(import.meta.url);",
+    js: "#!/usr/bin/env node\nimport { createRequire as __createRequire } from 'node:module'; const require = __createRequire(import.meta.url);",
   },
   logLevel: "info",
 });
