@@ -15,10 +15,5 @@
       "drizzle": false,
       "entry": ["drizzle.config.ts"],
     },
-    "tooling/eslint": {
-      // Enabled via the "typescript" string in base.js's import/resolver
-      // setting (eslint-import-resolver-* convention), not imported directly.
-      "ignoreDependencies": ["eslint-import-resolver-typescript"],
-    },
   },
 }

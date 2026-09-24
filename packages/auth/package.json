@@ -10,7 +10,6 @@
   "scripts": {
     "clean": "git clean -xdf .cache .turbo dist node_modules",
     "generate": "dotenv -e ../../.env -- auth generate --config src/auth.ts --output ../db/src/schema/auth-schema.ts --yes",
-    "lint": "eslint",
     "test:unit": "vitest run --passWithNoTests",
     "test:unit:coverage": "vitest run --coverage --passWithNoTests",
     "typecheck": "tsc --noEmit"
@@ -21,11 +20,9 @@
     "better-auth": "catalog:"
   },
   "devDependencies": {
-    "@repo/eslint-config": "workspace:*",
     "@repo/tsconfig": "workspace:*",
     "@repo/vitest": "workspace:*",
     "auth": "catalog:",
-    "eslint": "catalog:",
     "react": "catalog:react19",
     "typescript": "catalog:",
     "vitest": "catalog:"

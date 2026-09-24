@@ -3,11 +3,6 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "clean": "git clean -xdf .cache .turbo node_modules",
-    "lint": "eslint"
-  },
-  "devDependencies": {
-    "@repo/eslint-config": "workspace:*",
-    "eslint": "catalog:"
+    "clean": "git clean -xdf .cache .turbo node_modules"
   }
 }

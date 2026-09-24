@@ -41,7 +41,6 @@
     "vscode": {
       "extensions": [
         "anthropic.claude-code",
-        "dbaeumer.vscode-eslint",
         "oxc.oxc-vscode",
         "bradlc.vscode-tailwindcss",
         "ms-azuretools.vscode-docker",
@@ -73,9 +72,8 @@
         "editor.formatOnSave": true,
         "editor.defaultFormatter": "oxc.oxc-vscode",
         "editor.codeActionsOnSave": {
-          "source.fixAll.eslint": "explicit"
+          "source.fixAll.oxc": "explicit"
         },
-        "eslint.useFlatConfig": true,
         "typescript.tsdk": "node_modules/typescript/lib",
         "typescript.enablePromptUseWorkspaceTsdk": true,
         // Tailwind v4 + the cva/cn helpers used across packages/ui
