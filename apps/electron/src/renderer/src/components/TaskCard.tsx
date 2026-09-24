@@ -253,13 +253,23 @@ export function TaskCard({
           />
         ) : (
           <div className="flex items-center gap-2">
-            <span
-              onClick={canEdit && onRename ? startEditing : undefined}
-              title={onRename ? t("taskCard.clickToEdit") : undefined}
-              className={`text-foreground truncate text-sm font-medium ${onRename ? "hover:text-sidebar-accent-foreground cursor-text" : ""}`}
-            >
-              {name}
-            </span>
+            {canEdit && onRename ? (
+              <button
+                type="button"
+                onClick={startEditing}
+                title={t("taskCard.clickToEdit")}
+                className="text-foreground hover:text-sidebar-accent-foreground cursor-text truncate text-left text-sm font-medium"
+              >
+                {name}
+              </button>
+            ) : (
+              <span
+                title={onRename ? t("taskCard.clickToEdit") : undefined}
+                className={`text-foreground truncate text-sm font-medium ${onRename ? "hover:text-sidebar-accent-foreground cursor-text" : ""}`}
+              >
+                {name}
+              </span>
+            )}
             {isActivity && onSetRecurrence && (
               <RecurrenceModal
                 recurrenceRule={recurrenceRule}

@@ -1,8 +1,10 @@
 import type { ReactNode } from "react";
-import { useEffect, useState } from "react";
+import { useEffect, useId, useState } from "react";
 import { X } from "lucide-react";
 
 import { Button } from "@horva/ui/Button";
+
+import { useEscapeKey } from "~/lib/useEscapeKey.js";
 
 /**
  * Right-hand slide-over panel. Lightweight overlay in the same style as the
@@ -25,28 +27,32 @@ export function Sheet({
     return () => cancelAnimationFrame(id);
   }, []);
 
-  useEffect(() => {
-    function onKey(e: KeyboardEvent) {
-      if (e.key === "Escape") onClose();
-    }
-    document.addEventListener("keydown", onKey);
-    return () => document.removeEventListener("keydown", onKey);
-  }, [onClose]);
+  useEscapeKey(onClose);
+  const titleId = useId();
 
   return (
     <div
       className="bg-foreground/30 fixed inset-0 z-50"
+      // A click on the backdrop is a mouse shortcut. Keyboard users close
+      // the dialog with Escape or the close button.
+      role="presentation"
       onClick={(e) => {
         if (e.target === e.currentTarget) onClose();
       }}
     >
       <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby={titleId}
         className={`border-border bg-card fixed top-0 right-0 flex h-full w-[28rem] max-w-[90vw] flex-col border-l shadow-xl transition-transform duration-200 ease-out ${
           shown ? "translate-x-0" : "translate-x-full"
         }`}
       >
         <div className="border-border flex items-center justify-between border-b px-5 py-4">
-          <h2 className="text-foreground truncate text-sm font-semibold">
+          <h2
+            id={titleId}
+            className="text-foreground truncate text-sm font-semibold"
+          >
             {title}
           </h2>
           <Button

@@ -113,6 +113,7 @@ export function InlineNewSlotRow({
     >
       <td className="py-1 pr-2">
         <TimeField
+          // oxlint-disable-next-line jsx-a11y/no-autofocus -- The row opens on a user action. Focus goes to its first empty field.
           autoFocus={autoFocusStart}
           value={stringToTime(startTime) as never}
           onChange={(value) => {
@@ -125,6 +126,7 @@ export function InlineNewSlotRow({
       </td>
       <td className="py-1 pr-2">
         <TimeField
+          // oxlint-disable-next-line jsx-a11y/no-autofocus -- The row opens on a user action. Focus goes to its first empty field.
           autoFocus={autoFocusEnd}
           value={stringToTime(endTime) as never}
           onChange={(value) => {
@@ -147,6 +149,7 @@ export function InlineNewSlotRow({
       </td>
       <td className="py-1 pr-2" colSpan={2}>
         <Select
+          // oxlint-disable-next-line jsx-a11y/no-autofocus -- The row opens on a user action. Focus goes to its first empty field.
           autoFocus={!autoFocusStart && !autoFocusEnd}
           value={taskId === null ? "" : String(taskId)}
           onChange={(value) => setTaskId(value ? Number(value) : null)}

@@ -79,8 +79,18 @@ export function DayRow({
     >
       {/* Timeline row – click to toggle */}
       <div
-        className={`group flex cursor-pointer items-center gap-4 px-3 py-2 ${!isToday && !expanded ? "hover:bg-background" : ""} rounded-lg`}
+        role="button"
+        tabIndex={0}
+        aria-expanded={expanded}
+        className={`group flex cursor-pointer items-center gap-4 px-3 py-2 ${!isToday && !expanded ? "hover:bg-background" : ""} focus-visible:ring-ring rounded-lg outline-none focus-visible:ring-2`}
         onClick={onToggle}
+        onKeyDown={(e) => {
+          if (e.target !== e.currentTarget) return;
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            onToggle();
+          }
+        }}
       >
         {/* Day label */}
         <div
@@ -119,6 +129,9 @@ export function DayRow({
             const isRunning = !slot.endedAt;
 
             return (
+              // Mouse shortcut to edit a slot. With the keyboard, open the day
+              // and edit the slot in its row.
+              // oxlint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions
               <div
                 key={slot.id}
                 style={{

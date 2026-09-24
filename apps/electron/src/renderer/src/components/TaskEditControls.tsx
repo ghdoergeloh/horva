@@ -198,6 +198,7 @@ export function PlanButton({ scheduledDate, onPlan }: PlanButtonProps) {
               commitAndClose();
             }
           }}
+          // oxlint-disable-next-line jsx-a11y/no-autofocus -- The picker replaces the button that the user just pressed.
           autoFocus
           className="text-xs"
         />
@@ -228,6 +229,7 @@ export function InlineRenameInput({
 
   return (
     <TextField
+      // oxlint-disable-next-line jsx-a11y/no-autofocus -- The input replaces the name that the user just clicked.
       autoFocus
       value={value}
       onChange={onChange}

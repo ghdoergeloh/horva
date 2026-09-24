@@ -174,6 +174,7 @@ function SetupWizard({ defaultDatabaseUrl, onDone }: SetupWizardProps) {
               {t("setup.nameLabel")}
             </label>
             <TextField
+              // oxlint-disable-next-line jsx-a11y/no-autofocus -- The setup form is the only content on this screen.
               autoFocus
               value={name}
               onChange={setName}

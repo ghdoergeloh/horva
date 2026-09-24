@@ -97,11 +97,14 @@ function NewTaskForm({
   }
 
   return (
+    // Handles Enter and Escape for all controls in the row.
+    // oxlint-disable-next-line jsx-a11y/no-static-element-interactions
     <div
       onKeyDown={handleKeyDown}
       className="border-border flex items-center gap-2 border-t px-3 py-2"
     >
       <TextField
+        // oxlint-disable-next-line jsx-a11y/no-autofocus -- The row opens on a user action.
         autoFocus
         value={name}
         onChange={setName}

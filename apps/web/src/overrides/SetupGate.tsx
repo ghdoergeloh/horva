@@ -139,6 +139,7 @@ function LoginForm() {
         <div className="mt-6 space-y-4">
           {mode === "signup" && (
             <TextField
+              // oxlint-disable-next-line jsx-a11y/no-autofocus -- The form is the only content on this screen.
               autoFocus
               label={t("auth.nameLabel")}
               value={name}
@@ -148,6 +149,7 @@ function LoginForm() {
             />
           )}
           <TextField
+            // oxlint-disable-next-line jsx-a11y/no-autofocus -- The form is the only content on this screen.
             autoFocus={mode !== "signup"}
             label={t("auth.emailLabel")}
             type="email"
@@ -325,6 +327,7 @@ function ResetPasswordForm() {
 
         <div className="mt-6 space-y-4">
           <TextField
+            // oxlint-disable-next-line jsx-a11y/no-autofocus -- The form is the only content on this screen.
             autoFocus
             label={t("auth.newPasswordLabel")}
             type="password"
