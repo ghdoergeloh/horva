@@ -81,6 +81,7 @@ export function StartTaskDialog({
         {/* Search */}
         <div className="border-border border-b px-4 py-3">
           <SearchField
+            // oxlint-disable-next-line jsx-a11y/no-autofocus -- The dialog opens on a user action. Focus goes to the search.
             autoFocus
             value={search}
             onChange={setSearch}

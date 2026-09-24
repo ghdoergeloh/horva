@@ -204,6 +204,7 @@ export function InlineSlotRow({
     >
       <td className="py-1 pr-2">
         <TimeField
+          // oxlint-disable-next-line jsx-a11y/no-autofocus -- Edit mode starts on a user action. Focus moves into the row.
           autoFocus
           value={stringToTime(startTime) as never}
           onChange={(value) => setStartTime(timeToString(value))}

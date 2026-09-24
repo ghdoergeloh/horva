@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { Component, useState } from "react";
+import { Component, useId, useState } from "react";
 import { useDroppable } from "@dnd-kit/core";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createRootRoute, Outlet, useLocation } from "@tanstack/react-router";
@@ -35,6 +35,7 @@ import {
 } from "~/contexts/TaskDragContext.js";
 import i18n from "~/i18n/index.js";
 import { client } from "~/lib/orpc.js";
+import { useEscapeKey } from "~/lib/useEscapeKey.js";
 
 const COLOR_PRESETS = [
   "#6366f1",
@@ -51,6 +52,8 @@ const COLOR_PRESETS = [
 
 function NewProjectModal({ onClose }: { onClose: () => void }) {
   const { t } = useTranslation();
+  const titleId = useId();
+  useEscapeKey(onClose);
   const queryClient = useQueryClient();
   const [name, setName] = useState("");
   const [color, setColor] = useState("#6366f1");
@@ -82,13 +85,21 @@ function NewProjectModal({ onClose }: { onClose: () => void }) {
   return (
     <div
       className="bg-foreground/30 fixed inset-0 z-50 flex items-center justify-center"
+      // A click on the backdrop is a mouse shortcut. Keyboard users close
+      // the dialog with Escape or the close button.
+      role="presentation"
       onClick={(e) => {
         if (e.target === e.currentTarget) onClose();
       }}
     >
-      <div className="border-border bg-card w-80 rounded-xl border p-5 shadow-xl">
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby={titleId}
+        className="border-border bg-card w-80 rounded-xl border p-5 shadow-xl"
+      >
         <div className="mb-4 flex items-center justify-between">
-          <h2 className="text-foreground text-sm font-semibold">
+          <h2 id={titleId} className="text-foreground text-sm font-semibold">
             {t("project.new")}
           </h2>
           <Button

@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useId, useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { ArrowRight, X } from "lucide-react";
 import { useTranslation } from "react-i18next";
@@ -8,6 +8,7 @@ import { Checkbox } from "@horva/ui/Checkbox";
 
 import { FormattedMinutes } from "~/components/FormattedMinutes.js";
 import { client } from "~/lib/orpc.js";
+import { useEscapeKey } from "~/lib/useEscapeKey.js";
 
 type PreviewLine = Awaited<
   ReturnType<typeof client.moco.preview>
@@ -36,6 +37,8 @@ export function MocoSyncModal({
 }) {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
+  const titleId = useId();
+  useEscapeKey(onClose);
 
   const {
     data: lines = [],
@@ -149,13 +152,21 @@ export function MocoSyncModal({
   return (
     <div
       className="bg-foreground/30 fixed inset-0 z-50 flex items-center justify-center p-6"
+      // A click on the backdrop is a mouse shortcut. Keyboard users close
+      // the dialog with Escape or the close button.
+      role="presentation"
       onClick={(e) => {
         if (e.target === e.currentTarget) onClose();
       }}
     >
-      <div className="border-border bg-card flex max-h-[80vh] w-full max-w-2xl flex-col rounded-xl border shadow-xl">
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby={titleId}
+        className="border-border bg-card flex max-h-[80vh] w-full max-w-2xl flex-col rounded-xl border shadow-xl"
+      >
         <div className="border-border flex items-center justify-between border-b px-5 py-4">
-          <h2 className="text-foreground text-sm font-semibold">
+          <h2 id={titleId} className="text-foreground text-sm font-semibold">
             {t("moco.syncTitle")}
           </h2>
           <Button
