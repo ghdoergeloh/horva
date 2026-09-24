@@ -9,6 +9,7 @@ allowBuilds:
   "@tailwindcss/oxide": true
   better-sqlite3: false
   bufferutil: false
+  electron: true
   electron-winstaller: false
   esbuild: true
   prisma: false
@@ -17,45 +18,86 @@ allowBuilds:
   unrs-resolver: false
 
 catalog:
-  "@better-auth/cli": ^1.4.21
+  "@commitlint/cli": ^21.2.3
+  "@commitlint/config-conventional": ^21.2.3
   "@dnd-kit/core": ^6.3.1
   "@dnd-kit/sortable": ^10.0.0
   "@dnd-kit/utilities": ^3.2.2
+  "@electron-toolkit/utils": ^4.0.0
+  "@eslint/compat": ^2.1.1
+  "@eslint/js": ^9.39.5
   "@hono/node-server": ^2.1.1
+  "@ianvs/prettier-plugin-sort-imports": ^4.7.1
+  "@inquirer/prompts": ^8.7.2
   "@internationalized/date": ^3.12.4
-  "@orpc/client": ^1.15.1
-  "@orpc/contract": ^1.15.1
-  "@orpc/server": ^1.15.1
-  "@orpc/tanstack-query": ^1.15.1
+  "@orpc/client": ^1.15.3
+  "@orpc/contract": ^1.15.3
+  "@orpc/server": ^1.15.3
+  "@orpc/tanstack-query": ^1.15.3
+  "@playwright/test": ^1.63.0
+  # Exact versions: `email dev` requires @react-email/ui to match react-email.
+  "@react-email/ui": 6.9.5
   "@tailwindcss/postcss": ^4.3.3
   "@tailwindcss/vite": ^4.3.3
-  "@tanstack/react-query": ^5.103.0
-  "@tanstack/react-router": ^1.170.36
-  "@tanstack/router-plugin": ^1.168.38
-  "@types/node": ^26.5.1
+  "@tanstack/react-query": ^5.103.2
+  "@tanstack/react-router": ^1.170.38
+  "@tanstack/router-plugin": ^1.168.40
+  "@turbo/gen": ^2.11.3
+  "@types/node": ^24.13.6
+  "@types/nodemailer": ^8.0.2
   "@types/pg": ^8.23.1
   "@vitejs/plugin-react": ^6.1.1
   "@vitest/coverage-istanbul": ^5.0.1
   "@vitest/coverage-v8": ^5.0.1
+  auth: ^1.7.5
   better-auth: ^1.7.5
+  chalk: ^6.0.0
   commander: ^15.0.0
-  dotenv: ^17.4.2
-  drizzle-kit: ^0.31.10
-  drizzle-orm: ^0.45.2
+  dependency-cruiser: ^18.4.0
+  dotenv: ^18.0.3
+  dotenv-cli: ^11.0.0
+  drizzle-kit: ^0.31.11
+  drizzle-orm: ^0.45.3
+  electron: ^44.4.5
+  electron-builder: ^26.15.3
+  electron-vite: ^5.0.0
+  esbuild: ^0.28.2
   eslint: ^9.39.5
+  eslint-import-resolver-typescript: ^4.4.5
+  eslint-plugin-import: ^2.32.0
+  eslint-plugin-jsx-a11y: ^6.10.2
+  eslint-plugin-react: ^7.37.5
+  eslint-plugin-react-hooks: ^7.1.1
+  eslint-plugin-react-refresh: ^0.5.7
+  eslint-plugin-sonarjs: ^4.2.1
+  eslint-plugin-turbo: ^2.11.3
+  globals: ^17.12.0
   hono: ^4.13.8
+  husky: ^9.1.7
   i18next: ^26.4.2
-  jsdom: ^30.0.1
-  lucide-react: ^1.46.0
+  jsdom: ^30.1.1
+  knip: ^6.37.0
+  lint-staged: ^17.5.1
+  lucide-react: ^1.47.0
+  nodemailer: ^10.0.10
   pg: ^8.23.0
-  prettier: ^3.9.7
+  prettier: ^3.9.9
+  prettier-plugin-packagejson: ^3.0.2
+  prettier-plugin-tailwindcss: ^0.8.1
   react-aria: ^3.52.1
   react-aria-components: ^1.21.1
-  react-i18next: ^17.0.14
+  react-email: 6.9.5
+  react-i18next: ^17.0.15
   rrule: ^2.8.1
+  tailwind-merge: ^3.7.0
+  tailwind-variants: ^3.3.1
   tailwindcss: ^4.3.3
-  tsx: ^4.23.13
+  tailwindcss-animate: ^1.0.7
+  tailwindcss-react-aria-components: ^2.2.0
+  tsx: ^4.23.15
+  turbo: ^2.11.3
   typescript: ^6.0.3
+  typescript-eslint: ^8.70.1
   vite: ^8.3.0
   vitest: ^5.0.1
   zod: ^4.6.5
@@ -69,31 +111,12 @@ catalogs:
 
 linkWorkspacePackages: true
 
-minimumReleaseAgeExclude:
-  - "@better-auth/core@1.6.25"
-  - "@better-auth/drizzle-adapter@1.6.25"
-  - "@better-auth/kysely-adapter@1.6.25"
-  - "@better-auth/memory-adapter@1.6.25"
-  - "@better-auth/mongo-adapter@1.6.25"
-  - "@better-auth/prisma-adapter@1.6.25"
-  - "@better-auth/telemetry@1.6.25"
-  - better-auth@1.6.25
-  - lint-staged@17.2.0
-  - lucide-react@1.26.0
-  - eslint-plugin-sonarjs@4.2.1
-  - dependency-cruiser@18.3.1
-  - electron@44.4.1
-  - "@tanstack/query-core@5.103.0"
-  - "@tanstack/react-query@5.103.0"
-  - "@types/nodemailer@8.0.2"
-  - prettier@3.9.7
-
-onlyBuiltDependencies:
-  - "@tailwindcss/oxide"
-  - esbuild
-  - electron
-
+# Tailwind pins an exact lightningcss version that differs from the one Vite
+# uses. One shared version avoids two copies of the native binary.
 overrides:
+  # One @types/node for the whole graph, on the Node.js major from .nvmrc.
+  # Transitive peers would otherwise pull in the latest major as well.
+  "@types/node": "catalog:"
   lightningcss: ^1.33.0
 
 publicHoistPattern:

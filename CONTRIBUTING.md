@@ -35,8 +35,8 @@ If you're planning something non-trivial, please open an issue first so we can a
 
 ### Prerequisites
 
-- **Node.js** `^24.13.0`
-- **pnpm** `^10.28.2`
+- **Node.js** `^24.21.0`
+- **pnpm** `^12.5.1`
 - **Docker** + Docker Compose (for PostgreSQL and Mailpit)
 
 ### Getting started

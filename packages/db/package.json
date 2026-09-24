@@ -34,7 +34,6 @@
   },
   "prettier": "@horva/prettier-config",
   "dependencies": {
-    "dotenv": "catalog:",
     "drizzle-orm": "catalog:",
     "pg": "catalog:"
   },
@@ -43,6 +42,7 @@
     "@horva/prettier-config": "workspace:*",
     "@horva/tsconfig": "workspace:*",
     "@horva/vitest": "workspace:*",
+    "@types/node": "catalog:",
     "@types/pg": "catalog:",
     "drizzle-kit": "catalog:",
     "eslint": "catalog:",

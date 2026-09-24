@@ -16,7 +16,7 @@
     "format": "turbo run format --continue -- --cache --cache-location .cache/.prettiercache",
     "format:fix": "turbo run format --continue -- --write --cache --cache-location .cache/.prettiercache",
     "postinstall": "pnpm lint:ws",
-    "knip": "DATABASE_URL=postgresql://knip:knip@localhost:5432/knip knip",
+    "knip": "knip",
     "lint": "turbo run lint --continue -- --cache --cache-location .cache/.eslintcache",
     "lint:fix": "turbo run lint --continue -- --fix --cache --cache-location .cache/.eslintcache",
     "lint:ws": "pnpm dlx sherif@latest",
@@ -30,23 +30,23 @@
   },
   "prettier": "@horva/prettier-config",
   "devDependencies": {
-    "@commitlint/cli": "^21.2.2",
-    "@commitlint/config-conventional": "^21.2.2",
+    "@commitlint/cli": "catalog:",
+    "@commitlint/config-conventional": "catalog:",
     "@horva/prettier-config": "workspace:*",
-    "@turbo/gen": "^2.10.13",
-    "dependency-cruiser": "^18.3.1",
-    "dotenv-cli": "^11.0.0",
-    "husky": "^9.1.7",
-    "knip": "^6.35.1",
-    "lint-staged": "^17.5.1",
+    "@turbo/gen": "catalog:",
+    "dependency-cruiser": "catalog:",
+    "dotenv-cli": "catalog:",
+    "husky": "catalog:",
+    "knip": "catalog:",
+    "lint-staged": "catalog:",
     "prettier": "catalog:",
-    "turbo": "^2.10.13",
+    "turbo": "catalog:",
     "typescript": "catalog:",
     "vitest": "catalog:"
   },
-  "packageManager": "pnpm@11.16.0",
+  "packageManager": "pnpm@12.5.1",
   "engines": {
-    "node": "^24.13.0",
-    "pnpm": "^11.16.0"
+    "node": "^24.21.0",
+    "pnpm": "^12.5.1"
   }
 }

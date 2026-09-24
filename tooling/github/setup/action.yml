@@ -4,12 +4,13 @@ description: "Common setup steps for Actions"
 runs:
   using: composite
   steps:
-    - uses: pnpm/action-setup@v4
-    - uses: actions/setup-node@v6
+    - uses: pnpm/action-setup@v6
+    - uses: actions/setup-node@v7
       with:
         node-version-file: ".nvmrc"
+        cache: pnpm
 
-    # No global turbo install: pnpm 11 derives the global bin dir by appending
+    # No global turbo install: pnpm derives the global bin dir by appending
     # /bin to PNPM_HOME, which pnpm/action-setup points at ".../node_modules/.bin".
     # The resulting ".../node_modules/.bin/bin" is not in PATH, so `pnpm add -g`
     # fails. It was redundant anyway — turbo is a root devDependency and every CI

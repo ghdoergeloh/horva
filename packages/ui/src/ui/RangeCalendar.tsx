@@ -26,20 +26,20 @@ export interface RangeCalendarProps<T extends DateValue> extends Omit<
 
 const cell = tv({
   extend: focusRing,
-  base: "w-full h-full flex items-center justify-center rounded-full forced-color-adjust-none text-neutral-900 dark:text-neutral-200",
+  base: "w-full h-full flex items-center justify-center rounded-full forced-color-adjust-none text-foreground",
   variants: {
     selectionState: {
-      none: "group-hover:bg-neutral-200 dark:group-hover:bg-neutral-700 group-pressed:bg-neutral-300 dark:group-pressed:bg-neutral-600",
+      none: "group-hover:bg-accent group-pressed:bg-muted-foreground/20",
       middle: [
-        "group-hover:bg-blue-200 dark:group-hover:bg-blue-900 forced-colors:group-hover:bg-[Highlight]",
-        "group-invalid:group-hover:bg-red-200 dark:group-invalid:group-hover:bg-red-900 forced-colors:group-invalid:group-hover:bg-[Mark]",
-        "group-pressed:bg-blue-300 dark:group-pressed:bg-blue-800 forced-colors:group-pressed:bg-[Highlight] forced-colors:text-[HighlightText]",
-        "group-invalid:group-pressed:bg-red-300 dark:group-invalid:group-pressed:bg-red-800 forced-colors:group-invalid:group-pressed:bg-[Mark]",
+        "group-hover:bg-primary/20 forced-colors:group-hover:bg-[Highlight]",
+        "group-invalid:group-hover:bg-destructive/20 forced-colors:group-invalid:group-hover:bg-[Mark]",
+        "group-pressed:bg-primary/30 forced-colors:group-pressed:bg-[Highlight] forced-colors:text-[HighlightText]",
+        "group-invalid:group-pressed:bg-destructive/30 forced-colors:group-invalid:group-pressed:bg-[Mark]",
       ],
-      cap: "bg-blue-600 group-invalid:bg-red-600 forced-colors:bg-[Highlight] forced-colors:group-invalid:bg-[Mark] text-white forced-colors:text-[HighlightText]",
+      cap: "bg-primary group-invalid:bg-destructive forced-colors:bg-[Highlight] forced-colors:group-invalid:bg-[Mark] text-primary-foreground forced-colors:text-[HighlightText]",
     },
     isDisabled: {
-      true: "text-neutral-300 dark:text-neutral-600 forced-colors:text-[GrayText]",
+      true: "text-muted-foreground/50 forced-colors:text-[GrayText]",
     },
     // Ring stays visible on top of the range fill, so today remains
     // identifiable even when it falls inside the selected range.
@@ -68,7 +68,7 @@ export function RangeCalendar<T extends DateValue>({
           {(date) => (
             <CalendarCell
               date={date}
-              className="group outside-month:text-neutral-300 selected:bg-blue-100 dark:selected:bg-blue-700/30 forced-colors:selected:bg-[Highlight] invalid:selected:bg-red-100 dark:invalid:selected:bg-red-700/30 forced-colors:invalid:selected:bg-[Mark] selection-start:rounded-s-full selection-end:rounded-e-full aspect-square w-[calc(100cqw/7)] cursor-default text-sm outline outline-0 [-webkit-tap-highlight-color:transparent] [td:first-child_&]:rounded-s-full [td:last-child_&]:rounded-e-full"
+              className="group outside-month:text-muted-foreground/50 selected:bg-primary/10 forced-colors:selected:bg-[Highlight] invalid:selected:bg-destructive/10 forced-colors:invalid:selected:bg-[Mark] selection-start:rounded-s-full selection-end:rounded-e-full aspect-square w-[calc(100cqw/7)] cursor-default text-sm outline outline-0 [-webkit-tap-highlight-color:transparent] [td:first-child_&]:rounded-s-full [td:last-child_&]:rounded-e-full"
             >
               {({
                 formattedDate,
@@ -100,7 +100,7 @@ export function RangeCalendar<T extends DateValue>({
         </CalendarGridBody>
       </CalendarGrid>
       {errorMessage && (
-        <Text slot="errorMessage" className="text-sm text-red-600">
+        <Text slot="errorMessage" className="text-destructive text-sm">
           {errorMessage}
         </Text>
       )}

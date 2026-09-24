@@ -23,8 +23,8 @@
   "dependencies": {
     "@horva/core": "workspace:*",
     "@horva/db": "workspace:*",
-    "@inquirer/prompts": "^8.7.2",
-    "chalk": "^6.0.0",
+    "@inquirer/prompts": "catalog:",
+    "chalk": "catalog:",
     "commander": "catalog:",
     "dotenv": "catalog:",
     "pg": "catalog:"
@@ -36,7 +36,7 @@
     "@horva/vitest": "workspace:*",
     "@types/node": "catalog:",
     "@types/pg": "catalog:",
-    "esbuild": "^0.28.2",
+    "esbuild": "catalog:",
     "eslint": "catalog:",
     "prettier": "catalog:",
     "typescript": "catalog:",

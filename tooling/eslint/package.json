@@ -4,7 +4,6 @@
   "type": "module",
   "exports": {
     "./base": "./base.js",
-    "./nextjs": "./nextjs.js",
     "./react": "./react.js"
   },
   "scripts": {
@@ -13,19 +12,18 @@
   },
   "prettier": "@horva/prettier-config",
   "dependencies": {
-    "@eslint/compat": "^2.1.1",
-    "@eslint/js": "^10.0.1",
-    "@next/eslint-plugin-next": "^16.3.5",
-    "eslint-import-resolver-typescript": "^4.4.5",
-    "eslint-plugin-import": "^2.32.0",
-    "eslint-plugin-jsx-a11y": "^6.10.2",
-    "eslint-plugin-react": "^7.37.5",
-    "eslint-plugin-react-hooks": "^7.1.1",
-    "eslint-plugin-react-refresh": "^0.5.7",
-    "eslint-plugin-sonarjs": "^4.2.1",
-    "eslint-plugin-turbo": "^2.10.13",
-    "globals": "^17.12.0",
-    "typescript-eslint": "^8.70.0"
+    "@eslint/compat": "catalog:",
+    "@eslint/js": "catalog:",
+    "eslint-import-resolver-typescript": "catalog:",
+    "eslint-plugin-import": "catalog:",
+    "eslint-plugin-jsx-a11y": "catalog:",
+    "eslint-plugin-react": "catalog:",
+    "eslint-plugin-react-hooks": "catalog:",
+    "eslint-plugin-react-refresh": "catalog:",
+    "eslint-plugin-sonarjs": "catalog:",
+    "eslint-plugin-turbo": "catalog:",
+    "globals": "catalog:",
+    "typescript-eslint": "catalog:"
   },
   "devDependencies": {
     "@horva/prettier-config": "workspace:*",

@@ -1,21 +1,28 @@
 "use client";
 
-import type { CheckboxProps } from "react-aria-components";
+import type { ReactNode } from "react";
+import type {
+  CheckboxFieldProps,
+  ValidationResult,
+} from "react-aria-components";
 import { Check, Minus } from "lucide-react";
 import {
-  Checkbox as AriaCheckbox,
+  CheckboxButton,
+  CheckboxField,
   composeRenderProps,
 } from "react-aria-components";
 import { tv } from "tailwind-variants";
 
 import { focusRing } from "@horva/ui";
 
+import { Description, FieldError } from "./Field";
+
 const checkboxStyles = tv({
   base: "flex gap-2 items-center group font-sans text-sm transition relative [-webkit-tap-highlight-color:transparent]",
   variants: {
     isDisabled: {
-      false: "text-neutral-800 dark:text-neutral-200",
-      true: "text-neutral-300 dark:text-neutral-600 forced-colors:text-[GrayText]",
+      false: "text-foreground",
+      true: "text-muted-foreground/50 forced-colors:text-[GrayText]",
     },
   },
 });
@@ -26,49 +33,65 @@ const boxStyles = tv({
   variants: {
     isSelected: {
       false:
-        "bg-white dark:bg-neutral-900 border-(--color) [--color:var(--color-neutral-400)] dark:[--color:var(--color-neutral-400)] group-pressed:[--color:var(--color-neutral-500)] dark:group-pressed:[--color:var(--color-neutral-300)]",
-      true: "bg-(--color) border-(--color) [--color:var(--color-neutral-700)] group-pressed:[--color:var(--color-neutral-800)] dark:[--color:var(--color-neutral-300)] dark:group-pressed:[--color:var(--color-neutral-200)] forced-colors:[--color:Highlight]!",
+        "bg-background border-(--color) [--color:var(--color-muted-foreground)] group-pressed:[--color:var(--color-foreground)]",
+      true: "bg-(--color) border-(--color) [--color:var(--color-primary)] group-pressed:opacity-80 forced-colors:[--color:Highlight]!",
     },
     isInvalid: {
-      true: "[--color:var(--color-red-700)] dark:[--color:var(--color-red-600)] forced-colors:[--color:Mark]! group-pressed:[--color:var(--color-red-800)] dark:group-pressed:[--color:var(--color-red-700)]",
+      true: "[--color:var(--color-destructive)] forced-colors:[--color:Mark]!",
     },
     isDisabled: {
-      true: "[--color:var(--color-neutral-200)] dark:[--color:var(--color-neutral-700)] forced-colors:[--color:GrayText]!",
+      true: "[--color:var(--color-border)] forced-colors:[--color:GrayText]!",
     },
   },
 });
 
 const iconStyles =
-  "w-3.5 h-3.5 text-white group-disabled:text-neutral-400 dark:text-neutral-900 dark:group-disabled:text-neutral-600 forced-colors:text-[HighlightText] pointer-events-none";
+  "w-3.5 h-3.5 text-primary-foreground group-disabled:text-muted-foreground forced-colors:text-[HighlightText] pointer-events-none";
 
+export interface CheckboxProps extends CheckboxFieldProps {
+  children?: ReactNode;
+  description?: string;
+  errorMessage?: string | ((validation: ValidationResult) => string);
+}
+
+/**
+ * A checkbox with an optional description and error message below it.
+ */
 export function Checkbox(props: CheckboxProps) {
   return (
-    <AriaCheckbox
-      {...props}
-      className={composeRenderProps(props.className, (className, renderProps) =>
-        checkboxStyles({ ...renderProps, className }),
+    <CheckboxField {...props} className="group flex flex-col gap-1">
+      <CheckboxButton
+        className={composeRenderProps(
+          props.className,
+          (className, renderProps) =>
+            checkboxStyles({ ...renderProps, className }),
+        )}
+      >
+        {composeRenderProps(
+          props.children,
+          (children, { isSelected, isIndeterminate, ...renderProps }) => (
+            <>
+              <div
+                className={boxStyles({
+                  isSelected: isSelected || isIndeterminate,
+                  ...renderProps,
+                })}
+              >
+                {isIndeterminate ? (
+                  <Minus aria-hidden className={iconStyles} />
+                ) : isSelected ? (
+                  <Check aria-hidden className={iconStyles} />
+                ) : null}
+              </div>
+              {children}
+            </>
+          ),
+        )}
+      </CheckboxButton>
+      {props.description && (
+        <Description className="ms-6.5">{props.description}</Description>
       )}
-    >
-      {composeRenderProps(
-        props.children,
-        (children, { isSelected, isIndeterminate, ...renderProps }) => (
-          <>
-            <div
-              className={boxStyles({
-                isSelected: isSelected || isIndeterminate,
-                ...renderProps,
-              })}
-            >
-              {isIndeterminate ? (
-                <Minus aria-hidden className={iconStyles} />
-              ) : isSelected ? (
-                <Check aria-hidden className={iconStyles} />
-              ) : null}
-            </div>
-            {children}
-          </>
-        ),
-      )}
-    </AriaCheckbox>
+      <FieldError className="ms-6.5">{props.errorMessage}</FieldError>
+    </CheckboxField>
   );
 }

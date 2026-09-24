@@ -24,13 +24,11 @@ export function ProgressBar({ label, ...props }: ProgressBarProps) {
         <>
           <div className="flex justify-between gap-2">
             <Label>{label}</Label>
-            <span className="text-sm text-neutral-600 dark:text-neutral-400">
-              {valueText}
-            </span>
+            <span className="text-muted-foreground text-sm">{valueText}</span>
           </div>
-          <div className="relative h-2 max-w-full overflow-hidden rounded-full bg-neutral-300 outline outline-1 -outline-offset-1 outline-transparent dark:bg-neutral-700">
+          <div className="bg-muted relative h-2 max-w-full overflow-hidden rounded-full outline outline-1 -outline-offset-1 outline-transparent">
             <div
-              className={`absolute top-0 h-full rounded-full bg-blue-500 forced-colors:bg-[Highlight] ${isIndeterminate ? "animate-in slide-in-from-left-[20rem] repeat-infinite left-full duration-1000 ease-out" : "left-0"}`}
+              className={`bg-primary absolute top-0 h-full rounded-full forced-colors:bg-[Highlight] ${isIndeterminate ? "animate-in slide-in-from-left-[20rem] repeat-infinite left-full duration-1000 ease-out" : "left-0"}`}
               style={{ width: (isIndeterminate ? 40 : percentage) + "%" }}
             />
           </div>

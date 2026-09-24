@@ -10,7 +10,7 @@
   "scripts": {
     "clean": "git clean -xdf .cache .turbo dist node_modules",
     "format": "prettier --check . --ignore-path ../../.gitignore",
-    "generate": "dotenv -e ../../.env -- pnpx @better-auth/cli generate --output ../db/src/schema/auth-schema.ts",
+    "generate": "dotenv -e ../../.env -- auth generate --config src/auth.ts --output ../db/src/schema/auth-schema.ts --yes",
     "lint": "eslint",
     "test:unit": "vitest run --passWithNoTests",
     "test:unit:coverage": "vitest run --coverage --passWithNoTests",
@@ -23,14 +23,18 @@
     "better-auth": "catalog:"
   },
   "devDependencies": {
-    "@better-auth/cli": "catalog:",
     "@horva/eslint-config": "workspace:*",
     "@horva/prettier-config": "workspace:*",
     "@horva/tsconfig": "workspace:*",
     "@horva/vitest": "workspace:*",
+    "auth": "catalog:",
     "eslint": "catalog:",
     "prettier": "catalog:",
+    "react": "catalog:react19",
     "typescript": "catalog:",
     "vitest": "catalog:"
+  },
+  "peerDependencies": {
+    "react": "catalog:react19"
   }
 }

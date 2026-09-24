@@ -3,13 +3,14 @@
 import type { ReactNode } from "react";
 import type {
   RadioGroupProps as RACRadioGroupProps,
-  RadioProps,
+  RadioFieldProps,
   ValidationResult,
 } from "react-aria-components";
 import {
   composeRenderProps,
-  Radio as RACRadio,
   RadioGroup as RACRadioGroup,
+  RadioButton,
+  RadioField,
 } from "react-aria-components";
 import { tv } from "tailwind-variants";
 
@@ -45,37 +46,47 @@ export function RadioGroup(props: RadioGroupProps) {
 
 const styles = tv({
   extend: focusRing,
-  base: "w-4.5 h-4.5 box-border rounded-full border bg-white dark:bg-neutral-900 transition-all",
+  base: "w-4.5 h-4.5 shrink-0 box-border rounded-full border bg-background transition-all",
   variants: {
     isSelected: {
-      false:
-        "border-neutral-400 dark:border-neutral-400 group-pressed:border-neutral-500 dark:group-pressed:border-neutral-300",
-      true: "border-[calc(var(--spacing)*1.5)] border-neutral-700 dark:border-neutral-300 forced-colors:border-[Highlight]! group-pressed:border-neutral-800 dark:group-pressed:border-neutral-200",
+      false: "border-muted-foreground group-pressed:border-foreground",
+      true: "border-[calc(var(--spacing)*1.5)] border-primary group-pressed:border-primary/80 forced-colors:border-[Highlight]!",
     },
     isInvalid: {
-      true: "border-red-700 dark:border-red-600 group-pressed:border-red-800 dark:group-pressed:border-red-700 forced-colors:border-[Mark]!",
+      true: "border-destructive group-pressed:border-destructive/80 forced-colors:border-[Mark]!",
     },
     isDisabled: {
-      true: "border-neutral-200 dark:border-neutral-700 forced-colors:border-[GrayText]!",
+      true: "border-border forced-colors:border-[GrayText]!",
     },
   },
 });
 
+export interface RadioProps extends RadioFieldProps {
+  description?: string;
+}
+
+/**
+ * A radio button for use inside a `RadioGroup`, with an optional description below it.
+ */
 export function Radio(props: RadioProps) {
   return (
-    <RACRadio
-      {...props}
-      className={composeTailwindRenderProps(
-        props.className,
-        "group relative flex items-center gap-2 text-sm text-neutral-800 transition [-webkit-tap-highlight-color:transparent] disabled:text-neutral-300 dark:text-neutral-200 dark:disabled:text-neutral-600 forced-colors:disabled:text-[GrayText]",
+    <RadioField {...props} className="group flex flex-col gap-1">
+      <RadioButton
+        className={composeTailwindRenderProps(
+          props.className,
+          "group text-foreground disabled:text-muted-foreground/50 relative flex items-center gap-2 text-sm transition [-webkit-tap-highlight-color:transparent] forced-colors:disabled:text-[GrayText]",
+        )}
+      >
+        {composeRenderProps(props.children, (children, renderProps) => (
+          <>
+            <div className={styles(renderProps)} />
+            {children}
+          </>
+        ))}
+      </RadioButton>
+      {props.description && (
+        <Description className="ms-6.5">{props.description}</Description>
       )}
-    >
-      {composeRenderProps(props.children, (children, renderProps) => (
-        <>
-          <div className={styles(renderProps)} />
-          {children}
-        </>
-      ))}
-    </RACRadio>
+    </RadioField>
   );
 }
