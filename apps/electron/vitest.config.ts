@@ -1,10 +1,9 @@
-import path from "node:path";
 import react from "@vitejs/plugin-react";
 import { defineConfig } from "vitest/config";
 
 // Custom (not the shared @horva/vitest/config export): only the renderer runs
-// in a browser-like environment (jsdom) and uses the `~` alias — main and
-// preload are plain Node and are out of scope for this config.
+// in a browser-like environment (jsdom). Main and preload are plain Node and
+// are out of scope for this config.
 export default defineConfig({
   plugins: [react()],
   test: {
@@ -25,11 +24,6 @@ export default defineConfig({
         functions: 0,
         lines: 0,
       },
-    },
-  },
-  resolve: {
-    alias: {
-      "~": path.resolve(import.meta.dirname, "src/renderer/src"),
     },
   },
 });

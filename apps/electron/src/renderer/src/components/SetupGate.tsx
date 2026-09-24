@@ -2,11 +2,11 @@ import type { ReactNode } from "react";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 
+import { LoadingSpinner } from "@horva/react";
 import { Button } from "@horva/ui/Button";
 import { TextField } from "@horva/ui/TextField";
 
-import { LoadingSpinner } from "~/components/LoadingSpinner.js";
-import { setupBridge } from "~/lib/setup.js";
+import { setupBridge } from "../lib/setup.js";
 
 type GateState =
   | { kind: "loading" }

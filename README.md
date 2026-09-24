@@ -94,8 +94,8 @@ pnpm db:push           # Apply schema to the database
 ```bash
 pnpm dev                              # Run everything (Turbo)
 pnpm -F @horva/api dev                # API only
+pnpm -F @horva/react dev              # React app in the browser only (port 5173)
 pnpm -F @horva/electron-app dev       # Electron desktop app only
-pnpm -F @horva/web dev                # Web frontend only (port 5173)
 pnpm -F @horva/cli dev                # CLI only
 ```
 
@@ -117,7 +117,7 @@ pnpm db:studio            # Open Drizzle Studio
 
 # Electron desktop app
 pnpm -F @horva/electron-app dev       # Dev mode
-pnpm -F @horva/electron-app build     # Build renderer + main
+pnpm -F @horva/electron-app build     # Build main, preload and renderer (with the React app)
 pnpm -F @horva/electron-app pack      # Package a distributable (.dmg / .exe / .AppImage)
 
 # Scaffold a new package
@@ -133,8 +133,8 @@ See [`AGENTS.md`](./AGENTS.md) for the repository rules and [`docs/`](./docs) fo
 ├── apps
 │   ├── api          # Hono + oRPC REST API + better-auth (port 3000)
 │   ├── cli          # Commander-based CLI (invokes @horva/core against a local DB)
-│   ├── electron     # Electron desktop app (electron-vite + electron-builder)
-│   └── web          # Web frontend (Vite, reuses the Electron renderer source)
+│   ├── electron     # Electron desktop app: wraps apps/react (electron-vite + electron-builder)
+│   └── react        # React app (Vite); runs in the browser and inside Electron
 ├── packages
 │   ├── auth         # better-auth (email/password) w/ Drizzle adapter
 │   ├── contract     # Shared oRPC + Zod API contract
@@ -149,9 +149,19 @@ See [`AGENTS.md`](./AGENTS.md) for the repository rules and [`docs/`](./docs) fo
 
 ## Architecture
 
-The **contract** package is the hub: `packages/contract` defines the API shape → `@horva/core/handlers` implements it → `apps/api` mounts the handlers over HTTP, and the Electron main process mounts the same handlers over IPC. Any consumer (Electron renderer, future web frontend, third-party integrations) gets full end-to-end type safety.
+The **contract** package is the hub: `packages/contract` defines the API shape → `@horva/core/handlers` implements it → `apps/api` mounts the handlers over HTTP, and the Electron main process mounts the same handlers over IPC. Any consumer (the React app, third-party integrations) gets full end-to-end type safety.
 
-### Web frontend
+### React app and Electron
+
+`apps/react` is the whole user interface. It runs on its own in the browser and talks to `apps/api` over HTTP. `apps/electron` wraps it: its renderer imports `@horva/react` and passes in the three parts that differ.
+
+|                              | Browser (`apps/react/src/main.tsx`) | Electron (`apps/electron/src/renderer/src/main.tsx`) |
+| ---------------------------- | ----------------------------------- | ---------------------------------------------------- |
+| Backend link (`setOrpcLink`) | HTTP to `apps/api`                  | MessagePort to the main process                      |
+| Gate before the app          | Login (better-auth)                 | Setup wizard (local database)                        |
+| Router history               | Browser history                     | Hash history                                         |
+
+### React app in the browser
 
 ```mermaid
 flowchart LR

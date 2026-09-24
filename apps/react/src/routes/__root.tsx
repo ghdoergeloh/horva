@@ -1,0 +1,474 @@
+import type { ReactNode } from "react";
+import { Component, useId, useState } from "react";
+import { useDroppable } from "@dnd-kit/core";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  createRootRoute,
+  Link,
+  Outlet,
+  useLocation,
+  useNavigate,
+} from "@tanstack/react-router";
+import {
+  ChartBar,
+  CheckSquare,
+  ChevronDown,
+  ChevronRight,
+  Clock,
+  LayoutDashboard,
+  Plus,
+  Settings,
+  Tag,
+  X,
+} from "lucide-react";
+import { useTranslation } from "react-i18next";
+
+import { Button } from "@horva/ui/Button";
+import { ColorPicker } from "@horva/ui/ColorPicker";
+import { TextField } from "@horva/ui/TextField";
+
+import { AppIcon } from "#/components/AppIcon.js";
+import { DetailDrawerHost } from "#/components/DetailDrawerHost.js";
+import { SlotBar } from "#/components/SlotBar.js";
+import { ActiveSlotProvider } from "#/contexts/ActiveSlotContext.js";
+import { DetailDrawerProvider } from "#/contexts/DetailDrawerContext.js";
+import { SettingsProvider } from "#/contexts/SettingsContext.js";
+import {
+  projectDropData,
+  projectDroppableId,
+  TaskDragProvider,
+  useTaskDrag,
+} from "#/contexts/TaskDragContext.js";
+import i18n from "#/i18n/index.js";
+import { client } from "#/lib/orpc.js";
+import { useEscapeKey } from "#/lib/useEscapeKey.js";
+
+const COLOR_PRESETS = [
+  "#6366f1",
+  "#8b5cf6",
+  "#ec4899",
+  "#ef4444",
+  "#f97316",
+  "#eab308",
+  "#22c55e",
+  "#14b8a6",
+  "#3b82f6",
+  "#64748b",
+];
+
+function NewProjectModal({ onClose }: { onClose: () => void }) {
+  const { t } = useTranslation();
+  const navigate = useNavigate();
+  const titleId = useId();
+  useEscapeKey(onClose);
+  const queryClient = useQueryClient();
+  const [name, setName] = useState("");
+  const [color, setColor] = useState("#6366f1");
+
+  const createProjectMutation = useMutation({
+    mutationFn: async ({
+      name: n,
+      color: c,
+    }: {
+      name: string;
+      color: string;
+    }) => {
+      const res = await client.project.create({ name: n, color: c });
+      return res.project;
+    },
+    onSuccess: (project) => {
+      void queryClient.invalidateQueries({ queryKey: ["projects"] });
+      void navigate({
+        to: "/tasks/$projectId",
+        params: { projectId: String(project.id) },
+      });
+      onClose();
+    },
+  });
+
+  function handleSubmit() {
+    const trimmed = name.trim();
+    if (!trimmed) return;
+    createProjectMutation.mutate({ name: trimmed, color });
+  }
+
+  return (
+    <div
+      className="bg-foreground/30 fixed inset-0 z-50 flex items-center justify-center"
+      // A click on the backdrop is a mouse shortcut. Keyboard users close
+      // the dialog with Escape or the close button.
+      role="presentation"
+      onClick={(e) => {
+        if (e.target === e.currentTarget) onClose();
+      }}
+    >
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby={titleId}
+        className="border-border bg-card w-80 rounded-xl border p-5 shadow-xl"
+      >
+        <div className="mb-4 flex items-center justify-between">
+          <h2 id={titleId} className="text-foreground text-sm font-semibold">
+            {t("project.new")}
+          </h2>
+          <Button
+            variant="quiet"
+            onPress={onClose}
+            className="text-muted-foreground hover:text-foreground/80 rounded p-0.5"
+            aria-label={t("project.cancel")}
+          >
+            <X className="h-4 w-4" />
+          </Button>
+        </div>
+        <div className="mb-3 flex items-center gap-2">
+          <div
+            className="h-3.5 w-3.5 flex-shrink-0 rounded-sm"
+            style={{ backgroundColor: color }}
+          />
+          <TextField
+            autoFocus
+            value={name}
+            onChange={setName}
+            placeholder={t("project.namePlaceholder")}
+            className="min-w-0 flex-1"
+          />
+        </div>
+        <div className="mb-4">
+          <span className="text-muted-foreground mb-1.5 block text-xs">
+            {t("project.color")}
+          </span>
+          <div className="flex flex-wrap items-center gap-1.5">
+            {COLOR_PRESETS.map((c) => (
+              <Button
+                key={c}
+                variant="quiet"
+                onPress={() => setColor(c)}
+                className={`h-5 w-5 rounded-full transition-transform hover:scale-110 ${
+                  color === c ? "ring-ring ring-2 ring-offset-1" : ""
+                }`}
+                style={{ backgroundColor: c }}
+                aria-label={t("project.color")}
+              />
+            ))}
+            <ColorPicker
+              aria-label={t("project.customColor")}
+              value={color}
+              onChange={(val) => {
+                setColor(val.toString());
+              }}
+            />
+          </div>
+        </div>
+        <div className="flex justify-end gap-2">
+          <Button variant="secondary" onPress={onClose}>
+            {t("project.cancel")}
+          </Button>
+          <Button
+            variant="primary"
+            isDisabled={!name.trim() || createProjectMutation.isPending}
+            onPress={handleSubmit}
+          >
+            {t("project.create")}
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+interface ErrorBoundaryState {
+  hasError: boolean;
+  message: string;
+}
+
+class RouteErrorBoundary extends Component<
+  { children: ReactNode },
+  ErrorBoundaryState
+> {
+  constructor(props: { children: ReactNode }) {
+    super(props);
+    this.state = { hasError: false, message: "" };
+  }
+
+  static getDerivedStateFromError(error: unknown): ErrorBoundaryState {
+    const message =
+      error instanceof Error ? error.message : i18n.t("error.unknown");
+    return { hasError: true, message };
+  }
+
+  override render() {
+    if (this.state.hasError) {
+      return (
+        <div className="flex flex-col items-center justify-center p-12 text-center">
+          <p className="text-destructive text-sm font-semibold">
+            {i18n.t("error.occurred")}
+          </p>
+          <p className="text-muted-foreground mt-1 text-xs">
+            {this.state.message}
+          </p>
+          <Button
+            variant="secondary"
+            className="mt-4"
+            onPress={() => this.setState({ hasError: false, message: "" })}
+          >
+            {i18n.t("error.retry")}
+          </Button>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
+
+/**
+ * A project entry in the sidebar, doubling as a drop target for tasks dragged
+ * from any task list.
+ */
+function ProjectNavItem({
+  project,
+  isActive,
+}: {
+  project: { id: number; name: string; color: string };
+  isActive: boolean;
+}) {
+  const { activeTask } = useTaskDrag();
+  const { setNodeRef, isOver } = useDroppable({
+    id: projectDroppableId(project.id),
+    data: projectDropData(project.id),
+  });
+
+  // Only offer the project as a target while dragging a task that isn't
+  // already in it.
+  const isDropCandidate =
+    activeTask !== null && activeTask.projectId !== project.id;
+  const isDropTarget = isOver && isDropCandidate;
+
+  return (
+    <Link
+      ref={setNodeRef}
+      to="/tasks/$projectId"
+      params={{ projectId: String(project.id) }}
+      // Suppress the browser's native link dragging so it can't fight dnd-kit.
+      draggable={false}
+      className={`flex items-center gap-2 rounded-md px-2 py-1.5 text-sm transition-colors ${
+        isDropTarget
+          ? "bg-sidebar-accent text-sidebar-accent-foreground ring-primary font-medium ring-2"
+          : isDropCandidate
+            ? "text-foreground/80 ring-primary/40 ring-dashed ring-1"
+            : isActive
+              ? "bg-sidebar-accent text-sidebar-accent-foreground font-medium"
+              : "text-foreground/80 hover:bg-muted hover:text-foreground"
+      }`}
+    >
+      <span
+        className="h-2.5 w-2.5 flex-shrink-0 rounded-full"
+        style={{ backgroundColor: project.color }}
+      />
+      <span className="truncate">{project.name}</span>
+    </Link>
+  );
+}
+
+function AppShell() {
+  const { t } = useTranslation();
+  const location = useLocation();
+  const [tasksOpen, setTasksOpen] = useState(true);
+  const [showNewProject, setShowNewProject] = useState(false);
+
+  const { data: projects = [] } = useQuery({
+    queryKey: ["projects"],
+    queryFn: async () => {
+      const res = await client.project.list({});
+      return res.projects;
+    },
+  });
+
+  const isTasksActive = location.pathname.startsWith("/tasks");
+  const isTasksOverview = location.pathname === "/tasks";
+
+  const topNavItems = [
+    { to: "/", label: t("nav.today"), icon: LayoutDashboard },
+    { to: "/timeline", label: t("nav.timeline"), icon: Clock },
+    { to: "/reports", label: t("nav.reports"), icon: ChartBar },
+  ] as const;
+
+  return (
+    <SettingsProvider>
+      <ActiveSlotProvider>
+        <DetailDrawerProvider>
+          <TaskDragProvider>
+            <div className="bg-background flex h-screen">
+              {showNewProject && (
+                <NewProjectModal onClose={() => setShowNewProject(false)} />
+              )}
+
+              {/* Sidebar */}
+              <aside className="border-sidebar-border bg-sidebar text-sidebar-foreground flex w-48 flex-col border-r">
+                <div className="border-sidebar-border border-b px-4 py-4">
+                  <div className="flex items-center gap-3">
+                    <AppIcon size={34} />
+                    <span className="text-sidebar-foreground text-sm font-semibold tracking-tight">
+                      {t("app.title")}
+                    </span>
+                  </div>
+                </div>
+                <nav className="flex-1 overflow-y-auto p-2">
+                  {/* Today */}
+                  {(() => {
+                    const { to, label, icon: Icon } = topNavItems[0];
+                    const isActive = location.pathname === "/";
+                    return (
+                      <Link
+                        to={to}
+                        className={`mb-1 flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors ${
+                          isActive
+                            ? "bg-sidebar-accent text-sidebar-accent-foreground font-medium"
+                            : "text-foreground/80 hover:bg-muted hover:text-foreground"
+                        }`}
+                      >
+                        <Icon className="h-4 w-4" />
+                        {label}
+                      </Link>
+                    );
+                  })()}
+
+                  {/* Tasks collapsible section */}
+                  <div className="mb-1">
+                    <div
+                      className={`flex items-center rounded-md text-sm transition-colors ${
+                        isTasksOverview
+                          ? "bg-sidebar-accent text-sidebar-accent-foreground font-medium"
+                          : isTasksActive
+                            ? "text-sidebar-accent-foreground font-medium"
+                            : "text-foreground/80 hover:bg-muted hover:text-foreground"
+                      }`}
+                    >
+                      <Link
+                        to="/tasks"
+                        className="flex flex-1 items-center gap-3 px-3 py-2"
+                      >
+                        <CheckSquare className="h-4 w-4 flex-shrink-0" />
+                        {t("nav.tasks")}
+                      </Link>
+                      <Button
+                        variant="quiet"
+                        onPress={() => setTasksOpen((v) => !v)}
+                        className="px-2 py-2 opacity-50 hover:opacity-100"
+                        aria-label={
+                          tasksOpen
+                            ? t("project.collapse")
+                            : t("project.expand")
+                        }
+                      >
+                        {tasksOpen ? (
+                          <ChevronDown className="h-3.5 w-3.5" />
+                        ) : (
+                          <ChevronRight className="h-3.5 w-3.5" />
+                        )}
+                      </Button>
+                    </div>
+
+                    {tasksOpen && (
+                      <div className="border-sidebar-border mt-0.5 ml-3 space-y-0.5 border-l pl-3">
+                        {projects.map((project) => (
+                          <ProjectNavItem
+                            key={project.id}
+                            project={project}
+                            isActive={
+                              location.pathname ===
+                              `/tasks/${String(project.id)}`
+                            }
+                          />
+                        ))}
+                        <Button
+                          variant="quiet"
+                          onPress={() => setShowNewProject(true)}
+                        >
+                          <span className="inline-flex items-center gap-2">
+                            <Plus className="h-3 w-3" />
+                            {t("nav.newProject")}
+                          </span>
+                        </Button>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Timeline + Reports */}
+                  {topNavItems.slice(1).map(({ to, label, icon: Icon }) => {
+                    const isActive = location.pathname === to;
+                    return (
+                      <Link
+                        key={to}
+                        to={to}
+                        className={`mb-1 flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors ${
+                          isActive
+                            ? "bg-sidebar-accent text-sidebar-accent-foreground font-medium"
+                            : "text-foreground/80 hover:bg-muted hover:text-foreground"
+                        }`}
+                      >
+                        <Icon className="h-4 w-4" />
+                        {label}
+                      </Link>
+                    );
+                  })}
+
+                  {/* Labels */}
+                  {(() => {
+                    const isActive = location.pathname === "/labels";
+                    return (
+                      <Link
+                        to="/labels"
+                        className={`mb-1 flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors ${
+                          isActive
+                            ? "bg-sidebar-accent text-sidebar-accent-foreground font-medium"
+                            : "text-foreground/80 hover:bg-muted hover:text-foreground"
+                        }`}
+                      >
+                        <Tag className="h-4 w-4" />
+                        {t("nav.labels")}
+                      </Link>
+                    );
+                  })()}
+                </nav>
+
+                {/* Settings link */}
+                <div className="border-sidebar-border border-t p-2">
+                  {(() => {
+                    const isActive = location.pathname === "/settings";
+                    return (
+                      <Link
+                        to="/settings"
+                        className={`flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors ${
+                          isActive
+                            ? "bg-sidebar-accent text-sidebar-accent-foreground font-medium"
+                            : "text-foreground/80 hover:bg-muted hover:text-foreground"
+                        }`}
+                      >
+                        <Settings className="h-4 w-4" />
+                        {t("nav.settings")}
+                      </Link>
+                    );
+                  })()}
+                </div>
+              </aside>
+
+              {/* Main content */}
+              <div className="flex flex-1 flex-col overflow-hidden">
+                <SlotBar />
+                <main className="flex-1 overflow-auto p-6">
+                  <RouteErrorBoundary>
+                    <Outlet />
+                  </RouteErrorBoundary>
+                </main>
+              </div>
+              <DetailDrawerHost />
+            </div>
+          </TaskDragProvider>
+        </DetailDrawerProvider>
+      </ActiveSlotProvider>
+    </SettingsProvider>
+  );
+}
+
+export const Route = createRootRoute({ component: AppShell });

@@ -22,7 +22,7 @@ test("first launch (no config yet) shows the setup wizard", async () => {
 
   try {
     const window = await app.firstWindow();
-    // Default locale is German (see src/renderer/src/i18n/index.ts) when no
+    // Default locale is German (see apps/react/src/i18n/index.ts) when no
     // language preference has been saved yet, i.e. exactly this scenario.
     await expect(window.getByText("Willkommen bei Horva")).toBeVisible();
     await expect(

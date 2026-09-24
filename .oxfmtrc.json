@@ -21,12 +21,12 @@
       },
       {
         "groupName": "alias-type",
-        "elementNamePattern": ["~/**"],
+        "elementNamePattern": ["#/**"],
         "modifiers": ["type"]
       },
       {
         "groupName": "alias",
-        "elementNamePattern": ["~/**"]
+        "elementNamePattern": ["#/**"]
       }
     ],
     "groups": [
