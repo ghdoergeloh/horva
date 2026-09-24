@@ -52,7 +52,7 @@ export function CommandPalette<T extends object>(
             // keyboard shortcut); moving focus to its search field is the
             // expected command-palette pattern, not the page-load
             // anti-pattern this rule targets.
-            // eslint-disable-next-line jsx-a11y/no-autofocus
+            // oxlint-disable-next-line jsx-a11y/no-autofocus
             autoFocus
             aria-label="Search commands"
             placeholder="Search commands"

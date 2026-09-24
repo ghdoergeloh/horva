@@ -57,7 +57,7 @@ export function AlertDialog({
               // focus to its default action follows the WAI-ARIA Alert
               // Dialog pattern, not the page-load anti-pattern this rule
               // targets.
-              // eslint-disable-next-line jsx-a11y/no-autofocus
+              // oxlint-disable-next-line jsx-a11y/no-autofocus
               autoFocus
               onPress={chain(onAction, close)}
             >

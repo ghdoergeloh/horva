@@ -17,25 +17,18 @@
     "build": "tsc",
     "clean": "git clean -xdf .cache .turbo dist node_modules",
     "dev": "tsc",
-    "format": "prettier --check . --ignore-path ../../.gitignore",
-    "lint": "eslint",
     "test:unit": "vitest run --passWithNoTests",
     "test:unit:coverage": "vitest run --coverage --passWithNoTests",
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
-  "prettier": "@horva/prettier-config",
   "dependencies": {
     "@horva/db": "workspace:*",
     "rrule": "catalog:",
     "zod": "catalog:"
   },
   "devDependencies": {
-    "@horva/eslint-config": "workspace:*",
-    "@horva/prettier-config": "workspace:*",
     "@horva/tsconfig": "workspace:*",
     "@horva/vitest": "workspace:*",
-    "eslint": "catalog:",
-    "prettier": "catalog:",
     "typescript": "catalog:",
     "vitest": "catalog:"
   }

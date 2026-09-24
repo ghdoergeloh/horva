@@ -56,9 +56,9 @@ See the [README](./README.md#development-setup) for the full walkthrough, includ
 ### Repo layout
 
 ```
-apps/        # api, cli, electron, react
+apps/        # api, cli, electron, web
 packages/    # contract, auth, core, db, ui, transactional
-tooling/     # shared ESLint / Prettier / TS / Tailwind / Vitest configs
+tooling/     # shared TS / Tailwind / Vitest configs
 docs/        # feature specs and design docs
 ```
 
@@ -97,8 +97,9 @@ pnpm -F @horva/db typecheck
 
 - **TypeScript strict mode everywhere.** `noUncheckedIndexedAccess` is on; `verbatimModuleSyntax` requires `import type` for type-only imports.
 - **ESM only.** All packages are `"type": "module"`.
-- **Imports are auto-sorted** by Prettier: types → React → third-party → `@horva/*` → local (`~/`, `../`, `./`). Don't fight the sort.
+- **Imports are auto-sorted** by Oxfmt (`.oxfmtrc.json`): types → React → third-party → `@horva/*` → local (`~/`, `../`, `./`). Don't fight the sort.
 - **Tailwind classes** are sorted automatically inside `cn()` and `cva()`.
+- **Linting:** Oxlint with one root config (`.oxlintrc.json`), including type-aware rules. The React rules apply through an `overrides` entry: add new React workspaces to its `files` list.
 - **Path aliases:** the Electron renderer uses `~/` → `src/renderer/src/`.
 - **Dependency versions** live in `pnpm-workspace.yaml` catalogs. New deps should use `catalog:` references where appropriate.
 - **No mocks at the DB boundary.** Integration tests hit real PostgreSQL via Docker Compose.

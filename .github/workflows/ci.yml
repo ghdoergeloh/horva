@@ -51,7 +51,7 @@ jobs:
         # sidesteps it by diffing schema.ts directly against the DB.
         run: pnpm --filter @horva/db exec drizzle-kit push --force
 
-      - name: Prettier Check
+      - name: Format Check
         run: pnpm format
 
       - name: Build
@@ -60,7 +60,7 @@ jobs:
       - name: Type Check
         run: pnpm typecheck
 
-      - name: ESLint Check
+      - name: Lint
         run: pnpm lint
 
       - name: Dependency Cruiser (circular imports)

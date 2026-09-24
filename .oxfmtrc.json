@@ -1,0 +1,61 @@
+{
+  "$schema": "./node_modules/oxfmt/configuration_schema.json",
+  "printWidth": 80,
+  "ignorePatterns": [
+    "pnpm-lock.yaml",
+    "**/routeTree.gen.ts",
+    "turbo/generators/templates/**"
+  ],
+  "sortImports": {
+    "internalPattern": ["@horva/"],
+    "newlinesBetween": false,
+    "customGroups": [
+      {
+        "groupName": "react-type",
+        "elementNamePattern": ["react", "react/**"],
+        "modifiers": ["type"]
+      },
+      {
+        "groupName": "react",
+        "elementNamePattern": ["react", "react/**"]
+      },
+      {
+        "groupName": "alias-type",
+        "elementNamePattern": ["~/**"],
+        "modifiers": ["type"]
+      },
+      {
+        "groupName": "alias",
+        "elementNamePattern": ["~/**"]
+      }
+    ],
+    "groups": [
+      "value-builtin",
+      "react-type",
+      "type-import",
+      "react",
+      "value-external",
+      {
+        "newlinesBetween": true
+      },
+      "type-internal",
+      "value-internal",
+      {
+        "newlinesBetween": true
+      },
+      "alias-type",
+      "alias",
+      ["type-parent", "type-sibling", "type-index"],
+      ["value-parent", "value-sibling", "value-index"],
+      "unknown",
+      {
+        "newlinesBetween": true
+      },
+      "style"
+    ]
+  },
+  "sortPackageJson": {},
+  "sortTailwindcss": {
+    "functions": ["cn", "cva"]
+  }
+}

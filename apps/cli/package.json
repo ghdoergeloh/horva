@@ -1,25 +1,22 @@
 {
   "name": "@horva/cli",
   "version": "0.0.1",
-  "type": "module",
   "bin": {
     "horva": "./dist/index.js"
   },
   "files": [
     "dist"
   ],
+  "type": "module",
   "scripts": {
     "build": "node build.mjs",
     "clean": "git clean -xdf .cache .turbo dist node_modules",
     "dev": "node build.mjs --watch",
-    "format": "prettier --check . --ignore-path ../../.gitignore",
-    "lint": "eslint",
     "pack": "node build.mjs && cd dist && pnpm pack --pack-destination ..",
     "test:unit": "vitest run --passWithNoTests",
     "test:unit:coverage": "vitest run --coverage --passWithNoTests",
     "typecheck": "tsc"
   },
-  "prettier": "@horva/prettier-config",
   "dependencies": {
     "@horva/core": "workspace:*",
     "@horva/db": "workspace:*",
@@ -30,15 +27,11 @@
     "pg": "catalog:"
   },
   "devDependencies": {
-    "@horva/eslint-config": "workspace:*",
-    "@horva/prettier-config": "workspace:*",
     "@horva/tsconfig": "workspace:*",
     "@horva/vitest": "workspace:*",
     "@types/node": "catalog:",
     "@types/pg": "catalog:",
     "esbuild": "catalog:",
-    "eslint": "catalog:",
-    "prettier": "catalog:",
     "typescript": "catalog:",
     "vitest": "catalog:"
   }

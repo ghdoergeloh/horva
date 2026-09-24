@@ -7,14 +7,11 @@
     "build": "tsc -b && vite build",
     "clean": "git clean -xdf .cache .turbo dist node_modules",
     "dev": "vite",
-    "format": "prettier --check . --ignore-path ../../.gitignore --ignore-path .prettierignore",
-    "lint": "eslint .",
     "preview": "vite preview",
     "test:unit": "vitest run --passWithNoTests",
     "test:unit:coverage": "vitest run --coverage --passWithNoTests",
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
-  "prettier": "@horva/prettier-config",
   "dependencies": {
     "@dnd-kit/core": "catalog:",
     "@dnd-kit/sortable": "catalog:",
@@ -34,8 +31,6 @@
     "rrule": "catalog:"
   },
   "devDependencies": {
-    "@horva/eslint-config": "workspace:*",
-    "@horva/prettier-config": "workspace:*",
     "@horva/tailwind-config": "workspace:*",
     "@horva/tsconfig": "workspace:*",
     "@horva/vitest": "workspace:*",
@@ -46,10 +41,8 @@
     "@types/react": "catalog:react19",
     "@types/react-dom": "catalog:react19",
     "@vitejs/plugin-react": "catalog:",
-    "eslint": "catalog:",
     "jsdom": "catalog:",
     "lucide-react": "catalog:",
-    "prettier": "catalog:",
     "react-aria-components": "catalog:",
     "tailwindcss": "catalog:",
     "typescript": "catalog:",

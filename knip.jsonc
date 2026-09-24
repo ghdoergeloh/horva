@@ -46,18 +46,9 @@
       "drizzle": false,
       "entry": ["drizzle.config.ts"],
     },
-    "tooling/prettier": {
-      // Referenced by name in index.js's `plugins` array, not imported.
-      "ignoreDependencies": ["prettier-plugin-packagejson"],
-    },
     "tooling/tailwind": {
       // Referenced by name in postcss-config.js's `plugins` object, not imported.
       "ignoreDependencies": ["@tailwindcss/postcss"],
-    },
-    "tooling/eslint": {
-      // Enabled via the "typescript" string in base.js's import/resolver
-      // setting (eslint-import-resolver-* convention), not imported directly.
-      "ignoreDependencies": ["eslint-import-resolver-typescript"],
     },
   },
 }

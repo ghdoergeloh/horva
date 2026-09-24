@@ -13,30 +13,23 @@
     "build": "tsc",
     "clean": "git clean -xdf .cache .turbo dist node_modules",
     "dev": "tsc",
-    "format": "prettier --check . --ignore-path ../../.gitignore",
-    "lint": "eslint",
     "preview": "email dev --dir src/templates --port 3001",
     "test:unit": "vitest run --passWithNoTests",
     "test:unit:coverage": "vitest run --coverage --passWithNoTests",
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
-  "prettier": "@horva/prettier-config",
   "dependencies": {
     "nodemailer": "catalog:",
     "react": "catalog:react19",
     "react-email": "catalog:"
   },
   "devDependencies": {
-    "@horva/eslint-config": "workspace:*",
-    "@horva/prettier-config": "workspace:*",
     "@horva/tsconfig": "workspace:*",
     "@horva/vitest": "workspace:*",
     "@react-email/ui": "catalog:",
     "@types/node": "catalog:",
     "@types/nodemailer": "catalog:",
     "@types/react": "catalog:react19",
-    "eslint": "catalog:",
-    "prettier": "catalog:",
     "typescript": "catalog:",
     "vitest": "catalog:"
   }

@@ -37,7 +37,7 @@ function createWindow(): void {
     return { action: "deny" };
   });
 
-  // eslint-disable-next-line turbo/no-undeclared-env-vars
+  // oxlint-disable-next-line turbo/no-undeclared-env-vars
   const rendererUrl = process.env["ELECTRON_RENDERER_URL"];
   if (is.dev && rendererUrl) {
     void win.loadURL(rendererUrl);

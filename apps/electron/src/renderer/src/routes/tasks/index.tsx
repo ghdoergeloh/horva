@@ -143,7 +143,7 @@ function TasksOverview() {
   // Sync local order with the server whenever the underlying set of tasks changes
   // (new task, deleted task, etc). Compare as a set, not by order, so a drop
   // doesn't get reverted before the mutation completes.
-  /* eslint-disable react-hooks/set-state-in-effect */
+  /* oxlint-disable react-hooks/set-state-in-effect */
   useEffect(() => {
     const serverSet = new Set(serverOrder);
     const localSet = new Set(orderedIds);
@@ -152,7 +152,7 @@ function TasksOverview() {
       [...serverSet].every((id) => localSet.has(id));
     if (!sameSet) setOrderedIds(serverOrder);
   }, [serverOrder, orderedIds]);
-  /* eslint-enable react-hooks/set-state-in-effect */
+  /* oxlint-enable react-hooks/set-state-in-effect */
 
   const tasksById = useMemo(() => {
     const map = new Map<number, TaskRow>();

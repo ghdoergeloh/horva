@@ -21,9 +21,7 @@
     "build": "tsc",
     "clean": "git clean -xdf .cache .turbo dist node_modules",
     "dev": "tsc",
-    "format": "prettier --check . --ignore-path ../../.gitignore",
     "generate": "pnpm drizzle-kit generate",
-    "lint": "eslint",
     "migrate": "pnpm with-env drizzle-kit migrate",
     "push": "pnpm with-env drizzle-kit push",
     "studio": "pnpm with-env drizzle-kit studio",
@@ -32,21 +30,16 @@
     "typecheck": "tsc --noEmit --emitDeclarationOnly false",
     "with-env": "dotenv -e ../../.env --"
   },
-  "prettier": "@horva/prettier-config",
   "dependencies": {
     "drizzle-orm": "catalog:",
     "pg": "catalog:"
   },
   "devDependencies": {
-    "@horva/eslint-config": "workspace:*",
-    "@horva/prettier-config": "workspace:*",
     "@horva/tsconfig": "workspace:*",
     "@horva/vitest": "workspace:*",
     "@types/node": "catalog:",
     "@types/pg": "catalog:",
     "drizzle-kit": "catalog:",
-    "eslint": "catalog:",
-    "prettier": "catalog:",
     "typescript": "catalog:",
     "vitest": "catalog:"
   }

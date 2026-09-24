@@ -105,10 +105,10 @@ pnpm -F @horva/cli dev                # CLI only
 # Build & quality checks
 pnpm build                # Build all workspaces
 pnpm typecheck            # Type-check everything
-pnpm lint                 # ESLint
-pnpm lint:fix             # ESLint with --fix
-pnpm format               # Prettier check
-pnpm format:fix           # Prettier write
+pnpm lint                 # Oxlint (type-aware)
+pnpm lint:fix             # Oxlint with --fix
+pnpm format               # Oxfmt check
+pnpm format:fix           # Oxfmt write
 
 # Database
 pnpm db:generate          # Generate Drizzle migrations
@@ -142,7 +142,7 @@ See [`AGENTS.md`](./AGENTS.md) for the repository rules and [`docs/`](./docs) fo
 │   ├── db           # Drizzle ORM + PostgreSQL schema
 │   ├── transactional# Email templates
 │   └── ui           # React Aria Components + Tailwind (shadcn-style)
-├── tooling          # Shared ESLint / Prettier / TS / Tailwind / Vitest configs
+├── tooling          # Shared TS / Tailwind / Vitest configs
 ├── docs             # Feature specs & design docs
 └── turbo            # Turborepo generators for new packages
 ```

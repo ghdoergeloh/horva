@@ -1,7 +1,8 @@
 import { createContext, useContext, useState } from "react";
 
 export type DetailTarget =
-  { type: "project"; id: number } | { type: "task"; id: number };
+  | { type: "project"; id: number }
+  | { type: "task"; id: number };
 
 interface DetailDrawerContextValue {
   detail: DetailTarget | null;

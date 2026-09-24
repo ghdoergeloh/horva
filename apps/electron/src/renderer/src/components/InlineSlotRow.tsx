@@ -77,7 +77,7 @@ export function InlineSlotRow({
 
   useEffect(() => {
     if (isEditing) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect -- reset form state when entering edit mode for a different slot
+      // Reset the form state when edit mode starts for a different slot.
       setStartTime(fmt(slot.startedAt));
       setEndTime(slot.endedAt ? fmt(slot.endedAt) : "");
       setTaskId(slot.taskId);
@@ -94,7 +94,7 @@ export function InlineSlotRow({
     }
     document.addEventListener("mousedown", handleClick);
     return () => document.removeEventListener("mousedown", handleClick);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // oxlint-disable-next-line react-hooks/exhaustive-deps
   }, [isEditing, startTime, endTime, taskId]);
 
   async function save() {
