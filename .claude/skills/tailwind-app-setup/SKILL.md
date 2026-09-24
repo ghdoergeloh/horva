@@ -96,7 +96,7 @@ For Electron specifically: only the **renderer** block runs Tailwind. Main and p
 
 ### 3. Entry CSS
 
-Every renderer's entry CSS file (e.g. `src/index.css`, `src/renderer/src/styles/globals.css`):
+Every renderer's entry CSS file (e.g. `apps/react/src/styles/globals.css`):
 
 ```css
 @import "tailwindcss";
@@ -106,7 +106,7 @@ Every renderer's entry CSS file (e.g. `src/index.css`, `src/renderer/src/styles/
 
 The `@source` directive is **mandatory** in Tailwind v4. Without it the bundler doesn't scan `@horva/ui`, and classes that appear only in shared components silently disappear from production. Adjust the relative path so it points at the symlink in the app's `node_modules`.
 
-Reference implementation: `apps/react/src/index.css`. It also paints `body` with `bg-background text-foreground`.
+Reference implementation: `apps/react/src/styles/globals.css`. `apps/electron` imports it as `@horva/react/styles.css`.
 
 ### 4. Mount the theme on `<html>`
 

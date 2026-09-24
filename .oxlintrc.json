@@ -223,7 +223,7 @@
     {
       "files": [
         "apps/electron/**/*.{ts,tsx}",
-        "apps/web/**/*.{ts,tsx}",
+        "apps/react/**/*.{ts,tsx}",
         "packages/ui/**/*.{ts,tsx}"
       ],
       "plugins": ["react", "jsx-a11y"],
@@ -399,8 +399,8 @@
     },
     {
       "files": [
-        "apps/electron/src/renderer/src/routes/**/*.{ts,tsx}",
-        "apps/electron/src/renderer/src/contexts/**/*.{ts,tsx}",
+        "apps/react/src/routes/**/*.{ts,tsx}",
+        "apps/react/src/contexts/**/*.{ts,tsx}",
         "packages/ui/**/*.{ts,tsx}"
       ],
       "rules": {

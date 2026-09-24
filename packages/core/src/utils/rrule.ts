@@ -1,9 +1,11 @@
-// rrule is CommonJS, so Node.js and the bundlers load it as a default export.
-// Its types describe only the ESM build, which has no default export.
-// oxlint-disable-next-line import/default
-import rrule from "rrule";
+import * as rruleModule from "rrule";
 
-const { RRule } = rrule;
+// rrule ships a CommonJS and an ESM build. Node.js loads the CommonJS build
+// and puts its exports under `default`. Bundlers that pick the ESM build
+// provide named exports only.
+type RRuleModule = typeof rruleModule;
+const loaded = rruleModule as RRuleModule & { default?: RRuleModule };
+const { RRule } = loaded.default ?? loaded;
 
 // rrule.js v2.x does not correctly handle DTSTART;TZID= when parsing from string:
 // it ignores the timezone offset and treats the wall-clock time as UTC, producing

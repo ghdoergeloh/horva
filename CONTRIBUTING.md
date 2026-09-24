@@ -56,7 +56,7 @@ See the [README](./README.md#development-setup) for the full walkthrough, includ
 ### Repo layout
 
 ```
-apps/        # api, cli, electron, web
+apps/        # api, cli, electron, react
 packages/    # contract, auth, core, db, ui, transactional
 tooling/     # shared TS / Tailwind / Vitest configs
 docs/        # feature specs and design docs
@@ -67,7 +67,7 @@ The **contract** package (`packages/contract`) is the source of truth for the AP
 1. Define the route in `packages/contract/src/index.ts`.
 2. Implement the handler in `packages/core/src/handlers/<section>.ts`.
 3. Wire it into `apps/api/src/router.ts` (and the Electron IPC bridge).
-4. Consume it from `apps/electron` or a future web frontend with full type inference.
+4. Consume it from `apps/react` with full type inference.
 
 ## Workflow
 
@@ -100,7 +100,7 @@ pnpm -F @horva/db typecheck
 - **Imports are auto-sorted** by Oxfmt (`.oxfmtrc.json`): types → React → third-party → `@horva/*` → local (`~/`, `../`, `./`). Don't fight the sort.
 - **Tailwind classes** are sorted automatically inside `cn()` and `cva()`.
 - **Linting:** Oxlint with one root config (`.oxlintrc.json`), including type-aware rules. The React rules apply through an `overrides` entry: add new React workspaces to its `files` list.
-- **Path aliases:** the Electron renderer uses `~/` → `src/renderer/src/`.
+- **Imports inside `apps/react`:** `#/` → `src/` (subpath imports in its `package.json`), so the code resolves the same way when `apps/electron` bundles it.
 - **Dependency versions** live in `pnpm-workspace.yaml` catalogs. New deps should use `catalog:` references where appropriate.
 - **No mocks at the DB boundary.** Integration tests hit real PostgreSQL via Docker Compose.
 - **Comments** should explain _why_, not _what_. Most code doesn't need them.
