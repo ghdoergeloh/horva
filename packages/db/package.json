@@ -21,7 +21,7 @@
     "build": "tsc",
     "clean": "git clean -xdf .cache .turbo dist node_modules",
     "dev": "tsc",
-    "generate": "pnpm drizzle-kit generate",
+    "generate": "pnpm with-env drizzle-kit generate",
     "migrate": "pnpm with-env drizzle-kit migrate",
     "push": "pnpm with-env drizzle-kit push",
     "studio": "pnpm with-env drizzle-kit studio",
