@@ -1,5 +1,10 @@
 import { useState } from "react";
-import { CalendarDate, fromDate, Time } from "@internationalized/date";
+import {
+  CalendarDate,
+  fromDate,
+  getLocalTimeZone,
+  Time,
+} from "@internationalized/date";
 import { useTranslation } from "react-i18next";
 import { RRule } from "rrule";
 
@@ -24,8 +29,6 @@ const WEEKDAYS = [
 
 const SETPOS_OPTIONS = [1, 2, 3, 4, -1] as const;
 
-const USER_TIMEZONE = Intl.DateTimeFormat().resolvedOptions().timeZone;
-
 // All IANA timezone identifiers supported by the runtime
 const ALL_TIMEZONES: string[] = (() => {
   try {
@@ -33,7 +36,7 @@ const ALL_TIMEZONES: string[] = (() => {
       .supportedValuesOf("timeZone")
       .sort();
   } catch {
-    return [USER_TIMEZONE];
+    return [getLocalTimeZone()];
   }
 })();
 
@@ -53,7 +56,7 @@ interface RuleState {
 }
 
 function defaultState(scheduledAt: Date | null): RuleState {
-  const tzid = USER_TIMEZONE;
+  const tzid = getLocalTimeZone();
   const zdt = scheduledAt ? fromDate(scheduledAt, tzid) : null;
   const date = zdt ? new CalendarDate(zdt.year, zdt.month, zdt.day) : null;
   const time = zdt ? new Time(zdt.hour, zdt.minute) : new Time(9, 0);
@@ -102,7 +105,7 @@ function parseRruleString(
     const bySetPosDay = byWeekday[0] ?? 0;
     const monthlyMode = bysetpos.length > 0 ? "bySetPos" : "byMonthDay";
 
-    const tzid = o.tzid ?? USER_TIMEZONE;
+    const tzid = o.tzid ?? getLocalTimeZone();
     // o.dtstart has UTC fields == wall-clock in tzid (rrule convention)
     const rawDtstart = o.dtstart as Date | null;
     let date: CalendarDate | null = null;
