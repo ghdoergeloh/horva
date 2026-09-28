@@ -40,12 +40,11 @@ export interface DateRangePickerProps<
 
 const presetButton = tv({
   extend: focusRing,
-  base: "w-full rounded-lg px-3 py-1.5 text-left text-sm text-neutral-800 transition [-webkit-tap-highlight-color:transparent] dark:text-neutral-200",
+  base: "w-full rounded-lg px-3 py-1.5 text-left text-sm text-foreground transition [-webkit-tap-highlight-color:transparent]",
   variants: {
     isActive: {
-      true: "bg-blue-600 text-white",
-      false:
-        "hover:bg-neutral-200 pressed:bg-neutral-300 dark:hover:bg-neutral-700 dark:pressed:bg-neutral-600",
+      true: "bg-primary text-primary-foreground",
+      false: "hover:bg-accent pressed:bg-muted-foreground/20",
     },
   },
 });
@@ -110,7 +109,7 @@ export function DateRangePicker<T extends DateValue>({
       <Popover className="p-2">
         {presets && presets.length > 0 ? (
           <div className="flex items-start gap-2">
-            <div className="flex min-w-32 flex-col gap-0.5 self-stretch border-e border-black/10 pe-2 dark:border-white/10">
+            <div className="border-border flex min-w-32 flex-col gap-0.5 self-stretch border-e pe-2">
               {presets.map((preset) => (
                 <PresetItem key={preset.id} preset={preset} />
               ))}

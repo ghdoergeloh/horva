@@ -326,7 +326,7 @@ export function MocoSyncModal({
           </p>
           <div className="flex items-center gap-2">
             {done && result && (
-              <span className="text-xs text-green-600 dark:text-green-400">
+              <span className="text-success text-xs">
                 {t("moco.syncDone", {
                   created: result.created,
                   failed: result.failed.length,

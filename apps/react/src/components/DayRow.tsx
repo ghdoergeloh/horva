@@ -142,7 +142,7 @@ export function DayRow({
                   bottom: 5,
                   backgroundColor: color,
                 }}
-                className={`rounded transition-all hover:ring-2 hover:ring-white hover:ring-offset-1 hover:brightness-110 ${isRunning ? "animate-pulse" : ""}`}
+                className={`hover:ring-foreground hover:ring-offset-background rounded transition-all hover:ring-2 hover:ring-offset-1 hover:brightness-110 ${isRunning ? "animate-pulse" : ""}`}
                 onMouseEnter={(e) => {
                   e.stopPropagation();
                   const rect = e.currentTarget.getBoundingClientRect();
