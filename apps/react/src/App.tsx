@@ -6,7 +6,11 @@ import { I18nProvider } from "react-aria-components";
 
 import type { AppRouter } from "#/router.js";
 import i18n from "#/i18n/index.js";
+import { ensureValidLocalTimeZone } from "#/lib/timeZone.js";
 import { queryClient } from "#/router.js";
+
+// Before the first render, so every date helper gets a valid zone.
+ensureValidLocalTimeZone();
 
 const LOCALE_MAP: Record<string, string> = {
   de: "de-DE",
