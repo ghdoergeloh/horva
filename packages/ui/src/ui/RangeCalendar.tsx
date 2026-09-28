@@ -44,7 +44,7 @@ const cell = tv({
     // Ring stays visible on top of the range fill, so today remains
     // identifiable even when it falls inside the selected range.
     isToday: {
-      true: "ring-2 ring-blue-600 ring-inset dark:ring-blue-400 forced-colors:ring-[ButtonBorder]",
+      true: "ring-2 ring-foreground ring-inset forced-colors:ring-[ButtonBorder]",
     },
   },
 });

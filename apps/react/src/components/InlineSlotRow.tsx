@@ -183,6 +183,7 @@ export function InlineSlotRow({
         </td>
         <td className="py-1.5">
           {slot.task ? (
+            // White text on the project color, which is the same in both themes.
             <span
               className="inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-xs text-white"
               style={{ backgroundColor: color }}

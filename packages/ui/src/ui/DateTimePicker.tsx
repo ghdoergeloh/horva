@@ -56,7 +56,7 @@ function CalendarActions() {
   }
 
   return (
-    <div className="mt-2 flex justify-between border-t border-neutral-200 pt-2 dark:border-neutral-700">
+    <div className="border-border mt-2 flex justify-between border-t pt-2">
       <FieldButton aria-label="Clear" onPress={handleClear}>
         <Trash2 size={14} strokeWidth={2} />
       </FieldButton>
