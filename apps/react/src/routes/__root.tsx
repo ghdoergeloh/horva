@@ -41,20 +41,11 @@ import {
 } from "#/contexts/TaskDragContext.js";
 import i18n from "#/i18n/index.js";
 import { client } from "#/lib/orpc.js";
+import {
+  DEFAULT_PROJECT_COLOR,
+  PROJECT_COLOR_PRESETS,
+} from "#/lib/projectColors.js";
 import { useEscapeKey } from "#/lib/useEscapeKey.js";
-
-const COLOR_PRESETS = [
-  "#6366f1",
-  "#8b5cf6",
-  "#ec4899",
-  "#ef4444",
-  "#f97316",
-  "#eab308",
-  "#22c55e",
-  "#14b8a6",
-  "#3b82f6",
-  "#64748b",
-];
 
 function NewProjectModal({ onClose }: { onClose: () => void }) {
   const { t } = useTranslation();
@@ -63,7 +54,7 @@ function NewProjectModal({ onClose }: { onClose: () => void }) {
   useEscapeKey(onClose);
   const queryClient = useQueryClient();
   const [name, setName] = useState("");
-  const [color, setColor] = useState("#6366f1");
+  const [color, setColor] = useState<string>(DEFAULT_PROJECT_COLOR);
 
   const createProjectMutation = useMutation({
     mutationFn: async ({
@@ -139,7 +130,7 @@ function NewProjectModal({ onClose }: { onClose: () => void }) {
             {t("project.color")}
           </span>
           <div className="flex flex-wrap items-center gap-1.5">
-            {COLOR_PRESETS.map((c) => (
+            {PROJECT_COLOR_PRESETS.map((c) => (
               <Button
                 key={c}
                 variant="quiet"
@@ -455,7 +446,9 @@ function AppShell() {
 
               {/* Main content */}
               <div className="flex flex-1 flex-col overflow-hidden">
-                <SlotBar />
+                <header>
+                  <SlotBar />
+                </header>
                 <main className="flex-1 overflow-auto p-6">
                   <RouteErrorBoundary>
                     <Outlet />

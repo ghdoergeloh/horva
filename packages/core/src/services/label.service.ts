@@ -1,20 +1,20 @@
-import type { Db } from "@horva/db/client";
+import type { Database } from "@horva/db/client";
 import { eq } from "@horva/db";
 import { label, taskLabel } from "@horva/db/schema";
 
-export async function listLabels(db: Db) {
+export async function listLabels(db: Database) {
   return db.query.label.findMany({ orderBy: (l, { asc }) => [asc(l.name)] });
 }
 
-export async function getLabel(db: Db, id: number) {
+export async function getLabel(db: Database, id: number) {
   return db.query.label.findFirst({ where: eq(label.id, id) });
 }
 
-export async function getLabelByName(db: Db, name: string) {
+export async function getLabelByName(db: Database, name: string) {
   return db.query.label.findFirst({ where: eq(label.name, name) });
 }
 
-export async function createLabel(db: Db, name: string) {
+export async function createLabel(db: Database, name: string) {
   const existing = await getLabelByName(db, name);
   if (existing) throw new Error(`Label "${name}" already exists`);
   const [row] = await db.insert(label).values({ name }).returning();
@@ -22,7 +22,7 @@ export async function createLabel(db: Db, name: string) {
   return row;
 }
 
-export async function deleteLabel(db: Db, id: number) {
+export async function deleteLabel(db: Database, id: number) {
   const existing = await getLabel(db, id);
   if (!existing) throw new Error(`Label #${id} not found`);
   // Count tasks with this label before deleting

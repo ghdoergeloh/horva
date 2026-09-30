@@ -1,4 +1,4 @@
-import type { Db } from "@horva/db/client";
+import type { Database } from "@horva/db/client";
 import { and, eq, inArray, isNull, ne, notInArray, sql } from "@horva/db";
 import { slot, task, taskLabel } from "@horva/db/schema";
 
@@ -16,7 +16,7 @@ export interface ListTasksOpts {
   offset?: number;
 }
 
-export async function listTasks(db: Db, opts: ListTasksOpts = {}) {
+export async function listTasks(db: Database, opts: ListTasksOpts = {}) {
   const conditions = [];
 
   if (opts.projectId !== undefined) {
@@ -53,7 +53,7 @@ export async function listTasks(db: Db, opts: ListTasksOpts = {}) {
   return rows;
 }
 
-export async function getTask(db: Db, id: number) {
+export async function getTask(db: Database, id: number) {
   return db.query.task.findFirst({
     where: eq(task.id, id),
     with: {
@@ -64,11 +64,11 @@ export async function getTask(db: Db, id: number) {
   });
 }
 
-export async function createTask(db: Db, input: CreateTask) {
+export async function createTask(db: Database, input: CreateTask) {
   return db.transaction(async (tx) => {
     let projectId = input.projectId;
     if (!projectId) {
-      const defaultProject = await getDefaultProject(db);
+      const defaultProject = await getDefaultProject(tx);
       if (!defaultProject) throw new Error("Default project not found");
       projectId = defaultProject.id;
     }
@@ -101,7 +101,7 @@ export async function createTask(db: Db, input: CreateTask) {
   });
 }
 
-export async function updateTask(db: Db, id: number, input: UpdateTask) {
+export async function updateTask(db: Database, id: number, input: UpdateTask) {
   const existing = await getTask(db, id);
   if (!existing) throw new Error(`Task #${id} not found`);
 
@@ -180,7 +180,7 @@ export async function updateTask(db: Db, id: number, input: UpdateTask) {
   });
 }
 
-export async function markTaskDone(db: Db, id: number) {
+export async function markTaskDone(db: Database, id: number) {
   const existing = await getTask(db, id);
   if (!existing) throw new Error(`Task #${id} not found`);
 
@@ -220,7 +220,7 @@ export async function markTaskDone(db: Db, id: number) {
   return row;
 }
 
-export async function reopenTask(db: Db, id: number) {
+export async function reopenTask(db: Database, id: number) {
   const existing = await getTask(db, id);
   if (!existing) throw new Error(`Task #${id} not found`);
   const [row] = await db
@@ -232,7 +232,7 @@ export async function reopenTask(db: Db, id: number) {
   return row;
 }
 
-export async function archiveTask(db: Db, id: number) {
+export async function archiveTask(db: Database, id: number) {
   const existing = await getTask(db, id);
   if (!existing) throw new Error(`Task #${id} not found`);
   const [row] = await db
@@ -244,7 +244,7 @@ export async function archiveTask(db: Db, id: number) {
   return row;
 }
 
-export async function deleteTask(db: Db, id: number) {
+export async function deleteTask(db: Database, id: number) {
   const existing = await getTask(db, id);
   if (!existing) throw new Error(`Task #${id} not found`);
 
@@ -296,7 +296,7 @@ export async function deleteTask(db: Db, id: number) {
   });
 }
 
-export async function reorderTasks(db: Db, orderedIds: number[]) {
+export async function reorderTasks(db: Database, orderedIds: number[]) {
   if (orderedIds.length === 0) return;
   await db.transaction(async (tx) => {
     for (let i = 0; i < orderedIds.length; i++) {
@@ -310,7 +310,7 @@ export async function reorderTasks(db: Db, orderedIds: number[]) {
   });
 }
 
-export async function planTask(db: Db, id: number, date: Date | null) {
+export async function planTask(db: Database, id: number, date: Date | null) {
   const existing = await getTask(db, id);
   if (!existing) throw new Error(`Task #${id} not found`);
   const [row] = await db

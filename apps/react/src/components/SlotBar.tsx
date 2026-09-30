@@ -6,6 +6,7 @@ import { Button } from "@horva/ui/Button";
 
 import { useActiveSlot } from "#/contexts/ActiveSlotContext.js";
 import { client } from "#/lib/orpc.js";
+import { NO_PROJECT_COLOR } from "#/lib/projectColors.js";
 import { StartTaskDialog } from "./StartTaskDialog.js";
 import { WorktimeDisplay } from "./WorktimeDisplay.js";
 
@@ -72,7 +73,7 @@ export function SlotBar() {
   }
 
   const task = openSlot.task;
-  const projectColor = task?.project.color ?? "#9ca3af";
+  const projectColor = task?.project.color ?? NO_PROJECT_COLOR;
 
   return (
     <div className="border-border bg-card flex items-center gap-4 border-b px-6 py-3">

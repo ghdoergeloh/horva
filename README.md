@@ -20,6 +20,8 @@ Horva is a time tracking suite built around the idea that your day is a sequence
 - [Development setup](#development-setup)
 - [Project structure](#project-structure)
 - [Architecture](#architecture)
+- [Testing](#testing)
+- [Production](#production)
 - [Tech stack](#tech-stack)
 - [Contributing](#contributing)
 - [License](#license)
@@ -86,7 +88,7 @@ cp .env.example .env
 
 ```bash
 docker compose up -d   # PostgreSQL + Mailpit
-pnpm db:push           # Apply schema to the database
+pnpm db:migrate        # Apply the migrations
 ```
 
 ### 4. Run in watch mode
@@ -95,9 +97,14 @@ pnpm db:push           # Apply schema to the database
 pnpm dev                              # Run everything (Turbo)
 pnpm -F @horva/api dev                # API only
 pnpm -F @horva/react dev              # React app in the browser only (port 5173)
+pnpm storybook                        # The UI components on http://localhost:6006
 pnpm -F @horva/electron-app dev       # Electron desktop app only
 pnpm -F @horva/cli dev                # CLI only
 ```
+
+In the browser, the React app runs on http://localhost:5173. Vite forwards
+`/api` to the API on port 3000, so the browser sees one origin, like in
+production.
 
 ### Common commands
 
@@ -109,10 +116,15 @@ pnpm lint                 # Oxlint (type-aware)
 pnpm lint:fix             # Oxlint with --fix
 pnpm format               # Oxfmt check
 pnpm format:fix           # Oxfmt write
+pnpm test:unit            # Vitest (test:unit:coverage with coverage)
+pnpm test:e2e             # Playwright: the web app and the Electron app
+pnpm knip                 # Unused files, dependencies, exports
+pnpm depcruise            # Circular imports and package boundaries
 
 # Database
-pnpm db:generate          # Generate Drizzle migrations
-pnpm db:migrate           # Run migrations
+pnpm db:generate          # Generate a migration from the schema
+pnpm db:migrate           # Apply the migrations
+pnpm db:push              # Push the schema without a migration (experiments only)
 pnpm db:studio            # Open Drizzle Studio
 
 # Electron desktop app
@@ -124,26 +136,27 @@ pnpm -F @horva/electron-app pack      # Package a distributable (.dmg / .exe / .
 pnpm turbo gen init
 ```
 
-See [`AGENTS.md`](./AGENTS.md) for the repository rules and [`docs/`](./docs) for feature specs.
+See [`AGENTS.md`](./AGENTS.md) for the repository rules and [`docs/`](./docs) for the status, the architecture, the decisions and the feature specs.
 
 ## Project structure
 
 ```
 .
 ├── apps
-│   ├── api          # Hono + oRPC REST API + better-auth (port 3000)
-│   ├── cli          # Commander-based CLI (invokes @horva/core against a local DB)
+│   ├── api          # Hono + oRPC API + better-auth; serves the built React app (port 3000)
+│   ├── cli          # Commander-based CLI (invokes @horva/core against a local DB, runs migrations)
+│   ├── e2e          # Playwright tests of the web app: flows, axe on every screen, smoke screenshots
 │   ├── electron     # Electron desktop app: wraps apps/react (electron-vite + electron-builder)
 │   └── react        # React app (Vite); runs in the browser and inside Electron
 ├── packages
 │   ├── auth         # better-auth (email/password) w/ Drizzle adapter
 │   ├── contract     # Shared oRPC + Zod API contract
 │   ├── core         # Services, transport-agnostic handlers, shared config
-│   ├── db           # Drizzle ORM + PostgreSQL schema
+│   ├── db           # Drizzle ORM, PostgreSQL schema, migrations, test databases (PGlite)
 │   ├── transactional# Email templates
-│   └── ui           # React Aria Components + Tailwind (shadcn-style)
-├── tooling          # Shared TS / Tailwind / Vitest configs
-├── docs             # Feature specs & design docs
+│   └── ui           # React Aria Components + Tailwind (shadcn-style), with Storybook
+├── tooling          # Shared TS / Tailwind / Vitest configs, workspace checks (quality)
+├── docs             # Status, architecture, decisions, feature specs
 └── turbo            # Turborepo generators for new packages
 ```
 
@@ -157,7 +170,7 @@ The **contract** package is the hub: `packages/contract` defines the API shape �
 
 |                              | Browser (`apps/react/src/main.tsx`) | Electron (`apps/electron/src/renderer/src/main.tsx`) |
 | ---------------------------- | ----------------------------------- | ---------------------------------------------------- |
-| Backend link (`setOrpcLink`) | HTTP to `apps/api`                  | MessagePort to the main process                      |
+| Backend link (`setOrpcLink`) | HTTP to `/api` on the same origin   | MessagePort to the main process                      |
 | Gate before the app          | Login (better-auth)                 | Setup wizard (local database)                        |
 | Router history               | Browser history                     | Hash history                                         |
 
@@ -198,6 +211,60 @@ flowchart LR
 
 > CLI authentication uses better-auth's `deviceAuthorization` flow.
 
+## Testing
+
+Most rules of the project are tests, not text. Each check is small and
+names what is wrong.
+
+| Check                              | Where                                           |
+| ---------------------------------- | ----------------------------------------------- |
+| No network in unit tests           | `tooling/vitest/no-network.ts`                  |
+| Every package typechecks and tests | `tooling/quality/src/workspace.spec.ts`         |
+| Fixed coverage floors              | `tooling/quality/src/vitest-configs.spec.ts`    |
+| Every procedure needs a session    | `apps/api/src/router.spec.ts`                   |
+| Package boundaries                 | `.dependency-cruiser.cjs`                       |
+| Migrations match the schema        | CI                                              |
+| Contrast of all token pairs        | `packages/ui/src/test/contrast.spec.ts`         |
+| No raw colors                      | `packages/ui/src/test/raw-colors.spec.ts`       |
+| Screens use `@horva/ui` only       | `apps/react/src/test/ui-only.spec.ts`           |
+| Stories: axe and screenshots       | `packages/ui/src/test/stories.browser.test.tsx` |
+| Screens: axe, width, screenshots   | `apps/e2e/tests/screens.e2e.ts`                 |
+| Electron: first launch             | `apps/electron/e2e/setup-wizard.spec.ts`        |
+| Secrets, workflow security         | CI (gitleaks, actionlint, zizmor)               |
+
+- **Database:** `createTestDatabase()` from `@horva/db/testing` gives each
+  test a migrated in-memory PostgreSQL (PGlite); no running server is
+  needed. Tests of locks and parallel transactions use
+  `createPostgresTestDatabase()`; they run when `TEST_DATABASE_URL` is set,
+  as in CI.
+- **Coverage floors** are fixed numbers a little below the measured
+  values. Raise them by hand; they do not rewrite themselves.
+- **Screenshots**: the first story of each component (light and dark) and
+  three screen combinations. They are compared on Linux arm64, where the
+  references come from: the CI runner `ubuntu-24.04-arm` and the dev
+  container on Apple silicon. Other systems skip only the pixel
+  comparison. After an intended change:
+  `pnpm -F @horva/ui exec vitest run --project stories --update` or
+  `pnpm -F @horva/e2e test:e2e --update-snapshots`, then look at every new
+  image.
+- Story tests need Chromium: `pnpm -F @horva/ui exec playwright install chromium`.
+
+## Production
+
+`docker build -t horva .` builds one image with the API, the built React
+app and the CLI. The API serves the app and `/api` on one origin
+(`docs/decisions/0001-*`), `/health` answers while the process runs,
+`/ready` when the database answers. Migrations run from the same image:
+
+```bash
+docker run --rm -e DATABASE_URL=… horva node apps/cli/dist/index.js migrate
+```
+
+The API needs `DATABASE_URL`, `BETTER_AUTH_SECRET` and `BETTER_AUTH_URL`
+(the public origin). With `SMTP_HOST` and `SMTP_FROM`, new accounts must
+verify their email address and password reset is on.
+`apps/api/src/env.ts` lists every variable.
+
 ## Tech stack
 
 - **Language**: TypeScript (strict, ESM everywhere)
@@ -207,7 +274,7 @@ flowchart LR
 - **Desktop**: Electron 44 + electron-vite + electron-builder
 - **Database**: PostgreSQL + [Drizzle ORM](https://orm.drizzle.team/)
 - **Auth**: [better-auth](https://www.better-auth.com/) with Drizzle adapter
-- **Testing**: Vitest, Playwright (Electron end-to-end)
+- **Testing**: Vitest (with PGlite), Storybook story tests in Chromium, Playwright (web and Electron), axe
 
 ## Contributing
 

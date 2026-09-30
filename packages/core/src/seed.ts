@@ -1,8 +1,8 @@
-import type { Db } from "@horva/db/client";
+import type { Database } from "@horva/db/client";
 import { eq } from "@horva/db";
 import { project } from "@horva/db/schema";
 
-export async function seed(db: Db) {
+export async function seed(db: Database) {
   const existing = await db.query.project.findFirst({
     where: eq(project.isDefault, true),
   });

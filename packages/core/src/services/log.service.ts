@@ -1,4 +1,4 @@
-import type { Db } from "@horva/db/client";
+import type { Database } from "@horva/db/client";
 import { and, gte, isNotNull, lte } from "@horva/db";
 import { slot } from "@horva/db/schema";
 
@@ -44,7 +44,7 @@ export function getPeriodRange(period: Period): { from: Date; to: Date } {
 }
 
 export async function getLog(
-  db: Db,
+  db: Database,
   period: Period | { from: Date; to: Date },
 ) {
   const { from, to } =
@@ -83,7 +83,7 @@ export interface SummaryEntry {
 }
 
 export async function getSummary(
-  db: Db,
+  db: Database,
   period: Period | { from: Date; to: Date },
 ) {
   const slots = await getLog(db, period);

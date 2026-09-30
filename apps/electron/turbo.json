@@ -8,6 +8,10 @@
     "dev": {
       "cache": false,
       "persistent": true
+    },
+    // The Playwright tests start the built app from out/.
+    "test:e2e": {
+      "dependsOn": ["^topo", "build"]
     }
   }
 }

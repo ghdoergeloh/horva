@@ -15,6 +15,7 @@ import {
   useTimeFormat,
 } from "#/contexts/SettingsContext.js";
 import { client } from "#/lib/orpc.js";
+import { NO_PROJECT_COLOR } from "#/lib/projectColors.js";
 import { applyTimeString, fmt } from "#/lib/timeFormatters.js";
 
 interface SlotRow {
@@ -144,7 +145,7 @@ export function InlineSlotRow({
     if (e.key === "Escape") onEndEdit();
   }
 
-  const color = slot.task?.project.color ?? "#9ca3af";
+  const color = slot.task?.project.color ?? NO_PROJECT_COLOR;
   const taskName = slot.task
     ? slot.task.name
     : slot.state === "no_task"

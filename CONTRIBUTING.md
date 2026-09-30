@@ -47,7 +47,7 @@ cd horva
 pnpm install
 cp .env.example .env
 docker compose up -d
-pnpm db:push
+pnpm db:migrate
 pnpm dev
 ```
 

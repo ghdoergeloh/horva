@@ -2,7 +2,7 @@ import type { IpcMain } from "electron";
 import { onError } from "@orpc/server";
 import { RPCHandler } from "@orpc/server/message-port";
 
-import type { Db } from "@horva/db/client";
+import type { Database } from "@horva/db/client";
 import { readConfig } from "@horva/core/config";
 
 import { createLocalContext } from "./context.js";
@@ -21,7 +21,7 @@ import { router } from "./router.js";
  * time. That matches oRPC's static-context contract and our "local, single
  * user" deployment model — no need for per-call auth resolution.
  */
-export function registerOrpcHandler(ipcMain: IpcMain, db: Db): void {
+export function registerOrpcHandler(ipcMain: IpcMain, db: Database): void {
   const rpcHandler = new RPCHandler(router, {
     interceptors: [
       onError((error) => {

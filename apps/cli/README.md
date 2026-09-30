@@ -12,11 +12,11 @@ A command-line time tracker for managing projects, tasks, labels, and time slots
 
 ### 1. Set up the database
 
-From the repo root, start the local PostgreSQL instance and apply the schema:
+From the repo root, start the local PostgreSQL instance and apply the migrations:
 
 ```bash
 docker compose up -d
-pnpm db:push
+pnpm db:migrate
 ```
 
 ### 2. Build the CLI

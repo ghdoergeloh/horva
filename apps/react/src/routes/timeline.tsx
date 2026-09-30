@@ -6,7 +6,8 @@ import { useTranslation } from "react-i18next";
 
 import { Button } from "@horva/ui/Button";
 import { Select, SelectItem } from "@horva/ui/Select";
-import { Tab, TabList, Tabs } from "@horva/ui/Tabs";
+import { ToggleButton } from "@horva/ui/ToggleButton";
+import { ToggleButtonGroup } from "@horva/ui/ToggleButtonGroup";
 
 import { DayRow } from "#/components/DayRow.js";
 import i18n from "#/i18n/index.js";
@@ -195,23 +196,24 @@ function Timeline() {
             ))}
           </Select>
         )}
-        <Tabs
-          selectedKey={viewMode}
-          onSelectionChange={(key) => setViewMode(key as "slots" | "tasks")}
-          className={`ml-auto flex-row items-center gap-1 ${projectOptions.length > 0 ? "" : ""}`}
+        <ToggleButtonGroup
+          aria-label={t("timeline.viewMode")}
+          selectionMode="single"
+          disallowEmptySelection
+          selectedKeys={[viewMode]}
+          onSelectionChange={(keys) => {
+            const [key] = [...keys];
+            if (key === "slots" || key === "tasks") setViewMode(key);
+          }}
+          className="ml-auto"
         >
-          <TabList
-            aria-label={t("timeline.viewMode")}
-            className="m-0 flex-row gap-1 p-0"
-          >
-            <Tab id="slots" className="px-2.5 py-1 text-xs">
-              {t("timeline.slots")}
-            </Tab>
-            <Tab id="tasks" className="px-2.5 py-1 text-xs">
-              {t("timeline.tasks")}
-            </Tab>
-          </TabList>
-        </Tabs>
+          <ToggleButton id="slots" className="px-2.5 py-1 text-xs">
+            {t("timeline.slots")}
+          </ToggleButton>
+          <ToggleButton id="tasks" className="px-2.5 py-1 text-xs">
+            {t("timeline.tasks")}
+          </ToggleButton>
+        </ToggleButtonGroup>
       </div>
 
       {/* Card */}

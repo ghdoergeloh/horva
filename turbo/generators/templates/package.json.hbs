@@ -7,13 +7,15 @@
   },
   "license": "MIT",
   "scripts": {
-    "build": "tsc",
     "clean": "git clean -xdf .cache .turbo dist node_modules",
-    "dev": "tsc",
-    "typecheck": "tsc --noEmit --emitDeclarationOnly false"
+    "test:unit": "vitest run",
+    "test:unit:coverage": "vitest run --coverage",
+    "typecheck": "tsc --noEmit"
   },
   "devDependencies": {
     "@horva/tsconfig": "workspace:*",
-    "typescript": "catalog:"
+    "@horva/vitest": "workspace:*",
+    "typescript": "catalog:",
+    "vitest": "catalog:"
   }
 }

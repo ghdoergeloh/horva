@@ -36,7 +36,7 @@ const cellStyles = tv({
     // Ring stays visible on top of the selected fill, so today remains
     // identifiable even when another date is selected.
     isToday: {
-      true: "ring-2 ring-blue-600 ring-inset dark:ring-blue-400 forced-colors:ring-[ButtonBorder]",
+      true: "ring-ring ring-2 ring-inset forced-colors:ring-[ButtonBorder]",
     },
   },
 });

@@ -1,5 +1,5 @@
 {
-  "extends": "@horva/tsconfig/compiled-package.json",
+  "extends": "@horva/tsconfig/base.json",
   "compilerOptions": {
     "types": ["node"],
     // tsx (esbuild) applies JSX settings to the whole loaded module graph,
