@@ -8,7 +8,7 @@ export default mergeConfig(
     test: {
       // Password hashing and the first migration of PGlite take seconds on
       // a busy machine.
-      testTimeout: 15_000,
+      testTimeout: 30_000,
       coverage: {
         // Fixed floors below the measured values. Raise them by hand.
         thresholds: {

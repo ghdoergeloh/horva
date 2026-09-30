@@ -6,6 +6,9 @@ export default mergeConfig(
   viteConfig,
   defineConfig({
     test: {
+      // The first createTestDatabase() of a file migrates PGlite, which
+      // takes seconds on a busy CI runner.
+      hookTimeout: 30_000,
       coverage: {
         // Fixed floors below the measured values. Raise them by hand.
         thresholds: {
