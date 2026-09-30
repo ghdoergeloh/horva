@@ -30,8 +30,11 @@ on `localhost:5432` with the user `postgres`.
 in light and dark. For each it checks:
 
 - nothing is wider than the screen,
-- axe finds no accessibility problem,
-- the screenshot equals the reference in `tests/__screenshots__`.
+- axe finds no accessibility problem.
+
+The combinations in `screenshots` (each viewport and each scheme once)
+are also compared with the reference in `tests/__screenshots__`, as a
+smoke test of the layout.
 
 The references come from Chromium on Linux arm64 (the CI runner, and the
 dev container on Apple silicon).

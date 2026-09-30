@@ -50,7 +50,7 @@ first real feature exists:
 - the greeting on `apps/react/src/routes/index.tsx`,
   `apps/react/src/routes/about.tsx`, and in `apps/e2e`: the greeting
   checks in `tests/auth.e2e.ts`, the `about` entry in
-  `tests/screens.e2e.ts` and the home and about screenshots
+  `tests/screens.e2e.ts` and the home screenshots
   (`pnpm test:e2e --update-snapshots`)
 
 Sign-up, sign-in and `user.me` are not an example; keep them.
@@ -96,7 +96,7 @@ pnpm preview:emails               # Preview the email templates
 ├── apps
 │   ├── api             -> REST API with Hono, implements the contract, serves the SPA
 │   ├── cli             -> CLI with Commander: core directly, migrations, or the API through the contract
-│   ├── e2e             -> Playwright tests: flows, axe and screenshots of every screen
+│   ├── e2e             -> Playwright tests: flows, axe on every screen, smoke screenshots
 │   └── react           -> Frontend with Vite, React, TanStack Router and Query, uses the contract
 ├── packages
 │   ├── auth            -> Authentication (better-auth), created by createAuth()
@@ -216,7 +216,8 @@ names what is wrong.
   server; they run when `TEST_DATABASE_URL` is set, as in CI.
 - **Coverage floors** are fixed numbers a little below the measured
   values. Raise them by hand; they do not rewrite themselves.
-- **Screenshots** of stories and screens are compared on Linux arm64,
+- **Screenshots**: the first story of each component (light and dark) and
+  three screen combinations. They are compared on Linux arm64,
   where the references come from: the CI runner `ubuntu-24.04-arm` and
   the dev container on Apple silicon. Other systems run every other check
   and skip only the pixel comparison. After an intended

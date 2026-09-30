@@ -20,7 +20,7 @@ Instructions for coding agents in this repository. Only rules that cannot be rea
 - Database tests use `createTestDatabase()` from `@repo/db/testing` (in-memory PGlite, migrated, one copy per test). Locks, parallel transactions and other concurrency need `createPostgresTestDatabase()`; those tests are skipped without `TEST_DATABASE_URL` and run in CI.
 - Coverage floors in each `vitest.config.ts` are fixed numbers. Raise them by hand when the coverage grows; never lower them to make a change pass.
 - Every bug fix and every review finding gets a test that fails without the fix.
-- Screenshot references (`__screenshots__`) come from Chromium on Linux arm64 (CI runner `ubuntu-24.04-arm`, dev container on Apple silicon); other systems skip the comparison. Update them only for an intended visual change, and look at every new image before you commit it.
+- Screenshot references (`__screenshots__`) come from Chromium on Linux arm64 (CI runner `ubuntu-24.04-arm`, dev container on Apple silicon); other systems skip the comparison. There are few on purpose: the first story of each component in light and dark, and three screen combinations in `screens.e2e.ts`. Do not add one per state. Update them only for an intended visual change, and look at every new image before you commit it.
 
 ## Styling
 
@@ -29,7 +29,7 @@ Use semantic tokens (`bg-primary`, `text-foreground`, `border-border`, …), nev
 - Screens in `apps/react` are built from `@repo/ui` only. A missing component goes into `packages/ui` first, with a story for each state (empty, filled, invalid, disabled, open, the limits of its values), ideally in its own small pull request before the screens that use it.
 - A new combination of text and background tokens needs a pair in `packages/ui/src/test/color-pairs.ts`.
 - `text-muted-foreground` is for side lines in `text-sm` or `text-xs`, never for running text.
-- A new screen goes into the `screens` list of `apps/e2e/tests/screens.e2e.ts`: desktop and phone, light and dark, axe and a screenshot.
+- A new screen goes into the `screens` list of `apps/e2e/tests/screens.e2e.ts`: desktop and phone, light and dark, with the width check and axe. It needs no screenshot.
 
 For wiring Tailwind into a new app, adding tokens, or missing-class and dark-mode-flash problems, follow `.claude/skills/tailwind-app-setup/SKILL.md`.
 
