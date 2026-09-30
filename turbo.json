@@ -35,10 +35,14 @@
   },
   "globalEnv": [
     "DATABASE_URL",
+    "TEST_DATABASE_URL",
+    "MIGRATIONS_DIR",
     "BETTER_AUTH_SECRET",
     "BETTER_AUTH_URL",
+    "TRUSTED_ORIGINS",
     "API_PORT",
-    "VITE_API_URL",
+    "API_PROXY_TARGET",
+    "SPA_DIR",
     "SMTP_HOST",
     "SMTP_PORT",
     "SMTP_SECURE",
@@ -46,5 +50,17 @@
     "SMTP_PASS",
     "SMTP_FROM"
   ],
-  "globalPassThroughEnv": ["NODE_ENV", "CI", "npm_lifecycle_event"]
+  "globalPassThroughEnv": [
+    "NODE_ENV",
+    "CI",
+    "npm_lifecycle_event",
+    "NODE_EXTRA_CA_CERTS",
+    "NODE_USE_ENV_PROXY",
+    "HTTP_PROXY",
+    "HTTPS_PROXY",
+    "NO_PROXY",
+    "http_proxy",
+    "https_proxy",
+    "no_proxy"
+  ]
 }

@@ -19,7 +19,9 @@
     "@repo/contract": "workspace:*",
     "@repo/core": "workspace:*",
     "@repo/db": "workspace:*",
-    "hono": "catalog:"
+    "@repo/transactional": "workspace:*",
+    "hono": "catalog:",
+    "zod": "catalog:"
   },
   "devDependencies": {
     "@repo/tsconfig": "workspace:*",

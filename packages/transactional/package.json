@@ -9,7 +9,9 @@
   "scripts": {
     "clean": "git clean -xdf .cache .turbo dist node_modules",
     "preview": "email dev --dir src/templates --port 3001",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test:unit": "vitest run",
+    "test:unit:coverage": "vitest run --coverage"
   },
   "dependencies": {
     "nodemailer": "catalog:",
@@ -19,9 +21,11 @@
   "devDependencies": {
     "@react-email/ui": "catalog:",
     "@repo/tsconfig": "workspace:*",
+    "@repo/vitest": "workspace:*",
     "@types/node": "catalog:",
     "@types/nodemailer": "catalog:",
     "@types/react": "catalog:react19",
-    "typescript": "catalog:"
+    "typescript": "catalog:",
+    "vitest": "catalog:"
   }
 }

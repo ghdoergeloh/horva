@@ -15,6 +15,7 @@
   },
   "dependencies": {
     "@repo/core": "workspace:*",
+    "@repo/db": "workspace:*",
     "commander": "catalog:"
   },
   "devDependencies": {

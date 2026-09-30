@@ -1,6 +1,6 @@
 import type { SubmitEvent } from "react";
 import { useState } from "react";
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 
 import { Button } from "@repo/ui/Button";
 import { TextField } from "@repo/ui/TextField";
@@ -12,6 +12,7 @@ export const Route = createFileRoute("/signup")({
 });
 
 function SignupPage() {
+  const navigate = useNavigate();
   const [error, setError] = useState<string | null>(null);
   const [isPending, setIsPending] = useState(false);
   const [emailSent, setEmailSent] = useState(false);
@@ -26,7 +27,7 @@ function SignupPage() {
     const email = formData.get("email") as string;
     const password = formData.get("password") as string;
 
-    const { error } = await authClient.signUp.email({
+    const { data, error } = await authClient.signUp.email({
       name,
       email,
       password,
@@ -39,6 +40,11 @@ function SignupPage() {
       return;
     }
 
+    // Without email verification (no SMTP_HOST), sign-up signs the user in.
+    if (data.token) {
+      await navigate({ to: "/" });
+      return;
+    }
     setEmailSent(true);
   }
 

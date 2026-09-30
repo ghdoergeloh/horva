@@ -9,14 +9,13 @@
   },
   "scripts": {
     "clean": "git clean -xdf .cache .turbo dist node_modules",
-    "generate": "dotenv -e ../../.env -- auth generate --config src/auth.ts --output ../db/src/schema/auth-schema.ts --yes",
+    "generate": "auth generate --config src/cli-config.ts --output ../db/src/schema/auth-schema.ts --yes",
     "test:unit": "vitest run --passWithNoTests",
     "test:unit:coverage": "vitest run --coverage --passWithNoTests",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@repo/db": "workspace:*",
-    "@repo/transactional": "workspace:*",
     "better-auth": "catalog:"
   },
   "devDependencies": {
