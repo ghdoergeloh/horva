@@ -82,9 +82,7 @@ export function MocoSettings() {
           {t("moco.save")}
         </Button>
         {saveMutation.isSuccess && (
-          <span className="text-xs text-green-600 dark:text-green-400">
-            {t("moco.saved")}
-          </span>
+          <span className="text-success text-xs">{t("moco.saved")}</span>
         )}
         {saveMutation.isError && (
           <span className="text-destructive text-xs">

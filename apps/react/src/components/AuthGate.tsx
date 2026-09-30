@@ -7,13 +7,13 @@ import { Button } from "@horva/ui/Button";
 import { TextField } from "@horva/ui/TextField";
 
 import { LoadingSpinner } from "#/components/LoadingSpinner.js";
-import { API_URL } from "#/lib/apiUrl.js";
 
 // Gate of the browser app: a better-auth email/password login wall plus the
 // password-reset flow. The reset page lives here (not in src/routes/),
 // because it must render outside the authenticated shell.
 
-const authClient = initAuthClient({ baseUrl: `${API_URL}/api/auth` });
+// The API is on the origin of the page.
+const authClient = initAuthClient({ baseUrl: globalThis.location.origin });
 
 const RESET_PATH = "/reset-password";
 
@@ -35,9 +35,9 @@ export function AuthGate({ children }: AuthGateProps) {
 
   if (isPending) {
     return (
-      <div className="flex h-screen items-center justify-center bg-gray-50">
+      <main className="bg-background flex h-screen items-center justify-center">
         <LoadingSpinner size={64} label={t("loading")} />
-      </div>
+      </main>
     );
   }
 
@@ -124,13 +124,13 @@ function LoginForm() {
         : t("auth.forgotSubtitle");
 
   return (
-    <div className="flex h-screen items-center justify-center bg-gray-50 p-6">
+    <main className="bg-background flex h-screen items-center justify-center p-6">
       <form
         onSubmit={handleSubmit}
-        className="w-full max-w-md rounded-xl border border-gray-200 bg-white p-6 shadow-sm"
+        className="border-border bg-card w-full max-w-md rounded-xl border p-6 shadow-sm"
       >
-        <h1 className="text-xl font-semibold text-gray-900">{title}</h1>
-        <p className="mt-1 text-sm text-gray-500">{subtitle}</p>
+        <h1 className="text-foreground text-xl font-semibold">{title}</h1>
+        <p className="text-muted-foreground mt-1 text-sm">{subtitle}</p>
 
         <div className="mt-6 space-y-4">
           {mode === "signup" && (
@@ -176,7 +176,7 @@ function LoginForm() {
               type="button"
               variant="quiet"
               onPress={() => switchMode("forgot")}
-              className="text-xs text-indigo-600 hover:text-indigo-800"
+              className="text-primary hover:text-primary/80 text-xs"
             >
               {t("auth.forgotLink")}
             </Button>
@@ -184,12 +184,12 @@ function LoginForm() {
         )}
 
         {error && (
-          <div className="mt-4 rounded-md bg-red-50 p-3 text-xs text-red-700">
+          <div className="bg-destructive/10 text-destructive mt-4 rounded-md p-3 text-xs">
             {error}
           </div>
         )}
         {info && (
-          <div className="mt-4 rounded-md bg-green-50 p-3 text-xs text-green-700">
+          <div className="bg-success/10 text-success mt-4 rounded-md p-3 text-xs">
             {info}
           </div>
         )}
@@ -199,7 +199,7 @@ function LoginForm() {
             type="button"
             variant="quiet"
             onPress={() => switchMode(mode === "signin" ? "signup" : "signin")}
-            className="text-xs text-indigo-600 hover:text-indigo-800"
+            className="text-primary hover:text-primary/80 text-xs"
           >
             {mode === "signin"
               ? t("auth.needAccount")
@@ -222,7 +222,7 @@ function LoginForm() {
           </Button>
         </div>
       </form>
-    </div>
+    </main>
   );
 }
 
@@ -262,12 +262,12 @@ function ResetPasswordForm() {
 
   if (!token) {
     return (
-      <div className="flex h-screen items-center justify-center bg-gray-50 p-6">
-        <div className="w-full max-w-md rounded-xl border border-gray-200 bg-white p-6 text-center shadow-sm">
-          <h1 className="text-xl font-semibold text-gray-900">
+      <main className="bg-background flex h-screen items-center justify-center p-6">
+        <div className="border-border bg-card w-full max-w-md rounded-xl border p-6 text-center shadow-sm">
+          <h1 className="text-foreground text-xl font-semibold">
             {t("auth.resetInvalidTitle")}
           </h1>
-          <p className="mt-2 text-sm text-gray-500">
+          <p className="text-muted-foreground mt-2 text-sm">
             {t("auth.resetInvalidBody")}
           </p>
           <Button
@@ -280,18 +280,18 @@ function ResetPasswordForm() {
             {t("auth.backToSignIn")}
           </Button>
         </div>
-      </div>
+      </main>
     );
   }
 
   if (done) {
     return (
-      <div className="flex h-screen items-center justify-center bg-gray-50 p-6">
-        <div className="w-full max-w-md rounded-xl border border-gray-200 bg-white p-6 text-center shadow-sm">
-          <h1 className="text-xl font-semibold text-gray-900">
+      <main className="bg-background flex h-screen items-center justify-center p-6">
+        <div className="border-border bg-card w-full max-w-md rounded-xl border p-6 text-center shadow-sm">
+          <h1 className="text-foreground text-xl font-semibold">
             {t("auth.resetDoneTitle")}
           </h1>
-          <p className="mt-2 text-sm text-gray-500">
+          <p className="text-muted-foreground mt-2 text-sm">
             {t("auth.resetDoneBody")}
           </p>
           <Button
@@ -304,22 +304,24 @@ function ResetPasswordForm() {
             {t("auth.signIn")}
           </Button>
         </div>
-      </div>
+      </main>
     );
   }
 
   const mismatch = confirm.length > 0 && password !== confirm;
 
   return (
-    <div className="flex h-screen items-center justify-center bg-gray-50 p-6">
+    <main className="bg-background flex h-screen items-center justify-center p-6">
       <form
         onSubmit={handleSubmit}
-        className="w-full max-w-md rounded-xl border border-gray-200 bg-white p-6 shadow-sm"
+        className="border-border bg-card w-full max-w-md rounded-xl border p-6 shadow-sm"
       >
-        <h1 className="text-xl font-semibold text-gray-900">
+        <h1 className="text-foreground text-xl font-semibold">
           {t("auth.resetTitle")}
         </h1>
-        <p className="mt-1 text-sm text-gray-500">{t("auth.resetSubtitle")}</p>
+        <p className="text-muted-foreground mt-1 text-sm">
+          {t("auth.resetSubtitle")}
+        </p>
 
         <div className="mt-6 space-y-4">
           <TextField
@@ -347,7 +349,7 @@ function ResetPasswordForm() {
         </div>
 
         {error && (
-          <div className="mt-4 rounded-md bg-red-50 p-3 text-xs text-red-700">
+          <div className="bg-destructive/10 text-destructive mt-4 rounded-md p-3 text-xs">
             {error}
           </div>
         )}
@@ -362,6 +364,6 @@ function ResetPasswordForm() {
           </Button>
         </div>
       </form>
-    </div>
+    </main>
   );
 }

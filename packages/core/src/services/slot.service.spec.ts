@@ -1,12 +1,10 @@
-import { afterAll, beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
-import { db } from "@horva/db/client";
+import type { Database } from "@horva/db/client";
+import type { TestDatabase } from "@horva/db/testing";
+import { createTestDatabase } from "@horva/db/testing";
 
-import {
-  createProjectFixture,
-  createTaskFixture,
-  resetDb,
-} from "../test-support/db.js";
+import { createProjectFixture, createTaskFixture } from "../test-support/db.js";
 import {
   assignTaskToSlot,
   deleteSlot,
@@ -27,12 +25,17 @@ const DAY = new Date("2026-06-01T00:00:00.000Z");
 const at = (hour: number, minute = 0) =>
   new Date(DAY.getTime() + (hour * 60 + minute) * 60_000);
 
+// A fresh in-memory database per test (PGlite, all migrations applied).
+let testDb: TestDatabase;
+let db: Database;
+
 beforeEach(async () => {
-  await resetDb(db);
+  testDb = await createTestDatabase();
+  db = testDb.db;
 });
 
-afterAll(async () => {
-  await db.close();
+afterEach(async () => {
+  await testDb.close();
 });
 
 async function taskFixture() {

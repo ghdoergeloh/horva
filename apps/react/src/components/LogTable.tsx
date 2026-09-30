@@ -102,9 +102,7 @@ export function LogTable({
   if (totalSlots === 0 && insertingAfterIndex !== -1) {
     return (
       <div className="flex items-center gap-3">
-        <p className="text-muted-foreground/70 text-sm">
-          {t("slot.noEntries")}
-        </p>
+        <p className="text-muted-foreground text-sm">{t("slot.noEntries")}</p>
         <Button
           variant="secondary"
           onPress={() => openInsert(-1)}

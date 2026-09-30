@@ -1,4 +1,4 @@
-import type { Db } from "@horva/db/client";
+import type { Database } from "@horva/db/client";
 import { and, asc, between, eq, gte, isNull, lte } from "@horva/db";
 import { slot } from "@horva/db/schema";
 
@@ -8,7 +8,7 @@ export function roundToMinute(date: Date): Date {
   return d;
 }
 
-export async function getOpenSlot(db: Db) {
+export async function getOpenSlot(db: Database) {
   return db.query.slot.findFirst({
     where: isNull(slot.endedAt),
     with: {
@@ -22,7 +22,7 @@ export async function getOpenSlot(db: Db) {
   });
 }
 
-export async function startSlot(db: Db, taskId?: number, at?: Date) {
+export async function startSlot(db: Database, taskId?: number, at?: Date) {
   const now = roundToMinute(at ?? new Date());
 
   return db.transaction(async (tx) => {
@@ -61,7 +61,7 @@ export async function startSlot(db: Db, taskId?: number, at?: Date) {
   });
 }
 
-export async function stopSlot(db: Db, at?: Date) {
+export async function stopSlot(db: Database, at?: Date) {
   const now = roundToMinute(at ?? new Date());
 
   return db.transaction(async (tx) => {
@@ -102,7 +102,7 @@ export async function stopSlot(db: Db, at?: Date) {
   });
 }
 
-export async function doneSlot(db: Db, at?: Date) {
+export async function doneSlot(db: Database, at?: Date) {
   const now = roundToMinute(at ?? new Date());
 
   const openSlot = await db.query.slot.findFirst({
@@ -125,7 +125,11 @@ export async function doneSlot(db: Db, at?: Date) {
   return { closedSlot: { ...openSlot, endedAt: now } };
 }
 
-export async function assignTaskToSlot(db: Db, slotId: number, taskId: number) {
+export async function assignTaskToSlot(
+  db: Database,
+  slotId: number,
+  taskId: number,
+) {
   const openSlot = await db.query.slot.findFirst({
     where: eq(slot.id, slotId),
   });
@@ -141,12 +145,12 @@ export async function assignTaskToSlot(db: Db, slotId: number, taskId: number) {
   return row;
 }
 
-export async function getSlotStatus(db: Db) {
+export async function getSlotStatus(db: Database) {
   return getOpenSlot(db);
 }
 
 export async function listSlots(
-  db: Db,
+  db: Database,
   opts: { from: Date; to: Date; projectId?: number; tasksOnly?: boolean },
 ) {
   return db.query.slot.findMany({
@@ -169,7 +173,7 @@ export async function listSlots(
 
 export type SlotWithTask = Awaited<ReturnType<typeof listSlots>>[number];
 
-export async function getSlot(db: Db, id: number) {
+export async function getSlot(db: Database, id: number) {
   return db.query.slot.findFirst({
     where: eq(slot.id, id),
     with: {
@@ -184,7 +188,10 @@ export async function getSlot(db: Db, id: number) {
 }
 
 /** Find the slot immediately before (by endedAt = given slot's startedAt or closest) */
-export async function getPrevSlot(db: Db, s: { id: number; startedAt: Date }) {
+export async function getPrevSlot(
+  db: Database,
+  s: { id: number; startedAt: Date },
+) {
   // Find the slot whose endedAt equals this slot's startedAt (adjacent)
   const startOfDay = new Date(s.startedAt);
   startOfDay.setHours(0, 0, 0, 0);
@@ -206,7 +213,7 @@ export async function getPrevSlot(db: Db, s: { id: number; startedAt: Date }) {
 
 /** Find the slot immediately after (by startedAt = given slot's endedAt or closest) */
 export async function getNextSlot(
-  db: Db,
+  db: Database,
   s: { id: number; startedAt: Date; endedAt?: Date | null },
 ) {
   const endOfDay = new Date(s.startedAt);
@@ -224,7 +231,7 @@ export async function getNextSlot(
 }
 
 export async function editSlot(
-  db: Db,
+  db: Database,
   id: number,
   changes: { startedAt?: Date; endedAt?: Date | null; taskId?: number | null },
 ): Promise<{
@@ -348,7 +355,7 @@ export async function editSlot(
   });
 }
 
-export async function deleteSlot(db: Db, id: number) {
+export async function deleteSlot(db: Database, id: number) {
   const existing = await db.query.slot.findFirst({ where: eq(slot.id, id) });
   if (!existing) throw new Error(`Slot #${id} not found`);
   await db.delete(slot).where(eq(slot.id, id));
@@ -356,7 +363,7 @@ export async function deleteSlot(db: Db, id: number) {
 }
 
 export async function insertSlot(
-  db: Db,
+  db: Database,
   startedAt: Date,
   endedAt: Date | null | undefined,
   taskId?: number | null,
@@ -450,7 +457,7 @@ export async function insertSlot(
   });
 }
 
-export async function splitSlot(db: Db, id: number, at: Date) {
+export async function splitSlot(db: Database, id: number, at: Date) {
   return db.transaction(async (tx) => {
     const original = await tx.query.slot.findFirst({
       where: eq(slot.id, id),

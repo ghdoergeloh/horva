@@ -1,21 +1,15 @@
-import pg from "pg";
+import { createDatabase } from "@horva/db/client";
+import { migrateDatabase } from "@horva/db/migrate";
 
-// Imported as plain text by esbuild (loader: { ".sql": "text" })
-// @ts-expect-error – no type declaration for .sql imports
-import migrationSql from "../../../../packages/db/drizzle/0000_thick_amazoness.sql";
-
+/**
+ * Applies all pending migrations of `packages/db/drizzle` to `databaseUrl`.
+ * The bundle carries them in `dist/drizzle` (see `build.mjs`).
+ */
 export async function runMigrations(databaseUrl: string): Promise<void> {
-  const pool = new pg.Pool({ connectionString: databaseUrl });
+  const connection = createDatabase(databaseUrl, { maxConnections: 1 });
   try {
-    const statements = (migrationSql as string)
-      .split("--> statement-breakpoint")
-      .map((s: string) => s.trim())
-      .filter(Boolean);
-
-    for (const statement of statements) {
-      await pool.query(statement);
-    }
+    await migrateDatabase(connection);
   } finally {
-    await pool.end();
+    await connection.close();
   }
 }

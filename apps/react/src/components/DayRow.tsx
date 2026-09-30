@@ -7,6 +7,7 @@ import { LogTable } from "#/components/LogTable.js";
 import { TaskSummaryView } from "#/components/TaskSummaryView.js";
 import i18n from "#/i18n/index.js";
 import { startOfDay } from "#/lib/dateUtils.js";
+import { DELETED_TASK_COLOR, NO_PROJECT_COLOR } from "#/lib/projectColors.js";
 import { fmt } from "#/lib/timeFormatters.js";
 
 interface SlotRow {
@@ -124,8 +125,8 @@ export function DayRow({
             const width = Math.max(0.4, ((endH - startH) / range) * 100);
             const color =
               slot.state === "task_deleted"
-                ? "#d1d5db"
-                : (slot.task?.project.color ?? "#9ca3af");
+                ? DELETED_TASK_COLOR
+                : (slot.task?.project.color ?? NO_PROJECT_COLOR);
             const isRunning = !slot.endedAt;
 
             return (
@@ -172,11 +173,11 @@ export function DayRow({
                 {tooltip.slot.task?.name ?? t("slot.noTask")}
               </p>
               {tooltip.slot.task && (
-                <p className="text-muted-foreground mt-0.5">
+                <p className="text-muted-foreground mt-0.5 text-xs">
                   {tooltip.slot.task.project.name}
                 </p>
               )}
-              <p className="text-muted-foreground/70 mt-1.5 font-mono">
+              <p className="text-muted-foreground/70 mt-1.5 font-mono text-xs">
                 {fmt(tooltip.slot.startedAt)}
                 {" – "}
                 {tooltip.slot.endedAt
@@ -193,7 +194,7 @@ export function DayRow({
                   </span>
                 )}
               </p>
-              <p className="text-muted-foreground mt-1">
+              <p className="text-muted-foreground mt-1 text-xs">
                 {t("taskCard.clickToEdit")}
               </p>
             </div>

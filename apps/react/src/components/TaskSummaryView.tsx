@@ -1,6 +1,7 @@
 import { useTranslation } from "react-i18next";
 
 import { FormattedMs } from "#/components/FormattedMinutes.js";
+import { NO_PROJECT_COLOR } from "#/lib/projectColors.js";
 
 interface SlotRow {
   endedAt: Date | string | null;
@@ -36,7 +37,7 @@ export function TaskSummaryView({ slots }: { slots: SlotRow[] }) {
       new Date(slot.endedAt).getTime() - new Date(slot.startedAt).getTime();
     const projectName =
       slot.task?.project.name ?? t("taskSummaryView.noProject");
-    const color = slot.task?.project.color ?? "#9ca3af";
+    const color = slot.task?.project.color ?? NO_PROJECT_COLOR;
     const taskName =
       slot.task?.name ??
       (slot.state === "no_task"
@@ -65,7 +66,7 @@ export function TaskSummaryView({ slots }: { slots: SlotRow[] }) {
 
   if (projects.length === 0) {
     return (
-      <p className="text-muted-foreground/70 px-3 py-2 text-sm">
+      <p className="text-muted-foreground px-3 py-2 text-sm">
         {t("taskSummaryView.noEntries")}
       </p>
     );

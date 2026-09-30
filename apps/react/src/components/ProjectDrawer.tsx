@@ -10,19 +10,7 @@ import { MocoLinkFields, MocoLoadButton } from "#/components/MocoLinkFields.js";
 import { Sheet } from "#/components/Sheet.js";
 import { useMocoConfigured, useRemoteMocoProjects } from "#/lib/mocoQueries.js";
 import { client } from "#/lib/orpc.js";
-
-const COLOR_PRESETS = [
-  "#6366f1",
-  "#8b5cf6",
-  "#ec4899",
-  "#ef4444",
-  "#f97316",
-  "#eab308",
-  "#22c55e",
-  "#14b8a6",
-  "#3b82f6",
-  "#64748b",
-];
+import { PROJECT_COLOR_PRESETS } from "#/lib/projectColors.js";
 
 type Project = NonNullable<
   Awaited<ReturnType<typeof client.project.get>>["project"]
@@ -135,7 +123,7 @@ function ProjectDrawerBody({
           {t("drawer.color")}
         </p>
         <div className="flex flex-wrap items-center gap-1.5">
-          {COLOR_PRESETS.map((c) => (
+          {PROJECT_COLOR_PRESETS.map((c) => (
             <Button
               key={c}
               variant="quiet"

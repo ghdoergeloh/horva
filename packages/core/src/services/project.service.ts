@@ -1,10 +1,10 @@
-import type { Db } from "@horva/db/client";
+import type { Database } from "@horva/db/client";
 import { eq, inArray, ne } from "@horva/db";
 import { project, task } from "@horva/db/schema";
 
 import type { CreateProject, UpdateProject } from "../schemas/index.js";
 
-export async function listProjects(db: Db, includeArchived = false) {
+export async function listProjects(db: Database, includeArchived = false) {
   const rows = await db.query.project.findMany({
     where: includeArchived
       ? ne(project.status, "deleted")
@@ -14,21 +14,25 @@ export async function listProjects(db: Db, includeArchived = false) {
   return rows;
 }
 
-export async function getProject(db: Db, id: number) {
+export async function getProject(db: Database, id: number) {
   return db.query.project.findFirst({ where: eq(project.id, id) });
 }
 
-export async function getDefaultProject(db: Db) {
+export async function getDefaultProject(db: Database) {
   return db.query.project.findFirst({ where: eq(project.isDefault, true) });
 }
 
-export async function createProject(db: Db, input: CreateProject) {
+export async function createProject(db: Database, input: CreateProject) {
   const [row] = await db.insert(project).values(input).returning();
   if (!row) throw new Error("Failed to create project");
   return row;
 }
 
-export async function updateProject(db: Db, id: number, input: UpdateProject) {
+export async function updateProject(
+  db: Database,
+  id: number,
+  input: UpdateProject,
+) {
   const existing = await getProject(db, id);
   if (!existing) throw new Error(`Project #${id} not found`);
   const [row] = await db
@@ -40,7 +44,7 @@ export async function updateProject(db: Db, id: number, input: UpdateProject) {
   return row;
 }
 
-export async function archiveProject(db: Db, id: number) {
+export async function archiveProject(db: Database, id: number) {
   const existing = await getProject(db, id);
   if (!existing) throw new Error(`Project #${id} not found`);
   if (existing.isDefault) throw new Error("Cannot archive the default project");
@@ -53,7 +57,7 @@ export async function archiveProject(db: Db, id: number) {
   return row;
 }
 
-export async function deleteProject(db: Db, id: number) {
+export async function deleteProject(db: Database, id: number) {
   const existing = await getProject(db, id);
   if (!existing) throw new Error(`Project #${id} not found`);
   if (existing.isDefault) throw new Error("Cannot delete the default project");
