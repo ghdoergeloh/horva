@@ -95,7 +95,7 @@ function storiesOf(module: StoryModule) {
  * Renders every story in light and dark with the real CSS and runs its play
  * function. Then axe checks roles, names, labels and contrast as rendered.
  * The first story of each component is also compared with the reference
- * image in `__screenshots__` (on Linux only, where the references
+ * image in `__screenshots__` (on Linux arm64 only, where the references
  * come from): one image per component and theme keeps visual changes
  * easy to review.
  * After an intended change, update the references with

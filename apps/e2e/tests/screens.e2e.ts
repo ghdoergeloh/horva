@@ -12,9 +12,12 @@ import { expectAccessible } from "../src/axe";
  * intended change, update the references with
  * `pnpm test:e2e --update-snapshots` and look at every new image.
  *
- * The references come from Chromium on Linux (CI, dev container). Other
- * systems render text a little differently and skip the comparison.
+ * The references come from Chromium on Linux arm64 (the CI runner, the dev
+ * container on Apple silicon). Other systems render a little differently
+ * and skip the comparison.
  */
+const comparesScreenshots =
+  process.platform === "linux" && process.arch === "arm64";
 const screens: {
   name: string;
   path: string;
@@ -82,7 +85,7 @@ for (const screen of screens) {
         );
 
         const id = `${screen.name}-${viewport.name}-${scheme}`;
-        if (process.platform === "linux" && screenshots.has(id))
+        if (comparesScreenshots && screenshots.has(id))
           await expect(page).toHaveScreenshot(`${id}.png`, { fullPage: true });
       });
     }
