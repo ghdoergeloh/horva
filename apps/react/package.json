@@ -10,7 +10,7 @@
     "preview": "vite preview",
     "test:unit": "vitest run --passWithNoTests",
     "test:unit:coverage": "vitest run --coverage --passWithNoTests",
-    "typecheck": "tsc --noEmit --emitDeclarationOnly false"
+    "typecheck": "tsc -b --noEmit"
   },
   "dependencies": {
     "@orpc/client": "catalog:",
