@@ -31,10 +31,10 @@ catalog:
   "@hono/node-server": ^2.1.1
   "@inquirer/prompts": ^8.7.2
   "@internationalized/date": ^3.12.4
-  "@orpc/client": ^1.15.3
-  "@orpc/contract": ^1.15.3
-  "@orpc/server": ^1.15.3
-  "@orpc/tanstack-query": ^1.15.3
+  "@orpc/client": ^1.15.4
+  "@orpc/contract": ^1.15.4
+  "@orpc/server": ^1.15.4
+  "@orpc/tanstack-query": ^1.15.4
   # Exact: Playwright and the Vitest browser tests share one Chromium build.
   "@playwright/test": 1.63.0
   # Exact versions: `email dev` requires @react-email/ui to match react-email.
