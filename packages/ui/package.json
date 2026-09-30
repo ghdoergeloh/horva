@@ -9,8 +9,8 @@
   },
   "scripts": {
     "clean": "git clean -xdf .cache .turbo dist node_modules",
-    "test:unit": "vitest run --passWithNoTests",
-    "test:unit:coverage": "vitest run --coverage --passWithNoTests",
+    "test:unit": "vitest run",
+    "test:unit:coverage": "vitest run --coverage",
     "typecheck": "tsc --noEmit",
     "ui-add": "pnpm dlx shadcn@latest add"
   },

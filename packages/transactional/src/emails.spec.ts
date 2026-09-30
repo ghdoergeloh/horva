@@ -32,6 +32,13 @@ describe("sendVerificationEmail", () => {
 });
 
 describe("createMailer", () => {
+  it("creates an SMTP transport without connecting", () => {
+    expect(createMailer(config)).toHaveProperty("send");
+    expect(createMailer({ ...config, user: "u", pass: "p" })).toHaveProperty(
+      "send",
+    );
+  });
+
   it("sends from the configured address", async () => {
     const calls: SendMailOptions[] = [];
     const transporter = {

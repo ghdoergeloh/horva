@@ -7,8 +7,8 @@ export default mergeConfig(
   defineConfig({
     test: {
       coverage: {
+        // Fixed floors below the measured values. Raise them by hand.
         thresholds: {
-          autoUpdate: true,
           statements: 0,
           branches: 0,
           functions: 0,
