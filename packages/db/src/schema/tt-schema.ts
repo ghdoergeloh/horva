@@ -45,7 +45,8 @@ export const project = pgTable("project", {
     .primaryKey()
     .default(sql`nextval('project_id_seq')`),
   name: text("name").notNull(),
-  color: text("color").notNull().default("#6366f1"),
+  // A token name such as `project-3`, or a custom `#rrggbb`.
+  color: text("color").notNull().default("project-1"),
   status: projectStatusEnum("status").notNull().default("active"),
   isDefault: boolean("is_default").notNull().default(false),
   // Moco integration: linked Moco project + its default activity ("Leistung").

@@ -13,6 +13,15 @@ const userSchema = z.object({
   name: z.string(),
 });
 
+/**
+ * A project color as stored: a token name of the design system
+ * (`project-1` … `project-18`, `project-none`) or a custom `#rrggbb`. The
+ * same rule as `PROJECT_COLOR_PATTERN` in `@horva/core`.
+ */
+const projectColorSchema = z
+  .string()
+  .regex(/^(?:project-(?:[1-9]|1[0-8]|none)|#[0-9a-fA-F]{6})$/);
+
 // Lite shapes embedded inside other records.
 const projectLiteSchema = z.object({
   id: z.number(),
@@ -365,7 +374,8 @@ export const contract = oc.router({
       .input(
         z.object({
           name: z.string().min(1),
-          color: z.string().optional(),
+          // Without a color, the project gets the least used of the first eight.
+          color: projectColorSchema.optional(),
         }),
       )
       .output(z.object({ project: projectSchema })),
@@ -375,7 +385,7 @@ export const contract = oc.router({
         z.object({
           id: z.number(),
           name: z.string().min(1).optional(),
-          color: z.string().optional(),
+          color: projectColorSchema.optional(),
         }),
       )
       .output(z.object({ project: projectSchema })),

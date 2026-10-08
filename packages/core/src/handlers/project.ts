@@ -32,10 +32,7 @@ interface CreateInput {
 }
 
 export async function create({ input, context }: HandlerArgs<CreateInput>) {
-  const project = await createProject(context.db, {
-    name: input.name,
-    color: input.color ?? "#6366f1",
-  });
+  const project = await createProject(context.db, input);
   return { project };
 }
 
