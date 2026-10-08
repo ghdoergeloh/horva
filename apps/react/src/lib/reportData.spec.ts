@@ -8,6 +8,7 @@ import {
   dayEntries,
   daysWithTime,
   donutProjects,
+  shares,
   sortEntries,
   taskIdsWithLabel,
 } from "./reportData";
@@ -202,5 +203,49 @@ describe("dayEntries", () => {
       return label(date);
     });
     expect(counts).toEqual([3, 3, 3]);
+  });
+});
+
+function entry(projectId: number | null, totalMinutes: number): SummaryEntry {
+  return {
+    projectId,
+    projectName: projectId === null ? "(no task)" : `P${String(projectId)}`,
+    projectColor: "project-1",
+    totalMinutes,
+    tasks: [],
+  };
+}
+
+describe("shares", () => {
+  it("rounds like the ring, so the percents add up to 100", () => {
+    const result = shares([entry(1, 60), entry(2, 60), entry(3, 60)]);
+    // 33.3 % each; the ring gives the remainder to the first.
+    expect(result.largest?.entry.projectId).toBe(1);
+    expect(result.largest?.percent).toBe(34);
+    expect(result.withoutTaskPercent).toBe(0);
+  });
+
+  it("skips time without a task for the largest project", () => {
+    const result = shares([entry(null, 300), entry(1, 90), entry(2, 120)]);
+    expect(result.largest?.entry.projectId).toBe(2);
+    expect(result.largest?.percent).toBe(23);
+    expect(result.withoutTaskPercent).toBe(59);
+  });
+
+  it("groups the smallest projects as the ring does", () => {
+    // Nine projects: the ring keeps seven and groups two into "Others".
+    const nine = [1, 2, 3, 4, 5, 6, 7, 8, 9].map((id) => entry(id, 10));
+    nine[0] = entry(1, 15);
+    const result = shares(nine);
+    // 15 of 95 minutes is 15.8 %; rounded with the "Others" slice, it is 16.
+    expect(result.largest?.percent).toBe(16);
+  });
+
+  it("has no largest project without time", () => {
+    expect(shares([entry(null, 30)])).toEqual({
+      largest: undefined,
+      withoutTaskPercent: 100,
+    });
+    expect(shares([])).toEqual({ largest: undefined, withoutTaskPercent: 0 });
   });
 });

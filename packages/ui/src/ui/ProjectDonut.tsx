@@ -21,6 +21,13 @@ import {
   polar,
 } from "./ProjectDonut.data";
 
+/**
+ * The rounding and the percent format of the ring, for screens that show
+ * the same shares elsewhere, such as a key figure.
+ */
+export { roundedPercents } from "./ProjectDonut.data";
+export { formatPercent } from "../lib/duration";
+
 /** The texts of the ProjectDonut. German by default. */
 export interface ProjectDonutStrings {
   title: string;

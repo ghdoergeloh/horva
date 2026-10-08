@@ -137,6 +137,11 @@ async function checkReport(page: Page) {
   await expect(tiles.getByText("7h 15m")).toBeVisible();
   await expect(tiles.getByText("2 Tage erfasst")).toBeVisible();
   await expect(tiles.getByText("Kranich")).toBeVisible();
+  // The tile rounds like the ring: 72 % of the time, as in the legend.
+  await expect(tiles.getByText("72\u202F% · 5h 15m")).toBeVisible();
+  await expect(
+    page.getByRole("img", { name: "Kranich: 5h 15m , 72\u202F%" }),
+  ).toBeVisible();
   await expect(
     page.getByRole("heading", { name: "Stunden je Tag" }),
   ).toBeVisible();
@@ -162,4 +167,111 @@ async function checkReport(page: Page) {
   });
   await expect(labelled.getByRole("button", { name: /Kranich/ })).toBeVisible();
   await expect(labelled.getByRole("button", { name: /Intern/ })).toHaveCount(0);
+
+  // With data, the narrowest phone still needs no horizontal scrolling.
+  await expect(page.getByRole("listbox")).toHaveCount(0);
+  await page.setViewportSize({ width: 400, height: 800 });
+  await expect(page.getByRole("heading", { name: "Auswertung" })).toBeVisible();
+  const overflow = await page.evaluate(
+    "document.documentElement.scrollWidth - document.documentElement.clientWidth",
+  );
+  expect(overflow, "horizontal scrolling").toBeLessThanOrEqual(0);
 }
+
+test("the report offers a retry when it cannot load", async ({ page }) => {
+  await signUp(page);
+  await page.route("**/api/rpc/log/summary", (route) => route.abort());
+  await page.goto("/reports");
+  const alert = page.getByRole("alert");
+  // The query retries a few times before it gives up.
+  await expect(alert).toContainText("Auswertung konnte nicht geladen werden.", {
+    timeout: 20_000,
+  });
+  await expect(page.getByText("Keine Zeiten in diesem Zeitraum")).toHaveCount(
+    0,
+  );
+
+  await page.unroute("**/api/rpc/log/summary");
+  await alert.getByRole("button", { name: "Erneut versuchen" }).click();
+  await expect(
+    page.getByRole("heading", { name: "Projektanteile" }),
+  ).toBeVisible();
+  await expect(alert).toHaveCount(0);
+});
+
+/** Answers an oRPC call with `output`. */
+async function fake(page: Page, path: string, output: unknown) {
+  await page.route(`**/api/rpc/${path}`, (route) =>
+    route.fulfill({ json: { json: output } }),
+  );
+}
+
+/** Two rows Moco can take: Review on 1 and 2 June, in Kranich. */
+const previewLines = ["2026-06-01", "2026-06-02"].map((date) => ({
+  date,
+  projectId: 7,
+  projectName: "Kranich",
+  taskId: 70,
+  taskName: "Review",
+  seconds: 7200,
+  status: "syncable",
+  mocoProjectId: 900,
+  mocoTaskId: 901,
+}));
+
+test("the Moco dialog sends the chosen rows", async ({ page }) => {
+  await signUp(page);
+  await fake(page, "moco/config/get", {
+    configured: true,
+    subdomain: "example",
+  });
+  await fake(page, "moco/preview", { lines: previewLines });
+  await fake(page, "moco/remoteProjects", {
+    projects: [
+      {
+        id: 900,
+        name: "Kranich GmbH",
+        tasks: [{ id: 901, name: "Entwicklung", active: true, billable: true }],
+      },
+    ],
+  });
+  const sent: unknown[] = [];
+  await page.route("**/api/rpc/moco/sync", async (route) => {
+    sent.push(route.request().postDataJSON());
+    await route.fulfill({ json: { json: { created: 1, failed: [] } } });
+  });
+  await page.goto("/reports");
+
+  const transfer = page.getByRole("button", { name: "An Moco übertragen" });
+  const dialog = page.getByRole("dialog", { name: "An Moco übertragen" });
+
+  // Opened with the keyboard, closed with Escape: focus goes back.
+  await transfer.focus();
+  await page.keyboard.press("Enter");
+  await expect(dialog).toBeVisible();
+  await expect(dialog.getByText("Kranich GmbH")).toBeVisible();
+  await page.keyboard.press("Escape");
+  await expect(dialog).toHaveCount(0);
+  await expect(transfer).toBeFocused();
+
+  // Closed with the close button: focus goes back too.
+  await page.keyboard.press("Enter");
+  await expect(dialog).toBeVisible();
+  await dialog.getByRole("button", { name: "Schließen" }).click();
+  await expect(dialog).toHaveCount(0);
+  await expect(transfer).toBeFocused();
+
+  // One row chosen and sent.
+  await page.keyboard.press("Enter");
+  await dialog
+    .getByRole("checkbox", { name: "2026-06-02 Review" })
+    .click({ force: true });
+  await dialog.getByRole("button", { name: "1 Eintrag übertragen" }).click();
+  await expect(dialog.getByRole("status")).toHaveText(
+    "1 übertragen, 0 fehlgeschlagen",
+  );
+  expect(sent).toHaveLength(1);
+  expect(JSON.stringify(sent[0])).toContain(
+    '"select":[{"date":"2026-06-02","taskId":70}]',
+  );
+});

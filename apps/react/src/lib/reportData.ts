@@ -4,6 +4,7 @@ import { fromDate, toCalendarDate } from "@internationalized/date";
 import type { ChartProject, HoursPerDayProps } from "@horva/ui/HoursPerDay";
 import type { BreakdownProject } from "@horva/ui/ProjectBreakdown";
 import type { ProjectDonutProps } from "@horva/ui/ProjectDonut";
+import { roundedPercents } from "@horva/ui/ProjectDonut";
 
 type ProjectShare = ProjectDonutProps["projects"][number];
 type DayEntry = HoursPerDayProps["days"][number];
@@ -185,4 +186,41 @@ export function dayEntries(
 export function daysWithTime(days: readonly DayEntry[]): number {
   return days.filter((day) => day.minutes.some((part) => part.minutes > 0))
     .length;
+}
+
+/** The number of project slices of the ring before it groups "Others". */
+const RING_PROJECTS = 8;
+
+/**
+ * The largest project (time without a task never counts) and the share of
+ * time without a task, in whole percent. The rounding matches the ring of
+ * `ProjectDonut`: the same slices, including its "Others" group, and the
+ * largest remainder method, so a key figure shows the same number.
+ */
+export function shares(summary: readonly SummaryEntry[]): {
+  largest: { entry: SummaryEntry; percent: number } | undefined;
+  withoutTaskPercent: number;
+} {
+  const projects = summary
+    .filter((e) => e.projectId !== null && e.totalMinutes > 0)
+    .sort((a, b) => b.totalMinutes - a.totalMinutes);
+  const withoutTask = summary
+    .filter((e) => e.projectId === null)
+    .reduce((sum, e) => sum + e.totalMinutes, 0);
+  const kept =
+    projects.length > RING_PROJECTS
+      ? projects.slice(0, RING_PROJECTS - 1)
+      : projects;
+  const others = projects
+    .slice(kept.length)
+    .reduce((sum, e) => sum + e.totalMinutes, 0);
+  const minutes = kept.map((e) => e.totalMinutes);
+  if (others > 0) minutes.push(others);
+  if (withoutTask > 0) minutes.push(withoutTask);
+  const percents = roundedPercents(minutes);
+  const first = kept[0];
+  return {
+    largest: first && { entry: first, percent: percents[0] ?? 0 },
+    withoutTaskPercent: withoutTask > 0 ? (percents.at(-1) ?? 0) : 0,
+  };
 }

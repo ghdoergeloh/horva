@@ -17,11 +17,12 @@ import { useTranslation } from "react-i18next";
 
 import type { DateRangePreset } from "@horva/ui/DateRangePicker";
 import type { StatTile } from "@horva/ui/StatTiles";
+import { Button } from "@horva/ui/Button";
 import { DateRangePicker } from "@horva/ui/DateRangePicker";
 import { HoursPerDay } from "@horva/ui/HoursPerDay";
 import { Loader } from "@horva/ui/Logo";
 import { ProjectBreakdown } from "@horva/ui/ProjectBreakdown";
-import { ProjectDonut } from "@horva/ui/ProjectDonut";
+import { formatPercent, ProjectDonut } from "@horva/ui/ProjectDonut";
 import { Select, SelectItem } from "@horva/ui/Select";
 import { StatTiles } from "@horva/ui/StatTiles";
 
@@ -38,7 +39,7 @@ import {
   dayEntries,
   daysWithTime,
   donutProjects,
-  sortEntries,
+  shares,
   taskIdsWithLabel,
 } from "#/lib/reportData.js";
 
@@ -69,11 +70,6 @@ function durationFormat(timeFormat: TimeFormat) {
       ),
     unit: timeFormat === "hm" ? "" : "h",
   };
-}
-
-/** A whole percentage of `total`, as the donut shows it. */
-function percentOf(minutes: number, total: number) {
-  return `${String(total > 0 ? Math.round((minutes / total) * 100) : 0)} %`;
 }
 
 // Predefined ranges for the picker popover. Weeks start on Monday to match
@@ -158,15 +154,22 @@ function Reports() {
     queryFn: async () => (await client.label.list()).labels,
   });
 
-  const { data: summary = [], isLoading } = useQuery({
+  const summaryQuery = useQuery({
     queryKey: ["log", "summary", range],
     queryFn: async () => (await client.log.summary(syncRange)).summary,
   });
-
-  const { data: logSlots = [] } = useQuery({
+  const slotsQuery = useQuery({
     queryKey: ["log", "raw", range],
     queryFn: async () => (await client.log.entries(syncRange)).slots,
   });
+  const summary = summaryQuery.data ?? [];
+  const logSlots = slotsQuery.data ?? [];
+  const isLoading = summaryQuery.isPending || slotsQuery.isPending;
+  const isError = summaryQuery.isError || slotsQuery.isError;
+  const retry = () => {
+    if (summaryQuery.isError) void summaryQuery.refetch();
+    if (slotsQuery.isError) void slotsQuery.refetch();
+  };
 
   const days = dayEntries(logSlots, range, timeZone, (date, dayCount) => {
     const day = date.toDate(timeZone);
@@ -188,7 +191,7 @@ function Reports() {
 
   const totalMinutes = summary.reduce((sum, e) => sum + e.totalMinutes, 0);
   const workDays = daysWithTime(days);
-  const largest = sortEntries(summary).find((e) => e.projectId !== null);
+  const { largest, withoutTaskPercent } = shares(summary);
   const withoutTaskMinutes =
     summary.find((e) => e.projectId === null)?.totalMinutes ?? 0;
 
@@ -205,12 +208,12 @@ function Reports() {
       id: "largest",
       label: t("reports.largestProject"),
       project: largest && {
-        name: largest.projectName,
-        color: largest.projectColor,
+        name: largest.entry.projectName,
+        color: largest.entry.projectColor,
       },
       context:
         largest &&
-        `${percentOf(largest.totalMinutes, totalMinutes)} · ${format(largest.totalMinutes)}${unit && ` ${unit}`}`,
+        `${formatPercent(largest.percent)} · ${format(largest.entry.totalMinutes)}${unit && ` ${unit}`}`,
     },
     {
       id: "withoutTask",
@@ -218,7 +221,7 @@ function Reports() {
       minutes: withoutTaskMinutes,
       unit,
       context: t("reports.shareOfTotal", {
-        percent: percentOf(withoutTaskMinutes, totalMinutes),
+        percent: formatPercent(withoutTaskPercent),
       }),
     },
   ];
@@ -281,7 +284,17 @@ function Reports() {
         </div>
       </div>
 
-      {isLoading ? (
+      {isError ? (
+        <div
+          role="alert"
+          className="bg-card text-card-foreground border-border flex flex-wrap items-center justify-between gap-3 rounded-lg border px-4 py-3"
+        >
+          <p className="text-body">{t("reports.loadError")}</p>
+          <Button variant="secondary" onPress={retry}>
+            {t("error.retry")}
+          </Button>
+        </div>
+      ) : isLoading ? (
         <div className="flex items-center justify-center py-20">
           <Loader
             size={64}
@@ -297,7 +310,7 @@ function Reports() {
             strings={{ hours: unit, noValue: "–" }}
           />
 
-          <div className="grid gap-4 xl:grid-cols-2">
+          <div className="grid grid-cols-1 gap-4 xl:grid-cols-2">
             <ProjectDonut
               projects={donutProjects(summary, withoutTask)}
               headingLevel={2}
