@@ -22,7 +22,7 @@ import {
 const meta = {
   title: "DayBars",
   component: DayBars,
-  args: { days: weekDays(week), now, onBlockPress: fn() },
+  args: { days: weekDays(week), now, onSlotPress: fn() },
   render: (args) => (
     <div className="max-w-190">
       <DayBars {...args} />
@@ -38,7 +38,7 @@ const body = () => within(document.body);
 /** The scale labels as the user sees them. */
 function scaleLabels(canvas: HTMLElement) {
   return [...canvas.querySelectorAll<HTMLElement>("[aria-hidden] > span")]
-    .filter((span) => /^\d\d:00$/.test(span.textContent ?? ""))
+    .filter((span) => /^\d\d:00$/.test(span.textContent))
     .filter((span) => span.checkVisibility());
 }
 
@@ -202,8 +202,8 @@ export const KeyboardBlocks: Story = {
     const last = within(monday).getByRole("button", { name: /^Tag planen/ });
     await expect(last).toHaveFocus();
     await userEvent.keyboard("{Enter}");
-    await expect(args.onBlockPress).toHaveBeenCalledTimes(1);
-    await expect(args.onBlockPress).toHaveBeenCalledWith(
+    await expect(args.onSlotPress).toHaveBeenCalledTimes(1);
+    await expect(args.onSlotPress).toHaveBeenCalledWith(
       expect.objectContaining({ title: "Tag planen" }),
       expect.objectContaining({ id: "2026-10-05" }),
     );

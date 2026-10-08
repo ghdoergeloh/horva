@@ -135,16 +135,15 @@ export interface SlotTableProps {
 }
 
 const cell = "border-border border-b px-2 py-1.75 align-middle";
-const timeCell = twMerge(
-  cell,
-  "type-duration w-px font-normal whitespace-nowrap",
-);
+const timeCell = twMerge(cell, "w-px font-mono tabular-nums whitespace-nowrap");
 const durationCell = twMerge(
   cell,
-  "type-duration text-muted-foreground w-px text-right font-normal whitespace-nowrap",
+  "text-muted-foreground w-px text-right font-mono tabular-nums whitespace-nowrap",
 );
 const actionCell = twMerge(cell, "w-px py-1 text-right whitespace-nowrap");
-const projectCell = twMerge(cell, "w-px @max-lg:hidden");
+// On a narrow screen the chip moves below the task; the column stays, so
+// the open row spans the same columns.
+const projectCell = twMerge(cell, "w-px @max-lg:px-0");
 
 const toTime = (time: ClockTime | null) =>
   time ? new Time(time.hour, time.minute) : null;
@@ -330,7 +329,7 @@ function EditRow({
             </Button>
           </div>
         </div>
-        {(message || props.editNote || marked) && (
+        {(Boolean(message) || Boolean(props.editNote) || marked) && (
           <div className="text-caption mt-1.5 flex flex-col gap-1 font-normal">
             {message && (
               <p role="alert" className="flex items-center gap-2">
@@ -399,7 +398,9 @@ function SlotRow({
         </span>
         {chip && <div className="mt-0.5 hidden @max-lg:block">{chip}</div>}
       </td>
-      <td className={projectCell}>{chip}</td>
+      <td className={projectCell}>
+        <span className="@max-lg:hidden">{chip}</span>
+      </td>
       <td className={actionCell}>
         {onEdit && (
           <Button
@@ -532,7 +533,7 @@ export function SlotTable(props: SlotTableProps) {
               {labels.task}
             </th>
             <th className={twMerge(projectCell, "py-1.5 font-medium")}>
-              {labels.project}
+              <span className="@max-lg:sr-only">{labels.project}</span>
             </th>
             <th className={twMerge(cell, "py-1.5")}>
               <span className="sr-only">{labels.actions}</span>

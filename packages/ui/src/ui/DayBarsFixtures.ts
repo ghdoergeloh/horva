@@ -104,7 +104,7 @@ export function taskOf(taskId: number) {
 }
 
 /** A sample slot as a block of the day bars. */
-export function toBlock(slot: SampleSlot): DayBarsBlock {
+function toBlock(slot: SampleSlot): DayBarsBlock {
   const { task, project } = taskOf(slot.taskId);
   return {
     id: slot.id,

@@ -59,7 +59,8 @@ const views: TimelineView[] = ["slots", "tasks", "periods"];
 /**
  * The head of the timeline: the week with buttons to page through weeks
  * and back to this week, the project filter, and the switch between the
- * views of an opened day. On a narrow screen it takes two lines.
+ * views of an opened day. On a narrow screen the week stands on top, the
+ * filter and the switch below it.
  */
 export function WeekHeader({
   weekStart,
@@ -106,12 +107,11 @@ export function WeekHeader({
             {labels.thisWeek}
           </Button>
         </div>
-        <div className="ms-auto flex min-w-0 items-center gap-3 @max-lg:w-full">
-          {filter && <div className="min-w-0 @max-lg:flex-1">{filter}</div>}
+        <div className="ms-auto flex min-w-0 items-center gap-3 @max-lg:w-full @max-lg:flex-wrap @max-lg:gap-2">
+          {filter && <div className="min-w-0 @max-lg:basis-full">{filter}</div>}
           {/* The arrow keys move the focus and switch the view with it. */}
-          {/* oxlint-disable-next-line jsx-a11y/no-static-element-interactions */}
           <div
-            className="ms-auto shrink-0"
+            className="ms-auto shrink-0 @max-lg:w-full"
             onKeyDownCapture={(e) => {
               const step = { ArrowRight: 1, ArrowLeft: -1 }[e.key];
               if (!step) return;
@@ -123,6 +123,7 @@ export function WeekHeader({
           >
             <ToggleButtonGroup
               variant="segmented"
+              className="@max-lg:w-full"
               aria-label={labels.view}
               selectionMode="single"
               disallowEmptySelection
@@ -134,7 +135,7 @@ export function WeekHeader({
               }}
             >
               {views.map((id) => (
-                <ToggleButton key={id} id={id}>
+                <ToggleButton key={id} id={id} className="@max-lg:flex-1">
                   {labels[id]}
                 </ToggleButton>
               ))}

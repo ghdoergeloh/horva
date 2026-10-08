@@ -103,7 +103,7 @@ export interface DayBarsProps {
   defaultExpandedDays?: Iterable<Key>;
   onExpandedChange?: (keys: Set<Key>) => void;
   /** Called on click or Enter on a block. */
-  onBlockPress?: (block: DayBarsBlock, day: DayBarsDay) => void;
+  onSlotPress?: (block: DayBarsBlock, day: DayBarsDay) => void;
   labels?: Partial<DayBarsLabels>;
   className?: string;
 }
@@ -180,7 +180,7 @@ interface TrackProps {
   range: HourRange;
   variant: "slots" | "periods";
   labels: DayBarsLabels;
-  onBlockPress?: (block: DayBarsBlock, day: DayBarsDay) => void;
+  onSlotPress?: (block: DayBarsBlock, day: DayBarsDay) => void;
   onTrackClick?: () => void;
 }
 
@@ -195,7 +195,7 @@ function Track({
   range,
   variant,
   labels,
-  onBlockPress,
+  onSlotPress,
   onTrackClick,
 }: TrackProps) {
   const blocks = [...day.blocks]
@@ -230,7 +230,7 @@ function Track({
   return (
     // A click on the free bar opens the day, a shortcut for the mouse. The
     // keyboard opens it with the day name.
-    // oxlint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions
+    // oxlint-disable-next-line jsx-a11y/click-events-have-key-events
     <div
       role={blocks.length > 0 ? "group" : undefined}
       aria-label={blocks.length > 0 ? name : undefined}
@@ -275,7 +275,7 @@ function Track({
               }
               onFocus={() => setActive(index)}
               onKeyDown={(e) => onKeyDown(e, index)}
-              onPress={() => onBlockPress?.(block, day)}
+              onPress={() => onSlotPress?.(block, day)}
               className={blockStyles({ isRunning })}
               style={{
                 left: `${String(place.left)}%`,
@@ -368,7 +368,7 @@ export function DayBars({
   expandedDays,
   defaultExpandedDays,
   onExpandedChange,
-  onBlockPress,
+  onSlotPress,
   labels: labelOverrides,
   className,
 }: DayBarsProps) {
@@ -398,7 +398,7 @@ export function DayBars({
               range={range}
               variant={variant}
               labels={labels}
-              onBlockPress={onBlockPress}
+              onSlotPress={onSlotPress}
               isToday={isSameDay(day.date, now)}
               content={renderDay?.(day)}
             />

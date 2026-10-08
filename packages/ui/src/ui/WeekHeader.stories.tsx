@@ -94,7 +94,7 @@ export const EarlierWeek: Story = {
 /** Without a project filter. */
 export const WithoutFilter: Story = { args: { filter: undefined } };
 
-/** On a phone the head takes two lines: the week, then filter and switch. */
+/** On a phone the week stands on top, filter and switch below it. */
 export const Narrow: Story = {
   render: (args) => (
     <div className="w-100">
