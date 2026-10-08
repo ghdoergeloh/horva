@@ -31,10 +31,17 @@ export function spanEnd(span: TimeSpan, now: Date): Date {
   return span.end ?? now;
 }
 
+/** Midnight at the start of the day after the day of `date`. */
+export function startOfNextDay(date: Date): Date {
+  return new Date(date.getFullYear(), date.getMonth(), date.getDate() + 1);
+}
+
 /**
- * The part of a span that lies on `day`, as minutes since midnight. A span
- * across midnight is cut at the day border. `null` when nothing of the span
- * lies on the day.
+ * The part of a span that lies on `day`, as minutes of the clock since
+ * midnight. The clock time keeps the scale right on days with a daylight
+ * saving switch. A span across midnight is cut at the day border; the day
+ * ends where the next day starts. `null` when nothing of the span lies on
+ * the day.
  */
 export function minutesOnDay(
   span: TimeSpan,
@@ -42,8 +49,12 @@ export function minutesOnDay(
   now: Date,
 ): { start: number; end: number } | null {
   const dayStart = startOfDay(day).getTime();
-  const toMinutes = (date: Date) =>
-    Math.min(DAY_MINUTES, Math.max(0, (date.getTime() - dayStart) / MINUTE));
+  const dayEnd = startOfNextDay(day).getTime();
+  const toMinutes = (date: Date) => {
+    if (date.getTime() <= dayStart) return 0;
+    if (date.getTime() >= dayEnd) return DAY_MINUTES;
+    return date.getHours() * 60 + date.getMinutes() + date.getSeconds() / 60;
+  };
   const start = toMinutes(span.start);
   const end = toMinutes(spanEnd(span, now));
   if (end <= start) return null;
@@ -96,16 +107,22 @@ export function placeSpan(
   return { left, width: right - left };
 }
 
-/** The minutes of all spans on `day`, a running span up to `now`. */
+/**
+ * The minutes of all spans on `day`, a running span up to `now`. These are
+ * real minutes, cut at the day borders.
+ */
 export function totalMinutesOnDay(
   spans: readonly TimeSpan[],
   day: Date,
   now: Date,
 ): number {
+  const dayStart = startOfDay(day).getTime();
+  const dayEnd = startOfNextDay(day).getTime();
   let total = 0;
   for (const span of spans) {
-    const minutes = minutesOnDay(span, day, now);
-    if (minutes) total += minutes.end - minutes.start;
+    const start = Math.max(dayStart, span.start.getTime());
+    const end = Math.min(dayEnd, spanEnd(span, now).getTime());
+    if (end > start) total += (end - start) / MINUTE;
   }
   return total;
 }

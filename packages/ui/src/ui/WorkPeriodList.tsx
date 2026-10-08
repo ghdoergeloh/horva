@@ -27,7 +27,7 @@ export interface WorkPeriod {
   /** How many slots the period holds. */
   slotCount: number;
   /** The projects of its slots, each once. */
-  projects: readonly { name: string; color: ProjectColor | null }[];
+  projects: readonly { id: Key; name: string; color: ProjectColor | null }[];
 }
 
 /** All texts of the work period list. Each one has a German default. */
@@ -46,6 +46,8 @@ export interface WorkPeriodListLabels {
   copyDay: string;
   /** Announced after copying. */
   copied: string;
+  /** Shown when `onCopy` rejects. */
+  copyFailed: string;
   workTime: string;
   breakTotal: (duration: string) => string;
   empty: string;
@@ -63,6 +65,7 @@ const defaultLabels: WorkPeriodListLabels = {
   copyPeriod: (text) => `Zeitraum ${text} kopieren`,
   copyDay: "Tag kopieren",
   copied: "Kopiert",
+  copyFailed: "Kopieren fehlgeschlagen.",
   workTime: "Arbeitszeit",
   breakTotal: (duration) => `Pause ${duration}`,
   empty: "Keine Arbeitszeiten an diesem Tag.",
@@ -106,6 +109,7 @@ export function WorkPeriodList({
 }: WorkPeriodListProps) {
   const labels = { ...defaultLabels, ...labelOverrides };
   const [copied, setCopied] = useState<Key | null>(null);
+  const [failed, setFailed] = useState(false);
   const totals = sumPeriods(periods, now);
 
   useEffect(() => {
@@ -115,8 +119,14 @@ export function WorkPeriodList({
   }, [copied]);
 
   async function copy(key: Key, text: string) {
-    await onCopy(text);
-    setCopied(key);
+    setCopied(null);
+    setFailed(false);
+    try {
+      await onCopy(text);
+      setCopied(key);
+    } catch {
+      setFailed(true);
+    }
   }
 
   const copyIcon = (key: Key) =>
@@ -207,7 +217,7 @@ export function WorkPeriodList({
                     <span>{labels.slots(period.slotCount)}</span>
                     {period.projects.map((project) => (
                       <span
-                        key={project.name}
+                        key={project.id}
                         className="inline-flex items-center gap-1.5"
                       >
                         <ProjectDot color={project.color} size="sm" />
@@ -257,6 +267,14 @@ export function WorkPeriodList({
           </tfoot>
         )}
       </table>
+      {failed && (
+        <p
+          role="alert"
+          className="text-destructive text-caption px-2 pt-1.5 font-normal"
+        >
+          {labels.copyFailed}
+        </p>
+      )}
       <span role="status" className="sr-only">
         {copied !== null ? labels.copied : ""}
       </span>

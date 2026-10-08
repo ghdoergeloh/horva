@@ -16,8 +16,19 @@ import type {
 import { twMerge } from "../lib/tw";
 import { Button } from "./Button";
 import { Chip, Kbd, LiveBadge } from "./Chip";
-import { formatClock, formatDuration, minutesBetween } from "./DayBarsModel";
-import { checkDraft, clockOf, draftMinutes, withGaps } from "./SlotTableModel";
+import {
+  formatClock,
+  formatDuration,
+  isSameDay,
+  minutesBetween,
+} from "./DayBarsModel";
+import {
+  checkDraft,
+  clockOf,
+  draftMinutes,
+  endsNextDay,
+  withGaps,
+} from "./SlotTableModel";
 import { TaskPicker } from "./TaskPicker";
 import { TimeField } from "./TimeField";
 
@@ -64,8 +75,11 @@ export interface SlotTableLabels {
   cancel: string;
   missingTime: string;
   endNotAfterStart: string;
-  /** Shown after a click outside the open row. */
-  unsaved: string;
+  startAfterNow: string;
+  /** Shown when `onSave` rejects. */
+  saveFailed: string;
+  /** After an end on the day after the start. */
+  nextDay: string;
 }
 
 const defaultLabels: SlotTableLabels = {
@@ -88,7 +102,9 @@ const defaultLabels: SlotTableLabels = {
   cancel: "Abbrechen",
   missingTime: "Bitte Start und Ende eintragen.",
   endNotAfterStart: "Das Ende muss nach dem Start liegen.",
-  unsaved: "Noch nicht gespeichert: Speichern oder Abbrechen.",
+  startAfterNow: "Der Start liegt in der Zukunft.",
+  saveFailed: "Speichern fehlgeschlagen. Erneut versuchen?",
+  nextDay: "+1 Tag",
 };
 
 export interface SlotTableProps {
@@ -161,9 +177,9 @@ interface EditRowProps {
 
 /**
  * The row in edit mode. Enter saves, also on the closed task field, and
- * never opens the task list with it; Escape cancels. A click outside keeps
- * the draft and marks it as not saved. Keys and clicks inside the task
- * popover belong to the picker, not to the row.
+ * never opens the task list with it; Escape cancels. A click outside saves
+ * a valid draft; an invalid one stays open and says why. Keys and clicks
+ * inside the task popover belong to the picker, not to the row.
  */
 function EditRow({
   initial,
@@ -176,10 +192,12 @@ function EditRow({
   const rowRef = useRef<HTMLTableRowElement>(null);
   const [draft, setDraft] = useState(initial);
   const [problem, setProblem] = useState<DraftProblem | null>(null);
-  const [marked, setMarked] = useState(false);
+  const [failed, setFailed] = useState(false);
   const [saving, setSaving] = useState(false);
   const pickerOpen = useRef(false);
   const { onSave, onCancel, onDraftChange } = props;
+  // The outside click listener lives across renders and needs the latest draft.
+  const saveRef = useRef<() => Promise<void>>(() => Promise.resolve());
 
   useEffect(() => {
     // Capture phase: React Aria stops some pointer events before they
@@ -187,7 +205,7 @@ function EditRow({
     function onPointerDown(e: PointerEvent) {
       if (pickerOpen.current) return;
       if (rowRef.current?.contains(e.target as Node)) return;
-      setMarked(true);
+      void saveRef.current();
     }
     document.addEventListener("pointerdown", onPointerDown, true);
     return () =>
@@ -195,27 +213,35 @@ function EditRow({
   }, []);
 
   function update(change: Partial<SlotDraft<TaskPickerKey>>) {
-    const next = { ...draft, ...change };
+    const merged = { ...draft, ...change };
+    const next = { ...merged, endNextDay: endsNextDay(merged) };
     setDraft(next);
     setProblem(null);
+    setFailed(false);
     onDraftChange?.(next);
   }
 
   async function save() {
     if (saving) return;
-    const found = checkDraft(draft, isRunning);
+    const found = checkDraft(draft, isRunning, now);
     setProblem(found);
+    setFailed(false);
     if (found) return;
     const result = onSave?.(draft, editing);
     if (!result) return;
     setSaving(true);
     try {
       await result;
+    } catch {
+      if (rowRef.current) setFailed(true);
     } finally {
       // The row may be gone after a successful save.
       if (rowRef.current) setSaving(false);
     }
   }
+  useEffect(() => {
+    saveRef.current = save;
+  });
 
   function onKeyDownCapture(e: React.KeyboardEvent) {
     // Keys in the task popover reach the row through the React tree only.
@@ -238,30 +264,23 @@ function EditRow({
   const minutes = isRunning
     ? draft.start && draftMinutes({ start: draft.start, end: clockOf(now) })
     : draftMinutes(draft);
-  const message =
-    problem === "missingTime"
-      ? labels.missingTime
-      : problem === "endNotAfterStart"
-        ? labels.endNotAfterStart
-        : props.saveError;
+  const problems: Record<DraftProblem, string> = {
+    missingTime: labels.missingTime,
+    endNotAfterStart: labels.endNotAfterStart,
+    startAfterNow: labels.startAfterNow,
+  };
+  let message = props.saveError;
+  if (failed) message = labels.saveFailed;
+  if (problem) message = problems[problem];
 
   return (
     <tr
       ref={rowRef}
       data-editing
-      data-marked={marked || undefined}
       onKeyDownCapture={onKeyDownCapture}
-      onFocusCapture={() => setMarked(false)}
       className="bg-accent text-foreground"
     >
-      <td
-        colSpan={6}
-        className={twMerge(
-          cell,
-          "px-2 py-1.5",
-          marked && "ring-primary ring-2 ring-inset",
-        )}
-      >
+      <td colSpan={6} className={twMerge(cell, "px-2 py-1.5")}>
         <div className="flex flex-wrap items-center gap-2">
           <TimeField
             aria-label={labels.start}
@@ -273,8 +292,7 @@ function EditRow({
             value={toTime(draft.start)}
             onChange={(value) => update({ start: fromTime(value) })}
             isInvalid={
-              problem !== null &&
-              (!draft.start || problem === "endNotAfterStart")
+              problem !== null && (!draft.start || problem !== "missingTime")
             }
             className="w-20"
           />
@@ -293,6 +311,9 @@ function EditRow({
               }
               className="w-20"
             />
+          )}
+          {draft.endNextDay && (
+            <span className="text-caption font-medium">{labels.nextDay}</span>
           )}
           <span
             className={twMerge(
@@ -329,7 +350,7 @@ function EditRow({
             </Button>
           </div>
         </div>
-        {(Boolean(message) || Boolean(props.editNote) || marked) && (
+        {(Boolean(message) || Boolean(props.editNote)) && (
           <div className="text-caption mt-1.5 flex flex-col gap-1 font-normal">
             {message && (
               <p role="alert" className="flex items-center gap-2">
@@ -346,12 +367,6 @@ function EditRow({
                 {props.editNote}
               </p>
             )}
-            {marked && (
-              <p role="status" className="flex items-center gap-2 font-medium">
-                <Info aria-hidden className="text-primary size-4 shrink-0" />
-                {labels.unsaved}
-              </p>
-            )}
           </div>
         )}
       </td>
@@ -366,16 +381,20 @@ function SlotRow({
   labels,
   isDisabled,
   onEdit,
+  buttonRef,
 }: {
   slot: SlotTableSlot;
   now: Date;
   labels: SlotTableLabels;
   isDisabled: boolean;
   onEdit?: (id: Key) => void;
+  /** Keeps the box of the edit button, to give the focus back after editing. */
+  buttonRef: (element: HTMLElement | null) => void;
 }) {
   const isRunning = slot.end === null;
   const from = formatClock(slot.start);
   const to = slot.end ? formatClock(slot.end) : labels.now;
+  const nextDay = slot.end !== null && !isSameDay(slot.start, slot.end);
   const chip = slot.project ? (
     <Chip color={slot.project.color} title={slot.project.name}>
       {slot.project.name}
@@ -386,6 +405,11 @@ function SlotRow({
       <td className={timeCell}>{from}</td>
       <td className={timeCell}>
         {isRunning ? <LiveBadge>{labels.now}</LiveBadge> : to}
+        {nextDay && (
+          <span className="text-caption ms-1.5 font-sans font-medium">
+            {labels.nextDay}
+          </span>
+        )}
       </td>
       <td className={twMerge(durationCell, isRunning && "text-running-text")}>
         {formatDuration(minutesBetween(slot.start, slot.end ?? now))}
@@ -403,15 +427,17 @@ function SlotRow({
       </td>
       <td className={actionCell}>
         {onEdit && (
-          <Button
-            variant="quiet"
-            size="sm"
-            aria-label={labels.edit(from, to)}
-            isDisabled={isDisabled}
-            onPress={() => onEdit(slot.id)}
-          >
-            <Pencil aria-hidden />
-          </Button>
+          <span ref={buttonRef} className="contents">
+            <Button
+              variant="quiet"
+              size="sm"
+              aria-label={labels.edit(from, to)}
+              isDisabled={isDisabled}
+              onPress={() => onEdit(slot.id)}
+            >
+              <Pencil aria-hidden />
+            </Button>
+          </span>
         )}
       </td>
     </tr>
@@ -425,12 +451,14 @@ function GapRow({
   labels,
   isDisabled,
   onAddSlot,
+  buttonRef,
 }: {
   start: Date;
   end: Date;
   labels: SlotTableLabels;
   isDisabled: boolean;
   onAddSlot?: (gap: { start: Date; end: Date }) => void;
+  buttonRef: (element: HTMLElement | null) => void;
 }) {
   const from = formatClock(start);
   const to = formatClock(end);
@@ -446,16 +474,18 @@ function GapRow({
       </td>
       <td className={twMerge(actionCell, "py-0.75 not-italic")}>
         {onAddSlot && (
-          <Button
-            variant="quiet"
-            size="sm"
-            aria-label={labels.addSlotIn(from, to)}
-            isDisabled={isDisabled}
-            onPress={() => onAddSlot({ start, end })}
-          >
-            <Plus aria-hidden />
-            <span className="@max-lg:sr-only">{labels.addSlot}</span>
-          </Button>
+          <span ref={buttonRef} className="contents">
+            <Button
+              variant="quiet"
+              size="sm"
+              aria-label={labels.addSlotIn(from, to)}
+              isDisabled={isDisabled}
+              onPress={() => onAddSlot({ start, end })}
+            >
+              <Plus aria-hidden />
+              <span className="@max-lg:sr-only">{labels.addSlot}</span>
+            </Button>
+          </span>
         )}
       </td>
     </tr>
@@ -516,6 +546,36 @@ export function SlotTable(props: SlotTableProps) {
   const labels = { ...defaultLabels, ...labelOverrides };
   const rows = buildRows(slots, showGaps, editing);
   const isEditing = editing != null;
+  const focusTargets = useRef(new Map<string, HTMLElement>());
+  const previous = useRef(editing);
+
+  function keep(key: string, element: HTMLElement | null) {
+    if (element) focusTargets.current.set(key, element);
+    else focusTargets.current.delete(key);
+  }
+
+  // When the open row closes, the focus goes back to the button that
+  // opened it: the edit button, or "Slot eintragen" of the gap. A new
+  // slot that filled its gap takes its own edit button.
+  useEffect(() => {
+    const before = previous.current;
+    previous.current = editing;
+    if (!before || editing) return;
+    const keys =
+      before.kind === "slot"
+        ? [`slot:${String(before.id)}`]
+        : [
+            `gap:${String(before.start.getTime())}`,
+            `start:${String(before.start.getTime())}`,
+          ];
+    for (const key of keys) {
+      const button = focusTargets.current.get(key)?.querySelector("button");
+      if (button) {
+        button.focus();
+        return;
+      }
+    }
+  }, [editing]);
 
   return (
     <div className={twMerge("@container font-sans", className)}>
@@ -562,6 +622,7 @@ export function SlotTable(props: SlotTableProps) {
                   initial={{
                     start: clockOf(row.start),
                     end: clockOf(row.end),
+                    endNextDay: false,
                     taskId: null,
                   }}
                   isRunning={false}
@@ -580,6 +641,8 @@ export function SlotTable(props: SlotTableProps) {
                     initial={{
                       start: clockOf(slot.start),
                       end: slot.end && clockOf(slot.end),
+                      endNextDay:
+                        slot.end !== null && !isSameDay(slot.start, slot.end),
                       taskId: slot.taskId,
                     }}
                     isRunning={slot.end === null}
@@ -597,6 +660,10 @@ export function SlotTable(props: SlotTableProps) {
                   labels={labels}
                   isDisabled={isEditing}
                   onEdit={onEdit}
+                  buttonRef={(element) => {
+                    keep(`slot:${String(slot.id)}`, element);
+                    keep(`start:${String(slot.start.getTime())}`, element);
+                  }}
                 />
               );
             }
@@ -608,6 +675,9 @@ export function SlotTable(props: SlotTableProps) {
                 labels={labels}
                 isDisabled={isEditing}
                 onAddSlot={onAddSlot}
+                buttonRef={(element) =>
+                  keep(`gap:${String(row.start.getTime())}`, element)
+                }
               />
             );
           })}

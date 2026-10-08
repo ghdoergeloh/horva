@@ -169,3 +169,47 @@ describe("formatting", () => {
     expect(minutesBetween(at(10), at(9))).toBe(0);
   });
 });
+
+describe("days with a daylight saving switch (Europe/Berlin)", () => {
+  // 29 March 2026 has 23 hours, 25 October 2026 has 25 hours.
+  for (const [month, day] of [
+    [2, 29],
+    [9, 25],
+  ] as const) {
+    const date = new Date(2026, month, day);
+    const time = (h: number, m: number) => new Date(2026, month, day, h, m);
+    const morning = { start: time(9, 0), end: time(10, 0) };
+    const late = { start: time(23, 0), end: time(23, 59) };
+
+    it(`places slots by their clock time on ${String(day)}.${String(month + 1)}.`, () => {
+      expect(minutesOnDay(morning, date, time(12, 0))).toEqual({
+        start: 540,
+        end: 600,
+      });
+      expect(minutesOnDay(late, date, time(12, 0))).toEqual({
+        start: 1380,
+        end: 1439,
+      });
+      expect(
+        getHourRange([{ date, spans: [morning, late] }], time(12, 0)),
+      ).toEqual({ startHour: 9, endHour: 24 });
+    });
+
+    it(`counts the real minutes on ${String(day)}.${String(month + 1)}.`, () => {
+      expect(totalMinutesOnDay([morning, late], date, time(12, 0))).toBe(119);
+    });
+  }
+
+  it("ends the day at the start of the next day", () => {
+    const date = new Date(2026, 9, 25);
+    const span = {
+      start: new Date(2026, 9, 25, 22),
+      end: new Date(2026, 9, 26, 2),
+    };
+    expect(minutesOnDay(span, date, span.end)).toEqual({
+      start: 1320,
+      end: 1440,
+    });
+    expect(totalMinutesOnDay([span], date, span.end)).toBe(120);
+  });
+});

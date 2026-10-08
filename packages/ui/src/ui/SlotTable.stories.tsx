@@ -58,15 +58,19 @@ function Harness(props: SlotTableProps) {
         props.onCancel?.();
         setEditing(null);
       }}
-      onSave={(draft, target: SlotTableEditing) => {
-        void props.onSave?.(draft, target);
+      onSave={async (draft, target: SlotTableEditing) => {
+        // A rejected save leaves the row open, as in the app.
+        await props.onSave?.(draft, target);
         const day = slots[0]?.start ?? lunch.start;
-        const time = (t: { hour: number; minute: number } | null) =>
+        const time = (
+          t: { hour: number; minute: number } | null,
+          nextDay = false,
+        ) =>
           t &&
           new Date(
             day.getFullYear(),
             day.getMonth(),
-            day.getDate(),
+            day.getDate() + (nextDay ? 1 : 0),
             t.hour,
             t.minute,
           );
@@ -75,7 +79,7 @@ function Harness(props: SlotTableProps) {
         const row: SlotTableSlot = {
           id: target.kind === "slot" ? target.id : 1000,
           start: time(draft.start) ?? lunch.start,
-          end: time(draft.end),
+          end: time(draft.end, draft.endNextDay),
           taskId: draft.taskId,
           task: task?.name ?? null,
           project: project && { name: project.name, color: project.color },
@@ -228,6 +232,7 @@ export const EditAndSave: Story = {
       {
         start: { hour: 9, minute: 27 },
         end: { hour: 10, minute: 20 },
+        endNextDay: false,
         taskId: 12,
       },
       { kind: "slot", id: second?.id },
@@ -237,13 +242,13 @@ export const EditAndSave: Story = {
   parameters: { screenshot: false },
 };
 
-/** An end before the start is not saved and says why. */
+/** An end equal to the start is not saved and says why. */
 export const Invalid: Story = {
   args: { editing: { kind: "slot", id: second?.id ?? 0 } },
   play: async ({ canvasElement, args }) => {
     clearAllMocks();
     const canvas = within(canvasElement);
-    await typeEnd(canvasElement, "09", "00");
+    await typeEnd(canvasElement, "09", "27");
     await userEvent.click(canvas.getByRole("button", { name: "Speichern" }));
     await expect(await canvas.findByRole("alert")).toHaveTextContent(
       "Das Ende muss nach dem Start liegen.",
@@ -264,6 +269,14 @@ export const KeyboardEnterSaves: Story = {
     await expect(args.onSave).toHaveBeenCalledWith(
       expect.objectContaining({ end: { hour: 10, minute: 30 } }),
       expect.anything(),
+    );
+    // The focus goes back to the edit button of the saved row.
+    await waitFor(() =>
+      expect(
+        within(canvasElement).getByRole("button", {
+          name: "Slot 09:27–10:30 bearbeiten",
+        }),
+      ).toHaveFocus(),
     );
   },
   parameters: { screenshot: false },
@@ -330,6 +343,34 @@ export const KeyboardEscapeCancels: Story = {
     await expect(
       within(canvasElement).queryByRole("button", { name: "Speichern" }),
     ).toBe(null);
+    await waitFor(() =>
+      expect(
+        within(canvasElement).getByRole("button", {
+          name: "Slot 09:27–10:16 bearbeiten",
+        }),
+      ).toHaveFocus(),
+    );
+  },
+  parameters: { screenshot: false },
+};
+
+/** Escape on a new slot gives the focus back to "Slot eintragen". */
+export const KeyboardEscapeNewSlot: Story = {
+  args: { editing: { kind: "new", ...lunch } },
+  play: async ({ canvasElement, args }) => {
+    clearAllMocks();
+    await waitFor(() =>
+      expect(segments(canvasElement, "Start").hour).toHaveFocus(),
+    );
+    await userEvent.keyboard("{Escape}");
+    await expect(args.onCancel).toHaveBeenCalledTimes(1);
+    await waitFor(() =>
+      expect(
+        within(canvasElement).getByRole("button", {
+          name: "Slot von 12:02 bis 13:05 eintragen",
+        }),
+      ).toHaveFocus(),
+    );
   },
   parameters: { screenshot: false },
 };
@@ -346,7 +387,6 @@ export const MousePickTask: Story = {
     );
     await waitFor(() => expect(body().queryByRole("dialog")).toBe(null));
     await expect(args.onSave).not.toHaveBeenCalled();
-    await expect(canvas.queryByRole("status")).toBe(null);
     await userEvent.click(canvas.getByRole("button", { name: "Speichern" }));
     await expect(args.onSave).toHaveBeenCalledWith(
       expect.objectContaining({ taskId: 22 }),
@@ -357,51 +397,126 @@ export const MousePickTask: Story = {
 };
 
 /**
- * A click outside keeps the draft of an existing slot and marks it: no
- * silent save, no silent loss (#34).
+ * A click outside saves a valid draft, as Save would (#34). Clicks in the
+ * task popover do not count as outside.
  */
-export const ClickOutsideKeepsDraft: Story = {
+export const ClickOutsideSavesValidDraft: Story = {
   args: { editing: { kind: "slot", id: second?.id ?? 0 } },
   play: async ({ canvasElement, args }) => {
     clearAllMocks();
     await typeEnd(canvasElement, "10", "40");
     const [other] = within(canvasElement).getAllByText("Karten zeichnen");
     if (other) await userEvent.click(other);
-    await expect(args.onSave).not.toHaveBeenCalled();
+    await expect(args.onSave).toHaveBeenCalledTimes(1);
+    await expect(args.onSave).toHaveBeenCalledWith(
+      expect.objectContaining({ end: { hour: 10, minute: 40 } }),
+      { kind: "slot", id: second?.id },
+    );
     await expect(args.onCancel).not.toHaveBeenCalled();
-    await expect(within(canvasElement).getByRole("status")).toHaveTextContent(
-      "Noch nicht gespeichert",
-    );
-    await expect(segments(canvasElement, "Ende").minute).toHaveTextContent(
-      "40",
-    );
   },
   parameters: { screenshot: false },
 };
 
-/** The same for a new slot: a click outside does not discard it. */
-export const ClickOutsideKeepsNewSlot: Story = {
+/**
+ * A click outside an invalid new slot neither saves nor discards it: the
+ * row stays open and says why it cannot be saved.
+ */
+export const ClickOutsideKeepsInvalidNewSlot: Story = {
   args: { editing: { kind: "new", ...lunch } },
   play: async ({ canvasElement, args }) => {
     clearAllMocks();
-    await typeEnd(canvasElement, "12", "45");
+    await typeEnd(canvasElement, "12", "02");
     await userEvent.click(document.body);
     await expect(args.onSave).not.toHaveBeenCalled();
     await expect(args.onCancel).not.toHaveBeenCalled();
-    await expect(within(canvasElement).getByRole("status")).toHaveTextContent(
-      "Noch nicht gespeichert",
+    await expect(
+      await within(canvasElement).findByRole("alert"),
+    ).toHaveTextContent("Das Ende muss nach dem Start liegen.");
+    await expect(
+      within(canvasElement).getByRole("button", { name: "Speichern" }),
+    ).toBeVisible();
+  },
+  parameters: { screenshot: false },
+};
+
+/** A failed save keeps the row open and offers to try again. */
+export const SaveFails: Story = {
+  args: {
+    editing: { kind: "slot", id: second?.id ?? 0 },
+    onSave: fn(() => Promise.reject(new Error("offline"))),
+  },
+  play: async ({ canvasElement, args }) => {
+    clearAllMocks();
+    const canvas = within(canvasElement);
+    await userEvent.click(canvas.getByRole("button", { name: "Speichern" }));
+    await expect(await canvas.findByRole("alert")).toHaveTextContent(
+      "Speichern fehlgeschlagen. Erneut versuchen?",
     );
+    await expect(args.onSave).toHaveBeenCalledTimes(1);
+    await expect(
+      canvas.getByRole("button", { name: "Speichern" }),
+    ).toBeEnabled();
+  },
+  parameters: { screenshot: false },
+};
+
+const lateEvening: SlotTableSlot[] = [
+  {
+    id: 900,
+    start: at(7, "22:30"),
+    end: at(8, "01:15"),
+    taskId: 41,
+    task: "Werkzeuge testen",
+    project: { name: "Leuchtturm", color: "project-8" },
+  },
+];
+
+/**
+ * A slot across midnight shows "+1 Tag" after its end. In the open row an
+ * end before the start means the next day, and the draft says so.
+ */
+export const AcrossMidnight: Story = {
+  args: { slots: lateEvening, onDraftChange: fn() },
+  play: async ({ canvasElement, args }) => {
+    clearAllMocks();
+    const canvas = within(canvasElement);
+    await expect(canvas.getByText("+1 Tag")).toBeVisible();
+    await expect(canvas.getByText("2:45")).toBeVisible();
+    await userEvent.click(
+      canvas.getByRole("button", { name: "Slot 22:30–01:15 bearbeiten" }),
+    );
+    await expect(canvas.getByText("+1 Tag")).toBeVisible();
+    await typeEnd(canvasElement, "02", "00");
+    await expect(canvas.getByText("3:30")).toBeVisible();
+    // The row stays open: the draft carries the next day.
+    await expect(args.onDraftChange).toHaveBeenLastCalledWith({
+      start: { hour: 22, minute: 30 },
+      end: { hour: 2, minute: 0 },
+      endNextDay: true,
+      taskId: 41,
+    });
+  },
+  parameters: { screenshot: false },
+};
+
+/** A running slot cannot start after now. */
+export const StartAfterNow: Story = {
+  args: {
+    slots: thursday,
+    editing: { kind: "slot", id: thursday.at(-1)?.id ?? 0 },
+  },
+  play: async ({ canvasElement, args }) => {
+    clearAllMocks();
+    const start = segments(canvasElement, "Start");
+    await userEvent.click(start.hour);
+    await userEvent.keyboard("12");
     await userEvent.click(
       within(canvasElement).getByRole("button", { name: "Speichern" }),
     );
-    await expect(args.onSave).toHaveBeenCalledWith(
-      {
-        start: { hour: 12, minute: 2 },
-        end: { hour: 12, minute: 45 },
-        taskId: null,
-      },
-      { kind: "new", ...lunch },
-    );
+    await expect(
+      await within(canvasElement).findByRole("alert"),
+    ).toHaveTextContent("Der Start liegt in der Zukunft.");
+    await expect(args.onSave).not.toHaveBeenCalled();
   },
   parameters: { screenshot: false },
 };

@@ -24,6 +24,8 @@ import {
   isSameDay,
   minutesOnDay,
   placeSpan,
+  startOfDay,
+  startOfNextDay,
   totalMinutesOnDay,
 } from "./DayBarsModel";
 import { Disclosure, DisclosurePanel } from "./Disclosure";
@@ -113,7 +115,7 @@ const columns =
   "grid grid-cols-[4rem_minmax(0,1fr)_3.5rem] gap-x-3 @max-lg:grid-cols-[4rem_minmax(0,1fr)]";
 
 const blockStyles = tv({
-  base: "absolute inset-y-[3px] min-w-0.5 cursor-default rounded-[4px] ring-1 ring-muted outline-0 hover:inset-y-px hover:z-10 hover:ring-foreground hover:ring-offset-2 hover:ring-offset-card data-focus-visible:inset-y-px data-focus-visible:z-10 data-focus-visible:ring-foreground data-focus-visible:ring-offset-2 data-focus-visible:ring-offset-card forced-colors:bg-[ButtonText]",
+  base: "absolute inset-y-0.5 min-w-0.5 cursor-default rounded-[4px] ring-1 ring-card outline-0 hover:inset-y-0 hover:z-10 hover:ring-foreground hover:ring-offset-2 hover:ring-offset-card data-focus-visible:inset-y-0 data-focus-visible:z-10 data-focus-visible:ring-foreground data-focus-visible:ring-offset-2 data-focus-visible:ring-offset-card forced-colors:bg-[ButtonText]",
   variants: {
     isRunning: {
       true: "motion-safe:animate-running-pulse after:bg-running after:absolute after:-inset-y-1 after:-right-0.5 after:w-0.5 after:rounded-full",
@@ -234,7 +236,7 @@ function Track({
     <div
       role={blocks.length > 0 ? "group" : undefined}
       aria-label={blocks.length > 0 ? name : undefined}
-      className="bg-muted relative h-7 rounded-sm"
+      className="bg-card border-border relative box-border h-7 rounded-sm border"
       onClick={(e) => {
         if (e.target === e.currentTarget) onTrackClick?.();
       }}
@@ -253,11 +255,17 @@ function Track({
           variant === "periods"
             ? "var(--primary)"
             : projectColorValue(block.color);
-        const from = formatClock(block.start);
-        const to = isRunning ? labels.now : formatClock(block.end ?? now);
-        const minutes = minutesOnDay(block, day.date, now);
+        // Times are cut at the borders of the day, like the bar.
+        const end = block.end ?? now;
+        const from =
+          block.start < startOfDay(day.date)
+            ? "00:00"
+            : formatClock(block.start);
+        let to = formatClock(end);
+        if (end >= startOfNextDay(day.date)) to = "24:00";
+        else if (isRunning) to = labels.now;
         const duration = formatDuration(
-          minutes ? minutes.end - minutes.start : 0,
+          totalMinutesOnDay([block], day.date, now),
         );
         const name = [block.title, block.subtitle, `${from} ${labels.to} ${to}`]
           .filter(Boolean)

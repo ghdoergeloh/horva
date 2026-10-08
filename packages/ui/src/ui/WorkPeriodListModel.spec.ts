@@ -57,6 +57,23 @@ describe("withBreaks", () => {
   });
 });
 
+describe("withBreaks with a period inside another", () => {
+  it("measures a break from the latest end so far", () => {
+    const rows = withBreaks(
+      [
+        { start: at(9), end: at(12) },
+        { start: at(10), end: at(11) },
+        { start: at(11, 30), end: at(13) },
+        { start: at(14), end: at(15) },
+      ],
+      now,
+    );
+    expect(rows.filter((row) => row.kind === "break")).toEqual([
+      { kind: "break", start: at(13), end: at(14) },
+    ]);
+  });
+});
+
 describe("sumPeriods", () => {
   it("sums work and breaks", () => {
     expect(sumPeriods([morning, afternoon], now)).toEqual({

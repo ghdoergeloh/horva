@@ -7,8 +7,8 @@ export type WorkPeriodRow<P extends TimeSpan> =
   | { kind: "break"; start: Date; end: Date };
 
 /**
- * The periods sorted by start, with a break row wherever one period ends
- * before the next one starts.
+ * The periods sorted by start, with a break row wherever the next period
+ * starts after the latest end so far.
  */
 export function withBreaks<P extends TimeSpan>(
   periods: readonly P[],
@@ -18,15 +18,15 @@ export function withBreaks<P extends TimeSpan>(
     (a, b) => a.start.getTime() - b.start.getTime(),
   );
   const rows: WorkPeriodRow<P>[] = [];
-  sorted.forEach((period, index) => {
-    const previous = sorted[index - 1];
-    if (previous) {
-      const end = spanEnd(previous, now);
-      if (period.start.getTime() > end.getTime())
-        rows.push({ kind: "break", start: end, end: period.start });
-    }
+  // The latest end so far: a period inside another one does not end it.
+  let lastEnd: Date | null = null;
+  for (const period of sorted) {
+    if (lastEnd && period.start.getTime() > lastEnd.getTime())
+      rows.push({ kind: "break", start: lastEnd, end: period.start });
     rows.push({ kind: "period", period });
-  });
+    const end = spanEnd(period, now);
+    if (!lastEnd || end.getTime() > lastEnd.getTime()) lastEnd = end;
+  }
   return rows;
 }
 

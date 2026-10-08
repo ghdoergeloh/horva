@@ -12,7 +12,12 @@ function periodsOf(slots: SampleSlot[]): WorkPeriod[] {
     const projects = new Map<string, WorkPeriod["projects"][number]>();
     for (const slot of period.slots) {
       const { project } = taskOf(slot.taskId);
-      if (project) projects.set(project.name, project);
+      if (project)
+        projects.set(project.name, {
+          id: project.id,
+          name: project.name,
+          color: project.color,
+        });
     }
     return {
       id: i,
@@ -98,6 +103,20 @@ export const KeyboardCopyDay: Story = {
     button.focus();
     await userEvent.keyboard("{Enter}");
     await expect(args.onCopy).toHaveBeenCalledWith("09:20–12:02, 13:05–18:12");
+  },
+  parameters: { screenshot: false },
+};
+
+/** A failed copy says so instead of "Kopiert". */
+export const CopyFails: Story = {
+  args: { onCopy: fn(() => Promise.reject(new Error("denied"))) },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await userEvent.click(canvas.getByRole("button", { name: "Tag kopieren" }));
+    await expect(await canvas.findByRole("alert")).toHaveTextContent(
+      "Kopieren fehlgeschlagen.",
+    );
+    await expect(canvas.getByRole("status")).toHaveTextContent("");
   },
   parameters: { screenshot: false },
 };

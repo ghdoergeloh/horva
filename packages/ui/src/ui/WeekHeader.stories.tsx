@@ -14,7 +14,7 @@ const filter = (
   <Select
     aria-label="Projekt"
     placeholder="Alle Projekte"
-    className="w-44 @max-lg:w-full"
+    className="w-45 @max-lg:w-full @max-lg:min-w-0"
   >
     <SelectItem id="all">Alle Projekte</SelectItem>
     <SelectItem id="nordlicht">Nordlicht</SelectItem>
@@ -94,7 +94,7 @@ export const EarlierWeek: Story = {
 /** Without a project filter. */
 export const WithoutFilter: Story = { args: { filter: undefined } };
 
-/** On a phone the week stands on top, filter and switch below it. */
+/** On a phone the head has two lines: the week, then filter and switch. */
 export const Narrow: Story = {
   render: (args) => (
     <div className="w-100">
@@ -106,6 +106,14 @@ export const Narrow: Story = {
     const title = canvas.getByRole("heading").getBoundingClientRect();
     const view = canvas.getByRole("radiogroup").getBoundingClientRect();
     await expect(view.top).toBeGreaterThan(title.bottom);
+    // Filter and switch share the second line.
+    const select = canvas
+      .getByRole("button", { name: /Alle Projekte/ })
+      .getBoundingClientRect();
+    await expect(
+      Math.abs(select.top + select.height / 2 - (view.top + view.height / 2)),
+    ).toBeLessThan(2);
+    await expect(select.right).toBeLessThanOrEqual(view.left);
   },
 };
 
@@ -147,6 +155,19 @@ export const KeyboardSwitchView: Story = {
     await userEvent.keyboard("{ArrowLeft}{ArrowLeft}");
     await expect(slots).toBeChecked();
     await expect(args.onViewChange).toHaveBeenLastCalledWith("slots");
+  },
+  parameters: { screenshot: false },
+};
+
+/** The title follows the locale. */
+export const English: Story = {
+  args: { locale: "en-US" },
+  play: async ({ canvasElement }) => {
+    await expect(
+      within(canvasElement).getByRole("heading", {
+        name: "October 5 – 11, 2026",
+      }),
+    ).toBeInTheDocument();
   },
   parameters: { screenshot: false },
 };

@@ -50,6 +50,8 @@ export interface WeekHeaderProps {
   filter?: React.ReactNode;
   /** Formats the title. @default `5.–11. Oktober 2026` */
   formatTitle?: (weekStart: Date) => string;
+  /** The locale of the default title. @default 'de-DE' */
+  locale?: string;
   labels?: Partial<WeekHeaderLabels>;
   className?: string;
 }
@@ -71,7 +73,8 @@ export function WeekHeader({
   view,
   onViewChange,
   filter,
-  formatTitle = (start) => formatWeekRange(start),
+  locale = "de-DE",
+  formatTitle = (start) => formatWeekRange(start, locale),
   labels: labelOverrides,
   className,
 }: WeekHeaderProps) {
@@ -107,11 +110,11 @@ export function WeekHeader({
             {labels.thisWeek}
           </Button>
         </div>
-        <div className="ms-auto flex min-w-0 items-center gap-3 @max-lg:w-full @max-lg:flex-wrap @max-lg:gap-2">
-          {filter && <div className="min-w-0 @max-lg:basis-full">{filter}</div>}
+        <div className="ms-auto flex min-w-0 items-center gap-3 @max-lg:w-full @max-lg:gap-2">
+          {filter && <div className="min-w-0 @max-lg:flex-1">{filter}</div>}
           {/* The arrow keys move the focus and switch the view with it. */}
           <div
-            className="ms-auto shrink-0 @max-lg:w-full"
+            className="ms-auto shrink-0"
             onKeyDownCapture={(e) => {
               const step = { ArrowRight: 1, ArrowLeft: -1 }[e.key];
               if (!step) return;
@@ -123,7 +126,6 @@ export function WeekHeader({
           >
             <ToggleButtonGroup
               variant="segmented"
-              className="@max-lg:w-full"
               aria-label={labels.view}
               selectionMode="single"
               disallowEmptySelection
@@ -135,7 +137,7 @@ export function WeekHeader({
               }}
             >
               {views.map((id) => (
-                <ToggleButton key={id} id={id} className="@max-lg:flex-1">
+                <ToggleButton key={id} id={id} className="@max-lg:px-2">
                   {labels[id]}
                 </ToggleButton>
               ))}

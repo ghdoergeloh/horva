@@ -254,3 +254,42 @@ export const KeyboardOpenDay: Story = {
   },
   parameters: { screenshot: false },
 };
+
+const nightShift = {
+  id: 1,
+  start: at(5, "22:30"),
+  end: at(6, "01:15"),
+  title: "Werkzeuge testen",
+  subtitle: "Leuchtturm",
+  color: "project-8",
+};
+
+/** A slot across midnight shows on both days, its times cut at midnight. */
+export const AcrossMidnight: Story = {
+  args: {
+    days: weekDays({}).map((day) =>
+      day.date.getDate() === 5 || day.date.getDate() === 6
+        ? { ...day, blocks: [nightShift] }
+        : day,
+    ),
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await userEvent.tab();
+    await expect(
+      within(canvas.getByRole("group", { name: "Mo., 5." })).getByRole(
+        "button",
+      ),
+    ).toHaveFocus();
+    await expect(await body().findByRole("tooltip")).toHaveTextContent(
+      "22:30–24:00 · 1:30 h",
+    );
+    await userEvent.tab();
+    await waitFor(() =>
+      expect(body().getByRole("tooltip")).toHaveTextContent(
+        "00:00–01:15 · 1:15 h",
+      ),
+    );
+  },
+  parameters: { screenshot: false },
+};
