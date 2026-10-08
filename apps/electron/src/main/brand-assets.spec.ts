@@ -46,8 +46,8 @@ describe("boot screen variables", () => {
   // theme also uses (`--muted`, `--running`, …) would override that
   // token for the whole app.
   it("uses only its own --boot-* names", () => {
-    const style = /<style>([\s\S]*?)<\/style>/.exec(html)?.[1] ?? "";
-    const names = [...style.matchAll(/(--[\w-]+)\s*:/g)].map((m) => m[1]);
+    // Every declaration in the file, in <style> blocks and style="".
+    const names = [...html.matchAll(/(--[\w-]+)\s*:/g)].map((m) => m[1]);
     expect(names.length).toBeGreaterThan(0);
     expect(names.filter((name) => !name?.startsWith("--boot-"))).toEqual([]);
   });

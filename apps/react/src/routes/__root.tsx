@@ -47,6 +47,7 @@ import {
 } from "#/contexts/TaskDragContext.js";
 import i18n from "#/i18n/index.js";
 import { client } from "#/lib/orpc.js";
+import { projectColorLabels } from "#/lib/projectColorLabels.js";
 import { useEscapeKey } from "#/lib/useEscapeKey.js";
 
 /** The dialog "New project": a name and a color. */
@@ -124,14 +125,7 @@ function NewProjectModal({
             label={t("project.color")}
             value={color}
             onChange={setPicked}
-            labels={{
-              presets: t("projectColors.presets", {
-                returnObjects: true,
-              }) as string[],
-              custom: t("projectColors.custom"),
-              customPlaceholder: t("projectColors.customPlaceholder"),
-              invalid: t("projectColors.invalid"),
-            }}
+            labels={projectColorLabels(t)}
           />
           {createProjectMutation.isError && (
             <p role="alert" className="text-destructive text-small">

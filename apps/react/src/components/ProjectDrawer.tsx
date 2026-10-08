@@ -13,6 +13,7 @@ import { MocoLinkFields, MocoLoadButton } from "#/components/MocoLinkFields.js";
 import { Sheet } from "#/components/Sheet.js";
 import { useMocoConfigured, useRemoteMocoProjects } from "#/lib/mocoQueries.js";
 import { client } from "#/lib/orpc.js";
+import { projectColorLabels } from "#/lib/projectColorLabels.js";
 
 type Project = NonNullable<
   Awaited<ReturnType<typeof client.project.get>>["project"]
@@ -122,14 +123,7 @@ function ProjectDrawerBody({
         value={project.color}
         onChange={(color) => updateMutation.mutate({ color })}
         label={t("project.color")}
-        labels={{
-          presets: t("projectColors.presets", {
-            returnObjects: true,
-          }) as string[],
-          custom: t("projectColors.custom"),
-          customPlaceholder: t("projectColors.customPlaceholder"),
-          invalid: t("projectColors.invalid"),
-        }}
+        labels={projectColorLabels(t)}
       />
 
       {/* Moco linking */}

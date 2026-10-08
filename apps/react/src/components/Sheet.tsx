@@ -87,7 +87,7 @@ export function Sheet({
         aria-labelledby={titleId}
         tabIndex={-1}
         onKeyDown={keepTabInside}
-        className={`border-border bg-card fixed top-0 right-0 flex h-full w-[28rem] max-w-full flex-col border-l shadow-lg outline-0 transition-transform duration-200 ease-out motion-reduce:transition-none ${
+        className={`border-border bg-popover text-popover-foreground fixed top-0 right-0 flex h-full w-[28rem] max-w-full flex-col border-l shadow-lg outline-0 transition-transform duration-200 ease-out motion-reduce:transition-none ${
           shown ? "translate-x-0" : "translate-x-full"
         }`}
       >

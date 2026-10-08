@@ -63,6 +63,8 @@ test("the project drawer changes the color to a preset and to a custom hex", asy
   await edit.click();
   const drawer = page.getByRole("dialog", { name: "Projekt-Eigenschaften" });
 
+  // The drawer shows the color picker like the "Neues Projekt" dialog.
+  await expect(drawer.getByRole("radiogroup", { name: "Farbe" })).toBeVisible();
   await drawer.getByRole("radio", { name: "Petrol" }).click();
   await expect(drawer.getByRole("radio", { name: "Petrol" })).toBeChecked();
   await expect
@@ -80,4 +82,13 @@ test("the project drawer changes the color to a preset and to a custom hex", asy
   await page.keyboard.press("Escape");
   await expect(drawer).toBeHidden();
   await expect(edit).toBeFocused();
+});
+
+test("the new-project dialog shows the same color picker", async ({ page }) => {
+  await signUp(page);
+  await page.goto("/");
+  await page.getByRole("button", { name: "Neues Projekt" }).click();
+  const dialog = page.getByRole("dialog", { name: "Neues Projekt" });
+  await expect(dialog.getByRole("radiogroup", { name: "Farbe" })).toBeVisible();
+  await expect(dialog.getByRole("radio", { name: "Petrol" })).toBeVisible();
 });
