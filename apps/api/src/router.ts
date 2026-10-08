@@ -246,6 +246,12 @@ export function createRouter(deps: RouterDeps) {
           context: { db: deps.db, session: context.session },
         }),
       ),
+      workPeriods: authed.log.workPeriods.handler(({ input, context }) =>
+        handlers.log.workPeriods({
+          input,
+          context: { db: deps.db, session: context.session },
+        }),
+      ),
     },
 
     moco: {
