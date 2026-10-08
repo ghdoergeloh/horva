@@ -170,6 +170,8 @@ interface EditRowProps {
   initial: SlotDraft<TaskPickerKey>;
   isRunning: boolean;
   now: Date;
+  /** The day the slot starts on. */
+  startDay: Date;
   editing: SlotTableEditing;
   props: SlotTableProps;
   labels: SlotTableLabels;
@@ -185,6 +187,7 @@ function EditRow({
   initial,
   isRunning,
   now,
+  startDay,
   editing,
   props,
   labels,
@@ -223,7 +226,7 @@ function EditRow({
 
   async function save() {
     if (saving) return;
-    const found = checkDraft(draft, isRunning, now);
+    const found = checkDraft(draft, isRunning, now, startDay);
     setProblem(found);
     setFailed(false);
     if (found) return;
@@ -627,6 +630,7 @@ export function SlotTable(props: SlotTableProps) {
                   }}
                   isRunning={false}
                   now={now}
+                  startDay={row.start}
                   editing={editing}
                   props={props}
                   labels={labels}
@@ -647,6 +651,7 @@ export function SlotTable(props: SlotTableProps) {
                     }}
                     isRunning={slot.end === null}
                     now={now}
+                    startDay={slot.start}
                     editing={editing}
                     props={props}
                     labels={labels}

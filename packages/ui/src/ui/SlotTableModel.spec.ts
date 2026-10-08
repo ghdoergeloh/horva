@@ -79,6 +79,19 @@ describe("checkDraft", () => {
     expect(endsNextDay({ start: nine, end: null })).toBe(false);
   });
 
+  it("accepts a running slot that started before midnight", () => {
+    const afterMidnight = new Date(2026, 9, 9, 1, 0);
+    const yesterday = new Date(2026, 9, 8, 22, 0);
+    expect(
+      checkDraft(
+        { start: { hour: 22, minute: 0 }, end: null },
+        true,
+        afterMidnight,
+        yesterday,
+      ),
+    ).toBe(null);
+  });
+
   it("refuses a start after now for a running slot", () => {
     expect(
       checkDraft({ start: { hour: 12, minute: 0 }, end: null }, true, now),

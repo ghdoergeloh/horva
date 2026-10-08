@@ -63,16 +63,22 @@ export function endsNextDay(draft: Pick<SlotDraft, "start" | "end">): boolean {
 /**
  * The problem that keeps a draft from being saved, or `null` when it can
  * be saved. A running slot needs only a start, and that start must not be
- * after `now`. An end before the start counts as the next day.
+ * after `now`; `startDay` is the day the slot starts on, so a slot that
+ * runs since yesterday stays valid after midnight. An end before the
+ * start counts as the next day.
  */
 export function checkDraft(
   draft: Pick<SlotDraft, "start" | "end">,
   isRunning: boolean,
   now: Date,
+  startDay: Date = now,
 ): DraftProblem | null {
   if (!draft.start || (!isRunning && !draft.end)) return "missingTime";
-  if (isRunning && toMinutes(draft.start) > toMinutes(clockOf(now)))
-    return "startAfterNow";
+  if (isRunning) {
+    const start = new Date(startDay);
+    start.setHours(draft.start.hour, draft.start.minute, 0, 0);
+    if (start.getTime() > now.getTime()) return "startAfterNow";
+  }
   if (draft.end && toMinutes(draft.end) === toMinutes(draft.start))
     return "endNotAfterStart";
   return null;
