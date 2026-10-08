@@ -16,25 +16,25 @@
         margin: 0;
         padding: 0;
         background: #f6f7f5;
-        --ink: #1d6a45;
-        --running: #e06d0c;
-        --muted: #58635b;
+        --boot-ink: #1d6a45;
+        --boot-running: #e06d0c;
+        --boot-muted: #58635b;
       }
       @media (prefers-color-scheme: dark) {
         html,
         body {
           background: #111612;
-          --ink: #5fc48f;
-          --running: #ff9440;
-          --muted: #9aa69d;
+          --boot-ink: #5fc48f;
+          --boot-running: #ff9440;
+          --boot-muted: #9aa69d;
         }
       }
       html.dark,
       html.dark body {
         background: #111612;
-        --ink: #5fc48f;
-        --running: #ff9440;
-        --muted: #9aa69d;
+        --boot-ink: #5fc48f;
+        --boot-running: #ff9440;
+        --boot-muted: #9aa69d;
       }
 
       #app-boot-spinner {
@@ -54,7 +54,7 @@
           -apple-system,
           sans-serif;
         font-size: 12px;
-        color: var(--muted);
+        color: var(--boot-muted);
         margin: 0;
       }
 
@@ -94,28 +94,34 @@
         aria-hidden="true"
         xmlns="http://www.w3.org/2000/svg"
       >
-        <circle cx="32" cy="32" r="19" stroke="var(--ink)" stroke-width="6" />
+        <circle
+          cx="32"
+          cy="32"
+          r="19"
+          stroke="var(--boot-ink)"
+          stroke-width="6"
+        />
         <path
           d="M22.5 15.55A19 19 0 0 1 48.45 22.5"
-          stroke="var(--running)"
+          stroke="var(--boot-running)"
           stroke-width="6"
           stroke-linecap="round"
         />
         <path
           class="boot-hand boot-hour"
           d="M32 34L26 27"
-          stroke="var(--ink)"
+          stroke="var(--boot-ink)"
           stroke-width="5"
           stroke-linecap="round"
         />
         <path
           class="boot-hand boot-minute"
           d="M32 34L40.5 21.5"
-          stroke="var(--ink)"
+          stroke="var(--boot-ink)"
           stroke-width="5"
           stroke-linecap="round"
         />
-        <circle cx="32" cy="34" r="3.2" fill="var(--running)" />
+        <circle cx="32" cy="34" r="3.2" fill="var(--boot-running)" />
       </svg>
       <p>Laden…</p>
     </div>

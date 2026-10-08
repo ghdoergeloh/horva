@@ -29,15 +29,27 @@ function boot(name: string): string[] {
 
 describe("boot screen colors", () => {
   it.each([
-    ["--ink", "primary"],
-    ["--running", "running"],
-    ["--muted", "muted-foreground"],
+    ["--boot-ink", "primary"],
+    ["--boot-running", "running"],
+    ["--boot-muted", "muted-foreground"],
     ["background", "background"],
   ])("%s follows --%s", (bootName, tokenName) => {
     const [light, ...dark] = boot(bootName);
     expect(light).toBe(token(tokenName, false));
     expect(dark).toEqual(dark.map(() => token(tokenName, true)));
     expect(dark.length).toBe(2);
+  });
+});
+
+describe("boot screen variables", () => {
+  // The boot screen sets its variables on <html> and <body>. A name the
+  // theme also uses (`--muted`, `--running`, …) would override that
+  // token for the whole app.
+  it("uses only its own --boot-* names", () => {
+    // Every declaration in the file, in <style> blocks and style="".
+    const names = [...html.matchAll(/(--[\w-]+)\s*:/g)].map((m) => m[1]);
+    expect(names.length).toBeGreaterThan(0);
+    expect(names.filter((name) => !name?.startsWith("--boot-"))).toEqual([]);
   });
 });
 

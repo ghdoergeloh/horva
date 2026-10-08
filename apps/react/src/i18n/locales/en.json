@@ -475,7 +475,6 @@
     "deleteError": "Deleting failed. Try again?"
   },
   "projectColors": {
-    "label": "Project color",
     "presets": [
       "Indigo",
       "Amber",
