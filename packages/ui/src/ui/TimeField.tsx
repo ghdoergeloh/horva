@@ -20,6 +20,7 @@ export interface TimeFieldProps<
   errorMessage?: string | ((validation: ValidationResult) => string);
 }
 
+/** A time typed in segments (HH:MM), in Geist Mono. */
 export function TimeField<T extends TimeValue>({
   label,
   description,
@@ -31,10 +32,10 @@ export function TimeField<T extends TimeValue>({
       {...props}
       className={composeTailwindRenderProps(
         props.className,
-        "flex flex-col gap-1 font-sans",
+        "flex flex-col gap-1.5 font-sans",
       )}
     >
-      <Label>{label}</Label>
+      {label && <Label>{label}</Label>}
       <DateInput minWidth="none" />
       {description && <Description>{description}</Description>}
       <FieldError>{errorMessage}</FieldError>
