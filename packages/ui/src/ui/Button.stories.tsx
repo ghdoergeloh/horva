@@ -48,7 +48,7 @@ export const Variants: Story = {
           <Square aria-hidden />
         </Button>
         <Button {...args} variant="primary">
-          Speichern <Kbd>↵</Kbd>
+          Speichern <Kbd>Enter</Kbd>
         </Button>
       </div>
     </div>
