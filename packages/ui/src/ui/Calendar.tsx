@@ -178,7 +178,7 @@ export function CalendarGridHeader() {
 /** The line below a calendar with quick choices or a summary. */
 export function CalendarFooter({ children }: { children: ReactNode }) {
   return (
-    <div className="border-border mt-2 flex items-center justify-between gap-2 border-t pt-2">
+    <div className="border-border mt-2 flex max-w-[252px] flex-wrap items-center justify-between gap-x-2 gap-y-1 border-t pt-2">
       {children}
     </div>
   );

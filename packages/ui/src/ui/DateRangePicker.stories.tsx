@@ -1,5 +1,11 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { getLocalTimeZone, parseDate, today } from "@internationalized/date";
+import {
+  getLocalTimeZone,
+  parseDate,
+  parseDateTime,
+  toCalendarDateTime,
+  today,
+} from "@internationalized/date";
 import { I18nProvider } from "react-aria-components";
 import { expect, fn, userEvent, waitFor, within } from "storybook/test";
 
@@ -125,17 +131,20 @@ export const Keyboard: Story = {
       dialog.getByRole("button", { name: /17\. März/ }),
     ).toHaveFocus();
     await userEvent.keyboard("{Enter}");
-    // A real mouse resting over the grid can move the focus while a range
-    // is open, so the end is read from the focused day.
-    await userEvent.keyboard("{ArrowRight}{ArrowRight}");
-    const endDay = Number(document.activeElement?.textContent);
+    // React Aria moves to the next day after the start is set by keyboard,
+    // to show that a range is being picked.
     await expect(
-      await dialog.findByText(`${String(endDay - 16)} Tage`),
-    ).toBeInTheDocument();
+      dialog.getByRole("button", { name: /18\. März/ }),
+    ).toHaveFocus();
+    await userEvent.keyboard("{ArrowRight}");
+    await expect(
+      dialog.getByRole("button", { name: /19\. März/ }),
+    ).toHaveFocus();
+    await expect(dialog.getByText("3 Tage")).toBeInTheDocument();
     await userEvent.keyboard("{Enter}");
     await expect(args.onChange).toHaveBeenLastCalledWith({
       start: parseDate("2025-03-17"),
-      end: parseDate("2025-03-17").set({ day: endDay }),
+      end: parseDate("2025-03-19"),
     });
     await waitFor(() =>
       expect(within(document.body).queryByRole("dialog")).toBeNull(),
@@ -158,6 +167,99 @@ export const Keyboard: Story = {
     await waitFor(() =>
       expect(canvas.getAllByRole("spinbutton")[0]).toHaveFocus(),
     );
+  },
+  parameters: { screenshot: false },
+};
+
+/** Without the × and its divider. */
+export const NotClearable: Story = {
+  args: { defaultValue: week, isClearable: false },
+  play: async ({ canvasElement }) => {
+    await expect(
+      within(canvasElement).queryByRole("button", {
+        name: "Zeitraum entfernen",
+      }),
+    ).toBeNull();
+    await expect(canvasElement.querySelector("[data-divider]")).toBeNull();
+  },
+};
+
+/**
+ * Days outside `minValue` and `maxValue` are locked; presets and ‹ › that
+ * would leave them are disabled.
+ */
+export const Bounds: Story = {
+  args: {
+    defaultValue: week,
+    minValue: parseDate("2025-03-05"),
+    maxValue: parseDate("2025-03-25"),
+  },
+  play: async ({ args, canvasElement }) => {
+    const canvas = within(canvasElement);
+    const next = canvas.getByRole("button", { name: "Nächster Zeitraum" });
+    await userEvent.click(next);
+    await expect(args.onChange).toHaveBeenLastCalledWith({
+      start: parseDate("2025-03-17"),
+      end: parseDate("2025-03-23"),
+    });
+    // 24 to 30 March would pass the maximum.
+    await expect(next).toBeDisabled();
+    const dialog = await openCalendar(canvasElement);
+    await expect(
+      dialog.getByRole("button", { name: /26\. März/ }),
+    ).toHaveAttribute("aria-disabled", "true");
+    await expect(dialog.getByRole("button", { name: "Heute" })).toBeDisabled();
+  },
+  parameters: { screenshot: false },
+};
+
+/** With today after `maxValue`, Heute is disabled and Gestern is not. */
+export const MaxBeforeToday: Story = {
+  args: { maxValue: today(getLocalTimeZone()).subtract({ days: 1 }) },
+  play: async ({ canvasElement }) => {
+    const dialog = await openCalendar(canvasElement);
+    await expect(dialog.getByRole("button", { name: "Heute" })).toBeDisabled();
+    await expect(dialog.getByRole("button", { name: "Gestern" })).toBeEnabled();
+  },
+  parameters: { screenshot: false },
+};
+
+/** A preset on a range with times keeps the times of the value. */
+export const WithTime: Story = {
+  args: {
+    defaultValue: {
+      start: parseDateTime("2025-03-10T08:00"),
+      end: parseDateTime("2025-03-16T17:00"),
+    },
+  },
+  play: async ({ args, canvasElement }) => {
+    const dialog = await openCalendar(canvasElement);
+    await userEvent.click(dialog.getByRole("button", { name: "Gestern" }));
+    const yesterday = toCalendarDateTime(
+      today(getLocalTimeZone()).subtract({ days: 1 }),
+    );
+    await expect(args.onChange).toHaveBeenLastCalledWith({
+      start: yesterday.set({ hour: 8 }),
+      end: yesterday.set({ hour: 17 }),
+    });
+  },
+  parameters: { screenshot: false },
+};
+
+/** Preset texts 30 % longer still fit and stay readable. */
+export const LongLabels: Story = {
+  args: {
+    defaultValue: week,
+    presets: [
+      { id: "a", label: "Nur der heutige Tag", range: week },
+      { id: "b", label: "Die laufende Kalenderwoche", range: week },
+      { id: "c", label: "Die letzten dreißig Tage", range: week },
+    ],
+  },
+  play: async ({ canvasElement }) => {
+    const dialog = await openCalendar(canvasElement);
+    for (const button of dialog.getAllByRole("button", { name: /^(Nur|Die)/ }))
+      await expect(button.scrollWidth).toBeLessThanOrEqual(button.clientWidth);
   },
   parameters: { screenshot: false },
 };

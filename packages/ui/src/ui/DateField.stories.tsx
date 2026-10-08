@@ -85,3 +85,30 @@ export const Keyboard: Story = {
   },
   parameters: { screenshot: false },
 };
+
+/** Without the ×, for fields that must keep a date. */
+export const NotClearable: Story = {
+  args: { defaultValue: parseDate("2025-03-14"), isClearable: false },
+  play: async ({ canvasElement }) => {
+    await expect(
+      within(canvasElement).queryByRole("button", { name: "Datum entfernen" }),
+    ).toBeNull();
+  },
+};
+
+/** `T` does nothing when today is after the latest allowed day. */
+export const MaxBeforeToday: Story = {
+  args: {
+    // A spy of its own: the one of the meta also counts other stories.
+    onChange: fn(),
+    maxValue: today(getLocalTimeZone()).subtract({ days: 1 }),
+  },
+  play: async ({ args, canvasElement }) => {
+    const day = within(canvasElement).getAllByRole("spinbutton")[0];
+    await userEvent.tab();
+    await expect(day).toHaveFocus();
+    await userEvent.keyboard("t");
+    await expect(args.onChange).not.toHaveBeenCalled();
+  },
+  parameters: { screenshot: false },
+};

@@ -14,13 +14,16 @@ import {
 
 import { composeTailwindRenderProps } from "@horva/ui";
 
+import type { DateBounds } from "./DateField";
 import { Button } from "./Button";
 import { Calendar, CalendarFooter } from "./Calendar";
 import {
   CalendarTriggerButton,
   DateSegments,
   FieldClearButton,
+  FieldDivider,
   focusFirstSegment,
+  isDateAllowed,
   isTodayKey,
   todayLike,
 } from "./DateField";
@@ -43,6 +46,8 @@ export interface DatePickerProps<
   tomorrowLabel?: string;
   /** Text of the calendar button that removes the date. */
   removeLabel?: string;
+  /** Shows the × in the field and Entfernen below the calendar. @default true */
+  isClearable?: boolean;
 }
 
 /** Heute, Morgen and Entfernen below the calendar. */
@@ -50,36 +55,50 @@ function QuickChoices({
   todayLabel,
   tomorrowLabel,
   removeLabel,
+  isClearable,
+  bounds,
 }: {
   todayLabel: string;
   tomorrowLabel: string;
   removeLabel: string;
+  isClearable: boolean;
+  bounds: DateBounds;
 }) {
   const state = use(DatePickerStateContext);
   if (!state) return null;
-  const pick = (offsetDays: number) => {
-    state.setValue(todayLike(state.value, state.hasTime, offsetDays));
-    state.close();
-  };
-  return (
-    <CalendarFooter>
-      <Button variant="quiet" size="sm" onPress={() => pick(0)}>
-        {todayLabel}
-      </Button>
-      <Button variant="quiet" size="sm" onPress={() => pick(1)}>
-        {tomorrowLabel}
-      </Button>
+  const choice = (label: string, offsetDays: number) => {
+    const next = todayLike(state.value, state.hasTime, offsetDays);
+    return (
       <Button
         variant="quiet"
         size="sm"
-        isDisabled={state.value == null}
+        isDisabled={!isDateAllowed(next, bounds)}
         onPress={() => {
-          state.setValue(null);
+          state.setValue(next);
           state.close();
         }}
       >
-        {removeLabel}
+        {label}
       </Button>
+    );
+  };
+  return (
+    <CalendarFooter>
+      {choice(todayLabel, 0)}
+      {choice(tomorrowLabel, 1)}
+      {isClearable && (
+        <Button
+          variant="quiet"
+          size="sm"
+          isDisabled={state.value == null}
+          onPress={() => {
+            state.setValue(null);
+            state.close();
+          }}
+        >
+          {removeLabel}
+        </Button>
+      )}
     </CalendarFooter>
   );
 }
@@ -88,11 +107,15 @@ function QuickChoices({
 function PickerField({
   clearLabel,
   calendarLabel,
+  isClearable,
+  bounds,
   isDisabled,
   isReadOnly,
 }: {
   clearLabel: string;
   calendarLabel: string;
+  isClearable: boolean;
+  bounds: DateBounds;
   isDisabled: boolean;
   isReadOnly: boolean;
 }) {
@@ -108,19 +131,23 @@ function PickerField({
           if (!state || !isEditable || !isTodayKey(event)) return;
           event.preventDefault();
           event.stopPropagation();
-          state.setValue(todayLike(state.value, state.hasTime));
+          const next = todayLike(state.value, state.hasTime);
+          if (isDateAllowed(next, bounds)) state.setValue(next);
         }}
         className="w-auto min-w-[208px] cursor-text gap-2 ps-2.5 pe-1 disabled:cursor-default"
       >
         <DateSegments />
-        {state?.value != null && isEditable && (
-          <FieldClearButton
-            aria-label={clearLabel}
-            onPress={() => {
-              focusFirstSegment(ref.current);
-              state.setValue(null);
-            }}
-          />
+        {isClearable && state?.value != null && isEditable && (
+          <>
+            <FieldClearButton
+              aria-label={clearLabel}
+              onPress={() => {
+                focusFirstSegment(ref.current);
+                state.setValue(null);
+              }}
+            />
+            <FieldDivider />
+          </>
         )}
         <CalendarTriggerButton aria-label={calendarLabel} />
       </FieldGroup>
@@ -142,10 +169,16 @@ export function DatePicker<T extends DateValue>({
   todayLabel = "Heute",
   tomorrowLabel = "Morgen",
   removeLabel = "Entfernen",
+  isClearable = true,
   firstDayOfWeek = "mon",
   shouldForceLeadingZeros = true,
   ...props
 }: DatePickerProps<T>) {
+  const bounds: DateBounds = {
+    minValue: props.minValue,
+    maxValue: props.maxValue,
+    isDateUnavailable: props.isDateUnavailable,
+  };
   return (
     <AriaDatePicker
       {...props}
@@ -162,6 +195,8 @@ export function DatePicker<T extends DateValue>({
           <PickerField
             clearLabel={clearLabel}
             calendarLabel={calendarLabel}
+            isClearable={isClearable}
+            bounds={bounds}
             isDisabled={isDisabled}
             isReadOnly={isReadOnly}
           />
@@ -174,6 +209,8 @@ export function DatePicker<T extends DateValue>({
                 todayLabel={todayLabel}
                 tomorrowLabel={tomorrowLabel}
                 removeLabel={removeLabel}
+                isClearable={isClearable}
+                bounds={bounds}
               />
             </Dialog>
           </Popover>

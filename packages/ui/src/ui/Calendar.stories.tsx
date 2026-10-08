@@ -74,7 +74,13 @@ export const Keyboard: Story = {
     const canvas = within(canvasElement);
     // Weeks start on Monday.
     await expect(canvasElement.querySelector("th")).toHaveTextContent("Mo");
-    await userEvent.click(canvas.getByRole("button", { name: /14\. März/ }));
+    // Tab passes the month buttons and lands on the selected day.
+    await userEvent.tab();
+    await userEvent.tab();
+    await userEvent.tab();
+    await expect(
+      canvas.getByRole("button", { name: /14\. März/ }),
+    ).toHaveFocus();
     await userEvent.keyboard("{ArrowRight}{ArrowDown}");
     await expect(
       canvas.getByRole("button", { name: /22\. März/ }),
@@ -85,6 +91,9 @@ export const Keyboard: Story = {
     await expect(args.onChange).toHaveBeenLastCalledWith(
       parseDate("2025-04-22"),
     );
+    // Leaves the calendar, so unmounting it does not move focus.
+    await userEvent.tab();
+    await expect(canvasElement.contains(document.activeElement)).toBe(false);
   },
   parameters: { screenshot: false },
 };

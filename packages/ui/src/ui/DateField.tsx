@@ -12,8 +12,9 @@ import { use, useRef } from "react";
 import {
   CalendarDateTime,
   getLocalTimeZone,
-  today,
+  toCalendarDate,
   toCalendarDateTime,
+  today,
   ZonedDateTime,
 } from "@internationalized/date";
 import { CalendarIcon, X } from "lucide-react";
@@ -128,23 +129,44 @@ export function FieldClearButton(
   );
 }
 
-/** The calendar button at the end of a picker field, after a divider. */
+/** The line between the × and the calendar button. */
+export function FieldDivider() {
+  return (
+    <span aria-hidden data-divider className="bg-border h-5 w-px shrink-0" />
+  );
+}
+
+/** The calendar button at the end of a picker field. */
 export function CalendarTriggerButton(
   props: Omit<ButtonProps, "children" | "className">,
 ) {
   return (
-    <>
-      <span aria-hidden className="bg-border h-5 w-px shrink-0" />
-      <RACButton
-        {...props}
-        className={(renderProps) =>
-          fieldIconButton({ ...renderProps, kind: "trigger" })
-        }
-      >
-        <CalendarIcon aria-hidden strokeWidth={2} />
-      </RACButton>
-    </>
+    <RACButton
+      {...props}
+      className={(renderProps) =>
+        fieldIconButton({ ...renderProps, kind: "trigger" })
+      }
+    >
+      <CalendarIcon aria-hidden strokeWidth={2} />
+    </RACButton>
   );
+}
+
+/** The limits a picked day must respect. */
+export interface DateBounds {
+  minValue?: DateValue | null;
+  maxValue?: DateValue | null;
+  isDateUnavailable?: (date: DateValue) => boolean;
+}
+
+/** True when `date` lies within the bounds and is not unavailable. */
+export function isDateAllowed(date: DateValue, bounds: DateBounds): boolean {
+  const day = toCalendarDate(date);
+  if (bounds.minValue && day.compare(toCalendarDate(bounds.minValue)) < 0)
+    return false;
+  if (bounds.maxValue && day.compare(toCalendarDate(bounds.maxValue)) > 0)
+    return false;
+  return !bounds.isDateUnavailable?.(date);
 }
 
 /**
@@ -200,16 +222,22 @@ export interface DateFieldProps<
   errorMessage?: string | ((validation: ValidationResult) => string);
   /** Accessible name of the × that removes the date. */
   clearLabel?: string;
+  /** Shows the × that removes the date. @default true */
+  isClearable?: boolean;
 }
 
 /** The frame with segments and ×; reads the state of the date field. */
 function DateFieldControl({
   clearLabel,
+  isClearable,
+  bounds,
   isInvalid,
   isDisabled,
   isReadOnly,
 }: {
   clearLabel: string;
+  isClearable: boolean;
+  bounds: DateBounds;
   isInvalid: boolean;
   isDisabled: boolean;
   isReadOnly: boolean;
@@ -225,7 +253,8 @@ function DateFieldControl({
         if (!state || isReadOnly || isDisabled || !isTodayKey(event)) return;
         event.preventDefault();
         event.stopPropagation();
-        state.setValue(todayLike(state.value, state.granularity !== "day"));
+        const next = todayLike(state.value, state.granularity !== "day");
+        if (isDateAllowed(next, bounds)) state.setValue(next);
       }}
       className={fieldGroupStyles({
         isInvalid,
@@ -237,7 +266,7 @@ function DateFieldControl({
       })}
     >
       <DateSegments />
-      {hasValue && !isDisabled && !isReadOnly && (
+      {isClearable && hasValue && !isDisabled && !isReadOnly && (
         <FieldClearButton
           aria-label={clearLabel}
           onPress={() => {
@@ -256,6 +285,7 @@ export function DateField<T extends DateValue>({
   description,
   errorMessage,
   clearLabel = "Datum entfernen",
+  isClearable = true,
   shouldForceLeadingZeros = true,
   ...props
 }: DateFieldProps<T>) {
@@ -273,6 +303,8 @@ export function DateField<T extends DateValue>({
           {label && <Label>{label}</Label>}
           <DateFieldControl
             clearLabel={clearLabel}
+            isClearable={isClearable}
+            bounds={{ minValue: props.minValue, maxValue: props.maxValue }}
             isInvalid={isInvalid}
             isDisabled={isDisabled}
             isReadOnly={isReadOnly}

@@ -27,14 +27,18 @@ import {
 
 import { composeTailwindRenderProps, focusRing } from "@horva/ui";
 
+import type { DateBounds } from "./DateField";
 import { tv } from "../lib/tw";
 import { Button } from "./Button";
 import { CalendarFooter } from "./Calendar";
 import {
   CalendarTriggerButton,
+  dateLike,
   DateSegments,
   FieldClearButton,
+  FieldDivider,
   focusFirstSegment,
+  isDateAllowed,
   WithoutPickerButton,
 } from "./DateField";
 import { Description, FieldError, FieldGroup, Label } from "./Field";
@@ -157,6 +161,48 @@ export function shiftRange<T extends DateValue>(
   };
 }
 
+/** Bounds of a range picker; unavailable days may sit inside a range only when non-contiguous ranges are allowed. */
+export interface RangeBounds extends DateBounds {
+  allowsNonContiguousRanges?: boolean;
+}
+
+/** True when both ends, and every day between them, respect the bounds. */
+export function isRangeAllowed(range: Range, bounds: RangeBounds): boolean {
+  const { isDateUnavailable, ...limits } = bounds;
+  if (!isDateAllowed(range.start, limits) || !isDateAllowed(range.end, limits))
+    return false;
+  if (!isDateUnavailable) return true;
+  if (bounds.allowsNonContiguousRanges)
+    return !isDateUnavailable(range.start) && !isDateUnavailable(range.end);
+  const end = toCalendarDate(range.end);
+  for (
+    let day = toCalendarDate(range.start);
+    day.compare(end) <= 0;
+    day = day.add({ days: 1 })
+  ) {
+    if (isDateUnavailable(day)) return false;
+  }
+  return true;
+}
+
+/**
+ * The days of `range` in the type of `value`: dates stay dates, date-times
+ * keep the times of the value, or midnight without a value.
+ */
+export function rangeLike(
+  range: Range,
+  value:
+    | { start?: DateValue | null; end?: DateValue | null }
+    | null
+    | undefined,
+  withTime: boolean,
+): Range {
+  return {
+    start: dateLike(range.start, value?.start, withTime),
+    end: dateLike(range.end, value?.end, withTime),
+  };
+}
+
 const presetStyles = tv({
   extend: focusRing,
   base: "shrink-0 cursor-default border-0 font-sans text-small text-foreground transition-colors [-webkit-tap-highlight-color:transparent] hover:bg-accent pressed:bg-accent",
@@ -169,6 +215,9 @@ const presetStyles = tv({
     isActive: {
       true: "bg-accent font-semibold text-accent-foreground",
       false: "bg-transparent",
+    },
+    isDisabled: {
+      true: "opacity-45 hover:bg-transparent",
     },
   },
 });
@@ -190,9 +239,11 @@ type PresetLayout = "auto" | "list" | "chips";
 function PresetItem({
   preset,
   layout,
+  bounds,
 }: {
   preset: DateRangePreset;
   layout: PresetLayout;
+  bounds: RangeBounds;
 }) {
   const state = use(DateRangePickerStateContext);
   if (!state) return null;
@@ -201,8 +252,9 @@ function PresetItem({
   const isActive =
     start != null &&
     end != null &&
-    preset.range.start.compare(start) === 0 &&
-    preset.range.end.compare(end) === 0;
+    toCalendarDate(preset.range.start).compare(toCalendarDate(start)) === 0 &&
+    toCalendarDate(preset.range.end).compare(toCalendarDate(end)) === 0;
+  const next = rangeLike(preset.range, state.value, state.hasTime);
 
   return (
     <RACButton
@@ -210,8 +262,9 @@ function PresetItem({
         presetStyles({ ...renderProps, layout, isActive })
       }
       aria-pressed={isActive}
+      isDisabled={!isRangeAllowed(next, bounds)}
       onPress={() => {
-        state.setValue(preset.range);
+        state.setValue(next);
         state.close();
       }}
     >
@@ -238,10 +291,12 @@ function RangeStepper({
   previousLabel,
   nextLabel,
   isDisabled,
+  bounds,
 }: {
   previousLabel: string;
   nextLabel: string;
   isDisabled: boolean;
+  bounds: RangeBounds;
 }) {
   const state = use(DateRangePickerStateContext);
   const value = state?.value;
@@ -249,25 +304,30 @@ function RangeStepper({
     value?.start != null && value.end != null
       ? { start: value.start, end: value.end }
       : null;
-  const step = (direction: 1 | -1) => {
-    if (state && range) state.setValue(shiftRange(range, direction));
-  };
+  const previous = range && shiftRange(range, -1);
+  const next = range && shiftRange(range, 1);
   return (
     <WithoutPickerButton>
       <div className="flex gap-0.5">
         <Button
           variant="quiet"
           aria-label={previousLabel}
-          isDisabled={isDisabled || !range}
-          onPress={() => step(-1)}
+          isDisabled={
+            isDisabled || !previous || !isRangeAllowed(previous, bounds)
+          }
+          onPress={() => {
+            if (previous) state?.setValue(previous);
+          }}
         >
           <ChevronLeft aria-hidden />
         </Button>
         <Button
           variant="quiet"
           aria-label={nextLabel}
-          isDisabled={isDisabled || !range}
-          onPress={() => step(1)}
+          isDisabled={isDisabled || !next || !isRangeAllowed(next, bounds)}
+          onPress={() => {
+            if (next) state?.setValue(next);
+          }}
         >
           <ChevronRight aria-hidden />
         </Button>
@@ -279,10 +339,12 @@ function RangeStepper({
 function RangeField({
   clearLabel,
   calendarLabel,
+  isClearable,
   isEditable,
 }: {
   clearLabel: string;
   calendarLabel: string;
+  isClearable: boolean;
   isEditable: boolean;
 }) {
   const state = use(DateRangePickerStateContext);
@@ -291,8 +353,8 @@ function RangeField({
   return (
     // FieldGroup takes no ref; the wrapper finds the first segment.
     <div ref={ref} className="contents">
-      <FieldGroup className="w-auto min-w-[208px] cursor-text gap-2 ps-2.5 pe-1 disabled:cursor-default">
-        <div className="flex flex-1 items-center">
+      <FieldGroup className="w-auto min-w-0 shrink cursor-text gap-2 ps-2.5 pe-1 disabled:cursor-default">
+        <div className="flex min-w-0 flex-1 [scrollbar-width:none] items-center overflow-x-auto">
           <DateSegments slot="start" className="flex-none" />
           <span
             aria-hidden="true"
@@ -302,14 +364,17 @@ function RangeField({
           </span>
           <DateSegments slot="end" className="flex-none" />
         </div>
-        {hasValue && isEditable && (
-          <FieldClearButton
-            aria-label={clearLabel}
-            onPress={() => {
-              focusFirstSegment(ref.current);
-              state.setValue(null);
-            }}
-          />
+        {isClearable && hasValue && isEditable && (
+          <>
+            <FieldClearButton
+              aria-label={clearLabel}
+              onPress={() => {
+                focusFirstSegment(ref.current);
+                state.setValue(null);
+              }}
+            />
+            <FieldDivider />
+          </>
         )}
         <CalendarTriggerButton aria-label={calendarLabel} />
       </FieldGroup>
@@ -338,6 +403,8 @@ export interface DateRangePickerProps<
   showStepper?: boolean;
   /** Accessible name of the × in the field. */
   clearLabel?: string;
+  /** Shows the × that removes the range. @default true */
+  isClearable?: boolean;
   /** Accessible name of the calendar button. */
   calendarLabel?: string;
   /** Accessible name of ‹. */
@@ -363,6 +430,7 @@ export function DateRangePicker<T extends DateValue>({
   presetLayout = "auto",
   showStepper = true,
   clearLabel = "Zeitraum entfernen",
+  isClearable = true,
   calendarLabel = "Kalender öffnen",
   previousRangeLabel = "Vorheriger Zeitraum",
   nextRangeLabel = "Nächster Zeitraum",
@@ -372,6 +440,13 @@ export function DateRangePicker<T extends DateValue>({
   ...props
 }: DateRangePickerProps<T>) {
   const shownPresets = presets ?? defaultDateRangePresets();
+  const unavailable = props.isDateUnavailable;
+  const bounds: RangeBounds = {
+    minValue: props.minValue,
+    maxValue: props.maxValue,
+    isDateUnavailable: unavailable && ((date) => unavailable(date, null)),
+    allowsNonContiguousRanges: props.allowsNonContiguousRanges,
+  };
   return (
     <AriaDateRangePicker
       {...props}
@@ -385,10 +460,11 @@ export function DateRangePicker<T extends DateValue>({
       {({ isDisabled, isReadOnly }) => (
         <>
           {label && <Label>{label}</Label>}
-          <div className="flex flex-wrap items-center gap-2">
+          <div className="flex items-center gap-2">
             <RangeField
               clearLabel={clearLabel}
               calendarLabel={calendarLabel}
+              isClearable={isClearable}
               isEditable={!isDisabled && !isReadOnly}
             />
             {showStepper && (
@@ -396,6 +472,7 @@ export function DateRangePicker<T extends DateValue>({
                 previousLabel={previousRangeLabel}
                 nextLabel={nextRangeLabel}
                 isDisabled={isDisabled || isReadOnly}
+                bounds={bounds}
               />
             )}
           </div>
@@ -418,6 +495,7 @@ export function DateRangePicker<T extends DateValue>({
                       key={preset.id}
                       preset={preset}
                       layout={presetLayout}
+                      bounds={bounds}
                     />
                   ))}
                 </div>
