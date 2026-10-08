@@ -1,29 +1,128 @@
-import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { Play, Plus, X } from "lucide-react";
+import type { TFunction } from "i18next";
+import { useId, useMemo, useState } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { X } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
+import type { TaskPickerKey, TaskPickerLabels } from "@horva/ui/TaskPicker";
 import { Button } from "@horva/ui/Button";
-import { SearchField } from "@horva/ui/SearchField";
-import { TextField } from "@horva/ui/TextField";
+import { Dialog } from "@horva/ui/Dialog";
+import { Modal } from "@horva/ui/Modal";
+import { TaskPickerPanel } from "@horva/ui/TaskPicker";
 
+import {
+  formatMinutesWithFormat,
+  useTimeFormat,
+} from "#/contexts/SettingsContext.js";
 import { client } from "#/lib/orpc.js";
+import { calcTotalMinutes } from "#/lib/taskUtils.js";
 
 interface StartTaskDialogProps {
+  isOpen: boolean;
+  /** "Switch task" instead of "Start work". */
   switchMode?: boolean;
+  /** The task that runs now; the picker marks it. */
+  currentTaskId?: number | null;
   onClose: () => void;
   onStarted: () => Promise<void>;
 }
 
+/** The texts of the task picker in the language of the app. */
+export function taskPickerLabels(t: TFunction): Partial<TaskPickerLabels> {
+  return {
+    field: t("taskPicker.field"),
+    noTask: t("taskPicker.noTask"),
+    unknownTask: t("taskPicker.unknownTask"),
+    dialog: t("taskPicker.dialog"),
+    search: t("taskPicker.search"),
+    list: t("taskPicker.list"),
+    noMatchesCreate: t("taskPicker.noMatchesCreate"),
+    noMatches: t("taskPicker.noMatches"),
+    noTasks: t("taskPicker.noTasks"),
+    createIn: t("taskPicker.createIn"),
+    createTask: (title, project) =>
+      t("taskPicker.createTask", { title, project }),
+    changeProject: (project) => t("taskPicker.changeProject", { project }),
+    createFailed: t("taskPicker.createFailed"),
+    projectPending: t("taskPicker.projectPending"),
+    createProjectFailed: t("taskPicker.createProjectFailed"),
+    back: t("taskPicker.back"),
+    projectFor: t("taskPicker.projectFor"),
+    projectSearch: t("taskPicker.projectSearch"),
+    projectList: t("taskPicker.projectList"),
+    noProjects: t("taskPicker.noProjects"),
+    newProject: t("taskPicker.newProject"),
+    keyMove: t("taskPicker.keyMove"),
+    keyPick: t("taskPicker.keyPick"),
+    keyCreate: t("taskPicker.keyCreate"),
+    keyClose: t("taskPicker.keyClose"),
+  };
+}
+
+/**
+ * The dialog "Start work" / "Switch task": the task picker with all open
+ * tasks, grouped by project. Picking a task starts it; a new task is
+ * created in the chosen project and started at once. The dialog gives the
+ * focus back to the button that opened it.
+ */
 export function StartTaskDialog({
+  isOpen,
   switchMode = false,
+  currentTaskId = null,
   onClose,
   onStarted,
 }: StartTaskDialogProps) {
   const { t } = useTranslation();
-  const [search, setSearch] = useState("");
-  const [newTaskName, setNewTaskName] = useState("");
-  const [creating, setCreating] = useState(false);
+  const titleId = useId();
+
+  return (
+    <Modal
+      isDismissable
+      isOpen={isOpen}
+      onOpenChange={(open) => {
+        if (!open) onClose();
+      }}
+    >
+      <Dialog aria-labelledby={titleId} className="p-0">
+        <div className="border-border flex items-center justify-between gap-2 border-b py-2 ps-4 pe-2">
+          <h2 id={titleId} className="text-heading text-foreground">
+            {switchMode
+              ? t("startTaskDialog.titleSwitch")
+              : t("startTaskDialog.titleStart")}
+          </h2>
+          <Button
+            variant="quiet"
+            size="sm"
+            onPress={onClose}
+            aria-label={t("startTaskDialog.close")}
+          >
+            <X aria-hidden />
+          </Button>
+        </div>
+        <StartTaskPanel
+          currentTaskId={switchMode ? currentTaskId : null}
+          onStarted={onStarted}
+          onUnchanged={onClose}
+        />
+      </Dialog>
+    </Modal>
+  );
+}
+
+/** The picker inside the dialog, with the data it needs. */
+function StartTaskPanel({
+  currentTaskId,
+  onStarted,
+  onUnchanged,
+}: {
+  currentTaskId: number | null;
+  onStarted: () => Promise<void>;
+  onUnchanged: () => void;
+}) {
+  const { t } = useTranslation();
+  const timeFormat = useTimeFormat();
+  const queryClient = useQueryClient();
+  const [failed, setFailed] = useState(false);
 
   const { data: tasks = [] } = useQuery({
     queryKey: ["tasks", "open"],
@@ -33,131 +132,89 @@ export function StartTaskDialog({
     },
   });
 
-  const filtered = search
-    ? tasks.filter((t) => t.name.toLowerCase().includes(search.toLowerCase()))
-    : tasks.slice(0, 10);
+  const { data: projects = [] } = useQuery({
+    queryKey: ["projects"],
+    queryFn: async () => {
+      const res = await client.project.list({});
+      return res.projects;
+    },
+  });
 
-  async function startWithTask(taskId: number) {
-    await client.slot.start({ taskId });
-    await onStarted();
-  }
+  const pickerTasks = useMemo(
+    () =>
+      tasks.map((task) => ({
+        id: task.id,
+        name: task.name,
+        projectId: task.projectId,
+        trackedMinutes: calcTotalMinutes(task.slots),
+      })),
+    [tasks],
+  );
 
-  async function startWithoutTask() {
-    await client.slot.start({});
-    await onStarted();
-  }
+  // The project of the task that was started last.
+  const lastProjectId = useMemo(() => {
+    let latest: { at: number; projectId: number } | null = null;
+    for (const task of tasks)
+      for (const slot of task.slots) {
+        const at = new Date(slot.startedAt).getTime();
+        if (!latest || at > latest.at)
+          latest = { at, projectId: task.projectId };
+      }
+    return latest?.projectId ?? null;
+  }, [tasks]);
 
-  async function createAndStart() {
-    if (!newTaskName.trim()) return;
-    setCreating(true);
+  async function start(value: TaskPickerKey | null) {
+    if (value !== null && value === currentTaskId) {
+      onUnchanged();
+      return;
+    }
+    setFailed(false);
     try {
-      const { task } = await client.task.create({ name: newTaskName.trim() });
-      await startWithTask(task.id);
-    } finally {
-      setCreating(false);
+      await client.slot.start(value === null ? {} : { taskId: Number(value) });
+      void queryClient.invalidateQueries({ queryKey: ["tasks"] });
+      void queryClient.invalidateQueries({ queryKey: ["log"] });
+      await onStarted();
+    } catch {
+      setFailed(true);
     }
   }
 
+  async function createTask(name: string, projectId: TaskPickerKey) {
+    const { task } = await client.task.create({
+      name,
+      projectId: Number(projectId),
+    });
+    return task.id;
+  }
+
+  async function createProject(name: string) {
+    const trimmed = name.trim();
+    if (!trimmed) return;
+    const { project } = await client.project.create({ name: trimmed });
+    await queryClient.invalidateQueries({ queryKey: ["projects"] });
+    return project.id;
+  }
+
   return (
-    <div className="bg-foreground/40 fixed inset-0 z-50 flex items-center justify-center">
-      <div className="bg-card w-full max-w-md rounded-xl shadow-lg">
-        {/* Header */}
-        <div className="border-border flex items-center justify-between border-b px-4 py-3">
-          <h2 className="text-foreground text-sm font-semibold">
-            {switchMode
-              ? t("startTaskDialog.titleSwitch")
-              : t("startTaskDialog.titleStart")}
-          </h2>
-          <Button
-            variant="quiet"
-            onPress={onClose}
-            className="text-muted-foreground hover:bg-muted hover:text-foreground/80 rounded p-1"
-            aria-label={t("startTaskDialog.close")}
-          >
-            <X className="h-4 w-4" />
-          </Button>
-        </div>
-
-        {/* Search */}
-        <div className="border-border border-b px-4 py-3">
-          <SearchField
-            // oxlint-disable-next-line jsx-a11y/no-autofocus -- The dialog opens on a user action. Focus goes to the search.
-            autoFocus
-            value={search}
-            onChange={setSearch}
-            placeholder={t("startTaskDialog.searchPlaceholder")}
-            className="w-full"
-          />
-        </div>
-
-        {/* Task list */}
-        <div className="max-h-64 overflow-y-auto py-2">
-          {filtered.map((task) => (
-            <Button
-              key={task.id}
-              variant="quiet"
-              onPress={() => void startWithTask(task.id)}
-              className="hover:bg-background flex w-full items-center gap-3 px-4 py-2 text-left"
-            >
-              <div
-                className="h-2.5 w-2.5 flex-shrink-0 rounded-full"
-                style={{ backgroundColor: task.project.color }}
-              />
-              <span className="text-foreground flex-1 truncate text-sm">
-                {task.name}
-              </span>
-              <span className="text-muted-foreground flex-shrink-0 text-xs">
-                {task.project.name}
-              </span>
-            </Button>
-          ))}
-          {filtered.length === 0 && search && (
-            <p className="text-muted-foreground px-4 py-3 text-sm">
-              {t("startTaskDialog.noTaskFound")}
-            </p>
-          )}
-        </div>
-
-        {/* Create new task */}
-        <div className="border-border border-t px-4 py-3">
-          <div className="flex items-center gap-2">
-            <div className="border-border flex flex-1 items-center gap-2 rounded-lg border px-3 py-2">
-              <Plus className="text-muted-foreground h-4 w-4 flex-shrink-0" />
-              <TextField
-                value={newTaskName}
-                onChange={setNewTaskName}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") void createAndStart();
-                }}
-                placeholder={t("startTaskDialog.createPlaceholder")}
-                className="flex-1 text-sm"
-              />
-            </div>
-            <Button
-              variant="primary"
-              onPress={() => void createAndStart()}
-              isDisabled={!newTaskName.trim() || creating}
-              className="px-3 py-2 text-xs font-medium"
-            >
-              <span className="inline-flex items-center gap-1.5">
-                <Play className="h-3.5 w-3.5" />
-                {t("startTaskDialog.start")}
-              </span>
-            </Button>
-          </div>
-        </div>
-
-        {/* Start without task */}
-        <div className="border-border border-t px-4 py-3">
-          <Button
-            variant="secondary"
-            onPress={() => void startWithoutTask()}
-            className="text-muted-foreground hover:bg-background hover:text-foreground/90 w-full py-2 text-sm"
-          >
-            {t("startTaskDialog.startWithoutTask")}
-          </Button>
-        </div>
-      </div>
-    </div>
+    <>
+      <TaskPickerPanel
+        projects={projects}
+        tasks={pickerTasks}
+        value={currentTaskId}
+        onChange={(value) => void start(value)}
+        onCreateTask={createTask}
+        onCreateProject={createProject}
+        lastProjectId={lastProjectId}
+        formatDuration={(minutes) =>
+          formatMinutesWithFormat(minutes, timeFormat)
+        }
+        labels={taskPickerLabels(t)}
+      />
+      {failed && (
+        <p role="alert" className="text-destructive text-small px-4 pb-3">
+          {t("startTaskDialog.failed")}
+        </p>
+      )}
+    </>
   );
 }
