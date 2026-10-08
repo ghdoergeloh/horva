@@ -25,3 +25,19 @@ describe("contract", () => {
     expect(missing).toEqual([]);
   });
 });
+
+describe("log.workPeriods", () => {
+  const input = contract.log.workPeriods["~orpc"].inputSchema;
+
+  it("accepts a range", () => {
+    const range = { from: new Date(2026, 9, 5), to: new Date(2026, 9, 11) };
+    expect(input?.["~standard"].validate(range)).toMatchObject({
+      value: range,
+    });
+  });
+
+  it("rejects a range that ends before it starts", () => {
+    const range = { from: new Date(2026, 9, 11), to: new Date(2026, 9, 5) };
+    expect(input?.["~standard"].validate(range)).toHaveProperty("issues");
+  });
+});
