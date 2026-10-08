@@ -13,232 +13,37 @@ import {
 } from "@internationalized/date";
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
-import { ChevronDown, ChevronRight, Upload, X } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
 import type { DateRangePreset } from "@horva/ui/DateRangePicker";
-import { Button } from "@horva/ui/Button";
+import type { StatTile } from "@horva/ui/StatTiles";
 import { DateRangePicker } from "@horva/ui/DateRangePicker";
+import { HoursPerDay } from "@horva/ui/HoursPerDay";
 import { Loader } from "@horva/ui/Logo";
+import { ProjectBreakdown } from "@horva/ui/ProjectBreakdown";
+import { ProjectDonut } from "@horva/ui/ProjectDonut";
 import { Select, SelectItem } from "@horva/ui/Select";
+import { StatTiles } from "@horva/ui/StatTiles";
 
-import { FormattedMinutes } from "#/components/FormattedMinutes.js";
+import type { TimeFormat } from "#/contexts/SettingsContext.js";
 import { MocoSyncModal } from "#/components/MocoSyncModal.js";
-import { ProjectPie } from "#/components/ProjectPie.js";
 import {
   formatMinutesWithFormat,
   useTimeFormat,
 } from "#/contexts/SettingsContext.js";
-import i18n from "#/i18n/index.js";
-import { buildArcPath, lighten } from "#/lib/chartUtils.js";
 import { client } from "#/lib/orpc.js";
+import {
+  breakdownProjects,
+  chartProjects,
+  dayEntries,
+  daysWithTime,
+  donutProjects,
+  sortEntries,
+  taskIdsWithLabel,
+} from "#/lib/reportData.js";
 
-type SummaryEntry = Awaited<
-  ReturnType<typeof client.log.summary>
->["summary"][number];
-
-function BarChart({ data }: { data: { label: string; minutes: number }[] }) {
-  const max = Math.max(...data.map((d) => d.minutes), 1);
-  return (
-    <div className="space-y-2">
-      {data.map((item, i) => (
-        <div key={i} className="flex items-center gap-3">
-          <span className="text-muted-foreground w-16 flex-shrink-0 text-right text-xs">
-            {item.label}
-          </span>
-          <div className="bg-muted h-5 flex-1 rounded">
-            <div
-              className="bg-primary/80 h-full rounded"
-              style={{ width: `${String((item.minutes / max) * 100)}%` }}
-            />
-          </div>
-          <span className="text-foreground/80 w-12 flex-shrink-0 text-right text-xs">
-            <FormattedMinutes minutes={item.minutes} />
-          </span>
-        </div>
-      ))}
-    </div>
-  );
-}
-
-function ProjectRow({ entry }: { entry: SummaryEntry }) {
-  const [expanded, setExpanded] = useState(false);
-
-  return (
-    <div className="border-border rounded-lg border">
-      <Button
-        variant="quiet"
-        onPress={() => setExpanded((e) => !e)}
-        className="hover:bg-background flex w-full items-center gap-3 px-4 py-3"
-        aria-label={entry.projectName}
-      >
-        {expanded ? (
-          <ChevronDown className="text-muted-foreground h-4 w-4" />
-        ) : (
-          <ChevronRight className="text-muted-foreground h-4 w-4" />
-        )}
-        <div
-          className="h-3 w-3 flex-shrink-0 rounded-sm"
-          style={{ backgroundColor: entry.projectColor }}
-        />
-        <span className="text-foreground flex-1 text-left text-sm font-medium">
-          {entry.projectName}
-        </span>
-        <span className="text-foreground text-sm font-semibold">
-          <FormattedMinutes minutes={entry.totalMinutes} />
-        </span>
-      </Button>
-
-      {expanded && (
-        <div className="border-border border-t px-4 py-3">
-          <div className="space-y-1.5">
-            {entry.tasks.map((task) => (
-              <div key={task.taskId} className="flex items-center gap-2 pl-7">
-                <span className="text-foreground/90 flex-1 text-sm">
-                  {task.taskName}
-                </span>
-                <span className="text-muted-foreground text-sm">
-                  <FormattedMinutes minutes={task.minutes} />
-                </span>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-    </div>
-  );
-}
-
-// Pie chart slices split by label (with/without)
-interface SplitSlice {
-  projectId: number | null;
-  projectName: string;
-  colorWith: string; // project color
-  colorWithout: string; // lighter version
-  minutesWith: number;
-  minutesWithout: number;
-}
-
-function SplitProjectPie({
-  slices,
-  size = 200,
-}: {
-  slices: SplitSlice[];
-  size?: number;
-}) {
-  const { t } = useTranslation();
-  const total = slices.reduce(
-    (s, p) => s + p.minutesWith + p.minutesWithout,
-    0,
-  );
-  if (total === 0)
-    return (
-      <div className="text-muted-foreground flex h-48 items-center justify-center text-sm">
-        {t("reports.noDataShort")}
-      </div>
-    );
-
-  const cx = size / 2;
-  const cy = size / 2;
-  const r = (size / 2) * 0.85;
-  let angle = -Math.PI / 2;
-
-  const paths: {
-    d: string;
-    fill: string;
-    key: string;
-  }[] = [];
-
-  for (const slice of slices) {
-    for (const [minutes, fill] of [
-      [slice.minutesWith, slice.colorWith],
-      [slice.minutesWithout, lighten(slice.colorWith)],
-    ] as [number, string][]) {
-      if (minutes <= 0) continue;
-      const sweep = (minutes / total) * 2 * Math.PI;
-      const d = buildArcPath(cx, cy, r, angle, angle + sweep);
-      paths.push({ d, fill, key: `${slice.projectId ?? "x"}-${fill}` });
-      angle += sweep;
-    }
-  }
-
-  const isSinglePath = paths.length === 1;
-
-  return (
-    <div className="flex items-start gap-6">
-      <svg width={size} height={size} className="flex-shrink-0">
-        {isSinglePath ? (
-          <circle
-            cx={cx}
-            cy={cy}
-            r={r}
-            fill={paths[0]?.fill ?? ""}
-            stroke="white"
-            strokeWidth={2}
-          />
-        ) : (
-          paths.map((p) => (
-            <path
-              key={p.key}
-              d={p.d}
-              fill={p.fill}
-              stroke="white"
-              strokeWidth={2}
-            />
-          ))
-        )}
-      </svg>
-      <div className="flex-1 space-y-2 pt-2">
-        {slices.map((slice) => (
-          <div key={slice.projectId ?? "no_task"} className="space-y-0.5">
-            <div className="flex items-center gap-2">
-              <div
-                className="h-3 w-3 flex-shrink-0 rounded-sm"
-                style={{ backgroundColor: slice.colorWith }}
-              />
-              <span className="text-foreground/90 flex-1 text-sm font-medium">
-                {slice.projectName}
-              </span>
-              <span className="text-foreground text-sm">
-                <FormattedMinutes
-                  minutes={slice.minutesWith + slice.minutesWithout}
-                />
-              </span>
-            </div>
-            {slice.minutesWith > 0 && (
-              <div className="flex items-center gap-2 pl-5">
-                <div
-                  className="h-2 w-2 flex-shrink-0 rounded-sm"
-                  style={{ backgroundColor: slice.colorWith }}
-                />
-                <span className="text-muted-foreground flex-1 text-xs">
-                  {t("reports.withLabel")}
-                </span>
-                <span className="text-foreground/90 text-xs">
-                  <FormattedMinutes minutes={slice.minutesWith} />
-                </span>
-              </div>
-            )}
-            {slice.minutesWithout > 0 && (
-              <div className="flex items-center gap-2 pl-5">
-                <div
-                  className="h-2 w-2 flex-shrink-0 rounded-sm"
-                  style={{ backgroundColor: lighten(slice.colorWith) }}
-                />
-                <span className="text-muted-foreground flex-1 text-xs">
-                  {t("reports.withoutLabel")}
-                </span>
-                <span className="text-muted-foreground text-xs">
-                  <FormattedMinutes minutes={slice.minutesWithout} />
-                </span>
-              </div>
-            )}
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
+/** The id of the "all labels" entry of the label filter. */
+const ALL_LABELS = "all";
 
 function calendarDateToDate(date: CalendarDate, endOfDay = false): Date {
   const d = date.toDate(getLocalTimeZone());
@@ -248,6 +53,27 @@ function calendarDateToDate(date: CalendarDate, endOfDay = false): Date {
     d.setHours(0, 0, 0, 0);
   }
   return d;
+}
+
+/**
+ * The duration format of the user's setting for the report components.
+ * They add the unit themselves, so the formatter leaves out the "h" of the
+ * decimal formats; "1h 30m" keeps its own units.
+ */
+function durationFormat(timeFormat: TimeFormat) {
+  return {
+    format: (minutes: number) =>
+      formatMinutesWithFormat(Math.round(minutes), timeFormat).replace(
+        / h$/,
+        "",
+      ),
+    unit: timeFormat === "hm" ? "" : "h",
+  };
+}
+
+/** A whole percentage of `total`, as the donut shows it. */
+function percentOf(minutes: number, total: number) {
+  return `${String(total > 0 ? Math.round((minutes / total) * 100) : 0)} %`;
 }
 
 // Predefined ranges for the picker popover. Weeks start on Monday to match
@@ -302,148 +128,122 @@ function buildPresets(
 }
 
 function Reports() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const timeFormat = useTimeFormat();
+  const timeZone = getLocalTimeZone();
   const [range, setRange] = useState<RangeValue<CalendarDate>>({
-    start: today(getLocalTimeZone()),
-    end: today(getLocalTimeZone()),
+    start: today(timeZone),
+    end: today(timeZone),
   });
   const [filterLabelId, setFilterLabelId] = useState<number | null>(null);
   const [showMocoSync, setShowMocoSync] = useState(false);
 
-  const { data: mocoStatus } = useQuery({
-    queryKey: ["moco", "config"],
-    queryFn: () => client.moco.config.get(),
-  });
-
   const locale = i18n.language === "de" ? "de-DE" : "en-US";
   const presets = buildPresets(t, locale);
+  const { format, unit } = durationFormat(timeFormat);
+  const withoutTask = t("reports.withoutTask");
 
   const syncRange = {
     from: calendarDateToDate(range.start),
     to: calendarDateToDate(range.end, true),
   };
 
+  const { data: mocoStatus } = useQuery({
+    queryKey: ["moco", "config"],
+    queryFn: () => client.moco.config.get(),
+  });
+
   const { data: allLabels = [] } = useQuery({
     queryKey: ["labels"],
-    queryFn: async () => {
-      const res = await client.label.list();
-      return res.labels;
-    },
+    queryFn: async () => (await client.label.list()).labels,
   });
 
   const { data: summary = [], isLoading } = useQuery({
     queryKey: ["log", "summary", range],
-    queryFn: async () => {
-      const res = await client.log.summary(syncRange);
-      return res.summary;
-    },
+    queryFn: async () => (await client.log.summary(syncRange)).summary,
   });
 
   const { data: logSlots = [] } = useQuery({
     queryKey: ["log", "raw", range],
-    queryFn: async () => {
-      const res = await client.log.entries(syncRange);
-      return res.slots;
-    },
+    queryFn: async () => (await client.log.entries(syncRange)).slots,
   });
 
-  const totalMinutes = summary.reduce((s, e) => s + e.totalMinutes, 0);
-
-  // Per-day totals for bar chart
-  const dayMap = new Map<string, number>();
-  for (const s of logSlots) {
-    if (!s.endedAt) continue;
-    const dayKey = new Date(s.startedAt).toISOString().slice(0, 10);
-    const mins = Math.round(
-      (new Date(s.endedAt).getTime() - new Date(s.startedAt).getTime()) / 60000,
-    );
-    dayMap.set(dayKey, (dayMap.get(dayKey) ?? 0) + mins);
-  }
-  const dayData = Array.from(dayMap.entries())
-    .sort(([a], [b]) => a.localeCompare(b))
-    .map(([key, minutes]) => ({
-      label: new Date(key).toLocaleDateString(locale, {
+  const days = dayEntries(logSlots, range, timeZone, (date, dayCount) => {
+    const day = date.toDate(timeZone);
+    return {
+      label: day.toLocaleDateString(
+        locale,
+        dayCount <= 7
+          ? { weekday: "short" }
+          : { day: "numeric", month: "numeric" },
+      ),
+      fullLabel: day.toLocaleDateString(locale, {
         weekday: "short",
         day: "numeric",
+        month: "long",
       }),
-      minutes,
-    }));
+    };
+  });
+  const isMultiDay = days.length > 1;
 
-  const isMultiDay = dayMap.size > 1;
-  const avgDailyMinutes = isMultiDay
-    ? Math.round(totalMinutes / dayMap.size)
-    : 0;
+  const totalMinutes = summary.reduce((sum, e) => sum + e.totalMinutes, 0);
+  const workDays = daysWithTime(days);
+  const largest = sortEntries(summary).find((e) => e.projectId !== null);
+  const withoutTaskMinutes =
+    summary.find((e) => e.projectId === null)?.totalMinutes ?? 0;
 
-  // Build split pie data for label filter
-  const splitSlices: SplitSlice[] = filterLabelId
-    ? summary.map((entry) => {
-        // Tasks with the label
-        const withLabelTaskIds = new Set(
-          logSlots
-            .filter(
-              (s) =>
-                s.task?.project.id === entry.projectId &&
-                s.task.taskLabels.some((tl) => tl.label.id === filterLabelId),
-            )
-            .map((s) => s.task?.id),
-        );
-        const minutesWith = entry.tasks
-          .filter((t) => withLabelTaskIds.has(t.taskId))
-          .reduce((s, t) => s + t.minutes, 0);
-        return {
-          projectId: entry.projectId,
-          projectName: entry.projectName,
-          colorWith: entry.projectColor,
-          colorWithout: entry.projectColor,
-          minutesWith,
-          minutesWithout: entry.totalMinutes - minutesWith,
-        };
-      })
-    : [];
-
-  // Tasks with selected label (cross-project)
-  const tasksWithLabel: {
-    taskId: number;
-    taskName: string;
-    projectName: string;
-    projectColor: string;
-    minutes: number;
-  }[] = filterLabelId
-    ? summary.flatMap((entry) => {
-        const labelTaskIds = new Set(
-          logSlots
-            .filter(
-              (s) =>
-                s.task?.project.id === entry.projectId &&
-                s.task.taskLabels.some((tl) => tl.label.id === filterLabelId),
-            )
-            .map((s) => s.task?.id),
-        );
-        return entry.tasks
-          .filter((t) => labelTaskIds.has(t.taskId))
-          .map((t) => ({
-            taskId: t.taskId,
-            taskName: t.taskName,
-            projectName: entry.projectName,
-            projectColor: entry.projectColor,
-            minutes: t.minutes,
-          }));
-      })
-    : [];
-
-  const labelTotalMinutes = tasksWithLabel.reduce((s, t) => s + t.minutes, 0);
+  const tiles: StatTile[] = [
+    { id: "total", label: t("reports.total"), minutes: totalMinutes, unit },
+    {
+      id: "average",
+      label: t("reports.averagePerDay"),
+      minutes: workDays > 0 ? totalMinutes / workDays : undefined,
+      unit,
+      context: t("reports.daysLogged", { count: workDays }),
+    },
+    {
+      id: "largest",
+      label: t("reports.largestProject"),
+      project: largest && {
+        name: largest.projectName,
+        color: largest.projectColor,
+      },
+      context:
+        largest &&
+        `${percentOf(largest.totalMinutes, totalMinutes)} · ${format(largest.totalMinutes)}${unit && ` ${unit}`}`,
+    },
+    {
+      id: "withoutTask",
+      label: withoutTask,
+      minutes: withoutTaskMinutes,
+      unit,
+      context: t("reports.shareOfTotal", {
+        percent: percentOf(withoutTaskMinutes, totalMinutes),
+      }),
+    },
+  ];
 
   const filterLabel = allLabels.find((l) => l.id === filterLabelId);
+  const labelledProjects = filterLabel
+    ? breakdownProjects(
+        summary,
+        withoutTask,
+        taskIdsWithLabel(logSlots, filterLabel.id),
+      )
+    : [];
+
+  const breakdownStrings = {
+    title: t("reports.detailsPerProject"),
+    transfer: t("reports.transfer"),
+    empty: t("reports.noData"),
+    noTasks: t("reports.noTasks"),
+  };
 
   return (
-    <div className="mx-auto max-w-5xl space-y-8">
-      {/* Header + period + label picker */}
-      <div className="flex flex-wrap items-start justify-between gap-3">
-        <h1 className="text-foreground text-2xl font-bold">
-          {t("reports.title")}
-        </h1>
-        <div className="flex flex-wrap items-center gap-2">
+    <div className="mx-auto flex max-w-5xl flex-col gap-6">
+      <div className="flex flex-wrap items-end justify-between gap-3">
+        <h1 className="text-display">{t("reports.title")}</h1>
+        <div className="flex max-w-full flex-wrap items-end gap-2">
           <DateRangePicker
             aria-label={t("reports.dateRange")}
             value={range}
@@ -451,63 +251,35 @@ function Reports() {
               if (next) setRange(next);
             }}
             presets={presets}
+            isClearable={false}
+            calendarLabel={t("reports.openCalendar")}
+            previousRangeLabel={t("reports.previousRange")}
+            nextRangeLabel={t("reports.nextRange")}
+            formatDayCount={(count) => t("reports.dayCount", { count })}
           />
-
-          {/* Label filter */}
           {allLabels.length > 0 && (
-            <div className="flex items-center gap-1 rounded-lg bg-transparent">
-              {filterLabel ? (
-                <>
-                  <span className="text-foreground/90 text-sm">
-                    {filterLabel.name}
-                  </span>
-                  <Button
-                    variant="quiet"
-                    onPress={() => setFilterLabelId(null)}
-                    className="text-muted-foreground hover:text-foreground/80 ml-1"
-                    aria-label={t("reports.clearLabelFilter")}
-                  >
-                    <X className="h-3.5 w-3.5" />
-                  </Button>
-                </>
-              ) : (
-                <Select
-                  value={filterLabelId === null ? "" : String(filterLabelId)}
-                  onChange={(value) =>
-                    setFilterLabelId(value ? Number(value) : null)
-                  }
-                  aria-label={t("reports.filterLabel")}
-                >
-                  <SelectItem id="">{t("reports.filterLabel")}</SelectItem>
-                  {allLabels.map((l) => (
-                    <SelectItem key={l.id} id={String(l.id)}>
-                      {l.name}
-                    </SelectItem>
-                  ))}
-                </Select>
-              )}
-            </div>
-          )}
-
-          {/* Moco sync */}
-          {mocoStatus?.configured && (
-            <Button variant="secondary" onPress={() => setShowMocoSync(true)}>
-              <span className="inline-flex items-center gap-2">
-                <Upload className="h-3.5 w-3.5" />
-                {t("moco.syncButton")}
-              </span>
-            </Button>
+            <Select
+              aria-label={t("reports.filterLabel")}
+              value={
+                filterLabelId === null ? ALL_LABELS : String(filterLabelId)
+              }
+              onChange={(key) =>
+                setFilterLabelId(
+                  key === ALL_LABELS || key === null ? null : Number(key),
+                )
+              }
+              className="w-48"
+            >
+              <SelectItem id={ALL_LABELS}>{t("reports.allLabels")}</SelectItem>
+              {allLabels.map((l) => (
+                <SelectItem key={l.id} id={String(l.id)}>
+                  {l.name}
+                </SelectItem>
+              ))}
+            </Select>
           )}
         </div>
       </div>
-
-      {showMocoSync && (
-        <MocoSyncModal
-          from={syncRange.from}
-          to={syncRange.to}
-          onClose={() => setShowMocoSync(false)}
-        />
-      )}
 
       {isLoading ? (
         <div className="flex items-center justify-center py-20">
@@ -519,112 +291,77 @@ function Reports() {
         </div>
       ) : (
         <>
-          {/* Total */}
-          <div className="border-border bg-card rounded-xl border p-6">
-            <p className="text-muted-foreground text-sm">
-              {t("reports.totalWorktime")}
-            </p>
-            <p className="text-foreground mt-1 text-4xl font-bold">
-              <FormattedMinutes minutes={totalMinutes} />
-            </p>
-            {avgDailyMinutes > 0 && (
-              <p className="text-muted-foreground mt-1 text-sm">
-                {t("reports.avgPerDay", {
-                  time: formatMinutesWithFormat(avgDailyMinutes, timeFormat),
-                })}
-              </p>
+          <StatTiles
+            tiles={tiles}
+            formatDuration={format}
+            strings={{ hours: unit, noValue: "–" }}
+          />
+
+          <div className="grid gap-4 xl:grid-cols-2">
+            <ProjectDonut
+              projects={donutProjects(summary, withoutTask)}
+              headingLevel={2}
+              formatDuration={format}
+              strings={{
+                title: t("reports.projectShares"),
+                hours: t("reports.hours"),
+                hoursShort: unit,
+                others: t("reports.others"),
+                empty: t("reports.noData"),
+              }}
+              className={isMultiDay ? undefined : "xl:col-span-2"}
+            />
+            {isMultiDay && (
+              <HoursPerDay
+                projects={chartProjects(summary, withoutTask)}
+                days={days}
+                headingLevel={2}
+                formatDuration={format}
+                strings={{
+                  title: t("reports.hoursPerDay"),
+                  showTable: t("reports.showTable"),
+                  hideTable: t("reports.hideTable"),
+                  table: t("reports.hoursTable"),
+                  day: t("reports.day"),
+                  total: t("reports.sum"),
+                  hoursShort: unit,
+                  empty: t("reports.noData"),
+                }}
+                className="min-w-0"
+              />
             )}
           </div>
 
-          {/* Pie chart — split if label filter active */}
-          {summary.length > 0 && (
-            <div className="border-border bg-card rounded-xl border p-6">
-              <h2 className="text-foreground/90 mb-4 text-sm font-semibold">
-                {t("reports.projectShares")}
-                {filterLabel && (
-                  <span className="text-muted-foreground ml-2 font-normal">
-                    {t("reports.labelFilter", { name: filterLabel.name })}
-                  </span>
-                )}
-              </h2>
-              {filterLabelId ? (
-                <SplitProjectPie slices={splitSlices} />
-              ) : (
-                <ProjectPie data={summary} />
-              )}
-            </div>
+          {filterLabel && (
+            <ProjectBreakdown
+              projects={labelledProjects}
+              headingLevel={2}
+              formatDuration={format}
+              strings={{
+                ...breakdownStrings,
+                title: t("reports.tasksWithLabel", { name: filterLabel.name }),
+              }}
+            />
           )}
 
-          {/* Bar chart */}
-          {isMultiDay && (
-            <div className="border-border bg-card rounded-xl border p-6">
-              <h2 className="text-foreground/90 mb-4 text-sm font-semibold">
-                {t("reports.hoursPerDay")}
-              </h2>
-              <BarChart data={dayData} />
-            </div>
-          )}
-
-          {/* Tasks with selected label */}
-          {filterLabel && tasksWithLabel.length > 0 && (
-            <div className="space-y-2">
-              <h2 className="text-foreground/90 text-sm font-semibold">
-                {t("reports.tasksWithLabel", { name: filterLabel.name })}
-                <span className="text-muted-foreground ml-2 font-normal">
-                  <FormattedMinutes minutes={labelTotalMinutes} />
-                </span>
-              </h2>
-              <div className="divide-border/50 border-border bg-card divide-y overflow-hidden rounded-xl border">
-                {tasksWithLabel
-                  .sort((a, b) => b.minutes - a.minutes)
-                  .map((task) => (
-                    <div
-                      key={task.taskId}
-                      className="flex items-center gap-3 px-4 py-2.5"
-                    >
-                      <div
-                        className="h-2.5 w-2.5 flex-shrink-0 rounded-sm"
-                        style={{ backgroundColor: task.projectColor }}
-                      />
-                      <span className="text-foreground flex-1 text-sm">
-                        {task.taskName}
-                      </span>
-                      <span className="text-muted-foreground text-xs">
-                        {task.projectName}
-                      </span>
-                      <span className="text-foreground/90 w-16 text-right text-sm font-medium">
-                        <FormattedMinutes minutes={task.minutes} />
-                      </span>
-                    </div>
-                  ))}
-              </div>
-            </div>
-          )}
-
-          {/* Per-project breakdown */}
-          {summary.length > 0 && (
-            <div className="space-y-2">
-              <h2 className="text-foreground/90 text-sm font-semibold">
-                {t("reports.detailsPerProject")}
-              </h2>
-              {summary
-                .sort((a, b) => b.totalMinutes - a.totalMinutes)
-                .map((entry) => (
-                  <ProjectRow
-                    key={entry.projectId ?? "no_task"}
-                    entry={entry}
-                  />
-                ))}
-            </div>
-          )}
-
-          {summary.length === 0 && (
-            <div className="text-muted-foreground flex items-center justify-center py-20">
-              {t("reports.noData")}
-            </div>
-          )}
+          <ProjectBreakdown
+            projects={breakdownProjects(summary, withoutTask)}
+            headingLevel={2}
+            formatDuration={format}
+            strings={breakdownStrings}
+            onTransfer={
+              mocoStatus?.configured ? () => setShowMocoSync(true) : undefined
+            }
+          />
         </>
       )}
+
+      <MocoSyncModal
+        isOpen={showMocoSync}
+        onOpenChange={setShowMocoSync}
+        from={syncRange.from}
+        to={syncRange.to}
+      />
     </div>
   );
 }

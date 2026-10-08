@@ -1,14 +1,16 @@
-import React, { useId, useMemo, useState } from "react";
+import { useId, useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { ArrowRight, X } from "lucide-react";
+import { ArrowRight, Check, X } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
 import { Button } from "@horva/ui/Button";
 import { Checkbox } from "@horva/ui/Checkbox";
+import { Dialog } from "@horva/ui/Dialog";
+import { Loader } from "@horva/ui/Logo";
+import { Modal } from "@horva/ui/Modal";
 
 import { FormattedMinutes } from "#/components/FormattedMinutes.js";
 import { client } from "#/lib/orpc.js";
-import { useEscapeKey } from "#/lib/useEscapeKey.js";
 
 type PreviewLine = Awaited<
   ReturnType<typeof client.moco.preview>
@@ -26,7 +28,32 @@ interface ProjectGroup {
   lines: PreviewLine[];
 }
 
+export interface MocoSyncModalProps {
+  isOpen: boolean;
+  onOpenChange: (isOpen: boolean) => void;
+  from: Date;
+  to: Date;
+}
+
+/**
+ * The dialog that sends the logged time of a period to Moco. It lists the
+ * rows that can be sent, grouped by project; the user picks which. Focus
+ * goes back to the button that opened it.
+ */
 export function MocoSyncModal({
+  isOpen,
+  onOpenChange,
+  from,
+  to,
+}: MocoSyncModalProps) {
+  return (
+    <Modal isOpen={isOpen} onOpenChange={onOpenChange} isDismissable>
+      <MocoSyncDialog from={from} to={to} onClose={() => onOpenChange(false)} />
+    </Modal>
+  );
+}
+
+function MocoSyncDialog({
   from,
   to,
   onClose,
@@ -35,10 +62,9 @@ export function MocoSyncModal({
   to: Date;
   onClose: () => void;
 }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const queryClient = useQueryClient();
   const titleId = useId();
-  useEscapeKey(onClose);
 
   const {
     data: lines = [],
@@ -72,10 +98,18 @@ export function MocoSyncModal({
   );
 
   function mocoName(map: Map<number, string>, id: number | undefined): string {
-    if (id === undefined) return "—";
+    if (id === undefined) return "–";
     if (remotePending) return "…";
     return map.get(id) ?? `#${String(id)}`;
   }
+
+  const locale = i18n.language === "de" ? "de-DE" : "en-US";
+  const formatDate = (date: string) =>
+    new Date(`${date}T00:00:00`).toLocaleDateString(locale, {
+      weekday: "short",
+      day: "numeric",
+      month: "short",
+    });
 
   // Selected row keys. Default: nothing selected (user opts in).
   const [selected, setSelected] = useState<Set<string>>(new Set());
@@ -126,15 +160,6 @@ export function MocoSyncModal({
     return [...map.values()];
   }, [syncable]);
 
-  function toggleRow(key: string) {
-    setSelected((prev) => {
-      const next = new Set(prev);
-      if (next.has(key)) next.delete(key);
-      else next.add(key);
-      return next;
-    });
-  }
-
   function setMany(keys: string[], on: boolean) {
     setSelected((prev) => {
       const next = new Set(prev);
@@ -150,213 +175,175 @@ export function MocoSyncModal({
   const done = syncMutation.isSuccess;
 
   return (
-    <div
-      className="bg-foreground/30 fixed inset-0 z-50 flex items-center justify-center p-6"
-      // A click on the backdrop is a mouse shortcut. Keyboard users close
-      // the dialog with Escape or the close button.
-      role="presentation"
-      onClick={(e) => {
-        if (e.target === e.currentTarget) onClose();
-      }}
+    <Dialog
+      aria-labelledby={titleId}
+      className="flex max-h-[inherit] flex-col p-0"
     >
-      <div
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby={titleId}
-        className="border-border bg-card flex max-h-[80vh] w-full max-w-2xl flex-col rounded-xl border shadow-lg"
-      >
-        <div className="border-border flex items-center justify-between border-b px-5 py-4">
-          <h2 id={titleId} className="text-foreground text-sm font-semibold">
-            {t("moco.syncTitle")}
-          </h2>
-          <Button
-            variant="quiet"
-            onPress={onClose}
-            className="text-muted-foreground hover:text-foreground/80 rounded p-0.5"
-            aria-label={t("moco.close")}
-          >
-            <X className="h-4 w-4" />
-          </Button>
-        </div>
+      <div className="border-border flex items-center justify-between gap-3 border-b px-5 py-3">
+        <h2 id={titleId} className="text-title">
+          {t("reports.transfer")}
+        </h2>
+        <Button
+          variant="quiet"
+          size="sm"
+          onPress={onClose}
+          aria-label={t("moco.close")}
+        >
+          <X aria-hidden />
+        </Button>
+      </div>
 
-        <div className="flex-1 overflow-auto px-5 py-4">
-          {isLoading && (
-            <p className="text-muted-foreground text-sm">{t("loading")}</p>
+      <div className="min-h-0 flex-1 overflow-auto px-5 py-4">
+        {isLoading && (
+          <div className="flex justify-center py-6">
+            <Loader size={32} label={t("loading")} />
+          </div>
+        )}
+
+        {isError && (
+          <p className="text-body text-destructive">
+            {error instanceof Error ? error.message : t("moco.previewError")}
+          </p>
+        )}
+
+        {!isLoading && !isError && lines.length === 0 && (
+          <p className="text-body">{t("moco.noData")}</p>
+        )}
+
+        {!isLoading &&
+          !isError &&
+          lines.length > 0 &&
+          syncable.length === 0 && (
+            <p className="text-body">{t("moco.noSyncable")}</p>
           )}
 
-          {isError && (
-            <p className="text-destructive text-sm">
-              {error instanceof Error ? error.message : t("moco.previewError")}
-            </p>
-          )}
+        {syncable.length > 0 && (
+          <>
+            <Checkbox
+              isSelected={allSelected}
+              onChange={(on) =>
+                setMany(
+                  syncable.map((l) => rowKey(l)),
+                  on,
+                )
+              }
+            >
+              {t("moco.selectAll")}
+            </Checkbox>
 
-          {!isLoading && !isError && lines.length === 0 && (
-            <p className="text-muted-foreground text-sm">{t("moco.noData")}</p>
-          )}
-
-          {!isLoading &&
-            !isError &&
-            lines.length > 0 &&
-            syncable.length === 0 && (
-              <p className="text-muted-foreground text-sm">
-                {t("moco.noSyncable")}
-              </p>
-            )}
-
-          {syncable.length > 0 && (
-            <>
-              <div className="mb-3">
-                <Checkbox
-                  isSelected={allSelected}
-                  onChange={(on) =>
-                    setMany(
-                      syncable.map((l) => rowKey(l)),
-                      on,
-                    )
-                  }
-                >
-                  {t("moco.selectAll")}
-                </Checkbox>
-              </div>
-
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="text-muted-foreground border-border border-b text-left text-xs">
-                    <th className="w-6 py-1.5" />
-                    <th className="py-1.5 pr-3 font-medium">
-                      {t("moco.date")}
-                    </th>
-                    <th className="py-1.5 pr-3 font-medium">
-                      {t("moco.task")}
-                    </th>
-                    <th className="py-1.5 pr-3 font-medium">
-                      {t("moco.mocoTask")}
-                    </th>
-                    <th className="py-1.5 text-right font-medium">
-                      {t("moco.duration")}
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {projectGroups.map((group) => {
-                    const groupKeys = group.lines.map((l) => rowKey(l));
-                    const groupOn = groupKeys.every((k) => selected.has(k));
-                    const groupSeconds = group.lines.reduce(
-                      (s, l) => s + l.seconds,
-                      0,
-                    );
-                    return (
-                      <React.Fragment key={group.key}>
-                        <tr className="border-border/50 border-b">
-                          <td className="py-2">
+            <ul className="mt-3 flex flex-col gap-3">
+              {projectGroups.map((group) => {
+                const groupKeys = group.lines.map((l) => rowKey(l));
+                const groupOn = groupKeys.every((k) => selected.has(k));
+                const groupSeconds = group.lines.reduce(
+                  (s, l) => s + l.seconds,
+                  0,
+                );
+                return (
+                  <li key={group.key}>
+                    <div className="border-border flex items-center gap-3 border-b pb-1.5">
+                      <Checkbox
+                        aria-label={group.projectName}
+                        isSelected={groupOn}
+                        onChange={(on) => setMany(groupKeys, on)}
+                      />
+                      <span className="text-body-strong flex min-w-0 flex-1 flex-wrap items-center gap-x-2">
+                        <span className="truncate">{group.projectName}</span>
+                        <ArrowRight
+                          aria-label={t("reports.transferTo")}
+                          className="text-muted-foreground size-3.5 shrink-0"
+                        />
+                        <span className="truncate font-normal">
+                          {mocoName(mocoProjectNames, group.mocoProjectId)}
+                        </span>
+                      </span>
+                      <span className="type-duration shrink-0">
+                        <FormattedMinutes
+                          minutes={Math.round(groupSeconds / 60)}
+                        />
+                      </span>
+                    </div>
+                    <ul>
+                      {group.lines.map((line) => {
+                        const key = rowKey(line);
+                        return (
+                          <li
+                            key={key}
+                            className="border-border flex items-center gap-3 border-b py-1.5"
+                          >
                             <Checkbox
-                              aria-label={group.projectName}
-                              isSelected={groupOn}
-                              onChange={(on) => setMany(groupKeys, on)}
+                              aria-label={`${line.date} ${line.taskName}`}
+                              isSelected={selected.has(key)}
+                              onChange={(on) => setMany([key], on)}
                             />
-                          </td>
-                          <td colSpan={3} className="py-2 pr-3">
-                            <span className="text-foreground inline-flex items-center gap-2 font-medium">
-                              {group.projectName}
-                              <ArrowRight
-                                aria-hidden
-                                className="text-muted-foreground h-3.5 w-3.5"
-                              />
-                              <span className="font-normal">
-                                {mocoName(
-                                  mocoProjectNames,
-                                  group.mocoProjectId,
-                                )}
+                            <span className="flex min-w-0 flex-1 flex-col">
+                              <span className="text-body [overflow-wrap:anywhere]">
+                                {line.taskName || "–"}
+                              </span>
+                              <span className="text-muted-foreground text-xs">
+                                {formatDate(line.date)} ·{" "}
+                                {mocoName(mocoTaskNames, line.mocoTaskId)}
                               </span>
                             </span>
-                          </td>
-                          <td className="text-foreground py-2 text-right font-medium tabular-nums">
-                            <FormattedMinutes
-                              minutes={Math.round(groupSeconds / 60)}
-                            />
-                          </td>
-                        </tr>
-                        {group.lines.map((line) => {
-                          const key = rowKey(line);
-                          return (
-                            <tr
-                              key={key}
-                              className="border-border/50 text-foreground border-b"
-                            >
-                              <td className="py-1.5">
-                                <Checkbox
-                                  aria-label={`${line.date} ${line.taskName}`}
-                                  isSelected={selected.has(key)}
-                                  onChange={() => toggleRow(key)}
-                                />
-                              </td>
-                              <td className="py-1.5 pr-3 whitespace-nowrap tabular-nums">
-                                {line.date}
-                              </td>
-                              <td className="py-1.5 pr-3">
-                                {line.taskName || "—"}
-                              </td>
-                              <td className="text-muted-foreground py-1.5 pr-3">
-                                {mocoName(mocoTaskNames, line.mocoTaskId)}
-                              </td>
-                              <td className="py-1.5 text-right tabular-nums">
-                                <FormattedMinutes
-                                  minutes={Math.round(line.seconds / 60)}
-                                />
-                              </td>
-                            </tr>
-                          );
-                        })}
-                      </React.Fragment>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </>
+                            <span className="type-duration-small shrink-0">
+                              <FormattedMinutes
+                                minutes={Math.round(line.seconds / 60)}
+                              />
+                            </span>
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  </li>
+                );
+              })}
+            </ul>
+          </>
+        )}
+      </div>
+
+      <div className="border-border flex flex-wrap items-center justify-between gap-3 border-t px-5 py-3">
+        <p className="text-muted-foreground text-xs">
+          {t("moco.selectionSummary", {
+            selected: selectedCount,
+            syncable: syncable.length,
+            skipped: skippedCount,
+          })}
+        </p>
+        <div className="flex flex-wrap items-center justify-end gap-2">
+          {done && result && (
+            <span role="status" className="text-small flex items-center gap-1">
+              <Check aria-hidden className="size-4" />
+              {t("moco.syncDone", {
+                created: result.created,
+                failed: result.failed.length,
+              })}
+            </span>
+          )}
+          {syncMutation.isError && (
+            <span role="alert" className="text-small text-destructive">
+              {syncMutation.error instanceof Error
+                ? syncMutation.error.message
+                : t("moco.syncError")}
+            </span>
+          )}
+          {done ? (
+            <Button variant="primary" onPress={onClose}>
+              {t("moco.close")}
+            </Button>
+          ) : (
+            <Button
+              variant="primary"
+              isDisabled={selectedCount === 0}
+              isPending={syncMutation.isPending}
+              pendingLabel={t("loading")}
+              onPress={() => syncMutation.mutate()}
+            >
+              {t("moco.confirmSync", { count: selectedCount })}
+            </Button>
           )}
         </div>
-
-        <div className="border-border flex items-center justify-between gap-3 border-t px-5 py-4">
-          <p className="text-muted-foreground text-xs">
-            {t("moco.selectionSummary", {
-              selected: selectedCount,
-              syncable: syncable.length,
-              skipped: skippedCount,
-            })}
-          </p>
-          <div className="flex items-center gap-2">
-            {done && result && (
-              <span className="text-success text-xs">
-                {t("moco.syncDone", {
-                  created: result.created,
-                  failed: result.failed.length,
-                })}
-              </span>
-            )}
-            {syncMutation.isError && (
-              <span className="text-destructive text-xs">
-                {syncMutation.error instanceof Error
-                  ? syncMutation.error.message
-                  : t("moco.syncError")}
-              </span>
-            )}
-            {done ? (
-              <Button variant="primary" onPress={onClose}>
-                {t("moco.close")}
-              </Button>
-            ) : (
-              <Button
-                variant="primary"
-                isDisabled={selectedCount === 0}
-                isPending={syncMutation.isPending}
-                onPress={() => syncMutation.mutate()}
-              >
-                {t("moco.confirmSync", { count: selectedCount })}
-              </Button>
-            )}
-          </div>
-        </div>
       </div>
-    </div>
+    </Dialog>
   );
 }
