@@ -265,7 +265,7 @@ function CreateRow({
           <span className="truncate">{project.name}</span>
           <ChevronDown aria-hidden className="size-3 shrink-0" />
         </RACButton>
-        <Kbd className="ms-auto shrink-0 max-sm:hidden">{modKey} ↵</Kbd>
+        <Kbd className="ms-auto shrink-0 max-sm:hidden">{modKey} Enter</Kbd>
       </div>
     </div>
   );
@@ -289,12 +289,12 @@ function KeyHints({
         {labels.keyMove}
       </span>
       <span>
-        <Kbd className="me-1">↵</Kbd>
+        <Kbd className="me-1">Enter</Kbd>
         {labels.keyPick}
       </span>
       {canCreate && (
         <span>
-          <Kbd className="me-1">{modKey} ↵</Kbd>
+          <Kbd className="me-1">{modKey} Enter</Kbd>
           {labels.keyCreate}
         </span>
       )}
