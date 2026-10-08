@@ -29,10 +29,10 @@ export interface ReportSlot {
 }
 
 /** The chart key of time without a task. */
-export const WITHOUT_TASK = "none";
+const WITHOUT_TASK = "none";
 
 /** The chart key of a summary entry. */
-export function entryKey(entry: Pick<SummaryEntry, "projectId">) {
+function entryKey(entry: Pick<SummaryEntry, "projectId">) {
   return entry.projectId ?? WITHOUT_TASK;
 }
 

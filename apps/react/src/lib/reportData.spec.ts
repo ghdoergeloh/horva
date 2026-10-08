@@ -16,7 +16,7 @@ const summary: SummaryEntry[] = [
   {
     projectId: null,
     projectName: "(no task)",
-    projectColor: "#888888",
+    projectColor: "project-2",
     totalMinutes: 300,
     tasks: [],
   },
@@ -33,7 +33,7 @@ const summary: SummaryEntry[] = [
   {
     projectId: 2,
     projectName: "Intern",
-    projectColor: "#123456",
+    projectColor: "project-1",
     totalMinutes: 120,
     tasks: [{ taskId: 21, taskName: "Planning", minutes: 120 }],
   },
@@ -76,7 +76,7 @@ describe("donutProjects", () => {
       {
         id: 2,
         name: "Intern",
-        color: "#123456",
+        color: "project-1",
         minutes: 120,
         isWithoutTask: false,
       },
