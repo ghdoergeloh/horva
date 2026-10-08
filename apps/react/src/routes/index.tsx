@@ -14,6 +14,7 @@ import { useDetailDrawer } from "#/contexts/DetailDrawerContext.js";
 import i18n from "#/i18n/index.js";
 import { client } from "#/lib/orpc.js";
 import { calcTotalMinutes } from "#/lib/taskUtils.js";
+import { useNow } from "#/lib/useNow.js";
 
 type TaskRow = Awaited<ReturnType<typeof client.task.list>>["tasks"][number];
 
@@ -70,7 +71,7 @@ function TaskSection({
 function DailyOverview() {
   const { t } = useTranslation();
   const { openTask } = useDetailDrawer();
-  const now = new Date();
+  const now = useNow();
   const tz = getLocalTimeZone();
   const todayDate = today(tz);
 
