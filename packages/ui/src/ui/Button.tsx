@@ -1,14 +1,24 @@
 "use client";
 
 import type { ButtonProps as RACButtonProps } from "react-aria-components";
+import { isValidElement } from "react";
 import { composeRenderProps, Button as RACButton } from "react-aria-components";
-import { tv } from "tailwind-variants";
 
 import { focusRing } from "@horva/ui";
 
+import { tv } from "../lib/tw";
+import { Loader } from "./Logo";
+
 export interface ButtonProps extends RACButtonProps {
-  /** @default 'primary' */
+  /**
+   * `primary` at most once per area, `secondary` for "Switch" and
+   * "Cancel", `quiet` for actions in cards and lists, `destructive` only
+   * for delete.
+   * @default 'primary'
+   */
   variant?: "primary" | "secondary" | "destructive" | "quiet";
+  /** @default 'md' */
+  size?: "sm" | "md";
 }
 
 const spinnerColors = {
@@ -20,43 +30,60 @@ const spinnerColors = {
 
 const button = tv({
   extend: focusRing,
-  base: "relative inline-flex items-center justify-center gap-2 border border-transparent h-9 box-border px-3.5 py-0 [&:has(>svg:only-child)]:px-0 [&:has(>svg:only-child)]:h-8 [&:has(>svg:only-child)]:w-8 font-sans text-sm text-center transition rounded-lg cursor-default [-webkit-tap-highlight-color:transparent]",
+  base: "relative inline-flex items-center justify-center gap-2 border border-transparent box-border py-0 font-sans font-medium text-center transition-colors rounded-md cursor-default [-webkit-tap-highlight-color:transparent] [&_svg]:size-4 [&_svg]:shrink-0",
   variants: {
     variant: {
       primary:
-        "bg-primary hover:bg-primary/90 pressed:bg-primary/80 text-primary-foreground",
+        "bg-primary hover:bg-primary-hover pressed:bg-primary-hover text-primary-foreground",
       secondary:
-        "border-border bg-secondary hover:bg-secondary/80 pressed:bg-secondary/60 text-secondary-foreground",
+        "bg-secondary text-secondary-foreground hover:bg-accent hover:text-accent-foreground pressed:bg-accent pressed:text-accent-foreground",
       destructive:
         "bg-destructive hover:bg-destructive/90 pressed:bg-destructive/80 text-destructive-foreground",
-      quiet:
-        "border-0 bg-transparent hover:bg-accent pressed:bg-muted-foreground/20 text-foreground",
+      quiet: "bg-transparent text-foreground hover:bg-accent pressed:bg-accent",
+    },
+    size: {
+      md: "h-9 px-3.5 text-body",
+      sm: "h-7.5 px-2.5 text-small",
+    },
+    iconOnly: {
+      true: "px-0 aspect-square",
     },
     isDisabled: {
-      true: "border-transparent bg-muted text-muted-foreground/50 forced-colors:text-[GrayText]",
+      true: "opacity-45 forced-colors:text-[GrayText]",
     },
     isPending: {
-      true: "text-transparent",
+      true: "text-transparent [&>svg]:invisible",
     },
   },
   defaultVariants: {
     variant: "primary",
+    size: "md",
   },
-  compoundVariants: [
-    {
-      variant: "quiet",
-      isDisabled: true,
-      class: "bg-transparent",
-    },
-  ],
 });
 
+/**
+ * True when the only child is a component element, such as a lucide icon,
+ * and no text: such a button is square. Wrapper tags (`<span>`) count as
+ * content.
+ */
+export function isIconOnly(children: unknown): boolean {
+  return isValidElement(children) && typeof children.type !== "string";
+}
+
 export function Button(props: ButtonProps) {
+  const variant = props.variant ?? "primary";
+  const iconOnly = isIconOnly(props.children);
   return (
     <RACButton
       {...props}
       className={composeRenderProps(props.className, (className, renderProps) =>
-        button({ ...renderProps, variant: props.variant, className }),
+        button({
+          ...renderProps,
+          variant: props.variant,
+          size: props.size,
+          iconOnly,
+          className,
+        }),
       )}
     >
       {composeRenderProps(props.children, (children, { isPending }) => (
@@ -67,31 +94,11 @@ export function Button(props: ButtonProps) {
               aria-hidden
               className="absolute inset-0 flex items-center justify-center"
             >
-              <svg
-                className={`h-4 w-4 animate-spin ${spinnerColors[props.variant ?? "primary"]}`}
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <circle
-                  cx="12"
-                  cy="12"
-                  r="10"
-                  strokeWidth="4"
-                  fill="none"
-                  className="opacity-25"
-                />
-                <circle
-                  cx="12"
-                  cy="12"
-                  r="10"
-                  strokeWidth="4"
-                  strokeLinecap="round"
-                  fill="none"
-                  pathLength="100"
-                  strokeDasharray="60 140"
-                  strokeDashoffset="0"
-                />
-              </svg>
+              <Loader
+                size={16}
+                onFill={variant === "primary" || variant === "destructive"}
+                className={spinnerColors[variant]}
+              />
             </span>
           )}
         </>

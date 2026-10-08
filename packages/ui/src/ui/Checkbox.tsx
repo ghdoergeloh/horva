@@ -11,36 +11,36 @@ import {
   CheckboxField,
   composeRenderProps,
 } from "react-aria-components";
-import { tv } from "tailwind-variants";
 
 import { focusRing } from "@horva/ui";
 
+import { tv } from "../lib/tw";
 import { Description, FieldError } from "./Field";
 
 const checkboxStyles = tv({
-  base: "flex gap-2 items-center group font-sans text-sm transition relative [-webkit-tap-highlight-color:transparent]",
+  base: "flex gap-2 items-center group font-sans text-body transition relative [-webkit-tap-highlight-color:transparent]",
   variants: {
     isDisabled: {
       false: "text-foreground",
-      true: "text-muted-foreground/50 forced-colors:text-[GrayText]",
+      true: "opacity-45 forced-colors:text-[GrayText]",
     },
   },
 });
 
 const boxStyles = tv({
   extend: focusRing,
-  base: "w-4.5 h-4.5 box-border shrink-0 rounded-sm flex items-center justify-center border transition",
+  base: "size-5 box-border shrink-0 rounded-sm flex items-center justify-center border transition",
   variants: {
     isSelected: {
       false:
-        "bg-background border-(--color) [--color:var(--color-muted-foreground)] group-pressed:[--color:var(--color-foreground)]",
+        "bg-input border-(--color) [--color:var(--color-input-border)] group-pressed:[--color:var(--color-foreground)]",
       true: "bg-(--color) border-(--color) [--color:var(--color-primary)] group-pressed:opacity-80 forced-colors:[--color:Highlight]!",
     },
     isInvalid: {
       true: "[--color:var(--color-destructive)] forced-colors:[--color:Mark]!",
     },
     isDisabled: {
-      true: "[--color:var(--color-border)] forced-colors:[--color:GrayText]!",
+      true: "opacity-45 forced-colors:[--color:GrayText]!",
     },
   },
 });
@@ -89,9 +89,9 @@ export function Checkbox(props: CheckboxProps) {
         )}
       </CheckboxButton>
       {props.description && (
-        <Description className="ms-6.5">{props.description}</Description>
+        <Description className="ms-7">{props.description}</Description>
       )}
-      <FieldError className="ms-6.5">{props.errorMessage}</FieldError>
+      <FieldError className="ms-7">{props.errorMessage}</FieldError>
     </CheckboxField>
   );
 }

@@ -1,6 +1,7 @@
 import { composeRenderProps } from "react-aria-components";
-import { twMerge } from "tailwind-merge";
-import { tv } from "tailwind-variants";
+
+import { twMerge } from "./tw";
+import { tv } from "./tw";
 
 export const focusRing = tv({
   base: "outline outline-ring forced-colors:outline-[Highlight] outline-offset-2",

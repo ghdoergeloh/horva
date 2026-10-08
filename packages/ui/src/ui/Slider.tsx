@@ -7,10 +7,10 @@ import {
   SliderThumb,
   SliderTrack,
 } from "react-aria-components";
-import { tv } from "tailwind-variants";
 
 import { composeTailwindRenderProps, focusRing } from "@horva/ui";
 
+import { tv } from "../lib/tw";
 import { Label } from "./Field";
 
 const trackStyles = tv({

@@ -12,10 +12,10 @@ import {
   DateSegment,
   useLocale,
 } from "react-aria-components";
-import { tv } from "tailwind-variants";
 
 import { composeTailwindRenderProps } from "@horva/ui";
 
+import { tv } from "../lib/tw";
 import { Description, FieldError, fieldGroupStyles, Label } from "./Field";
 
 export interface DateFieldProps<

@@ -31,10 +31,7 @@ export function AlertDialog({
     <Dialog role="alertdialog" {...props}>
       {({ close }) => (
         <>
-          <Heading
-            slot="title"
-            className="my-0 text-xl leading-6 font-semibold"
-          >
+          <Heading slot="title" className="text-title my-0">
             {title}
           </Heading>
           <div
