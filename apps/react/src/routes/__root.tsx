@@ -35,6 +35,7 @@ import { TextField } from "@horva/ui/TextField";
 
 import { DetailDrawerHost } from "#/components/DetailDrawerHost.js";
 import { SlotBar } from "#/components/SlotBar.js";
+import { nextProjectColor } from "#/components/timerRules.js";
 import { ActiveSlotProvider } from "#/contexts/ActiveSlotContext.js";
 import { DetailDrawerProvider } from "#/contexts/DetailDrawerContext.js";
 import { SettingsProvider } from "#/contexts/SettingsContext.js";
@@ -48,15 +49,15 @@ import i18n from "#/i18n/index.js";
 import { client } from "#/lib/orpc.js";
 import { useEscapeKey } from "#/lib/useEscapeKey.js";
 
-/** The color of a new project. */
-const NEW_PROJECT_COLOR = "project-1";
-
 /** The dialog "New project": a name and a color. */
 function NewProjectModal({
   isOpen,
+  projects,
   onClose,
 }: {
   isOpen: boolean;
+  /** The existing projects; the least used color is the default. */
+  projects: readonly { color: string }[];
   onClose: () => void;
 }) {
   const { t } = useTranslation();
@@ -64,7 +65,8 @@ function NewProjectModal({
   const titleId = useId();
   const queryClient = useQueryClient();
   const [name, setName] = useState("");
-  const [color, setColor] = useState<ProjectColor>(NEW_PROJECT_COLOR);
+  const [picked, setPicked] = useState<ProjectColor | null>(null);
+  const color = picked ?? nextProjectColor(projects);
 
   const createProjectMutation = useMutation({
     mutationFn: async (input: { name: string; color: string }) => {
@@ -83,7 +85,7 @@ function NewProjectModal({
 
   function close() {
     setName("");
-    setColor(NEW_PROJECT_COLOR);
+    setPicked(null);
     createProjectMutation.reset();
     onClose();
   }
@@ -121,7 +123,7 @@ function NewProjectModal({
           <ProjectColorPicker
             label={t("project.color")}
             value={color}
-            onChange={setColor}
+            onChange={setPicked}
           />
           {createProjectMutation.isError && (
             <p role="alert" className="text-destructive text-small">
@@ -206,9 +208,11 @@ function navItemClass(isActive: boolean, extra = "") {
 function ProjectNavItem({
   project,
   isActive,
+  onNavigate,
 }: {
   project: { id: number; name: string; color: string };
   isActive: boolean;
+  onNavigate: () => void;
 }) {
   const { activeTask } = useTaskDrag();
   const { setNodeRef, isOver } = useDroppable({
@@ -225,6 +229,7 @@ function ProjectNavItem({
   return (
     <Link
       ref={setNodeRef}
+      onClick={onNavigate}
       to="/tasks/$projectId"
       params={{ projectId: String(project.id) }}
       // Suppress the browser's native link dragging so it can't fight dnd-kit.
@@ -251,10 +256,13 @@ function Sidebar({
   id,
   isOpen,
   onClose,
+  onNavigate,
 }: {
   id: string;
   isOpen: boolean;
   onClose: () => void;
+  /** Called on every link, also on the one to the page that is open. */
+  onNavigate: () => void;
 }) {
   const { t } = useTranslation();
   const location = useLocation();
@@ -292,7 +300,11 @@ function Sidebar({
         </Button>
       </div>
       <nav className="flex-1 space-y-1 overflow-y-auto px-2 py-2">
-        <Link to="/" className={navItemClass(path === "/")}>
+        <Link
+          onClick={onNavigate}
+          to="/"
+          className={navItemClass(path === "/")}
+        >
           <LayoutDashboard aria-hidden className="size-5" />
           {t("nav.today")}
         </Link>
@@ -300,6 +312,7 @@ function Sidebar({
         <div>
           <div className="flex items-center gap-1">
             <Link
+              onClick={onNavigate}
               to="/tasks"
               className={navItemClass(path === "/tasks", "flex-1")}
             >
@@ -330,6 +343,7 @@ function Sidebar({
                 key={project.id}
                 project={project}
                 isActive={path === `/tasks/${String(project.id)}`}
+                onNavigate={onNavigate}
               />
             ))}
             <Button
@@ -344,28 +358,45 @@ function Sidebar({
           </div>
         </div>
 
-        <Link to="/timeline" className={navItemClass(path === "/timeline")}>
+        <Link
+          onClick={onNavigate}
+          to="/timeline"
+          className={navItemClass(path === "/timeline")}
+        >
           <Clock aria-hidden className="size-5" />
           {t("nav.timeline")}
         </Link>
-        <Link to="/reports" className={navItemClass(path === "/reports")}>
+        <Link
+          onClick={onNavigate}
+          to="/reports"
+          className={navItemClass(path === "/reports")}
+        >
           <ChartBar aria-hidden className="size-5" />
           {t("nav.reports")}
         </Link>
-        <Link to="/labels" className={navItemClass(path === "/labels")}>
+        <Link
+          onClick={onNavigate}
+          to="/labels"
+          className={navItemClass(path === "/labels")}
+        >
           <Tag aria-hidden className="size-5" />
           {t("nav.labels")}
         </Link>
       </nav>
 
       <div className="border-sidebar-border border-t p-2">
-        <Link to="/settings" className={navItemClass(path === "/settings")}>
+        <Link
+          onClick={onNavigate}
+          to="/settings"
+          className={navItemClass(path === "/settings")}
+        >
           <Settings aria-hidden className="size-5" />
           {t("nav.settings")}
         </Link>
       </div>
       <NewProjectModal
         isOpen={showNewProject}
+        projects={projects}
         onClose={() => setShowNewProject(false)}
       />
     </aside>
@@ -432,7 +463,12 @@ function AppShell() {
                   onClick={closeMenu}
                 />
               )}
-              <Sidebar id={sidebarId} isOpen={menuOpen} onClose={closeMenu} />
+              <Sidebar
+                id={sidebarId}
+                isOpen={menuOpen}
+                onClose={closeMenu}
+                onNavigate={() => setMenuOpenOn(null)}
+              />
 
               <div
                 className="flex min-w-0 flex-1 flex-col overflow-hidden"

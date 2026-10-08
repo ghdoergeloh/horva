@@ -6,7 +6,7 @@ import { MoreHorizontal } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
 import { Button } from "@horva/ui/Button";
-import { Calendar, CalendarFooter } from "@horva/ui/Calendar";
+import { Calendar } from "@horva/ui/Calendar";
 import { Dialog } from "@horva/ui/Dialog";
 import { Form } from "@horva/ui/Form";
 import { Menu, MenuItem, MenuTrigger, SubmenuTrigger } from "@horva/ui/Menu";
@@ -124,14 +124,18 @@ export function TaskCard({
 
   const { isPlannedToday, dateLabel } = planState(scheduledAt, scheduledTime);
 
-  async function handleStart() {
-    await client.slot.start({ taskId: id });
-    await invalidate();
-  }
+  const [failed, setFailed] = useState<"start" | "stop" | null>(null);
 
-  async function handleStop() {
-    await client.slot.stop({});
-    await invalidate();
+  async function run(action: "start" | "stop") {
+    setFailed(null);
+    try {
+      // Stop ends the work, like the stop of the timer.
+      if (action === "start") await client.slot.start({ taskId: id });
+      else await client.slot.done({});
+      await invalidate();
+    } catch {
+      setFailed(action);
+    }
   }
 
   function planToday() {
@@ -150,30 +154,30 @@ export function TaskCard({
     <Popover placement="bottom start">
       <Dialog aria-label={t("taskCard.pickDate")} className="p-3">
         {({ close }) => (
-          <Calendar
-            aria-label={t("taskCard.pickDate")}
-            value={scheduledAt ? toCalendarDate(scheduledAt) : null}
-            onChange={(day) => {
-              planOn(day);
-              close();
-            }}
-            footer={
-              scheduledAt ? (
-                <CalendarFooter>
-                  <Button
-                    variant="quiet"
-                    size="sm"
-                    onPress={() => {
-                      onPlan(null);
-                      close();
-                    }}
-                  >
-                    {t("taskCard.clearDate")}
-                  </Button>
-                </CalendarFooter>
-              ) : undefined
-            }
-          />
+          <>
+            <Calendar
+              aria-label={t("taskCard.pickDate")}
+              value={scheduledAt ? toCalendarDate(scheduledAt) : null}
+              onChange={(day) => {
+                planOn(day);
+                close();
+              }}
+            />
+            {scheduledAt && (
+              <div className="border-border mt-2 border-t pt-2">
+                <Button
+                  variant="quiet"
+                  size="sm"
+                  onPress={() => {
+                    onPlan(null);
+                    close();
+                  }}
+                >
+                  {t("taskCard.clearDate")}
+                </Button>
+              </div>
+            )}
+          </>
         )}
       </Dialog>
     </Popover>
@@ -207,8 +211,8 @@ export function TaskCard({
         dateLabel={dateLabel}
         isPlannedToday={isPlannedToday}
         onToggleDone={isActivity ? undefined : onMarkDone}
-        onStart={() => void handleStart()}
-        onStop={() => void handleStop()}
+        onStart={() => void run("start")}
+        onStop={() => void run("stop")}
         onPlanToday={onPlan ? planToday : undefined}
         datePopover={datePopover}
         actions={actions}
@@ -218,6 +222,13 @@ export function TaskCard({
         strings={cardStrings(t)}
         className={dimmed ? "opacity-60" : undefined}
       />
+      {failed && (
+        <p role="alert" className="text-destructive text-small mt-1">
+          {failed === "start"
+            ? t("startTaskDialog.failed")
+            : t("slotBar.stopFailed")}
+        </p>
+      )}
       {onRename && dialog === "rename" && (
         <RenameDialog
           name={name}

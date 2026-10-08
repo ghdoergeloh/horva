@@ -143,18 +143,15 @@
     "noTask": "No task",
     "region": "Timer",
     "running": "Running",
-    "noProject": "No project"
+    "noProject": "No project",
+    "stopFailed": "Could not stop. Try again?"
   },
   "startTaskDialog": {
     "titleStart": "Start work",
     "titleSwitch": "Switch task",
-    "searchPlaceholder": "Search tasks...",
-    "noTaskFound": "No task found",
-    "createPlaceholder": "Create new task...",
-    "startWithoutTask": "Start without task",
-    "start": "Start",
     "close": "Close",
-    "failed": "Could not start. Try again?"
+    "failed": "Could not start. Try again?",
+    "loadFailed": "Could not load the tasks."
   },
   "worktime": {
     "today": "Today",
@@ -205,13 +202,9 @@
   },
   "taskCard": {
     "markDone": "Mark as done",
-    "markOpen": "Mark as open",
     "removeFromToday": "Remove from today",
     "clickToEdit": "Click to edit",
-    "totalTime": "{{time}} total",
-    "pause": "Pause",
     "start": "Start",
-    "recurring": "Recurring activity",
     "recurrenceModalTitle": "Recurrence",
     "openDetails": "Open details",
     "reopen": "Reopen",
@@ -233,10 +226,7 @@
     "pickDate": "Pick a date"
   },
   "taskEditControls": {
-    "editLabels": "Edit labels",
     "planDate": "Plan date",
-    "planToday": "Plan for today",
-    "planned": "Planned: {{date}}",
     "planTime": "Time"
   },
   "taskUtils": {

@@ -89,7 +89,7 @@
     "overdue": "Überfällig",
     "planned": "Geplant",
     "noTasksToday": "Für jetzt ist nichts geplant.",
-    "noTasksHint": "Plane Aufgaben mit „Heute“ in der Aufgabenliste ein oder starte die Arbeit oben."
+    "noTasksHint": "Aufgaben in der Aufgabenliste mit „Heute“ einplanen oder oben die Arbeit starten."
   },
   "tasks": {
     "title": "Aufgaben",
@@ -143,18 +143,15 @@
     "noTask": "Ohne Aufgabe",
     "region": "Timer",
     "running": "Läuft",
-    "noProject": "Ohne Projekt"
+    "noProject": "Ohne Projekt",
+    "stopFailed": "Stoppen fehlgeschlagen. Erneut versuchen?"
   },
   "startTaskDialog": {
     "titleStart": "Arbeit starten",
     "titleSwitch": "Aufgabe wechseln",
-    "searchPlaceholder": "Task suchen...",
-    "noTaskFound": "Kein Task gefunden",
-    "createPlaceholder": "Neuen Task erstellen...",
-    "startWithoutTask": "Ohne Task starten",
-    "start": "Start",
     "close": "Schließen",
-    "failed": "Starten fehlgeschlagen. Erneut versuchen?"
+    "failed": "Starten fehlgeschlagen. Erneut versuchen?",
+    "loadFailed": "Aufgaben konnten nicht geladen werden."
   },
   "worktime": {
     "today": "Heute",
@@ -226,13 +223,9 @@
   },
   "taskCard": {
     "markDone": "Als erledigt markieren",
-    "markOpen": "Als offen markieren",
     "removeFromToday": "Von heute entfernen",
     "clickToEdit": "Klicken zum Bearbeiten",
-    "totalTime": "{{time}} gesamt",
-    "pause": "Pause",
     "start": "Starten",
-    "recurring": "Wiederkehrende Aktivität",
     "recurrenceModalTitle": "Wiederholung",
     "openDetails": "Details öffnen",
     "reopen": "Wieder öffnen",
@@ -254,10 +247,7 @@
     "pickDate": "Datum wählen"
   },
   "taskEditControls": {
-    "editLabels": "Labels bearbeiten",
     "planDate": "Datum planen",
-    "planToday": "Für heute planen",
-    "planned": "Geplant: {{date}}",
     "planTime": "Uhrzeit"
   },
   "taskUtils": {

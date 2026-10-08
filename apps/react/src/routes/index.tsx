@@ -36,10 +36,11 @@ function TaskSection({
 }: TaskSectionProps) {
   const [open, setOpen] = useState(defaultOpen);
   const panelId = useId();
+  const headingId = useId();
 
   return (
-    <section className="space-y-2">
-      <h2 className="text-heading">
+    <section aria-labelledby={headingId} className="space-y-2">
+      <h2 id={headingId} className="text-heading">
         <Button
           variant="quiet"
           size="sm"

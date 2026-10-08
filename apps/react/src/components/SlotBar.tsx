@@ -11,6 +11,7 @@ import {
 } from "#/contexts/SettingsContext.js";
 import { client } from "#/lib/orpc.js";
 import { StartTaskDialog } from "./StartTaskDialog.js";
+import { elapsedSeconds, workedMinutes } from "./timerRules.js";
 
 /** The current time, updated every second while `isTicking` is true. */
 function useNow(isTicking: boolean): number {
@@ -50,18 +51,18 @@ export function SlotBar() {
   const todayLogged = useLoggedMinutes("today");
   const weekLogged = useLoggedMinutes("week");
 
-  const elapsedSeconds = openSlot
-    ? Math.max(
-        0,
-        Math.floor((now - new Date(openSlot.startedAt).getTime()) / 1000),
-      )
-    : 0;
-  const runningMinutes = Math.floor(elapsedSeconds / 60);
+  const [stopFailed, setStopFailed] = useState(false);
+  const seconds = elapsedSeconds(openSlot?.startedAt, now);
   const task = openSlot?.task;
 
   async function handleStop() {
-    await client.slot.done({});
-    await invalidate();
+    setStopFailed(false);
+    try {
+      await client.slot.done({});
+      await invalidate();
+    } catch {
+      setStopFailed(true);
+    }
   }
 
   return (
@@ -72,12 +73,12 @@ export function SlotBar() {
             ? {
                 taskName: task?.name ?? t("slotBar.noTask"),
                 project: task ? task.project : null,
-                elapsedSeconds,
+                elapsedSeconds: seconds,
               }
             : null
         }
-        todayMinutes={todayLogged + runningMinutes}
-        weekMinutes={weekLogged + runningMinutes}
+        todayMinutes={workedMinutes(todayLogged, seconds)}
+        weekMinutes={workedMinutes(weekLogged, seconds)}
         onStart={() => setDialog("start")}
         onSwitch={() => setDialog("switch")}
         onStop={() => void handleStop()}
@@ -96,10 +97,15 @@ export function SlotBar() {
           noProject: t("slotBar.noProject"),
         }}
       />
+      {stopFailed && (
+        <p role="alert" className="text-destructive text-small mt-2">
+          {t("slotBar.stopFailed")}
+        </p>
+      )}
       <StartTaskDialog
         isOpen={dialog !== null}
         switchMode={dialog === "switch"}
-        currentTaskId={task?.id ?? null}
+        current={openSlot ? (task?.id ?? null) : undefined}
         onClose={() => setDialog(null)}
         onStarted={async () => {
           await invalidate();
