@@ -71,6 +71,10 @@ export const colorPairs: ColorPair[] = [
   text("foreground", "secondary"),
   text("destructive", "popover"),
   graphic("primary", "accent"),
+  // Active presets and today in the calendar.
+  text("accent-foreground", "popover"),
+  text("accent-foreground", "background"),
+  text("accent-foreground", "card"),
   // Focus ring, selected borders and field borders.
   graphic("ring", "background"),
   graphic("ring", "card"),
