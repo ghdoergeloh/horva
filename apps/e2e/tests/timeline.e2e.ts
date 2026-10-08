@@ -360,3 +360,98 @@ test("a slot is deleted after a question", async ({ page }) => {
   await expect(row(page, /^10:00 11:00/)).toHaveCount(0);
   await expect(row(page, /^09:00 10:00 1:00/)).toBeVisible();
 });
+
+test("a failed delete says so and reloads the day", async ({ page }) => {
+  const day = "2026-01-07";
+  await clearWeek(page, day);
+  await addSlot(page, at(day, "09:00"), at(day, "10:00"));
+  const gone = await addSlot(page, at(day, "10:00"), at(day, "11:00"));
+  await openTimeline(page, at(day, "18:00"));
+
+  await page
+    .getByRole("button", { name: "Slot 10:00–11:00 bearbeiten" })
+    .click();
+  await page.getByRole("button", { name: "Slot löschen" }).click();
+  const question = page.getByRole("alertdialog", { name: "Slot löschen?" });
+  await expect(question).toBeVisible();
+  // Someone else deletes the slot while the question is open.
+  await rpc(page, "slot/delete", { id: gone });
+  await question.getByRole("button", { name: "Löschen" }).click();
+
+  await expect(page.getByRole("alert")).toHaveText(
+    "Löschen fehlgeschlagen. Erneut versuchen?",
+  );
+  await expect(row(page, /^10:00 11:00/)).toHaveCount(0);
+  await expect(row(page, /^09:00 10:00 1:00/)).toBeVisible();
+});
+
+test("a slot from Sunday night shows on Monday, also while it runs", async ({
+  page,
+}) => {
+  await clearWeek(page, "2026-01-14");
+  await clearWeek(page, "2026-01-21");
+  const night = await addSlot(
+    page,
+    at("2026-01-18", "22:00"),
+    at("2026-01-19", "02:00"),
+  );
+  await openTimeline(page, at("2026-01-19", "10:00"));
+  await expect(
+    page.getByRole("button", { name: /00:00 bis 02:00/ }),
+  ).toBeVisible();
+
+  await rpc(page, "slot/delete", { id: night });
+  const running = await addSlot(page, at("2026-01-18", "22:00"), null);
+  try {
+    await openTimeline(page, at("2026-01-19", "10:00"));
+    await expect(
+      page.getByRole("button", { name: /00:00 bis jetzt/ }),
+    ).toBeVisible();
+    // The running slot covers the whole day so far: no slot to add.
+    await expect(
+      page.getByRole("button", { name: "Slot eintragen", exact: true }),
+    ).toHaveCount(0);
+  } finally {
+    await rpc(page, "slot/delete", { id: running });
+  }
+});
+
+test("the project filter hides gaps, rests in work periods and resets", async ({
+  page,
+}) => {
+  await clearWeek(page, "2026-01-21");
+  await clearWeek(page, "2026-01-28");
+  const day = "2026-01-28";
+  const a = await projectWithTask(page, "Nordlicht", "Mail");
+  const b = await projectWithTask(page, "Kranich", "Adapter");
+  await addSlot(page, at(day, "09:00"), at(day, "10:00"), a.task.id);
+  await addSlot(page, at(day, "10:30"), at(day, "11:00"), b.task.id);
+  await addSlot(
+    page,
+    at("2026-01-21", "09:00"),
+    at("2026-01-21", "10:00"),
+    b.task.id,
+  );
+  await openTimeline(page, at(day, "18:00"));
+  await expect(row(page, /Lücke/)).toBeVisible();
+
+  const filter = page.getByRole("button", { name: /Projekt filtern/ });
+  await filter.click();
+  await page.getByRole("option", { name: a.project.name }).click();
+  await expect(row(page, /^09:00 10:00 1:00/)).toBeVisible();
+  await expect(row(page, /^10:30 11:00/)).toHaveCount(0);
+  await expect(row(page, /Lücke/)).toHaveCount(0);
+
+  // Work periods count all projects; the filter rests.
+  await page.getByRole("radio", { name: "Arbeitszeiten" }).click();
+  await expect(filter).toBeDisabled();
+  await page.getByRole("radio", { name: "Slots" }).click();
+  await expect(filter).toBeEnabled();
+
+  // A week without the project shows all projects.
+  await page.getByRole("button", { name: "Vorherige Woche" }).click();
+  await expect(filter).toContainText("Alle Projekte");
+  await expect(
+    page.getByRole("button", { name: new RegExp(b.task.name) }),
+  ).toBeVisible();
+});

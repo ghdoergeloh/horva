@@ -151,9 +151,7 @@
   "timeline": {
     "previousWeek": "Vorherige Woche",
     "nextWeek": "Nächste Woche",
-    "today": "Heute",
-    "filterProject": "Projekt filtern…",
-    "removeFilter": "Filter entfernen",
+    "filterProject": "Projekt filtern",
     "slots": "Slots",
     "tasks": "Aufgaben",
     "title": "Zeitleiste",
@@ -176,6 +174,7 @@
     "deleteTitle": "Slot löschen?",
     "deleteText": "Der Slot {{from}}–{{to}} ({{task}}) wird gelöscht.",
     "deleteAction": "Löschen",
+    "deleteFailed": "Löschen fehlgeschlagen. Erneut versuchen?",
     "slotTable": {
       "from": "Von",
       "to": "Bis",

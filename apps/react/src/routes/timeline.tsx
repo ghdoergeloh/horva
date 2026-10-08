@@ -20,6 +20,7 @@ import { client } from "#/lib/orpc.js";
 import {
   addDays,
   dayKey,
+  periodsOverlapping,
   projectsOfSlots,
   slotColor,
   slotsOverlapping,
@@ -27,6 +28,7 @@ import {
   slotTitle,
   startOfWeek,
   weekDays,
+  weekQueryRange,
 } from "#/lib/timeline.js";
 import {
   dateLocale,
@@ -67,9 +69,7 @@ function Timeline() {
   } | null>(null);
 
   const days = weekDays(weekStart);
-  const from = weekStart;
-  const to = addDays(weekStart, 7);
-  to.setMilliseconds(-1);
+  const { from, to } = weekQueryRange(weekStart);
 
   const slotsQuery = useQuery({
     queryKey: ["slots", "week", from.toISOString()],
@@ -91,8 +91,13 @@ function Timeline() {
     queryFn: async () => (await client.project.list({})).projects,
   });
 
-  const allSlots = slotsQuery.data ?? [];
-  const periods = periodsQuery.data ?? [];
+  // The query starts a day early; keep what reaches into this week.
+  const allSlots = (slotsQuery.data ?? []).filter(
+    (s) => (s.endedAt ?? now) > weekStart,
+  );
+  const periods = (periodsQuery.data ?? []).filter(
+    (p) => (p.endedAt ?? now) > weekStart,
+  );
   const texts = slotTexts(t);
   const weekProjects = projectsOfSlots(allSlots);
   const filter =
@@ -137,14 +142,12 @@ function Timeline() {
     date,
     blocks:
       view === "periods"
-        ? periods
-            .filter((p) => dayKey(p.startedAt) === dayKey(date))
-            .map((p) => ({
-              id: p.startedAt.toISOString(),
-              start: p.startedAt,
-              end: p.endedAt,
-              title: t("timeline.workTime"),
-            }))
+        ? periodsOverlapping(periods, date, now).map((p) => ({
+            id: p.startedAt.toISOString(),
+            start: p.startedAt,
+            end: p.endedAt,
+            title: t("timeline.workTime"),
+          }))
         : slotsOverlapping(visibleSlots, date, now).map((s) => ({
             id: s.id,
             start: s.startedAt,
@@ -246,7 +249,8 @@ function Timeline() {
                   view={view}
                   slots={slotsStartingOn(visibleSlots, day.date)}
                   allSlots={slotsStartingOn(allSlots, day.date)}
-                  periods={periods.filter((p) => dayKey(p.startedAt) === key)}
+                  overlappingSlots={slotsOverlapping(allSlots, day.date, now)}
+                  periods={periodsOverlapping(periods, day.date, now)}
                   isFiltered={filter !== null}
                   now={now}
                   editing={editing?.day === key ? editing.editing : null}

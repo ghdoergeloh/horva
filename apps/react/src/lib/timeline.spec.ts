@@ -5,6 +5,7 @@ import {
   draftTimes,
   neighborChanges,
   newSlotTimes,
+  periodsOverlapping,
   projectsOfSlots,
   slotColor,
   slotEdit,
@@ -15,6 +16,7 @@ import {
   toTableSlot,
   toWorkPeriod,
   weekDays,
+  weekQueryRange,
 } from "./timeline";
 
 const texts = {
@@ -309,11 +311,19 @@ describe("neighborChanges", () => {
 });
 
 describe("newSlotTimes", () => {
+  /** A time long after the test day, so "now" does not cut anything. */
+  const later = at("12:00", 20);
+
   it("offers 09:00 to 10:00 on an empty day", () => {
-    expect(newSlotTimes([], at("0:00"))).toEqual({
+    expect(newSlotTimes([], at("0:00"), later)).toEqual({
       start: at("9:00"),
       end: at("10:00"),
     });
+  });
+
+  it("offers nothing that starts in the future", () => {
+    expect(newSlotTimes([], at("0:00"), at("7:30"))).toBeNull();
+    expect(newSlotTimes([], at("0:00", 9), at("12:00"))).toBeNull();
   });
 
   it("offers half an hour after the last finished slot", () => {
@@ -324,25 +334,81 @@ describe("newSlotTimes", () => {
           slot(new Date(2026, 9, 8, 10, 30), new Date(2026, 9, 8, 12, 5, 40)),
         ],
         at("0:00"),
+        later,
       ),
     ).toEqual({ start: at("12:05"), end: at("12:35") });
   });
 
-  it("stops at the end of the day", () => {
-    expect(newSlotTimes([slot(at("20:00"), at("23:50"))], at("0:00"))).toEqual({
-      start: at("23:50"),
-      end: at("23:59"),
-    });
-    expect(newSlotTimes([slot(at("20:00"), at("23:59"))], at("0:00"))).toBe(
-      null,
-    );
+  it("ends the offer at now", () => {
     expect(
-      newSlotTimes([slot(at("20:00"), at("1:00", 9))], at("0:00")),
+      newSlotTimes([slot(at("9:00"), at("17:00"))], at("0:00"), at("17:10")),
+    ).toEqual({ start: at("17:00"), end: at("17:10") });
+    expect(
+      newSlotTimes([slot(at("9:00"), at("17:00"))], at("0:00"), at("17:00")),
+    ).toBeNull();
+  });
+
+  it("starts after a slot from the day before", () => {
+    expect(
+      newSlotTimes([slot(at("22:00", 7), at("1:00"))], at("0:00"), later),
+    ).toEqual({ start: at("1:00"), end: at("1:30") });
+  });
+
+  it("stops at the end of the day", () => {
+    expect(
+      newSlotTimes([slot(at("20:00"), at("23:50"))], at("0:00"), later),
+    ).toEqual({ start: at("23:50"), end: at("23:59") });
+    expect(
+      newSlotTimes([slot(at("20:00"), at("23:59"))], at("0:00"), later),
+    ).toBeNull();
+    expect(
+      newSlotTimes([slot(at("20:00"), at("1:00", 9))], at("0:00"), later),
     ).toBeNull();
   });
 
   it("offers nothing while a slot of the day runs", () => {
-    expect(newSlotTimes([slot(at("9:00"), null)], at("0:00"))).toBeNull();
+    expect(
+      newSlotTimes([slot(at("9:00"), null)], at("0:00"), at("12:00")),
+    ).toBeNull();
+    // A slot that runs since yesterday 22:00 covers the whole day so far.
+    expect(
+      newSlotTimes([slot(at("22:00", 7), null)], at("0:00"), at("12:00")),
+    ).toBeNull();
+  });
+});
+
+describe("periodsOverlapping", () => {
+  const period = (start: Date, end: Date | null): TimelinePeriod => ({
+    startedAt: start,
+    endedAt: end,
+    minutes: 0,
+    slotCount: 1,
+    projectIds: [],
+  });
+  const night = period(at("22:00", 7), at("2:00"));
+  const morning = period(at("9:00"), at("10:00"));
+  const running = period(at("11:00"), null);
+
+  it("shows a period across midnight on both days", () => {
+    const all = [night, morning, running];
+    expect(periodsOverlapping(all, at("0:00", 7), at("12:00"))).toEqual([
+      night,
+    ]);
+    expect(periodsOverlapping(all, at("0:00"), at("12:00"))).toEqual([
+      night,
+      morning,
+      running,
+    ]);
+    expect(periodsOverlapping(all, at("0:00", 9), at("12:00"))).toEqual([]);
+  });
+});
+
+describe("weekQueryRange", () => {
+  it("starts a day early, for a slot that runs into Monday", () => {
+    expect(weekQueryRange(new Date(2026, 9, 5))).toEqual({
+      from: new Date(2026, 9, 4),
+      to: new Date(new Date(2026, 9, 12).getTime() - 1),
+    });
   });
 });
 

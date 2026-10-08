@@ -286,31 +286,61 @@ export function neighborChanges(
 
 /**
  * The times offered for a new slot on a day without a free gap: after the
- * last finished slot, or 09:00–10:00 on an empty day. `null` when a slot
- * runs on that day, or when the day has no room left.
+ * last finished slot, or 09:00–10:00 on an empty day, and never after
+ * `now`. `daySlots` are all slots that lie on the day, also one from the
+ * day before. `null` when a slot runs on that day, when the offer would
+ * start at or after `now`, or when the day has no room left.
  */
 export function newSlotTimes(
   daySlots: readonly TimelineSlot[],
   day: Date,
+  now: Date,
 ): { start: Date; end: Date } | null {
   const midnight = new Date(day.getFullYear(), day.getMonth(), day.getDate());
+  let start: Date;
+  let end: Date;
   if (daySlots.length === 0) {
-    const start = new Date(midnight);
+    start = new Date(midnight);
     start.setHours(9);
-    const end = new Date(midnight);
+    end = new Date(midnight);
     end.setHours(10);
-    return { start, end };
+  } else {
+    if (daySlots.some((s) => s.endedAt === null)) return null;
+    start = new Date(
+      Math.max(...daySlots.map((s) => s.endedAt?.getTime() ?? 0)),
+    );
+    start.setSeconds(0, 0);
+    const latest = addDays(midnight, 1);
+    latest.setMinutes(-1);
+    if (start >= latest) return null;
+    end = new Date(Math.min(start.getTime() + 30 * MINUTE, latest.getTime()));
   }
-  if (daySlots.some((s) => s.endedAt === null)) return null;
-  const lastEnd = new Date(
-    Math.max(...daySlots.map((s) => s.endedAt?.getTime() ?? 0)),
-  );
-  lastEnd.setSeconds(0, 0);
-  const latest = addDays(midnight, 1);
-  latest.setMinutes(-1);
-  if (lastEnd >= latest) return null;
-  const end = new Date(
-    Math.min(lastEnd.getTime() + 30 * MINUTE, latest.getTime()),
-  );
-  return { start: lastEnd, end };
+  const cut = new Date(now);
+  cut.setSeconds(0, 0);
+  if (start >= cut) return null;
+  if (end > cut) end = cut;
+  return { start, end };
+}
+
+/**
+ * The work periods that lie on `day` at least in part: a period across
+ * midnight shows on both days. A running period lasts until `now`.
+ */
+export function periodsOverlapping(
+  periods: readonly TimelinePeriod[],
+  day: Date,
+  now: Date,
+): TimelinePeriod[] {
+  const from = new Date(day.getFullYear(), day.getMonth(), day.getDate());
+  const to = addDays(from, 1);
+  return periods.filter((p) => p.startedAt < to && (p.endedAt ?? now) > from);
+}
+
+/**
+ * The range to load for the week that starts on `weekStart`. It starts a
+ * day early, so a slot from Sunday night that runs into Monday is there.
+ */
+export function weekQueryRange(weekStart: Date): { from: Date; to: Date } {
+  const to = addDays(weekStart, 7);
+  return { from: addDays(weekStart, -1), to: new Date(to.getTime() - 1) };
 }

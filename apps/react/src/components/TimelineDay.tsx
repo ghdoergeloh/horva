@@ -51,6 +51,8 @@ export interface TimelineDayProps {
   slots: readonly TimelineSlot[];
   /** All slots that start on this day, for the neighbour note. */
   allSlots: readonly TimelineSlot[];
+  /** All slots that lie on this day, also one from the day before. */
+  overlappingSlots: readonly TimelineSlot[];
   periods: readonly TimelinePeriod[];
   /** Whether the project filter is on; gaps then hide. */
   isFiltered: boolean;
@@ -81,6 +83,7 @@ export function TimelineDay({
   view,
   slots,
   allSlots,
+  overlappingSlots,
   periods,
   isFiltered,
   now,
@@ -98,6 +101,7 @@ export function TimelineDay({
     draft: SlotDraft<TaskPickerKey>;
   } | null>(null);
   const [toDelete, setToDelete] = useState<TimelineSlot | null>(null);
+  const [deleteFailed, setDeleteFailed] = useState(false);
   const texts = slotTexts(t);
 
   if (view === "periods")
@@ -130,6 +134,7 @@ export function TimelineDay({
 
   function setEditing(next: SlotTableEditing | null) {
     setDraft(null);
+    setDeleteFailed(false);
     onEditingChange(next);
   }
 
@@ -170,8 +175,15 @@ export function TimelineDay({
   }
 
   async function deleteSlot(slot: TimelineSlot) {
-    await client.slot.delete({ id: slot.id });
-    await queryClient.invalidateQueries({ queryKey: ["slots"] });
+    setDeleteFailed(false);
+    try {
+      await client.slot.delete({ id: slot.id });
+    } catch {
+      setDeleteFailed(true);
+    } finally {
+      // Also after a failure: the slot may be gone or changed elsewhere.
+      await queryClient.invalidateQueries({ queryKey: ["slots"] });
+    }
   }
 
   // Which neighbour slots move when the open draft is saved.
@@ -213,9 +225,7 @@ export function TimelineDay({
       </span>
     ) : undefined;
 
-  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  const proposal =
-    date <= today && !editing ? newSlotTimes(allSlots, date) : null;
+  const proposal = editing ? null : newSlotTimes(overlappingSlots, date, now);
 
   return (
     <div className="pb-2">
@@ -239,6 +249,11 @@ export function TimelineDay({
         lastProjectId={lastProjectId}
         labels={slotTableLabels(t)}
       />
+      {deleteFailed && (
+        <p role="alert" className="text-destructive text-caption px-2 pt-1.5">
+          {t("timeline.deleteFailed")}
+        </p>
+      )}
       {proposal && (
         <Button
           variant="quiet"
