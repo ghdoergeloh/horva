@@ -1,156 +1,170 @@
-import type { KeyboardEvent } from "react";
-import { useEffect, useState } from "react";
+import type { ReactNode } from "react";
+import { useEffect, useId, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, useParams } from "@tanstack/react-router";
-import { ChevronDown, ChevronRight, Plus, Settings2, X } from "lucide-react";
+import { ChevronRight, Plus, Settings2 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
 import { Button } from "@horva/ui/Button";
+import { ProjectDot } from "@horva/ui/Chip";
 import { Loader } from "@horva/ui/Logo";
-import { Select, SelectItem } from "@horva/ui/Select";
 import { TextField } from "@horva/ui/TextField";
 
-import type { LabelRow } from "#/components/TaskEditControls.js";
 import { DraggableTask } from "#/components/DraggableTask.js";
-import { TaskCard } from "#/components/TaskCard.js";
 import { useDetailDrawer } from "#/contexts/DetailDrawerContext.js";
 import { client } from "#/lib/orpc.js";
-import { calcTotalMinutes } from "#/lib/taskUtils.js";
+import type { TaskRow } from "./-components/TaskListCard.js";
+import { TaskListCard } from "./-components/TaskListCard.js";
 
-type TaskRow = Awaited<ReturnType<typeof client.task.list>>["tasks"][number];
+type TaskType = "task" | "activity";
 
-interface CollapsibleSectionProps {
-  title: string;
-  count: number;
-  titleClassName?: string;
-  defaultOpen?: boolean;
-  children: React.ReactNode;
-}
-
-function CollapsibleSection({
+/**
+ * A section of the project page with a heading that folds it, the number
+ * of its entries and an optional action on the right.
+ */
+function Section({
   title,
   count,
-  titleClassName = "text-muted-foreground",
-  defaultOpen = true,
+  action,
+  isOpen,
+  onOpenChange,
   children,
-}: CollapsibleSectionProps) {
-  const [open, setOpen] = useState(defaultOpen);
-
+}: {
+  title: string;
+  count?: string;
+  action?: ReactNode;
+  isOpen: boolean;
+  onOpenChange: (isOpen: boolean) => void;
+  children: ReactNode;
+}) {
+  const panelId = useId();
   return (
-    <section>
-      <Button
-        variant="quiet"
-        onPress={() => setOpen((v) => !v)}
-        className="mb-3 flex items-center gap-1.5 text-left"
-        aria-label={title}
-      >
-        {open ? (
-          <ChevronDown className={`h-3.5 w-3.5 ${titleClassName}`} />
-        ) : (
-          <ChevronRight className={`h-3.5 w-3.5 ${titleClassName}`} />
-        )}
-        <h2
-          className={`text-sm font-semibold tracking-wide uppercase ${titleClassName}`}
-        >
-          {title}
+    <section className="space-y-3">
+      <div className="flex min-h-9 items-center justify-between gap-2">
+        <h2 className="text-foreground">
+          <Button
+            variant="quiet"
+            size="sm"
+            aria-expanded={isOpen}
+            aria-controls={panelId}
+            onPress={() => onOpenChange(!isOpen)}
+            className="text-heading -ml-2.5 gap-1.5 font-semibold"
+          >
+            <ChevronRight
+              aria-hidden
+              className={`text-muted-foreground transition-transform ${isOpen ? "rotate-90" : ""}`}
+            />
+            {title}
+            {count !== undefined && (
+              <span className="text-muted-foreground text-small font-normal">
+                {count}
+              </span>
+            )}
+          </Button>
         </h2>
-        <span className="text-muted-foreground text-xs font-normal tracking-normal normal-case">
-          ({count})
-        </span>
-      </Button>
-      {open && children}
+        {action}
+      </div>
+      <div id={panelId} hidden={!isOpen}>
+        {isOpen && children}
+      </div>
     </section>
   );
 }
 
-interface NewTaskFormProps {
-  defaultTaskType?: "task" | "activity";
-  onClose: () => void;
-  onCreate: (name: string, taskType: "task" | "activity") => void;
-}
-
+/** The row to name a new task or activity. Enter creates, Escape closes. */
 function NewTaskForm({
-  defaultTaskType = "task",
+  label,
   onClose,
   onCreate,
-}: NewTaskFormProps) {
+}: {
+  label: string;
+  onClose: () => void;
+  onCreate: (name: string) => void;
+}) {
   const { t } = useTranslation();
   const [name, setName] = useState("");
-  const [taskType, setTaskType] = useState<"task" | "activity">(
-    defaultTaskType,
-  );
 
   function submit() {
     const trimmed = name.trim();
     if (!trimmed) return;
-    onCreate(trimmed, taskType);
-    onClose();
-  }
-
-  function handleKeyDown(e: KeyboardEvent) {
-    if (e.key === "Enter") {
-      e.preventDefault();
-      submit();
-      return;
-    }
-    if (e.key === "Escape") onClose();
+    onCreate(trimmed);
+    setName("");
   }
 
   return (
-    // Handles Enter and Escape for all controls in the row.
-    // oxlint-disable-next-line jsx-a11y/no-static-element-interactions
-    <div
-      onKeyDown={handleKeyDown}
-      className="border-border flex items-center gap-2 border-t px-3 py-2"
+    <form
+      className="bg-card border-border flex flex-wrap items-center gap-2 rounded-lg border p-3"
+      onSubmit={(e) => {
+        e.preventDefault();
+        submit();
+      }}
     >
       <TextField
         // oxlint-disable-next-line jsx-a11y/no-autofocus -- The row opens on a user action.
         autoFocus
+        aria-label={label}
         value={name}
         onChange={setName}
-        onKeyDown={(e) => handleKeyDown(e)}
+        onKeyDown={(e) => {
+          if (e.key === "Escape") onClose();
+        }}
         placeholder={t("tasks.newTaskPlaceholder")}
-        className="min-w-0 flex-1"
+        className="min-w-48 flex-1"
       />
-      <Select
-        value={taskType}
-        onChange={(value) => setTaskType(value as "task" | "activity")}
-      >
-        <SelectItem id="task">{t("tasks.taskType.task")}</SelectItem>
-        <SelectItem id="activity">{t("tasks.taskType.activity")}</SelectItem>
-      </Select>
-      <Button
-        variant="quiet"
-        onPress={onClose}
-        className="text-muted-foreground hover:text-foreground/80 flex-shrink-0 rounded p-0.5"
-      >
-        <X className="h-3.5 w-3.5" />
-      </Button>
-      <Button
-        variant="primary"
-        isDisabled={!name.trim()}
-        onPress={submit}
-        className="flex-shrink-0"
-      >
-        {t("tasks.create")}
-      </Button>
-    </div>
+      <div className="flex gap-2">
+        <Button variant="secondary" onPress={onClose}>
+          {t("tasks.cancel")}
+        </Button>
+        <Button type="submit" isDisabled={!name.trim()}>
+          {t("tasks.create")}
+        </Button>
+      </div>
+    </form>
+  );
+}
+
+/** A list of cards that can be dragged onto a project in the sidebar. */
+function TaskList({
+  tasks,
+  allLabels,
+  empty,
+}: {
+  tasks: TaskRow[];
+  allLabels: { id: number; name: string }[];
+  empty: string;
+}) {
+  if (tasks.length === 0)
+    return <p className="text-muted-foreground text-sm">{empty}</p>;
+  return (
+    <ul className="space-y-2">
+      {tasks.map((task) => (
+        <li key={task.id}>
+          <DraggableTask
+            task={{
+              type: "task",
+              taskId: task.id,
+              name: task.name,
+              projectId: task.project.id,
+            }}
+          >
+            <TaskListCard task={task} allLabels={allLabels} />
+          </DraggableTask>
+        </li>
+      ))}
+    </ul>
   );
 }
 
 const PAGE_SIZE = 100;
 
-interface DoneTasksSectionProps {
-  projectId: number;
-  allLabels: LabelRow[];
-  onReopen: (id: number) => void;
-}
-
+/** The done tasks of the project, loaded page by page on first open. */
 function DoneTasksSection({
   projectId,
   allLabels,
-  onReopen,
-}: DoneTasksSectionProps) {
+}: {
+  projectId: number;
+  allLabels: { id: number; name: string }[];
+}) {
   const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const [page, setPage] = useState(0);
@@ -182,8 +196,8 @@ function DoneTasksSection({
   useEffect(() => {
     if (!fetched) return;
     setAccumulated((prev) => {
-      const existingIds = new Set(prev.map((t) => t.id));
-      const newItems = fetched.filter((t) => !existingIds.has(t.id));
+      const existingIds = new Set(prev.map((task) => task.id));
+      const newItems = fetched.filter((task) => !existingIds.has(task.id));
       if (newItems.length === 0) return prev;
       return [...prev, ...newItems];
     });
@@ -192,84 +206,52 @@ function DoneTasksSection({
 
   const hasMore = (fetched?.length ?? 0) === PAGE_SIZE;
 
-  function handleToggle() {
-    setOpen((v) => !v);
-  }
-
-  function handleLoadMore() {
-    setPage((p) => p + 1);
-  }
-
-  function handleReopen(id: number) {
-    setAccumulated((prev) => prev.filter((t) => t.id !== id));
-    onReopen(id);
-  }
-
   return (
-    <section>
-      <Button
-        variant="quiet"
-        onPress={handleToggle}
-        className="mb-3 flex items-center gap-1.5 text-left"
-        aria-label={t("tasks.done.title")}
-      >
-        {open ? (
-          <ChevronDown className="text-muted-foreground h-3.5 w-3.5" />
-        ) : (
-          <ChevronRight className="text-muted-foreground h-3.5 w-3.5" />
-        )}
-        <h2 className="text-muted-foreground text-sm font-semibold tracking-wide uppercase">
-          {t("tasks.done.title")}
-        </h2>
+    <Section
+      title={t("tasks.done.title")}
+      count={
+        accumulated.length > 0
+          ? `${String(accumulated.length)}${hasMore ? "+" : ""}`
+          : undefined
+      }
+      isOpen={open}
+      onOpenChange={setOpen}
+    >
+      <div className="space-y-2">
         {accumulated.length > 0 && (
-          <span className="text-muted-foreground text-xs font-normal tracking-normal normal-case">
-            ({accumulated.length}
-            {hasMore ? "+" : ""})
-          </span>
+          <ul className="space-y-2">
+            {accumulated.map((task) => (
+              <li key={task.id}>
+                <TaskListCard
+                  task={task}
+                  allLabels={allLabels}
+                  onReopened={() =>
+                    setAccumulated((prev) =>
+                      prev.filter((other) => other.id !== task.id),
+                    )
+                  }
+                />
+              </li>
+            ))}
+          </ul>
         )}
-      </Button>
-
-      {open && (
-        <div className="space-y-2">
-          {accumulated.map((t) => (
-            <TaskCard
-              key={t.id}
-              id={t.id}
-              name={t.name}
-              project={t.project}
-              labels={t.taskLabels.map((tl) => tl.label)}
-              totalMinutes={calcTotalMinutes(t.slots)}
-              isActivity={t.taskType === "activity"}
-              isDone={t.taskType !== "activity"}
-              scheduledAt={t.scheduledAt}
-              recurrenceRule={t.recurrenceRule}
-              allLabels={allLabels}
-              onMarkDone={() => handleReopen(t.id)}
-            />
-          ))}
-
-          {isFetching && (
-            <p className="text-muted-foreground py-1 text-xs">{t("loading")}</p>
-          )}
-
-          {!isFetching && hasMore && (
-            <Button
-              variant="quiet"
-              onPress={handleLoadMore}
-              className="text-primary hover:text-sidebar-accent-foreground mt-1 text-xs"
-            >
-              {t("tasks.done.loadMore")}
-            </Button>
-          )}
-
-          {!isFetching && accumulated.length === 0 && (
-            <p className="text-muted-foreground text-sm">
-              {t("tasks.done.none")}
-            </p>
-          )}
-        </div>
-      )}
-    </section>
+        {isFetching && <Loader size={24} label={t("loading")} />}
+        {!isFetching && hasMore && (
+          <Button
+            variant="quiet"
+            size="sm"
+            onPress={() => setPage((p) => p + 1)}
+          >
+            {t("tasks.done.loadMore")}
+          </Button>
+        )}
+        {!isFetching && accumulated.length === 0 && (
+          <p className="text-muted-foreground text-sm">
+            {t("tasks.done.none")}
+          </p>
+        )}
+      </div>
+    </Section>
   );
 }
 
@@ -278,13 +260,12 @@ function ProjectTaskPage() {
   const { projectId: projectIdStr } = useParams({ from: "/tasks/$projectId" });
   const projectId = parseInt(projectIdStr, 10);
   const queryClient = useQueryClient();
-  const { openProject, openTask } = useDetailDrawer();
+  const { openProject } = useDetailDrawer();
 
-  const [addingTaskType, setAddingTaskType] = useState<
-    "task" | "activity" | null
-  >(null);
+  const [adding, setAdding] = useState<TaskType | null>(null);
+  const [open, setOpen] = useState({ task: true, activity: true });
 
-  const { data: projectData, isLoading: projectLoading } = useQuery({
+  const { data: project, isLoading: projectLoading } = useQuery({
     queryKey: ["projects", projectId],
     queryFn: async () => {
       const res = await client.project.get({ id: projectId });
@@ -311,111 +292,12 @@ function ProjectTaskPage() {
     },
   });
 
-  function invalidateTasks() {
-    void queryClient.invalidateQueries({ queryKey: ["tasks"] });
-  }
-
-  const markDoneMutation = useMutation({
-    mutationFn: (taskId: number) => client.task.done({ id: taskId }),
-    onSuccess: () => {
-      invalidateTasks();
-      // Completing a running task stops its slot and starts a new empty one,
-      // so the active-slot UI needs to refresh too.
-      void queryClient.invalidateQueries({ queryKey: ["slots"] });
-    },
-  });
-
-  const renameMutation = useMutation({
-    mutationFn: ({ id, name }: { id: number; name: string }) =>
-      client.task.update({ id, name }),
-    onSuccess: invalidateTasks,
-  });
-
-  const planMutation = useMutation({
-    mutationFn: ({ id, date }: { id: number; date: string | null }) =>
-      client.task.plan({ id, date: date ? new Date(date) : null }),
-    onSuccess: invalidateTasks,
-  });
-
-  const setRecurrenceMutation = useMutation({
-    mutationFn: ({ id, rule }: { id: number; rule: string | null }) =>
-      client.task.update({ id, recurrenceRule: rule }),
-    onSuccess: invalidateTasks,
-  });
-
-  const addLabelMutation = useMutation({
-    mutationFn: ({ taskId, labelId }: { taskId: number; labelId: number }) =>
-      client.task.update({ id: taskId, addLabelIds: [labelId] }),
-    onSuccess: invalidateTasks,
-  });
-
-  const removeLabelMutation = useMutation({
-    mutationFn: ({ taskId, labelId }: { taskId: number; labelId: number }) =>
-      client.task.update({ id: taskId, removeLabelIds: [labelId] }),
-    onSuccess: invalidateTasks,
-  });
-
-  const reopenMutation = useMutation({
-    mutationFn: (taskId: number) => client.task.reopen({ id: taskId }),
-    onSuccess: invalidateTasks,
-  });
-
   const createTaskMutation = useMutation({
-    mutationFn: ({
-      name,
-      taskType,
-    }: {
-      name: string;
-      taskType: "task" | "activity";
-    }) => client.task.create({ projectId, name, taskType }),
-    onSuccess: invalidateTasks,
+    mutationFn: ({ name, taskType }: { name: string; taskType: TaskType }) =>
+      client.task.create({ projectId, name, taskType }),
+    onSuccess: () =>
+      void queryClient.invalidateQueries({ queryKey: ["tasks"] }),
   });
-
-  // Split tasks by type
-  const allTasks = tasks.filter((t) => t.taskType === "task");
-  const allActivities = tasks.filter((t) => t.taskType === "activity");
-
-  function renderCard(t: TaskRow) {
-    const isActivity = t.taskType === "activity";
-    return (
-      <DraggableTask
-        key={t.id}
-        task={{
-          type: "task",
-          taskId: t.id,
-          name: t.name,
-          projectId: t.project.id,
-        }}
-      >
-        <TaskCard
-          id={t.id}
-          name={t.name}
-          project={t.project}
-          labels={t.taskLabels.map((tl) => tl.label)}
-          totalMinutes={calcTotalMinutes(t.slots)}
-          isActivity={isActivity}
-          scheduledAt={t.scheduledAt}
-          recurrenceRule={t.recurrenceRule}
-          onMarkDone={() => markDoneMutation.mutate(t.id)}
-          allLabels={allLabels}
-          onRename={(name) => renameMutation.mutate({ id: t.id, name })}
-          onPlan={(date) => planMutation.mutate({ id: t.id, date })}
-          onSetRecurrence={
-            isActivity
-              ? (rule) => setRecurrenceMutation.mutate({ id: t.id, rule })
-              : undefined
-          }
-          onAddLabel={(labelId) =>
-            addLabelMutation.mutate({ taskId: t.id, labelId })
-          }
-          onRemoveLabel={(labelId) =>
-            removeLabelMutation.mutate({ taskId: t.id, labelId })
-          }
-          onOpenDetails={() => openTask(t.id)}
-        />
-      </DraggableTask>
-    );
-  }
 
   if (projectLoading || tasksLoading) {
     return (
@@ -429,118 +311,87 @@ function ProjectTaskPage() {
     );
   }
 
-  const project = projectData;
+  const byType = {
+    task: tasks.filter((task) => task.taskType === "task"),
+    activity: tasks.filter((task) => task.taskType === "activity"),
+  };
 
-  return (
-    <div className="mx-auto max-w-5xl space-y-8">
-      <div>
-        <div className="flex items-center gap-3">
-          {project && (
-            <div
-              className="h-4 w-4 flex-shrink-0 rounded-sm"
-              style={{ backgroundColor: project.color }}
+  function renderSection(type: TaskType) {
+    const isTask = type === "task";
+    const list = byType[type];
+    return (
+      <Section
+        title={isTask ? t("tasks.title") : t("tasks.activities")}
+        count={String(list.length)}
+        isOpen={open[type]}
+        onOpenChange={(isOpen) => setOpen((o) => ({ ...o, [type]: isOpen }))}
+        action={
+          adding !== type && (
+            <Button
+              variant="quiet"
+              size="sm"
+              onPress={() => {
+                setOpen((o) => ({ ...o, [type]: true }));
+                setAdding(type);
+              }}
+            >
+              <Plus aria-hidden />
+              {isTask ? t("tasks.newTask") : t("tasks.newActivity")}
+            </Button>
+          )
+        }
+      >
+        <div className="space-y-2">
+          {adding === type && (
+            <NewTaskForm
+              label={
+                isTask ? t("tasks.newTaskName") : t("tasks.newActivityName")
+              }
+              onClose={() => setAdding(null)}
+              onCreate={(name) =>
+                createTaskMutation.mutate({ name, taskType: type })
+              }
             />
           )}
-          <h1 className="text-foreground text-2xl font-bold">
-            {project?.name ?? "Projekt"}
+          <TaskList
+            tasks={list}
+            allLabels={allLabels}
+            empty={isTask ? t("tasks.noTasks") : t("tasks.noActivities")}
+          />
+        </div>
+      </Section>
+    );
+  }
+
+  return (
+    <div className="mx-auto max-w-4xl space-y-8">
+      <header>
+        <div className="flex min-w-0 items-center gap-3">
+          {project && <ProjectDot color={project.color} className="size-3" />}
+          <h1 className="text-display text-foreground min-w-0 [overflow-wrap:anywhere]">
+            {project?.name ?? t("drawer.project")}
           </h1>
           {project && (
             <Button
               variant="quiet"
+              size="sm"
               onPress={() => openProject(project.id)}
-              className="text-muted-foreground hover:text-foreground/80 rounded p-1"
-              aria-label={t("drawer.projectTitle")}
+              aria-label={t("tasks.openProject")}
+              className="text-muted-foreground shrink-0"
             >
-              <Settings2 className="h-4 w-4" />
+              <Settings2 aria-hidden />
             </Button>
           )}
         </div>
         <p className="text-muted-foreground mt-1 text-sm">
-          {t("tasks.openCount", {
-            count: allTasks.filter((t) => t.status === "open").length,
-          })}{" "}
-          · {t("tasks.activityCount", { count: allActivities.length })}
+          {t("tasks.openCount", { count: byType.task.length })} ·{" "}
+          {t("tasks.activityCount", { count: byType.activity.length })}
         </p>
-      </div>
+      </header>
 
-      {/* Tasks group */}
-      <CollapsibleSection
-        title={t("tasks.title")}
-        count={allTasks.length}
-        titleClassName="text-foreground/90"
-      >
-        <div className="space-y-2">
-          {allTasks.map((t) => renderCard(t))}
-          {allTasks.length === 0 && addingTaskType !== "task" && (
-            <p className="text-muted-foreground text-sm">
-              {t("tasks.noTasks")}
-            </p>
-          )}
-        </div>
-        {addingTaskType === "task" ? (
-          <NewTaskForm
-            defaultTaskType="task"
-            onClose={() => setAddingTaskType(null)}
-            onCreate={(name, taskType) =>
-              createTaskMutation.mutate({ name, taskType })
-            }
-          />
-        ) : (
-          <Button
-            variant="quiet"
-            onPress={() => setAddingTaskType("task")}
-            className="text-muted-foreground hover:text-primary mt-3 flex items-center gap-1.5 text-sm"
-          >
-            <span className="inline-flex items-center gap-1.5">
-              <Plus className="h-3.5 w-3.5" />
-              {t("tasks.newTask")}
-            </span>
-          </Button>
-        )}
-      </CollapsibleSection>
-
-      {/* Activities group */}
-      <CollapsibleSection
-        title={t("tasks.activities")}
-        count={allActivities.length}
-        titleClassName="text-foreground/90"
-      >
-        <div className="space-y-2">
-          {allActivities.map((t) => renderCard(t))}
-          {allActivities.length === 0 && addingTaskType !== "activity" && (
-            <p className="text-muted-foreground text-sm">
-              {t("tasks.noActivities")}
-            </p>
-          )}
-        </div>
-        {addingTaskType === "activity" ? (
-          <NewTaskForm
-            defaultTaskType="activity"
-            onClose={() => setAddingTaskType(null)}
-            onCreate={(name, taskType) =>
-              createTaskMutation.mutate({ name, taskType })
-            }
-          />
-        ) : (
-          <Button
-            variant="quiet"
-            onPress={() => setAddingTaskType("activity")}
-            className="text-muted-foreground hover:text-primary mt-3 flex items-center gap-1.5 text-sm"
-          >
-            <span className="inline-flex items-center gap-1.5">
-              <Plus className="h-3.5 w-3.5" />
-              {t("tasks.newActivity")}
-            </span>
-          </Button>
-        )}
-      </CollapsibleSection>
-
-      {/* Done tasks — lazy, paginated */}
-      <DoneTasksSection
-        projectId={projectId}
-        allLabels={allLabels}
-        onReopen={(id) => reopenMutation.mutate(id)}
-      />
+      {renderSection("task")}
+      {renderSection("activity")}
+      <DoneTasksSection projectId={projectId} allLabels={allLabels} />
     </div>
   );
 }

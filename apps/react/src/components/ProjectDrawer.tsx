@@ -2,15 +2,17 @@ import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 
+import { AlertDialog } from "@horva/ui/AlertDialog";
 import { Button } from "@horva/ui/Button";
-import { ColorPicker } from "@horva/ui/ColorPicker";
+import { Loader } from "@horva/ui/Logo";
+import { Modal } from "@horva/ui/Modal";
+import { ProjectColorPicker } from "@horva/ui/ProjectColorPicker";
 import { TextField } from "@horva/ui/TextField";
 
 import { MocoLinkFields, MocoLoadButton } from "#/components/MocoLinkFields.js";
 import { Sheet } from "#/components/Sheet.js";
 import { useMocoConfigured, useRemoteMocoProjects } from "#/lib/mocoQueries.js";
 import { client } from "#/lib/orpc.js";
-import { PROJECT_COLOR_PRESETS } from "#/lib/projectColors.js";
 
 type Project = NonNullable<
   Awaited<ReturnType<typeof client.project.get>>["project"]
@@ -40,7 +42,7 @@ export function ProjectDrawer({
           onClose={onClose}
         />
       ) : (
-        <p className="text-muted-foreground text-sm">{t("loading")}</p>
+        <Loader size={24} label={t("loading")} />
       )}
     </Sheet>
   );
@@ -104,51 +106,37 @@ function ProjectDrawerBody({
 
   return (
     <>
-      {/* Name */}
-      <div className="space-y-1">
-        <p className="text-foreground text-sm font-medium">
-          {t("drawer.name")}
-        </p>
-        <TextField
-          aria-label={t("drawer.name")}
-          value={name}
-          onChange={setName}
-          onBlur={commitName}
-        />
-      </div>
+      <TextField
+        label={t("drawer.name")}
+        value={name}
+        onChange={setName}
+        onBlur={commitName}
+        onKeyDown={(e) => {
+          if (e.key === "Enter") commitName();
+        }}
+      />
 
-      {/* Color */}
-      <div className="space-y-1.5">
-        <p className="text-foreground text-sm font-medium">
-          {t("drawer.color")}
-        </p>
-        <div className="flex flex-wrap items-center gap-1.5">
-          {PROJECT_COLOR_PRESETS.map((c) => (
-            <Button
-              key={c}
-              variant="quiet"
-              onPress={() => updateMutation.mutate({ color: c })}
-              className={`h-5 w-5 rounded-full transition-transform hover:scale-110 ${
-                project.color === c ? "ring-ring ring-2 ring-offset-1" : ""
-              }`}
-              style={{ backgroundColor: c }}
-              aria-label={t("drawer.color")}
-            />
-          ))}
-          <ColorPicker
-            aria-label={t("drawer.customColor")}
-            value={project.color}
-            onChange={(val) => updateMutation.mutate({ color: val.toString() })}
-          />
-        </div>
-      </div>
+      <ProjectColorPicker
+        value={project.color}
+        onChange={(color) => updateMutation.mutate({ color })}
+        label={t("projectColors.label")}
+        labels={{
+          presets: t("projectColors.presets", {
+            returnObjects: true,
+          }) as string[],
+          custom: t("projectColors.custom"),
+          customPlaceholder: t("projectColors.customPlaceholder"),
+          invalid: t("projectColors.invalid"),
+        }}
+        className="bg-popover border-border rounded-lg border p-3"
+      />
 
       {/* Moco linking */}
       {mocoConfigured && (
         <div className="border-border space-y-3 border-t pt-5">
-          <p className="text-foreground text-sm font-semibold">
+          <h3 className="text-heading text-foreground">
             {t("moco.linkingTitle")}
-          </p>
+          </h3>
           {remoteQuery.data ? (
             <MocoLinkFields
               projectId={project.id}
@@ -164,52 +152,54 @@ function ProjectDrawerBody({
 
       {/* Status / actions */}
       <div className="border-border space-y-3 border-t pt-5">
-        <p className="text-muted-foreground text-xs">
+        <p className="text-muted-foreground text-sm">
           {t(`drawer.status.${project.status}`)}
         </p>
         {actionError && (
-          <p className="text-destructive text-xs">{actionError}</p>
+          <p role="alert" className="text-destructive text-sm">
+            {actionError}
+          </p>
         )}
-        <div className="flex flex-wrap gap-2">
-          {project.status === "active" && (
-            <Button
-              variant="secondary"
-              isPending={archiveMutation.isPending}
-              onPress={() => {
-                setActionError(null);
-                archiveMutation.mutate();
-              }}
-            >
-              {t("drawer.archive")}
-            </Button>
-          )}
-          {confirmDelete ? (
-            <>
+        {!project.isDefault && (
+          <div className="flex flex-wrap gap-2">
+            {project.status === "active" && (
               <Button
-                variant="destructive"
-                isPending={deleteMutation.isPending}
+                variant="secondary"
+                isPending={archiveMutation.isPending}
                 onPress={() => {
                   setActionError(null);
-                  deleteMutation.mutate();
+                  archiveMutation.mutate();
                 }}
               >
-                {t("drawer.confirmDelete")}
+                {t("drawer.archive")}
               </Button>
-              <Button variant="quiet" onPress={() => setConfirmDelete(false)}>
-                {t("common.cancel")}
-              </Button>
-            </>
-          ) : (
+            )}
             <Button
               variant="quiet"
               className="text-destructive"
+              isPending={deleteMutation.isPending}
               onPress={() => setConfirmDelete(true)}
             >
               {t("drawer.delete")}
             </Button>
-          )}
-        </div>
+          </div>
+        )}
       </div>
+
+      <Modal isOpen={confirmDelete} onOpenChange={setConfirmDelete}>
+        <AlertDialog
+          variant="destructive"
+          title={t("drawer.deleteProjectTitle")}
+          actionLabel={t("drawer.delete")}
+          cancelLabel={t("common.cancel")}
+          onAction={() => {
+            setActionError(null);
+            deleteMutation.mutate();
+          }}
+        >
+          {t("drawer.deleteProjectText")}
+        </AlertDialog>
+      </Modal>
     </>
   );
 }

@@ -23,9 +23,8 @@ const rawElementsAllowed: Record<string, string> = {
   "components/DraggableTask.tsx": "drag handle",
   "routes/tasks/index.tsx": "drag handle",
   // Not yet moved to @horva/ui.
-  "components/RecurrenceRulePicker.tsx": "radio inputs, time zone button",
   "components/TaskCard.tsx": "rename button",
-  "components/TaskDrawer.tsx": "notes textarea, link",
+  "components/TaskDrawer.tsx": "notes textarea",
 };
 
 /** Elements the app must not render itself; `@horva/ui` has a component for each. */

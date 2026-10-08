@@ -101,7 +101,8 @@
       "subtitle": "Prioritize via drag & drop",
       "empty": "No open tasks.",
       "dragHandle": "Drag to reorder",
-      "dragToProject": "Drag onto a project to move"
+      "dragToProject": "Drag onto a project to move",
+      "emptyHint": "Create new tasks inside a project."
     },
     "taskType": {
       "task": "Task",
@@ -111,7 +112,10 @@
       "title": "Completed Tasks",
       "none": "No completed tasks.",
       "loadMore": "Load more"
-    }
+    },
+    "newTaskName": "Name of the new task",
+    "newActivityName": "Name of the new activity",
+    "openProject": "Edit project"
   },
   "slot": {
     "edit": "Edit Slot",
@@ -189,7 +193,15 @@
     "deleteTitle": "Delete label",
     "deleteConfirm": "Delete?",
     "yes": "Yes",
-    "tasks": "{{count}} tasks"
+    "tasks_one": "{{count}} task",
+    "tasks_other": "{{count}} tasks",
+    "empty": "No labels yet.",
+    "newLabel": "New label",
+    "add": "Add",
+    "deleteDialogTitle": "Delete label?",
+    "deleteDialogText": "“{{name}}” is removed from all tasks.",
+    "delete": "Delete",
+    "deleteNamed": "Delete label “{{name}}”"
   },
   "taskCard": {
     "markDone": "Mark as done",
@@ -262,7 +274,11 @@
     "third": "third",
     "fourth": "fourth",
     "last": "last",
-    "timezone": "Timezone"
+    "timezone": "Timezone",
+    "frequency": "Frequency",
+    "weekdays": "Weekdays",
+    "monthlyMode": "Monthly on",
+    "repeat": "Repeat"
   },
   "settings": {
     "title": "Settings",
@@ -275,7 +291,9 @@
     "theme_system": "System",
     "theme_light": "Light",
     "theme_dark": "Dark",
-    "preview": "Example"
+    "preview": "Example",
+    "display": "Display",
+    "languageHint": "Language of the interface"
   },
   "moco": {
     "title": "Moco integration",
@@ -345,6 +363,59 @@
       "deleted": "Status: deleted",
       "open": "Status: open",
       "done": "Status: done"
-    }
+    },
+    "close": "Close",
+    "deleteProjectTitle": "Delete project?",
+    "deleteProjectText": "The tasks of the project move to the default project.",
+    "deleteTaskTitle": "Delete task?",
+    "deleteTaskText": "The tracked time stays, without a task.",
+    "notesPlaceholder": "Notes on the task"
+  },
+  "projectColors": {
+    "label": "Project color",
+    "presets": [
+      "Indigo",
+      "Amber",
+      "Teal",
+      "Magenta",
+      "Olive",
+      "Sky blue",
+      "Rose",
+      "Violet",
+      "Cyan",
+      "Red",
+      "Lime",
+      "Purple",
+      "Blue",
+      "Pink",
+      "Navy",
+      "Brown",
+      "Slate",
+      "Stone"
+    ],
+    "custom": "Custom color",
+    "customPlaceholder": "#RRGGBB",
+    "invalid": "Enter a hex value with six digits."
+  },
+  "taskList": {
+    "markDone": "Done",
+    "reopen": "Reopen",
+    "start": "Start",
+    "stop": "Stop",
+    "planToday": "Today",
+    "tomorrow": "Tomorrow",
+    "noDate": "Date",
+    "date": "Date",
+    "overdue": "overdue",
+    "activity": "Activity",
+    "running": "running",
+    "total": "Total time",
+    "chooseDate": "Choose a date",
+    "removeDate": "Remove",
+    "more": "More actions",
+    "openDetails": "Open details",
+    "labels": "Labels",
+    "recurrence": "Recurrence…",
+    "recurrenceTitle": "Recurrence"
   }
 }

@@ -28,17 +28,16 @@ export function DraggableTask({
   return (
     <div
       ref={setNodeRef}
-      className="flex items-stretch gap-1"
-      style={{ opacity: isDragging ? 0.5 : 1 }}
+      className={`flex items-stretch gap-1 ${isDragging ? "opacity-60" : ""}`}
     >
       <button
         {...attributes}
         {...listeners}
         aria-label={t("tasks.overview.dragToProject")}
-        className="text-muted-foreground/70 hover:text-muted-foreground flex cursor-grab items-center px-1 active:cursor-grabbing"
+        className="text-muted-foreground hover:text-foreground focus-visible:outline-ring flex w-6 shrink-0 cursor-grab touch-none items-center justify-center rounded-md outline-offset-2 focus-visible:outline-2 active:cursor-grabbing"
         type="button"
       >
-        <GripVertical className="h-4 w-4" />
+        <GripVertical aria-hidden className="size-4" />
       </button>
       <div className="min-w-0 flex-1">{children}</div>
     </div>

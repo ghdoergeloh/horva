@@ -101,7 +101,8 @@
       "subtitle": "Per Drag & Drop priorisieren",
       "empty": "Keine offenen Aufgaben.",
       "dragHandle": "Ziehen zum Neuordnen",
-      "dragToProject": "Auf Projekt ziehen zum Verschieben"
+      "dragToProject": "Auf Projekt ziehen zum Verschieben",
+      "emptyHint": "Neue Aufgaben legst du in einem Projekt an."
     },
     "taskType": {
       "task": "Aufgabe",
@@ -111,7 +112,10 @@
       "title": "Erledigte Aufgaben",
       "none": "Keine erledigten Aufgaben.",
       "loadMore": "Weitere laden"
-    }
+    },
+    "newTaskName": "Name der neuen Aufgabe",
+    "newActivityName": "Name der neuen Aktivität",
+    "openProject": "Projekt bearbeiten"
   },
   "slot": {
     "edit": "Slot bearbeiten",
@@ -189,7 +193,15 @@
     "deleteTitle": "Label löschen",
     "deleteConfirm": "Löschen?",
     "yes": "Ja",
-    "tasks": "{{count}} Tasks"
+    "tasks_one": "{{count}} Aufgabe",
+    "tasks_other": "{{count}} Aufgaben",
+    "empty": "Noch keine Labels.",
+    "newLabel": "Neues Label",
+    "add": "Hinzufügen",
+    "deleteDialogTitle": "Label löschen?",
+    "deleteDialogText": "„{{name}}“ wird von allen Aufgaben entfernt.",
+    "delete": "Löschen",
+    "deleteNamed": "Label „{{name}}“ löschen"
   },
   "recurrence": {
     "doesNotRepeat": "Wiederholt sich nicht",
@@ -210,7 +222,11 @@
     "third": "dritten",
     "fourth": "vierten",
     "last": "letzten",
-    "timezone": "Zeitzone"
+    "timezone": "Zeitzone",
+    "frequency": "Häufigkeit",
+    "weekdays": "Wochentage",
+    "monthlyMode": "Monatlich am",
+    "repeat": "Wiederholen"
   },
   "taskCard": {
     "markDone": "Als erledigt markieren",
@@ -275,7 +291,9 @@
     "theme_system": "System",
     "theme_light": "Hell",
     "theme_dark": "Dunkel",
-    "preview": "Vorschau"
+    "preview": "Vorschau",
+    "display": "Darstellung",
+    "languageHint": "Sprache der Oberfläche"
   },
   "moco": {
     "title": "Moco-Integration",
@@ -345,6 +363,59 @@
       "deleted": "Status: gelöscht",
       "open": "Status: offen",
       "done": "Status: erledigt"
-    }
+    },
+    "close": "Schließen",
+    "deleteProjectTitle": "Projekt löschen?",
+    "deleteProjectText": "Die Aufgaben des Projekts wandern in das Standardprojekt.",
+    "deleteTaskTitle": "Aufgabe löschen?",
+    "deleteTaskText": "Die erfassten Zeiten bleiben erhalten, ohne Aufgabe.",
+    "notesPlaceholder": "Notizen zur Aufgabe"
+  },
+  "projectColors": {
+    "label": "Projektfarbe",
+    "presets": [
+      "Indigo",
+      "Bernstein",
+      "Petrol",
+      "Magenta",
+      "Oliv",
+      "Himmelblau",
+      "Rosé",
+      "Violett",
+      "Cyan",
+      "Rot",
+      "Limette",
+      "Purpur",
+      "Blau",
+      "Pink",
+      "Marine",
+      "Braun",
+      "Schiefer",
+      "Stein"
+    ],
+    "custom": "Eigene Farbe",
+    "customPlaceholder": "#RRGGBB",
+    "invalid": "Bitte einen Hex-Wert mit sechs Stellen eingeben."
+  },
+  "taskList": {
+    "markDone": "Erledigt",
+    "reopen": "Wieder öffnen",
+    "start": "Starten",
+    "stop": "Stoppen",
+    "planToday": "Heute",
+    "tomorrow": "Morgen",
+    "noDate": "Datum",
+    "date": "Datum",
+    "overdue": "überfällig",
+    "activity": "Aktivität",
+    "running": "läuft",
+    "total": "Gesamtzeit",
+    "chooseDate": "Datum wählen",
+    "removeDate": "Entfernen",
+    "more": "Weitere Aktionen",
+    "openDetails": "Details öffnen",
+    "labels": "Labels",
+    "recurrence": "Wiederholung…",
+    "recurrenceTitle": "Wiederholung"
   }
 }
