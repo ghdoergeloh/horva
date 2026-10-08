@@ -1,5 +1,5 @@
 import { useId, useState } from "react";
-import { CalendarDate, getLocalTimeZone, today } from "@internationalized/date";
+import { CalendarDate } from "@internationalized/date";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { AlertCircle, ChevronRight } from "lucide-react";
@@ -72,12 +72,12 @@ function DailyOverview() {
   const { t } = useTranslation();
   const { openTask } = useDetailDrawer();
   const now = useNow();
-  const tz = getLocalTimeZone();
-  const todayDate = today(tz);
 
   function toCalendarDate(d: Date): CalendarDate {
     return new CalendarDate(d.getFullYear(), d.getMonth() + 1, d.getDate());
   }
+  // Today comes from the same clock reading as `now`.
+  const todayDate = toCalendarDate(now);
   const queryClient = useQueryClient();
 
   const { data: tasks = [], isLoading } = useQuery({
