@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { expect, userEvent, within } from "storybook/test";
+import { expect, userEvent, waitFor, within } from "storybook/test";
 
 import { Select, SelectItem } from "./Select";
 
@@ -52,4 +52,32 @@ export const Open: Story = {
       await within(document.body).findByRole("listbox"),
     ).toBeInTheDocument();
   },
+};
+
+/**
+ * Enter opens the list, arrows move, Enter selects and closes, Escape
+ * closes without a change; focus goes back to the trigger.
+ */
+export const Keyboard: Story = {
+  play: async ({ canvasElement }) => {
+    const trigger = within(canvasElement).getByRole("button");
+    await userEvent.tab();
+    await expect(trigger).toHaveFocus();
+    await userEvent.keyboard("{Enter}");
+    const list = await within(document.body).findByRole("listbox");
+    await waitFor(() =>
+      expect(
+        within(list).getByRole("option", { name: "Austria" }),
+      ).toHaveFocus(),
+    );
+    await userEvent.keyboard("{ArrowDown}{Enter}");
+    await waitFor(() => expect(trigger).toHaveFocus());
+    await expect(trigger).toHaveTextContent("Germany");
+    await userEvent.keyboard("{Enter}");
+    await within(document.body).findByRole("listbox");
+    await userEvent.keyboard("{ArrowDown}{Escape}");
+    await waitFor(() => expect(trigger).toHaveFocus());
+    await expect(trigger).toHaveTextContent("Germany");
+  },
+  parameters: { screenshot: false },
 };

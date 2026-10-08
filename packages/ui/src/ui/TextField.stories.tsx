@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
+import { expect, userEvent, within } from "storybook/test";
 
 import { TextField } from "./TextField";
 
@@ -44,4 +45,16 @@ export const LongValue: Story = {
     defaultValue:
       "A very long name that does not fit into the field and must not push the layout",
   },
+};
+
+/** Tab focuses the field; typing fills it. */
+export const Keyboard: Story = {
+  play: async ({ canvasElement }) => {
+    const input = within(canvasElement).getByRole("textbox");
+    await userEvent.tab();
+    await expect(input).toHaveFocus();
+    await userEvent.keyboard("Ada");
+    await expect(input).toHaveValue("Ada");
+  },
+  parameters: { screenshot: false },
 };

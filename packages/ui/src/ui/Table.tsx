@@ -27,8 +27,7 @@ import {
 
 import { composeTailwindRenderProps, focusRing } from "@horva/ui";
 
-import { twMerge } from "../lib/tw";
-import { tv } from "../lib/tw";
+import { twMerge, tv } from "../lib/tw";
 import { Checkbox } from "./Checkbox";
 
 interface TableProps extends Omit<AriaTableProps, "className"> {

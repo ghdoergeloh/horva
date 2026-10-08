@@ -40,7 +40,7 @@ export const Open: Story = {
 
 /** Enter opens the menu, arrows move, Enter runs the item and closes. */
 export const Keyboard: Story = {
-  play: async ({ args }) => {
+  play: async ({ args, canvasElement }) => {
     await userEvent.tab();
     await userEvent.keyboard("{Enter}");
     const menu = await within(document.body).findByRole("menu");
@@ -55,6 +55,13 @@ export const Keyboard: Story = {
     ).toHaveFocus();
     await userEvent.keyboard("{Enter}");
     await expect(args.onAction).toHaveBeenLastCalledWith("today", undefined);
+    // Escape closes without an action and gives focus back to the trigger.
+    const trigger = within(canvasElement).getByRole("button", { name: "Mehr" });
+    await waitFor(() => expect(trigger).toHaveFocus());
+    await userEvent.keyboard("{Enter}");
+    await within(document.body).findByRole("menu");
+    await userEvent.keyboard("{Escape}");
+    await waitFor(() => expect(trigger).toHaveFocus());
   },
   parameters: { screenshot: false },
 };

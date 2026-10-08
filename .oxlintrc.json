@@ -413,6 +413,35 @@
       "rules": {
         "typescript/no-empty-object-type": "off"
       }
+    },
+    {
+      "files": [
+        "packages/ui/src/**/*.{ts,tsx}",
+        "apps/react/src/**/*.{ts,tsx}"
+      ],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "paths": [
+              {
+                "name": "tailwind-merge",
+                "message": "Import twMerge from packages/ui/src/lib/tw.ts; it knows the text styles of the theme."
+              },
+              {
+                "name": "tailwind-variants",
+                "message": "Import tv from packages/ui/src/lib/tw.ts; it knows the text styles of the theme."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "files": ["packages/ui/src/lib/tw.ts"],
+      "rules": {
+        "no-restricted-imports": "off"
+      }
     }
   ]
 }

@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
+import { expect, userEvent, within } from "storybook/test";
 
 import { Checkbox } from "./Checkbox";
 
@@ -32,4 +33,27 @@ export const Invalid: Story = {
 
 export const Disabled: Story = {
   args: { isDisabled: true, defaultSelected: true },
+};
+
+/** Tab focuses the box with a visible ring; Space toggles it. */
+export const Keyboard: Story = {
+  play: async ({ canvasElement }) => {
+    const box = within(canvasElement).getByRole("checkbox");
+    await userEvent.tab();
+    await expect(box).toHaveFocus();
+    await userEvent.keyboard(" ");
+    await expect(box).toBeChecked();
+    await userEvent.keyboard(" ");
+    await expect(box).not.toBeChecked();
+  },
+  parameters: { screenshot: false },
+};
+
+/** The disabled state fades the whole control once, not twice. */
+export const DisabledOpacity: Story = {
+  args: { isDisabled: true, defaultSelected: true },
+  play: async ({ canvasElement }) => {
+    await expect(canvasElement.querySelectorAll(".opacity-45")).toHaveLength(1);
+  },
+  parameters: { screenshot: false },
 };

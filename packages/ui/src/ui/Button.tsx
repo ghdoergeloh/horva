@@ -1,8 +1,12 @@
 "use client";
 
 import type { ButtonProps as RACButtonProps } from "react-aria-components";
-import { isValidElement } from "react";
-import { composeRenderProps, Button as RACButton } from "react-aria-components";
+import { Fragment, isValidElement } from "react";
+import {
+  composeRenderProps,
+  ProgressBar,
+  Button as RACButton,
+} from "react-aria-components";
 
 import { focusRing } from "@horva/ui";
 
@@ -19,6 +23,13 @@ export interface ButtonProps extends RACButtonProps {
   variant?: "primary" | "secondary" | "destructive" | "quiet";
   /** @default 'md' */
   size?: "sm" | "md";
+  /**
+   * Square button with only an icon; it needs an `aria-label`. Detected
+   * from the children when not set.
+   */
+  iconOnly?: boolean;
+  /** Read out while `isPending` is set. @default 'Lädt' */
+  pendingLabel?: string;
 }
 
 const spinnerColors = {
@@ -30,7 +41,7 @@ const spinnerColors = {
 
 const button = tv({
   extend: focusRing,
-  base: "relative inline-flex items-center justify-center gap-2 border border-transparent box-border py-0 font-sans font-medium text-center transition-colors rounded-md cursor-default [-webkit-tap-highlight-color:transparent] [&_svg]:size-4 [&_svg]:shrink-0",
+  base: "relative inline-flex items-center justify-center gap-2 border border-transparent box-border py-0 font-sans font-medium text-center transition-colors rounded-md cursor-default [-webkit-tap-highlight-color:transparent] [&_svg:not([class*='size-'])]:size-4 [&_svg]:shrink-0",
   variants: {
     variant: {
       primary:
@@ -67,12 +78,20 @@ const button = tv({
  * content.
  */
 export function isIconOnly(children: unknown): boolean {
-  return isValidElement(children) && typeof children.type !== "string";
+  return (
+    isValidElement(children) &&
+    typeof children.type !== "string" &&
+    children.type !== Fragment
+  );
 }
 
-export function Button(props: ButtonProps) {
+export function Button({
+  iconOnly: iconOnlyProp,
+  pendingLabel = "Lädt",
+  ...props
+}: ButtonProps) {
   const variant = props.variant ?? "primary";
-  const iconOnly = isIconOnly(props.children);
+  const iconOnly = iconOnlyProp ?? isIconOnly(props.children);
   return (
     <RACButton
       {...props}
@@ -90,16 +109,20 @@ export function Button(props: ButtonProps) {
         <>
           {children}
           {isPending && (
-            <span
-              aria-hidden
-              className="absolute inset-0 flex items-center justify-center"
+            // React Aria names the button by this progress bar while it
+            // waits. The loader shows only after 400 ms to avoid a flicker.
+            <ProgressBar
+              aria-label={pendingLabel}
+              isIndeterminate
+              className="animate-delayed-show absolute inset-0 flex items-center justify-center opacity-0"
             >
               <Loader
                 size={16}
+                decorative
                 onFill={variant === "primary" || variant === "destructive"}
                 className={spinnerColors[variant]}
               />
-            </span>
+            </ProgressBar>
           )}
         </>
       ))}
