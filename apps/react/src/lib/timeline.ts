@@ -124,14 +124,16 @@ export function toWorkPeriod(
     end: period.endedAt,
     slotCount: period.slotCount,
     // A project that is not in the list (deleted) is left out.
-    projects: period.projectIds.flatMap((id) => {
-      if (id === null)
-        return [{ id: "none", name: texts.noProject, color: null }];
-      const project = projects.get(id);
-      return project
-        ? [{ id: project.id, name: project.name, color: project.color }]
-        : [];
-    }),
+    projects: period.projectIds.flatMap(
+      (id): WorkPeriod["projects"][number][] => {
+        if (id === null)
+          return [{ id: "none", name: texts.noProject, color: null }];
+        const project = projects.get(id);
+        return project
+          ? [{ id: project.id, name: project.name, color: project.color }]
+          : [];
+      },
+    ),
   };
 }
 

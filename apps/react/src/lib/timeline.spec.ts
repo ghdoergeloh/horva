@@ -66,7 +66,7 @@ const call: [number, string, number, string, string] = [
   "Call",
   11,
   "Kranich",
-  "#336699",
+  "project-7",
 ];
 
 describe("startOfWeek and weekDays", () => {
@@ -138,7 +138,7 @@ describe("toTableSlot and slotColor", () => {
     expect(toTableSlot(deleted, texts).task).toBe("Deleted task");
     expect(slotColor(deleted)).toBe("project-deleted");
     expect(slotColor(slot(at("9:00"), at("10:00")))).toBeNull();
-    expect(slotColor(slot(at("9:00"), at("10:00"), call))).toBe("#336699");
+    expect(slotColor(slot(at("9:00"), at("10:00"), call))).toBe("project-7");
   });
 });
 
