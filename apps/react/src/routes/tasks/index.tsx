@@ -12,9 +12,10 @@ import { createFileRoute } from "@tanstack/react-router";
 import { GripVertical } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
+import { Loader } from "@horva/ui/Logo";
+
 import type { LabelRow } from "#/components/TaskEditControls.js";
 import type { TaskDragData } from "#/contexts/TaskDragContext.js";
-import { LoadingSpinner } from "#/components/LoadingSpinner.js";
 import { TaskCard } from "#/components/TaskCard.js";
 import { useDetailDrawer } from "#/contexts/DetailDrawerContext.js";
 import { useTaskDrag } from "#/contexts/TaskDragContext.js";
@@ -244,7 +245,11 @@ function TasksOverview() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <LoadingSpinner size={64} label={t("loading")} />
+        <Loader
+          size={64}
+          label={t("loading")}
+          className="animate-delayed-show opacity-0"
+        />
       </div>
     );
   }

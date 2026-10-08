@@ -5,7 +5,11 @@ import { describe, expect, it } from "vitest";
 const repoRoot = resolve(import.meta.dirname, "../../../..");
 
 /** Source folders whose code must use the semantic tokens only. */
-const roots = ["packages/ui/src", "apps/react/src"];
+const roots = [
+  "packages/ui/src",
+  "apps/react/src",
+  "apps/electron/src/renderer/src",
+];
 
 /**
  * Files that may contain raw colors, with the reason. The color pickers
@@ -22,7 +26,6 @@ const exceptions: [RegExp, string][] = [
   [/\/routeTree\.gen\.ts$/, "generated"],
   [/\/lib\/projectColors\.ts$/, "project colors are data the user picks"],
   [/\/lib\/chartUtils(?:\.spec)?\.ts$/, "mixes project colors for the charts"],
-  [/\/components\/(?:AppIcon|LoadingSpinner)\.tsx$/, "the app icon"],
   [
     /\/components\/(?:DayRow|InlineSlotRow)\.tsx$/,
     "white text and ring on a project color",
