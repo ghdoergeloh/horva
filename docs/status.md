@@ -7,21 +7,16 @@ numbered files in `docs/`.
 
 ## Now
 
-- New design system (#77, source in `docs/design/`), in three steps:
-  1. tokens in `tooling/tailwind/theme.css` (#78),
-  2. the components in `@horva/ui` with stories and keyboard tests (#80),
-  3. the screens of `apps/react`, with logo and app icon (#79).
-- Project colors are stored as hex today; the design stores the token
-  name (`project-3`) so that dark mode picks its own value. Open until
-  step 3.
+- The design system of `docs/design/` is in place: tokens, logo and
+  icons, the components of `@horva/ui` and all screens (#77). Project
+  colors are stored as token names (`project-1` … `project-18`) or hex.
 
 ## Next
 
-- Move the screens of `apps/react` to `@horva/ui` components, then remove
-  the exceptions in `ui-only.spec.ts` and `raw-colors.spec.ts`.
-- Make the browser app usable on a phone: the sidebar keeps its width and
-  the main area cuts off its content (see the `today-phone-light`
-  screenshot). The width check does not see it, because nothing scrolls.
+- Move the shell, sidebar, sheet, disclosure with action and text area
+  into `@horva/ui` (#92), then empty `ui-only.spec.ts`.
+- Bugs found on the way: day boundaries in the server time zone (#84),
+  slot neighbour rule (#93), Moco settings in the web API (#95).
 - Raise the coverage floors as tests are added.
 
 ## Open points
