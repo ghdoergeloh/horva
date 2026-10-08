@@ -33,10 +33,8 @@ describe("ProjectColorPicker", () => {
   });
 
   it("shows a custom value in the field and checks no preset", () => {
-    render(
-      <ProjectColorPicker value={`#${"2f8f83"}`} onChange={() => undefined} />,
-    );
-    expect(screen.getByRole("textbox")).toHaveValue(`#${"2F8F83"}`);
+    render(<ProjectColorPicker value="#2f8f83" onChange={() => undefined} />);
+    expect(screen.getByRole("textbox")).toHaveValue("#2F8F83");
     expect(screen.queryByRole("radio", { checked: true })).toBeNull();
   });
 

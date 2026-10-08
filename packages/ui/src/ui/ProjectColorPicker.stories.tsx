@@ -68,9 +68,7 @@ export const CustomColor: Story = {
     });
     await userEvent.type(field, "2f8f83{Enter}");
     await expect(args.onChange).toHaveBeenCalledTimes(1);
-    await expect(args.onChange).toHaveBeenCalledWith(
-      expect.stringMatching(/^[#]2F8F83$/),
-    );
+    await expect(args.onChange).toHaveBeenCalledWith("#2F8F83");
     // No preset is chosen any more.
     await expect(
       within(canvasElement).queryByRole("radio", { checked: true }),
