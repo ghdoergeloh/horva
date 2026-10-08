@@ -34,7 +34,7 @@ export function ProjectDot({ color, size = "md", className }: ProjectDotProps) {
         size === "sm" ? "size-2" : "size-2.5",
         className,
       )}
-      style={{ background: projectColorValue(color) }}
+      style={{ backgroundColor: projectColorValue(color) }}
     />
   );
 }

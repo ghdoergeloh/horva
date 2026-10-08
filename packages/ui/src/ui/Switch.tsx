@@ -24,7 +24,7 @@ const track = tv({
       true: "bg-primary forced-colors:bg-[Highlight]! group-pressed:bg-primary/80",
     },
     isDisabled: {
-      true: "opacity-45 forced-colors:group-selected:bg-[GrayText]! forced-colors:border-[GrayText]",
+      true: "forced-colors:group-selected:bg-[GrayText]! forced-colors:border-[GrayText]",
     },
   },
 });
@@ -51,7 +51,7 @@ export function Switch({ children, ...props }: SwitchProps) {
       <SwitchButton
         className={composeTailwindRenderProps(
           props.className,
-          "group text-foreground disabled:text-muted-foreground/50 relative flex items-center gap-2 text-sm transition [-webkit-tap-highlight-color:transparent] forced-colors:disabled:text-[GrayText]",
+          "group text-foreground disabled:opacity-45 relative flex items-center gap-2 text-body transition [-webkit-tap-highlight-color:transparent] forced-colors:disabled:text-[GrayText]",
         )}
       >
         {(renderProps) => (

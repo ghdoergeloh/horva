@@ -291,6 +291,15 @@
   --animate-running-pulse: running-pulse var(--duration-pulse)
     var(--ease-in-out) infinite;
 
+  /* Shows a loader only when waiting takes longer than 400 ms. */
+  --animate-delayed-show: delayed-show 1ms 400ms forwards;
+
+  @keyframes delayed-show {
+    to {
+      opacity: 1;
+    }
+  }
+
   @keyframes running-pulse {
     0%,
     100% {

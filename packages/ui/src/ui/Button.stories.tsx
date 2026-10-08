@@ -74,7 +74,34 @@ export const IconOnly: Story = {
 
 export const Disabled: Story = { args: { isDisabled: true } };
 
-export const Pending: Story = { args: { isPending: true } };
+/**
+ * While waiting the button cannot be pressed and holds a progress bar
+ * "Lädt"; React Aria announces the change.
+ */
+export const Pending: Story = {
+  args: { isPending: true },
+  play: async ({ canvasElement }) => {
+    const button = within(canvasElement).getByRole("button");
+    await expect(button).toHaveAttribute("aria-disabled", "true");
+    await expect(
+      within(button).getByRole("progressbar", { name: "Lädt" }),
+    ).toBeInTheDocument();
+  },
+};
+
+/** An icon-only button that waits is named by its label and "Lädt". */
+export const PendingIconOnly: Story = {
+  args: {
+    isPending: true,
+    "aria-label": "Stopp",
+    children: <Square aria-hidden />,
+  },
+  play: async ({ canvasElement }) => {
+    await expect(
+      within(canvasElement).getByRole("button"),
+    ).toHaveAccessibleName("Stopp Lädt");
+  },
+};
 
 /** A long label must not overflow the button. */
 export const LongLabel: Story = {
