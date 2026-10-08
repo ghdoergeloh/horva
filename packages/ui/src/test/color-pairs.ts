@@ -89,6 +89,13 @@ export const colorPairs: ColorPair[] = [
   ...projects.map((project) => graphic(project, "card")),
   // The check mark on a selected swatch of the color picker.
   ...projects.slice(1).map((project) => graphic("card", project)),
+  // The timeline: work periods on the day bar, and the open row of the
+  // slot table with the running time, the note and the error icons.
+  graphic("primary", "card"),
+  text("running-text", "accent"),
+  graphic("info", "accent"),
+  graphic("destructive", "accent"),
+
   // Horva components: the done check, the chart tooltip, an overdue date
   // and the focus ring on a running card.
   graphic("primary-foreground", "success"),
