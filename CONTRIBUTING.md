@@ -110,7 +110,7 @@ See [`AGENTS.md`](./AGENTS.md) for the rules coding agents follow here — they 
 
 ## Commit messages
 
-We use [Conventional Commits](https://www.conventionalcommits.org/), enforced via commitlint + a husky pre-commit hook.
+We use [Conventional Commits](https://www.conventionalcommits.org/), checked by commitlint in the husky `commit-msg` hook. This hook runs only on your machine; in continuous integration the _PR Title_ workflow checks the pull request title.
 
 Format:
 
@@ -175,32 +175,36 @@ Small, well-scoped requests are much more likely to get picked up.
 
 ## Releases
 
-Releases are versioned automatically from the Conventional Commits on `main` — nobody picks a version number by hand.
+Releases get their version from the Conventional Commits on `main`. Nobody picks a version number by hand.
 
 **How it works**
 
-1. Every merge into `main` runs [release-please](https://github.com/googleapis/release-please), which opens or updates a single release PR titled `chore(main): release <version>`. That PR carries the next version (in `package.json`, `apps/electron/package.json` and `.release-please-manifest.json`) and the `CHANGELOG.md` entries for everything merged since the last release. Merging into `main` never releases on its own.
-2. Merging the release PR creates a draft GitHub Release with the changelog. The tag does not exist yet.
-3. That in turn builds the Electron installers for macOS (`.dmg`), Windows (`.exe` via NSIS) and Linux (`.AppImage`), attaches them to the release and publishes it. The tag only becomes visible once the installers are downloadable.
+1. Every merge into `main` runs [release-please](https://github.com/googleapis/release-please). It opens or updates one release PR with the title `chore(main): release <version>`. That PR carries the next version (in `package.json`, `apps/electron/package.json` and `.release-please-manifest.json`) and the `CHANGELOG.md` entries for everything merged since the last release. A merge into `main` never releases on its own.
+2. Merging the release PR creates the tag and a draft GitHub Release with the changelog.
+3. Then the Electron installers for macOS (`.dmg`), Windows (`.exe` via NSIS) and Linux (`.AppImage`) are built and attached, and the release is published. The release stays a draft until the installers can be downloaded.
 
 **Which commit bumps what** (while the version is below `1.0.0`):
 
-| Commit                            | Bump                            |
-| --------------------------------- | ------------------------------- |
-| `fix: …`                          | patch — `0.1.0` → `0.1.1`       |
-| `feat: …`                         | minor — `0.1.1` → `0.2.0`       |
-| `feat!: …` / `BREAKING CHANGE:`   | minor — majors start at `1.0.0` |
-| `chore: …`, `ci: …`, `test: …`, … | no release                      |
+| Commit                                                      | Bump                           |
+| ----------------------------------------------------------- | ------------------------------ |
+| `fix: …`, `perf: …`, `revert: …`                            | patch: `0.1.0` → `0.1.1`       |
+| `feat: …`                                                   | minor: `0.1.1` → `0.2.0`       |
+| `feat!: …` or a `BREAKING CHANGE:` footer                   | minor: majors start at `1.0.0` |
+| `docs`, `refactor`, `build`, `chore`, `ci`, `style`, `test` | no release                     |
 
-Only `feat`, `fix`, `perf`, `revert`, `docs` and `refactor` appear in the changelog; the remaining types stay out of it.
+Only the types that make a release appear in the changelog.
+
+To go to `1.0.0` (or any other version), add the footer `Release-As: 1.0.0` to a commit message or to a pull request description.
 
 **Notes for maintainers**
 
-- PRs are merged with a merge commit, and its title is the **PR title**. release-please reads this title and the branch commits, so both count for the version and can show up in the changelog. commitlint checks the branch commits; the _PR Title_ workflow checks the title.
-- If the installer build fails, the release stays a draft and has no tag. Re-run the failed jobs of the _Release Please_ run; do not create the tag by hand.
-- The release PR is opened with the `GITHUB_TOKEN`, so the CI workflow does not run on it by itself. It only changes version numbers and `CHANGELOG.md`.
-- A release can also be built by hand: push a `v*` tag, or run the _Release Electron App_ workflow with a tag as input.
-- Contributors don't need to create tags or touch version numbers.
+- Pull requests are merged with a merge commit. Its title is the **PR title** and its body is the **PR description**. release-please reads this merge commit and the branch commits, so all of them count for the version and can show up in the changelog. Footers in the PR description, such as `BREAKING CHANGE:` or `Release-As:`, count as well.
+- commitlint checks the branch commits on your machine; the _PR Title_ workflow checks the title.
+- The release PR is opened with the `GITHUB_TOKEN`, so no checks run on it by themselves. It only changes version numbers and `CHANGELOG.md`.
+- release-please needs the repository setting "Allow GitHub Actions to create and approve pull requests" (Settings, Actions, General).
+- If the installer build fails, the release stays a draft. Re-run the failed jobs of the _Release Please_ run.
+- A release can also be built by hand: push a `v*` tag, or run the _Release Electron App_ workflow with an existing tag as input.
+- Contributors do not need to create tags or change version numbers.
 
 ## License
 

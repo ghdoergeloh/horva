@@ -25,11 +25,6 @@ on:
         required: false
         type: string
         default: ""
-      ref:
-        description: "Ref or SHA to build. Defaults to the tag, or to the current ref."
-        required: false
-        type: string
-        default: ""
 
 permissions:
   contents: read
@@ -182,6 +177,5 @@ jobs:
           find artifacts -type f -print0 \
             | xargs -0 --no-run-if-empty gh release upload "$TAG" --clobber
 
-          # Undrafting is what creates the tag for a release-please draft, so
-          # the tag appears exactly when the installers are downloadable.
+          # The release stays a draft until the installers are attached.
           gh release edit "$TAG" --draft=false

@@ -9,7 +9,7 @@
     "typecheck": "tsc --noEmit"
   },
   "devDependencies": {
-    "@commitlint/config-conventional": "catalog:",
+    "@commitlint/load": "catalog:",
     "@horva/tsconfig": "workspace:*",
     "@horva/vitest": "workspace:*",
     "@types/node": "catalog:",

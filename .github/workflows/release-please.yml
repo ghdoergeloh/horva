@@ -35,9 +35,8 @@ jobs:
           manifest-file: .release-please-manifest.json
 
   installers:
-    # release-please creates the release as a draft, so the tag does not
-    # exist yet. The build checks out `sha`; `tag` names the draft release
-    # that gets the installers.
+    # release-please creates a draft release and its tag. The build checks
+    # out `sha`; `tag` names the draft release that gets the installers.
     #
     # release.yml is called here instead of waiting for its tag trigger:
     # releases and tags created with the GITHUB_TOKEN start no other

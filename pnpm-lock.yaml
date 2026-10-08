@@ -173,6 +173,9 @@ catalogs:
     '@commitlint/config-conventional':
       specifier: ^21.2.3
       version: 21.2.3
+    '@commitlint/load':
+      specifier: ^21.2.3
+      version: 21.2.3
     '@dnd-kit/core':
       specifier: ^6.3.1
       version: 6.3.1
@@ -1074,9 +1077,9 @@ importers:
 
   tooling/quality:
     devDependencies:
-      '@commitlint/config-conventional':
+      '@commitlint/load':
         specifier: 'catalog:'
-        version: 21.2.3
+        version: 21.2.3(@types/node@24.13.6)(typescript@6.0.3)
       '@horva/tsconfig':
         specifier: workspace:*
         version: link:../typescript
