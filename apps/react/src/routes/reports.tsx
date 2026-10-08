@@ -242,7 +242,7 @@ function Reports() {
   return (
     <div className="mx-auto flex max-w-5xl flex-col gap-6">
       <div className="flex flex-wrap items-end justify-between gap-3">
-        <h1 className="text-display">{t("reports.title")}</h1>
+        <h1 className="text-display text-foreground">{t("reports.title")}</h1>
         <div className="flex max-w-full flex-wrap items-end gap-2">
           <DateRangePicker
             aria-label={t("reports.dateRange")}
@@ -341,12 +341,14 @@ function Reports() {
                 ...breakdownStrings,
                 title: t("reports.tasksWithLabel", { name: filterLabel.name }),
               }}
+              className="text-foreground"
             />
           )}
 
           <ProjectBreakdown
             projects={breakdownProjects(summary, withoutTask)}
             headingLevel={2}
+            className="text-foreground"
             formatDuration={format}
             strings={breakdownStrings}
             onTransfer={
