@@ -47,7 +47,8 @@
     "signUp": "Sign up",
     "submitting": "Working…",
     "needAccount": "Need an account? Sign up",
-    "haveAccount": "Already have one? Sign in"
+    "haveAccount": "Already have one? Sign in",
+    "tagline": "Time tracking that runs alongside your day."
   },
   "nav": {
     "today": "Today",
@@ -56,7 +57,11 @@
     "tasks": "Tasks",
     "labels": "Labels",
     "newProject": "New Project",
-    "settings": "Settings"
+    "settings": "Settings",
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu",
+    "main": "Main navigation",
+    "projects": "Projects"
   },
   "app": {
     "title": "Horva"
@@ -69,7 +74,8 @@
     "create": "Create",
     "customColor": "Custom color",
     "collapse": "Collapse",
-    "expand": "Expand"
+    "expand": "Expand",
+    "name": "Name"
   },
   "error": {
     "unknown": "Unknown error",
@@ -82,7 +88,8 @@
     "laterToday": "Later today",
     "overdue": "Overdue",
     "planned": "Planned",
-    "noTasksToday": "No upcoming tasks for today."
+    "noTasksToday": "Nothing is planned for now.",
+    "noTasksHint": "Plan tasks with “Today” in the task list, or start work above."
   },
   "tasks": {
     "title": "Tasks",
@@ -140,16 +147,18 @@
     "startWork": "Start work",
     "switchTask": "Switch",
     "stop": "Stop",
-    "noTask": "No task"
+    "noTask": "No task",
+    "region": "Timer",
+    "running": "Running",
+    "noProject": "No project",
+    "stopFailed": "Could not stop. Try again?"
   },
   "startTaskDialog": {
-    "titleStart": "Start task",
+    "titleStart": "Start work",
     "titleSwitch": "Switch task",
-    "searchPlaceholder": "Search tasks...",
-    "noTaskFound": "No task found",
-    "createPlaceholder": "Create new task...",
-    "startWithoutTask": "Start without task",
-    "start": "Start"
+    "close": "Close",
+    "failed": "Could not start. Try again?",
+    "loadFailed": "Could not load the tasks."
   },
   "worktime": {
     "today": "Today",
@@ -173,19 +182,37 @@
     "thisMonth": "This month",
     "lastMonth": "Last month",
     "thisYear": "This year",
-    "dateRange": "Date range",
-    "filterLabel": "Filter label…",
-    "totalWorktime": "Total work time",
-    "avgPerDay": "Ø {{time}} / day",
+    "dateRange": "Period",
+    "filterLabel": "Filter by label",
     "projectShares": "Project shares",
-    "labelFilter": "· Label: {{name}}",
     "hoursPerDay": "Hours per day",
     "tasksWithLabel": "Tasks with label \"{{name}}\"",
     "detailsPerProject": "Details per project",
-    "noData": "No data for this period.",
-    "noDataShort": "No data",
-    "withLabel": "with label",
-    "withoutLabel": "without label"
+    "noData": "No time in this period",
+    "openCalendar": "Open calendar",
+    "previousRange": "Previous period",
+    "nextRange": "Next period",
+    "dayCount_one": "{{count}} day",
+    "dayCount_other": "{{count}} days",
+    "allLabels": "All labels",
+    "total": "Total",
+    "averagePerDay": "Ø per work day",
+    "daysLogged_one": "{{count}} day logged",
+    "daysLogged_other": "{{count}} days logged",
+    "largestProject": "Largest project",
+    "withoutTask": "Without task",
+    "shareOfTotal": "{{percent}} of the time",
+    "hours": "Hours",
+    "others": "Others",
+    "showTable": "Show table",
+    "hideTable": "Hide table",
+    "hoursTable": "Hours per day as a table",
+    "day": "Day",
+    "sum": "Total",
+    "noTasks": "No tasks",
+    "transfer": "Send to Moco",
+    "loadError": "Could not load the report.",
+    "transferTo": "to"
   },
   "labels": {
     "title": "Labels",
@@ -210,21 +237,31 @@
   },
   "taskCard": {
     "markDone": "Mark as done",
-    "markOpen": "Mark as open",
     "removeFromToday": "Remove from today",
     "clickToEdit": "Click to edit",
-    "totalTime": "{{time}} total",
-    "pause": "Pause",
     "start": "Start",
-    "recurring": "Recurring activity",
     "recurrenceModalTitle": "Recurrence",
-    "openDetails": "Open details"
+    "openDetails": "Open details",
+    "reopen": "Reopen",
+    "stop": "Stop",
+    "planToday": "Today",
+    "noDate": "Date",
+    "date": "Date",
+    "overdue": "overdue",
+    "activity": "Activity",
+    "running": "running",
+    "total": "Total time",
+    "actions": "More actions",
+    "rename": "Rename",
+    "renameTitle": "Rename task",
+    "name": "Name",
+    "labels": "Labels",
+    "recurrence": "Recurrence …",
+    "clearDate": "Remove date",
+    "pickDate": "Pick a date"
   },
   "taskEditControls": {
-    "editLabels": "Edit labels",
     "planDate": "Plan date",
-    "planToday": "Plan for today",
-    "planned": "Planned: {{date}}",
     "planTime": "Time"
   },
   "taskUtils": {
@@ -320,23 +357,17 @@
     "notLinked": "Not linked",
     "defaultTask": "Default activity",
     "noDefaultTask": "No default activity",
-    "syncButton": "Sync to Moco",
-    "syncTitle": "Sync to Moco",
     "close": "Close",
-    "date": "Date",
-    "task": "Task",
-    "mocoTask": "Activity",
-    "duration": "Duration",
     "previewError": "Could not load preview",
     "noData": "No time entries in the selected period.",
-    "noSyncable": "No syncable entries in the selected period.",
-    "summary": "{{syncable}} syncable, {{skipped}} skipped",
+    "noSyncable": "No entries to send in the selected period.",
     "selectAll": "Select all",
     "selectionSummary": "{{selected}} of {{syncable}} selected · {{skipped}} skipped",
-    "confirmSync": "Sync {{count}} entries",
-    "syncDone": "{{created}} synced, {{failed}} failed",
-    "syncError": "Sync failed",
-    "linkingMovedHint": "Project linking now lives in each project's detail panel."
+    "syncDone": "{{created}} sent, {{failed}} failed",
+    "syncError": "Sending failed",
+    "linkingMovedHint": "Project linking now lives in each project's detail panel.",
+    "confirmSync_one": "Send {{count}} entry",
+    "confirmSync_other": "Send {{count}} entries"
   },
   "drawer": {
     "projectTitle": "Project properties",
@@ -425,5 +456,32 @@
     "labels": "Labels",
     "recurrence": "Recurrence…",
     "recurrenceTitle": "Recurrence"
+  },
+  "taskPicker": {
+    "field": "Task",
+    "noTask": "No task",
+    "unknownTask": "Unknown task",
+    "dialog": "Choose a task",
+    "search": "Search or create a task …",
+    "list": "Tasks",
+    "noMatchesCreate": "No task found. Enter creates it.",
+    "noMatches": "No task found.",
+    "noTasks": "No tasks yet.",
+    "createIn": "as a new task in",
+    "createTask": "Create “{{title}}” as a new task in {{project}}",
+    "changeProject": "Project: {{project}}, change",
+    "createFailed": "The task could not be created.",
+    "projectPending": "Creating project …",
+    "createProjectFailed": "The project could not be created.",
+    "back": "Back",
+    "projectFor": "Project for",
+    "projectSearch": "Search projects …",
+    "projectList": "Projects",
+    "noProjects": "No project found.",
+    "newProject": "New project …",
+    "keyMove": "move",
+    "keyPick": "pick",
+    "keyCreate": "new",
+    "keyClose": "close"
   }
 }

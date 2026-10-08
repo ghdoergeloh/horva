@@ -47,7 +47,8 @@
     "signUp": "Registrieren",
     "submitting": "Einen Moment…",
     "needAccount": "Noch kein Konto? Registrieren",
-    "haveAccount": "Schon registriert? Anmelden"
+    "haveAccount": "Schon registriert? Anmelden",
+    "tagline": "Zeiterfassung, die nebenher läuft."
   },
   "nav": {
     "today": "Heute",
@@ -56,7 +57,11 @@
     "tasks": "Aufgaben",
     "labels": "Labels",
     "newProject": "Neues Projekt",
-    "settings": "Einstellungen"
+    "settings": "Einstellungen",
+    "openMenu": "Menü öffnen",
+    "closeMenu": "Menü schließen",
+    "main": "Hauptnavigation",
+    "projects": "Projekte"
   },
   "app": {
     "title": "Horva"
@@ -69,7 +74,8 @@
     "create": "Erstellen",
     "customColor": "Benutzerdefinierte Farbe",
     "collapse": "Einklappen",
-    "expand": "Ausklappen"
+    "expand": "Ausklappen",
+    "name": "Name"
   },
   "error": {
     "unknown": "Unbekannter Fehler",
@@ -82,7 +88,8 @@
     "laterToday": "Später heute",
     "overdue": "Überfällig",
     "planned": "Geplant",
-    "noTasksToday": "Keine anstehenden Aufgaben für heute."
+    "noTasksToday": "Für jetzt ist nichts geplant.",
+    "noTasksHint": "Aufgaben in der Aufgabenliste mit „Heute“ einplanen oder oben die Arbeit starten."
   },
   "tasks": {
     "title": "Aufgaben",
@@ -140,16 +147,18 @@
     "startWork": "Arbeit starten",
     "switchTask": "Wechseln",
     "stop": "Stopp",
-    "noTask": "Kein Task"
+    "noTask": "Ohne Aufgabe",
+    "region": "Timer",
+    "running": "Läuft",
+    "noProject": "Ohne Projekt",
+    "stopFailed": "Stoppen fehlgeschlagen. Erneut versuchen?"
   },
   "startTaskDialog": {
-    "titleStart": "Task starten",
-    "titleSwitch": "Task wechseln",
-    "searchPlaceholder": "Task suchen...",
-    "noTaskFound": "Kein Task gefunden",
-    "createPlaceholder": "Neuen Task erstellen...",
-    "startWithoutTask": "Ohne Task starten",
-    "start": "Start"
+    "titleStart": "Arbeit starten",
+    "titleSwitch": "Aufgabe wechseln",
+    "close": "Schließen",
+    "failed": "Starten fehlgeschlagen. Erneut versuchen?",
+    "loadFailed": "Aufgaben konnten nicht geladen werden."
   },
   "worktime": {
     "today": "Heute",
@@ -173,19 +182,37 @@
     "thisMonth": "Dieser Monat",
     "lastMonth": "Letzter Monat",
     "thisYear": "Dieses Jahr",
-    "dateRange": "Datumsbereich",
-    "filterLabel": "Label filtern…",
-    "totalWorktime": "Gesamte Arbeitszeit",
-    "avgPerDay": "Ø {{time}} / Tag",
+    "dateRange": "Zeitraum",
+    "filterLabel": "Nach Label filtern",
     "projectShares": "Projektanteile",
-    "labelFilter": "· Label: {{name}}",
-    "hoursPerDay": "Stunden pro Tag",
-    "tasksWithLabel": "Tasks mit Label \u201e{{name}}\u201c",
-    "detailsPerProject": "Details pro Projekt",
-    "noData": "Keine Daten für diesen Zeitraum.",
-    "noDataShort": "Keine Daten",
-    "withLabel": "mit Label",
-    "withoutLabel": "ohne Label"
+    "hoursPerDay": "Stunden je Tag",
+    "tasksWithLabel": "Aufgaben mit Label „{{name}}“",
+    "detailsPerProject": "Details je Projekt",
+    "noData": "Keine Zeiten in diesem Zeitraum",
+    "openCalendar": "Kalender öffnen",
+    "previousRange": "Vorheriger Zeitraum",
+    "nextRange": "Nächster Zeitraum",
+    "dayCount_one": "{{count}} Tag",
+    "dayCount_other": "{{count}} Tage",
+    "allLabels": "Alle Labels",
+    "total": "Gesamt",
+    "averagePerDay": "Ø pro Arbeitstag",
+    "daysLogged_one": "{{count}} Tag erfasst",
+    "daysLogged_other": "{{count}} Tage erfasst",
+    "largestProject": "Größtes Projekt",
+    "withoutTask": "Ohne Aufgabe",
+    "shareOfTotal": "{{percent}} der Zeit",
+    "hours": "Stunden",
+    "others": "Weitere",
+    "showTable": "Tabelle anzeigen",
+    "hideTable": "Tabelle ausblenden",
+    "hoursTable": "Stunden je Tag als Tabelle",
+    "day": "Tag",
+    "sum": "Summe",
+    "noTasks": "Keine Aufgaben",
+    "transfer": "An Moco übertragen",
+    "loadError": "Auswertung konnte nicht geladen werden.",
+    "transferTo": "nach"
   },
   "labels": {
     "title": "Labels",
@@ -235,21 +262,31 @@
   },
   "taskCard": {
     "markDone": "Als erledigt markieren",
-    "markOpen": "Als offen markieren",
     "removeFromToday": "Von heute entfernen",
     "clickToEdit": "Klicken zum Bearbeiten",
-    "totalTime": "{{time}} gesamt",
-    "pause": "Pause",
     "start": "Starten",
-    "recurring": "Wiederkehrende Aktivität",
     "recurrenceModalTitle": "Wiederholung",
-    "openDetails": "Details öffnen"
+    "openDetails": "Details öffnen",
+    "reopen": "Wieder öffnen",
+    "stop": "Stoppen",
+    "planToday": "Heute",
+    "noDate": "Datum",
+    "date": "Datum",
+    "overdue": "überfällig",
+    "activity": "Aktivität",
+    "running": "läuft",
+    "total": "Gesamtzeit",
+    "actions": "Weitere Aktionen",
+    "rename": "Umbenennen",
+    "renameTitle": "Aufgabe umbenennen",
+    "name": "Name",
+    "labels": "Labels",
+    "recurrence": "Wiederholung …",
+    "clearDate": "Datum entfernen",
+    "pickDate": "Datum wählen"
   },
   "taskEditControls": {
-    "editLabels": "Labels bearbeiten",
     "planDate": "Datum planen",
-    "planToday": "Für heute planen",
-    "planned": "Geplant: {{date}}",
     "planTime": "Uhrzeit"
   },
   "taskUtils": {
@@ -320,23 +357,17 @@
     "notLinked": "Nicht verknüpft",
     "defaultTask": "Standard-Leistung",
     "noDefaultTask": "Keine Standard-Leistung",
-    "syncButton": "Nach Moco übertragen",
-    "syncTitle": "Nach Moco übertragen",
     "close": "Schließen",
-    "date": "Datum",
-    "task": "Aufgabe",
-    "mocoTask": "Leistung",
-    "duration": "Dauer",
     "previewError": "Vorschau konnte nicht geladen werden",
     "noData": "Keine Zeiten im gewählten Zeitraum.",
     "noSyncable": "Keine übertragbaren Einträge im gewählten Zeitraum.",
-    "summary": "{{syncable}} übertragbar, {{skipped}} übersprungen",
     "selectAll": "Alle auswählen",
     "selectionSummary": "{{selected}} von {{syncable}} ausgewählt · {{skipped}} übersprungen",
-    "confirmSync": "{{count}} Einträge übertragen",
     "syncDone": "{{created}} übertragen, {{failed}} fehlgeschlagen",
     "syncError": "Übertragung fehlgeschlagen",
-    "linkingMovedHint": "Die Projekt-Verknüpfung findest du jetzt direkt im Detail-Panel des jeweiligen Projekts."
+    "linkingMovedHint": "Die Projekt-Verknüpfung findest du jetzt direkt im Detail-Panel des jeweiligen Projekts.",
+    "confirmSync_one": "{{count}} Eintrag übertragen",
+    "confirmSync_other": "{{count}} Einträge übertragen"
   },
   "drawer": {
     "projectTitle": "Projekt-Eigenschaften",
@@ -425,5 +456,32 @@
     "labels": "Labels",
     "recurrence": "Wiederholung…",
     "recurrenceTitle": "Wiederholung"
+  },
+  "taskPicker": {
+    "field": "Aufgabe",
+    "noTask": "Ohne Aufgabe",
+    "unknownTask": "Unbekannte Aufgabe",
+    "dialog": "Aufgabe wählen",
+    "search": "Aufgabe suchen oder neu anlegen …",
+    "list": "Aufgaben",
+    "noMatchesCreate": "Keine Aufgabe gefunden – Enter legt sie neu an.",
+    "noMatches": "Keine Aufgabe gefunden.",
+    "noTasks": "Noch keine Aufgaben.",
+    "createIn": "als neue Aufgabe in",
+    "createTask": "„{{title}}“ als neue Aufgabe in {{project}} anlegen",
+    "changeProject": "Projekt: {{project}}, ändern",
+    "createFailed": "Die Aufgabe konnte nicht angelegt werden.",
+    "projectPending": "Projekt wird angelegt …",
+    "createProjectFailed": "Das Projekt konnte nicht angelegt werden.",
+    "back": "Zurück",
+    "projectFor": "Projekt für",
+    "projectSearch": "Projekt suchen …",
+    "projectList": "Projekte",
+    "noProjects": "Kein Projekt gefunden.",
+    "newProject": "Neues Projekt …",
+    "keyMove": "wählen",
+    "keyPick": "übernehmen",
+    "keyCreate": "neu",
+    "keyClose": "schließen"
   }
 }

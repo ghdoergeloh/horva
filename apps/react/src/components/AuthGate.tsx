@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 
 import { initAuthClient } from "@horva/auth/client";
 import { Button } from "@horva/ui/Button";
-import { Loader } from "@horva/ui/Logo";
+import { HorvaWordmark, Loader } from "@horva/ui/Logo";
 import { TextField } from "@horva/ui/TextField";
 
 // Gate of the browser app: a better-auth email/password login wall plus the
@@ -34,7 +34,7 @@ export function AuthGate({ children }: AuthGateProps) {
 
   if (isPending) {
     return (
-      <main className="bg-background flex h-screen items-center justify-center">
+      <main className="bg-background flex h-dvh items-center justify-center">
         <Loader
           size={64}
           label={t("loading")}
@@ -49,6 +49,17 @@ export function AuthGate({ children }: AuthGateProps) {
   }
 
   return <>{children}</>;
+}
+
+/** The Horva wordmark and its tagline above the forms of the gate. */
+function AuthBrand() {
+  const { t } = useTranslation();
+  return (
+    <div className="flex flex-col items-center gap-2 text-center">
+      <HorvaWordmark size={40} label={t("app.title")} />
+      <p className="text-muted-foreground text-small">{t("auth.tagline")}</p>
+    </div>
+  );
 }
 
 type LoginMode = "signin" | "signup" | "forgot";
@@ -127,13 +138,14 @@ function LoginForm() {
         : t("auth.forgotSubtitle");
 
   return (
-    <main className="bg-background flex h-screen items-center justify-center p-6">
+    <main className="bg-background flex min-h-dvh flex-col items-center justify-center gap-6 p-6 max-sm:p-3">
+      <AuthBrand />
       <form
         onSubmit={handleSubmit}
-        className="border-border bg-card w-full max-w-md rounded-xl border p-6 shadow-sm"
+        className="border-border bg-card text-card-foreground w-full max-w-md rounded-xl border p-6 shadow-sm max-sm:p-4"
       >
-        <h1 className="text-foreground text-xl font-semibold">{title}</h1>
-        <p className="text-muted-foreground mt-1 text-sm">{subtitle}</p>
+        <h1 className="text-title text-foreground">{title}</h1>
+        <p className="text-muted-foreground text-small mt-1">{subtitle}</p>
 
         <div className="mt-6 space-y-4">
           {mode === "signup" && (
@@ -179,7 +191,8 @@ function LoginForm() {
               type="button"
               variant="quiet"
               onPress={() => switchMode("forgot")}
-              className="text-primary hover:text-primary/80 text-xs"
+              size="sm"
+              className="text-primary -mx-2.5"
             >
               {t("auth.forgotLink")}
             </Button>
@@ -187,22 +200,29 @@ function LoginForm() {
         )}
 
         {error && (
-          <div className="bg-destructive/10 text-destructive mt-4 rounded-md p-3 text-xs">
+          <div
+            role="alert"
+            className="border-destructive text-destructive text-small mt-4 rounded-md border p-3"
+          >
             {error}
           </div>
         )}
         {info && (
-          <div className="bg-success/10 text-success mt-4 rounded-md p-3 text-xs">
+          <div
+            role="status"
+            className="border-success text-foreground text-small mt-4 rounded-md border p-3"
+          >
             {info}
           </div>
         )}
 
-        <div className="mt-6 flex items-center justify-between">
+        <div className="mt-6 flex flex-wrap items-center justify-between gap-2">
           <Button
             type="button"
             variant="quiet"
             onPress={() => switchMode(mode === "signin" ? "signup" : "signin")}
-            className="text-primary hover:text-primary/80 text-xs"
+            size="sm"
+            className="text-primary -mx-2.5"
           >
             {mode === "signin"
               ? t("auth.needAccount")
@@ -265,12 +285,13 @@ function ResetPasswordForm() {
 
   if (!token) {
     return (
-      <main className="bg-background flex h-screen items-center justify-center p-6">
-        <div className="border-border bg-card w-full max-w-md rounded-xl border p-6 text-center shadow-sm">
-          <h1 className="text-foreground text-xl font-semibold">
+      <main className="bg-background flex min-h-dvh flex-col items-center justify-center gap-6 p-6 max-sm:p-3">
+        <AuthBrand />
+        <div className="border-border bg-card text-card-foreground w-full max-w-md rounded-xl border p-6 text-center shadow-sm max-sm:p-4">
+          <h1 className="text-title text-foreground">
             {t("auth.resetInvalidTitle")}
           </h1>
-          <p className="text-muted-foreground mt-2 text-sm">
+          <p className="text-muted-foreground text-small mt-2">
             {t("auth.resetInvalidBody")}
           </p>
           <Button
@@ -289,12 +310,13 @@ function ResetPasswordForm() {
 
   if (done) {
     return (
-      <main className="bg-background flex h-screen items-center justify-center p-6">
-        <div className="border-border bg-card w-full max-w-md rounded-xl border p-6 text-center shadow-sm">
-          <h1 className="text-foreground text-xl font-semibold">
+      <main className="bg-background flex min-h-dvh flex-col items-center justify-center gap-6 p-6 max-sm:p-3">
+        <AuthBrand />
+        <div className="border-border bg-card text-card-foreground w-full max-w-md rounded-xl border p-6 text-center shadow-sm max-sm:p-4">
+          <h1 className="text-title text-foreground">
             {t("auth.resetDoneTitle")}
           </h1>
-          <p className="text-muted-foreground mt-2 text-sm">
+          <p className="text-muted-foreground text-small mt-2">
             {t("auth.resetDoneBody")}
           </p>
           <Button
@@ -314,15 +336,14 @@ function ResetPasswordForm() {
   const mismatch = confirm.length > 0 && password !== confirm;
 
   return (
-    <main className="bg-background flex h-screen items-center justify-center p-6">
+    <main className="bg-background flex min-h-dvh flex-col items-center justify-center gap-6 p-6 max-sm:p-3">
+      <AuthBrand />
       <form
         onSubmit={handleSubmit}
-        className="border-border bg-card w-full max-w-md rounded-xl border p-6 shadow-sm"
+        className="border-border bg-card text-card-foreground w-full max-w-md rounded-xl border p-6 shadow-sm max-sm:p-4"
       >
-        <h1 className="text-foreground text-xl font-semibold">
-          {t("auth.resetTitle")}
-        </h1>
-        <p className="text-muted-foreground mt-1 text-sm">
+        <h1 className="text-title text-foreground">{t("auth.resetTitle")}</h1>
+        <p className="text-muted-foreground text-small mt-1">
           {t("auth.resetSubtitle")}
         </p>
 
@@ -352,7 +373,10 @@ function ResetPasswordForm() {
         </div>
 
         {error && (
-          <div className="bg-destructive/10 text-destructive mt-4 rounded-md p-3 text-xs">
+          <div
+            role="alert"
+            className="border-destructive text-destructive text-small mt-4 rounded-md border p-3"
+          >
             {error}
           </div>
         )}
