@@ -161,7 +161,8 @@ function Timeline() {
   const failed = slotsQuery.isError || periodsQuery.isError;
 
   return (
-    <div className="mx-auto flex w-full max-w-5xl flex-col gap-4">
+    // `relative` keeps the screen reader texts of the tables inside the page.
+    <div className="relative mx-auto flex w-full max-w-5xl flex-col gap-4">
       <h1 className="sr-only">{t("timeline.title")}</h1>
       <WeekHeader
         weekStart={weekStart}
