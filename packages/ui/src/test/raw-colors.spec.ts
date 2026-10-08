@@ -15,7 +15,10 @@ const roots = ["packages/ui/src", "apps/react/src"];
 const exceptions: [RegExp, string][] = [
   [/\/ui\/Color[A-Z]\w*\.tsx$/, "color pickers show arbitrary colors"],
   [/\/raw-colors\.spec\.ts$/, "the patterns of this test"],
-  [/\/ui\/Chip\.stories\.tsx$/, "a project color the user picked"],
+  [
+    /\/ui\/(?:Chip|ProjectColorPicker)\.(?:stories|spec)\.tsx$/,
+    "a project color the user picked",
+  ],
   [/\/routeTree\.gen\.ts$/, "generated"],
   [/\/lib\/projectColors\.ts$/, "project colors are data the user picks"],
   [/\/lib\/chartUtils(?:\.spec)?\.ts$/, "mixes project colors for the charts"],
