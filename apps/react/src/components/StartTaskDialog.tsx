@@ -60,7 +60,7 @@ export function StartTaskDialog({
 
   return (
     <div className="bg-foreground/40 fixed inset-0 z-50 flex items-center justify-center">
-      <div className="bg-card w-full max-w-md rounded-xl shadow-xl">
+      <div className="bg-card w-full max-w-md rounded-xl shadow-lg">
         {/* Header */}
         <div className="border-border flex items-center justify-between border-b px-4 py-3">
           <h2 className="text-foreground text-sm font-semibold">

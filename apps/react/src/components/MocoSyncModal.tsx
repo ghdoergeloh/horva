@@ -163,7 +163,7 @@ export function MocoSyncModal({
         role="dialog"
         aria-modal="true"
         aria-labelledby={titleId}
-        className="border-border bg-card flex max-h-[80vh] w-full max-w-2xl flex-col rounded-xl border shadow-xl"
+        className="border-border bg-card flex max-h-[80vh] w-full max-w-2xl flex-col rounded-xl border shadow-lg"
       >
         <div className="border-border flex items-center justify-between border-b px-5 py-4">
           <h2 id={titleId} className="text-foreground text-sm font-semibold">

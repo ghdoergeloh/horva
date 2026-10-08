@@ -1,0 +1,166 @@
+<!-- @dsCard height=288 -->
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="utf-8" />
+    <title>Horva</title>
+    <style>
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+      }
+      body {
+        background: var(--background);
+        color: var(--foreground);
+        font-family: var(--font-sans);
+        overflow: hidden;
+      }
+      .cover {
+        position: relative;
+        height: 288px;
+        overflow: hidden;
+      }
+      .art {
+        position: absolute;
+        top: 0;
+        left: 480px;
+        width: 480px;
+        height: 288px;
+        overflow: hidden;
+      }
+      .art svg {
+        display: block;
+        width: 480px;
+        height: 288px;
+      }
+      .green {
+        fill: var(--primary);
+      }
+      .run {
+        fill: var(--running);
+      }
+      .ink {
+        fill: var(--foreground);
+      }
+      .blk {
+        rx: var(--radius-lg);
+      }
+      .slot {
+        rx: var(--radius-sm);
+      }
+      .words {
+        position: absolute;
+        left: var(--space-6);
+        bottom: var(--space-6);
+        max-width: 440px;
+      }
+      .name {
+        margin: 0;
+        font-size: 120px;
+        line-height: 0.9;
+        font-weight: 600;
+        letter-spacing: -0.035em;
+        color: var(--foreground);
+      }
+      .tag {
+        margin: var(--space-2) 0 0 6px;
+        font-size: 14px;
+        line-height: 20px;
+        color: var(--muted-foreground);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="cover">
+      <div class="art" aria-hidden="true">
+        <svg viewBox="0 0 480 288" width="480" height="288">
+          <!--
+  blocks      primary 176×232 bled off the top (Waldgrün, die Marke) · running 96×128 (Orange, „läuft“) · foreground 176×184 bleeding off the right edge — ≈35% of 960×288
+  arrangement one tall green slab with two satellites, bottoms on one line, space-4 gutters
+  pattern     slot bars, from the timeline: each day is a bar of project-coloured slots — rows of radius-sm bars at a space-6 pitch, some cut into the ink block in running
+  scales      sides in space-2 multiples; gutters space-4; bar height space-2, pitch space-6; corners radius-lg, bars radius-sm
+-->
+          <rect
+            class="green blk"
+            x="16"
+            y="-16"
+            width="176"
+            height="232"
+            rx="12"
+          />
+          <rect
+            class="run blk"
+            x="208"
+            y="88"
+            width="96"
+            height="128"
+            rx="12"
+          />
+          <rect
+            class="ink blk"
+            x="320"
+            y="32"
+            width="176"
+            height="184"
+            rx="12"
+          />
+          <rect class="run slot" x="336" y="152" width="40" height="8" rx="6" />
+          <rect class="run slot" x="380" y="152" width="64" height="8" rx="6" />
+          <rect class="run slot" x="336" y="176" width="72" height="8" rx="6" />
+          <rect class="run slot" x="412" y="176" width="24" height="8" rx="6" />
+          <rect
+            class="green slot"
+            x="16"
+            y="240"
+            width="96"
+            height="8"
+            rx="6"
+          />
+          <rect class="run slot" x="116" y="240" width="32" height="8" rx="6" />
+          <rect
+            class="green slot"
+            x="152"
+            y="240"
+            width="56"
+            height="8"
+            rx="6"
+          />
+          <rect
+            class="ink slot"
+            x="224"
+            y="240"
+            width="120"
+            height="8"
+            rx="6"
+          />
+          <rect
+            class="green slot"
+            x="40"
+            y="264"
+            width="64"
+            height="8"
+            rx="6"
+          />
+          <rect class="ink slot" x="108" y="264" width="88" height="8" rx="6" />
+          <rect class="run slot" x="200" y="264" width="48" height="8" rx="6" />
+          <rect
+            class="green slot"
+            x="264"
+            y="264"
+            width="80"
+            height="8"
+            rx="6"
+          />
+        </svg>
+      </div>
+      <div class="words">
+        <h1 class="name">Horva</h1>
+        <p class="tag">
+          Zeiterfassung, die den ganzen Tag ruhig nebenher läuft.
+        </p>
+      </div>
+    </div>
+  </body>
+</html>

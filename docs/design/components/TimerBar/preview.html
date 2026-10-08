@@ -1,0 +1,60 @@
+<!-- @dsCard group="Horva" height=190 subtitle="Ruhezustand und läuft" -->
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="utf-8" />
+    <title>TimerBar</title>
+  </head>
+  <body>
+    <div class="hv-stack">
+      <div class="hv-timer" role="status">
+        <span class="hv-timer__state" aria-hidden="true"></span>
+        <div class="hv-timer__task">
+          <div class="hv-timer__title">Nicht am Arbeiten</div>
+          <div class="hv-timer__meta">
+            <span>Heute 6:12 · Woche 28:40</span>
+          </div>
+        </div>
+        <button class="hv-btn hv-btn--primary">
+          <svg class="hv-icon" viewBox="0 0 24 24">
+            <polygon points="6 3 20 12 6 21 6 3" /></svg
+          >Arbeit starten
+        </button>
+      </div>
+      <div class="hv-timer is-running" role="status">
+        <span class="hv-timer__state" aria-hidden="true"></span>
+        <div class="hv-timer__task">
+          <div class="hv-timer__title">
+            Angebot für die Stadtwerke überarbeiten und Rückfragen klären
+          </div>
+          <div class="hv-timer__meta">
+            <span class="hv-dot" style="--c: var(--project-7)"></span
+            ><span>Kundenprojekte</span>
+          </div>
+        </div>
+        <div>
+          <div class="hv-timer__time">01:42:07</div>
+          <div class="hv-timer__sums">Heute 6:54</div>
+        </div>
+        <div class="hv-timer__actions">
+          <button class="hv-btn hv-btn--secondary">
+            <svg class="hv-icon" viewBox="0 0 24 24">
+              <path d="M8 3 4 7l4 4" />
+              <path d="M4 7h16" />
+              <path d="m16 21 4-4-4-4" />
+              <path d="M20 17H4" /></svg
+            >Wechseln
+          </button>
+          <button
+            class="hv-btn hv-btn--secondary hv-btn--icon"
+            aria-label="Stopp"
+          >
+            <svg class="hv-icon" viewBox="0 0 24 24">
+              <rect width="14" height="14" x="5" y="5" rx="2" />
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

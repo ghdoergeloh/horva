@@ -1,7 +1,9 @@
+import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
 import { wcagContrast } from "culori";
 import { describe, expect, it } from "vitest";
 
-import { colorPairs } from "./color-pairs";
+import { colorPairs, unpairedProjectColors } from "./color-pairs";
 import { readThemes } from "./tokens";
 
 const themes = readThemes();
@@ -23,4 +25,26 @@ describe.each(["light", "dark"] as const)("color contrast (%s)", (theme) => {
       expect(ratio).toBeGreaterThanOrEqual(minimum[pair.kind]);
     },
   );
+});
+
+/**
+ * Every project color in the theme needs a pair here, or a reason in
+ * `unpairedProjectColors`, so a new color cannot skip the check.
+ */
+it("checks every project color", () => {
+  const css = readFileSync(
+    resolve(import.meta.dirname, "../../../../tooling/tailwind/theme.css"),
+    "utf8",
+  );
+  const tokens = new Set(
+    [...css.matchAll(/--(project-[\w-]+):/g)].map((match) => match[1]),
+  );
+  const paired = new Set(colorPairs.map((pair) => pair.fg));
+  const missing = [...tokens].filter(
+    (token) =>
+      token !== undefined &&
+      !paired.has(token) &&
+      !unpairedProjectColors.includes(token),
+  );
+  expect(missing).toEqual([]);
 });

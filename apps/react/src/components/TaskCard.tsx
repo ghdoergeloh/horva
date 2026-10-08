@@ -360,7 +360,7 @@ export function TaskCard({
         <Button
           variant="secondary"
           onPress={() => void handleStop()}
-          className="bg-warning/10 text-warning hover:bg-warning/20 w-24 shrink-0 px-3 py-1.5 text-sm font-medium transition-colors"
+          className="bg-running text-running-foreground hover:bg-running/90 hover:text-running-foreground w-24 shrink-0 px-3 py-1.5 text-sm font-medium transition-colors"
         >
           <span className="inline-flex items-center justify-center gap-1">
             <Pause className="h-3 w-3" />

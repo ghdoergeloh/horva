@@ -97,7 +97,7 @@ function NewProjectModal({ onClose }: { onClose: () => void }) {
         role="dialog"
         aria-modal="true"
         aria-labelledby={titleId}
-        className="border-border bg-card w-80 rounded-xl border p-5 shadow-xl"
+        className="border-border bg-card w-80 rounded-xl border p-5 shadow-lg"
       >
         <div className="mb-4 flex items-center justify-between">
           <h2 id={titleId} className="text-foreground text-sm font-semibold">

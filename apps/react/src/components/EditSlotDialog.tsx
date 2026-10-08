@@ -101,7 +101,7 @@ export function EditSlotDialog({ slot, onClose }: EditSlotDialogProps) {
 
   return (
     <div className="bg-foreground/40 fixed inset-0 z-50 flex items-center justify-center">
-      <div className="bg-card w-full max-w-sm rounded-xl shadow-xl">
+      <div className="bg-card w-full max-w-sm rounded-xl shadow-lg">
         <div className="border-border flex items-center justify-between border-b px-4 py-3">
           <h2 className="text-foreground text-sm font-semibold">
             {t("slot.edit")}
@@ -158,7 +158,7 @@ export function EditSlotDialog({ slot, onClose }: EditSlotDialogProps) {
 
           {/* Neighbor warning */}
           {warning && (
-            <div className="bg-warning/10 text-warning flex items-start gap-2 rounded-lg p-3 text-xs">
+            <div className="border-warning bg-warning/15 text-foreground flex items-start gap-2 rounded-lg border p-3 text-xs">
               <AlertTriangle className="mt-0.5 h-3.5 w-3.5 flex-shrink-0" />
               {warning}
             </div>

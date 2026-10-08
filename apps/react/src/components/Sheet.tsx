@@ -44,7 +44,7 @@ export function Sheet({
         role="dialog"
         aria-modal="true"
         aria-labelledby={titleId}
-        className={`border-border bg-card fixed top-0 right-0 flex h-full w-[28rem] max-w-[90vw] flex-col border-l shadow-xl transition-transform duration-200 ease-out ${
+        className={`border-border bg-card fixed top-0 right-0 flex h-full w-[28rem] max-w-[90vw] flex-col border-l shadow-lg transition-transform duration-200 ease-out ${
           shown ? "translate-x-0" : "translate-x-full"
         }`}
       >

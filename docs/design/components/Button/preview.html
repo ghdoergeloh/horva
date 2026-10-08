@@ -1,0 +1,47 @@
+<!-- @dsCard group="Aktionen" height=150 subtitle="primär, sekundär, ruhig, Fehler, nur Symbol" -->
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="utf-8" />
+    <title>Button</title>
+  </head>
+  <body>
+    <div class="hv-stack">
+      <div class="hv-row">
+        <button class="hv-btn hv-btn--primary">
+          <svg class="hv-icon" viewBox="0 0 24 24">
+            <polygon points="6 3 20 12 6 21 6 3" /></svg
+          >Arbeit starten
+        </button>
+        <button class="hv-btn hv-btn--primary is-hover">Hover</button>
+        <button class="hv-btn hv-btn--primary is-focus">Fokus</button>
+        <button class="hv-btn hv-btn--primary" disabled>Deaktiviert</button>
+      </div>
+      <div class="hv-row">
+        <button class="hv-btn hv-btn--secondary">
+          <svg class="hv-icon" viewBox="0 0 24 24">
+            <path d="M8 3 4 7l4 4" />
+            <path d="M4 7h16" />
+            <path d="m16 21 4-4-4-4" />
+            <path d="M20 17H4" /></svg
+          >Wechseln <span class="hv-kbd">W</span>
+        </button>
+        <button class="hv-btn hv-btn--quiet">
+          <svg class="hv-icon" viewBox="0 0 24 24">
+            <path d="M5 12h14" />
+            <path d="M12 5v14" /></svg
+          >Neue Aufgabe
+        </button>
+        <button class="hv-btn hv-btn--destructive">Löschen</button>
+        <button
+          class="hv-btn hv-btn--secondary hv-btn--icon"
+          aria-label="Stopp"
+        >
+          <svg class="hv-icon" viewBox="0 0 24 24">
+            <rect width="14" height="14" x="5" y="5" rx="2" />
+          </svg>
+        </button>
+      </div>
+    </div>
+  </body>
+</html>
