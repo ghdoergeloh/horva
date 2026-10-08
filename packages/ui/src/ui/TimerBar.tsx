@@ -2,12 +2,12 @@
 
 import { ArrowLeftRight, Play, Square } from "lucide-react";
 
+import type { FormatDuration } from "../lib/duration";
 import type { ProjectColor } from "./Chip";
-import type { FormatDuration } from "./TimerBar.format";
+import { formatClock, formatDuration } from "../lib/duration";
 import { twMerge } from "../lib/tw";
 import { Button } from "./Button";
 import { ProjectDot } from "./Chip";
-import { formatClock, formatDuration } from "./TimerBar.format";
 
 /** The texts of the TimerBar. German by default. */
 export interface TimerBarStrings {

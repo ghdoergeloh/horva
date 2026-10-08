@@ -14,13 +14,13 @@ import { DialogTrigger, Button as RACButton } from "react-aria-components";
 
 import { focusRing } from "@horva/ui";
 
+import type { FormatDuration } from "../lib/duration";
 import type { ProjectColor } from "./Chip";
-import type { FormatDuration } from "./TimerBar.format";
+import { formatDuration } from "../lib/duration";
 import { tv, twMerge } from "../lib/tw";
 import { Button } from "./Button";
 import { Checkbox } from "./Checkbox";
 import { Chip, LiveBadge } from "./Chip";
-import { formatDuration } from "./TimerBar.format";
 
 /** The texts of the TaskCard. German by default. */
 export interface TaskCardStrings {
@@ -190,6 +190,9 @@ function handleCardKey(
   actions: Record<TaskCardShortcut, () => void>,
 ) {
   if (event.altKey || event.ctrlKey || event.metaKey) return;
+  // Keys from portals, such as the date popover or a menu, reach the card
+  // through React but belong to them.
+  if (!event.currentTarget.contains(event.target as Node)) return;
   if (isTextField(event.target)) return;
   const shortcut = taskCardShortcut(event.key, {
     ...state,
@@ -481,16 +484,16 @@ function Lead({
           aria-label={isRunning ? t.stop : t.start}
           onPress={isRunning ? onStop : onStart}
           className={twMerge(
-            "size-7 rounded-full border-[1.5px] p-0 [&_svg]:size-3 [&_svg]:fill-current",
+            "size-7 rounded-full border-[1.5px] p-0 [&_svg]:fill-current",
             isRunning
               ? "bg-running border-running text-running-foreground hover:bg-running pressed:bg-running hover:opacity-90"
               : "bg-card border-input-border text-primary hover:bg-primary hover:border-primary hover:text-primary-foreground pressed:bg-primary pressed:text-primary-foreground",
           )}
         >
           {isRunning ? (
-            <Square aria-hidden />
+            <Square aria-hidden className="size-3" />
           ) : (
-            <Play aria-hidden className="ml-0.5" />
+            <Play aria-hidden className="ml-0.5 size-3" />
           )}
         </Button>
       )}

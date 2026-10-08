@@ -78,6 +78,8 @@ describe("donutSlices", () => {
       minutes: 93 + 92 + 91,
     });
     expect(others?.grouped.map((s) => s.id)).toEqual([8, 9, 10]);
+    // A color no project can pick, so "Others" is never mistaken for one.
+    expect(others?.color).toBe("var(--muted-foreground)");
   });
 
   it("does not count time without a task as a project", () => {

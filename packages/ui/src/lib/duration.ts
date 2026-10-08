@@ -1,7 +1,7 @@
 /**
- * Formatting of times for the Horva components (TimerBar, TaskCard and the
- * report charts). Durations come in whole minutes, the running timer in
- * seconds.
+ * Formatting of times for the Horva components, such as the timer, the task
+ * card and the report charts. Durations come in whole minutes, the running
+ * timer in seconds.
  */
 
 /** Formats a duration in a component; the app can pass its own setting. */

@@ -5,7 +5,7 @@ import {
   formatDuration,
   formatPercent,
   formatSignedDuration,
-} from "./TimerBar.format";
+} from "./duration";
 
 describe("formatDuration", () => {
   it("writes hours and two-digit minutes", () => {

@@ -6,9 +6,12 @@ import { ChevronRight } from "lucide-react";
 
 import { focusRing } from "@horva/ui";
 
-import type { ChartKey, DonutSlice, ProjectShare } from "./ProjectDonut.data";
-import type { FormatDuration } from "./TimerBar.format";
+import type { ChartKey } from "../lib/chart";
+import type { FormatDuration } from "../lib/duration";
+import type { DonutSlice, ProjectShare } from "./ProjectDonut.data";
+import { formatDuration, formatPercent } from "../lib/duration";
 import { twMerge } from "../lib/tw";
+import { ChartTooltip } from "./ChartTooltip";
 import { ProjectDot, projectColorValue } from "./Chip";
 import {
   arcPath,
@@ -17,8 +20,6 @@ import {
   OTHERS_KEY,
   polar,
 } from "./ProjectDonut.data";
-import { ChartTooltip } from "./ProjectDonut.tooltip";
-import { formatDuration, formatPercent } from "./TimerBar.format";
 
 /** The texts of the ProjectDonut. German by default. */
 export interface ProjectDonutStrings {
@@ -42,7 +43,10 @@ export const projectDonutStrings: ProjectDonutStrings = {
 export interface ProjectDonutProps {
   /** Time per project in the period; the order does not matter. */
   projects: ProjectShare[];
-  /** From this many projects on, the smallest become "Others". @default 8 */
+  /**
+   * With more than this many projects, the smallest become "Others".
+   * @default 8
+   */
   maxProjects?: number;
   /** @default 3 */
   headingLevel?: 2 | 3 | 4;
@@ -85,6 +89,8 @@ export function ProjectDonut({
   const [tabIndex, setTabIndex] = useState(0);
   const [othersOpen, setOthersOpen] = useState(false);
   const segments = useRef<(SVGPathElement | null)[]>([]);
+  // The tab stop stays on an existing segment when the data shrinks.
+  const tabStop = Math.min(tabIndex, Math.max(slices.length - 1, 0));
   const activeKey = hoverKey ?? focusKey;
   const activeIndex = slices.findIndex((slice) => slice.id === activeKey);
   const active = slices[activeIndex];
@@ -165,7 +171,7 @@ export function ProjectDonut({
                   d={arcPath(CENTER, CENTER, RADIUS, arc)}
                   role="img"
                   aria-label={label(slice)}
-                  tabIndex={index === tabIndex ? 0 : -1}
+                  tabIndex={index === tabStop ? 0 : -1}
                   fill="none"
                   stroke={projectColorValue(slice.color)}
                   strokeWidth={isActive ? WIDTH_ACTIVE : WIDTH}
@@ -351,7 +357,20 @@ function LegendRow({
           {content}
         </button>
       ) : (
-        <div className={twMerge(rowGrid, highlight)}>{content}</div>
+        <div
+          // A focusable row highlights its segment, as on hover.
+          // oxlint-disable-next-line jsx-a11y/no-noninteractive-tabindex
+          tabIndex={0}
+          onFocus={() => onFocusChange(true)}
+          onBlur={() => onFocusChange(false)}
+          className={twMerge(
+            rowGrid,
+            "outline-ring outline-offset-2 focus-visible:outline-2",
+            highlight,
+          )}
+        >
+          {content}
+        </div>
       )}
       {isOthers && (
         <ul id={panelId} hidden={!isOpen} className="ml-5 flex flex-col">

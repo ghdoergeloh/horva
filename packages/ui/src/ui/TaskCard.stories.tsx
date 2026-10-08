@@ -106,7 +106,15 @@ export const Overview: Story = {
 };
 
 /** An open task without a date: dashed date chip. */
-export const Open: Story = {};
+export const Open: Story = {
+  play: async ({ canvasElement }) => {
+    const start = within(canvasElement).getByRole("button", {
+      name: "Starten",
+    });
+    const icon = start.querySelector("svg");
+    await expect(icon?.getBoundingClientRect().width).toBe(12);
+  },
+};
 
 /** A running task: orange surface, "läuft" and a stop button. */
 export const Running: Story = {
@@ -303,6 +311,55 @@ export const KeyboardActivity: Story = {
     await userEvent.keyboard("s");
     await expect(done()).toBe(0);
     await expect(start()).toBe(1);
+  },
+  parameters: { screenshot: false },
+};
+
+/**
+ * Keys typed inside the date popover belong to the popover, not to the
+ * card. Escape closes it and returns the focus to the card.
+ */
+export const KeyboardInPopover: Story = {
+  args: { datePopover: DatePopover.args?.datePopover },
+  render: DatePopover.render,
+  play: async ({ args, canvasElement }) => {
+    const start = counter(args.onStart);
+    const today = counter(args.onPlanToday);
+    await userEvent.tab();
+    await userEvent.keyboard("d");
+    const dialog = await within(document.body).findByRole("dialog");
+    await waitFor(() => expect(dialog).toHaveFocus());
+    await userEvent.keyboard("s");
+    await userEvent.keyboard("h");
+    await expect(start()).toBe(0);
+    await expect(today()).toBe(0);
+    await userEvent.keyboard("{Escape}");
+    await waitFor(() =>
+      expect(within(document.body).queryByRole("dialog")).toBeNull(),
+    );
+    // The focus goes back to where the popover was opened from: the card.
+    await waitFor(() =>
+      expect(within(canvasElement).getByRole("group")).toHaveFocus(),
+    );
+  },
+  parameters: { screenshot: false },
+};
+
+/** Escape closes a popover opened from the chip; the chip gets the focus. */
+export const DatePopoverEscape: Story = {
+  args: DatePopover.args,
+  render: DatePopover.render,
+  play: async ({ canvasElement }) => {
+    const chip = within(canvasElement).getByRole("button", {
+      name: "Datum: Fr 10.10.",
+    });
+    await userEvent.click(chip);
+    await within(document.body).findByRole("dialog");
+    await userEvent.keyboard("{Escape}");
+    await waitFor(() =>
+      expect(within(document.body).queryByRole("dialog")).toBeNull(),
+    );
+    await waitFor(() => expect(chip).toHaveFocus());
   },
   parameters: { screenshot: false },
 };

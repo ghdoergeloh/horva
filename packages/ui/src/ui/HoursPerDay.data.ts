@@ -1,4 +1,4 @@
-import type { ChartKey } from "./ProjectDonut.data";
+import type { ChartKey } from "../lib/chart";
 
 /** The time of one project on one day. */
 export interface DayProjectMinutes {
@@ -59,18 +59,15 @@ export interface StackPart {
 /**
  * The parts of one day, stacked in the order of `projectOrder` (the
  * legend), so each project keeps its place in every column. Projects that
- * are not in the order come last.
+ * are not in the legend are left out.
  */
 export function stackDay(
   minutes: DayProjectMinutes[],
   projectOrder: ChartKey[],
 ): StackPart[] {
-  const rank = (id: ChartKey) => {
-    const index = projectOrder.indexOf(id);
-    return index === -1 ? projectOrder.length : index;
-  };
+  const rank = (id: ChartKey) => projectOrder.indexOf(id);
   const sorted = minutes
-    .filter((part) => part.minutes > 0)
+    .filter((part) => part.minutes > 0 && rank(part.projectId) !== -1)
     .sort((a, b) => rank(a.projectId) - rank(b.projectId));
   let bottom = 0;
   return sorted.map((part) => {
@@ -85,9 +82,11 @@ export function stackDay(
   });
 }
 
-/** The sum of one day. */
-export function dayTotal(day: DayEntry): number {
-  return day.minutes.reduce((sum, part) => sum + Math.max(0, part.minutes), 0);
+/** The sum of one day; with `projectIds` only of these projects. */
+export function dayTotal(day: DayEntry, projectIds?: ChartKey[]): number {
+  return day.minutes
+    .filter((part) => !projectIds || projectIds.includes(part.projectId))
+    .reduce((sum, part) => sum + Math.max(0, part.minutes), 0);
 }
 
 /** The time of one project on one day. */
@@ -109,6 +108,22 @@ export function weekStarts(dates: string[]): number[] {
   return dates.flatMap((date, index) =>
     index > 0 && weekday(date) === 0 ? [index] : [],
   );
+}
+
+/**
+ * The baseline of the sum above a column, `gap` px above its top. When the
+ * text would cross the target line, it moves above the line. The text is
+ * taken as `height` px tall above its baseline and 3 px below it.
+ */
+export function valueLabelY(
+  columnTop: number,
+  targetY: number | undefined,
+  { gap = 6, height = 11 } = {},
+): number {
+  const baseline = columnTop - gap;
+  if (targetY === undefined) return baseline;
+  const crosses = targetY > baseline - height && targetY < baseline + 3;
+  return crosses ? targetY - 4 : baseline;
 }
 
 /** From this many days on, columns lose their sums and get week lines. */

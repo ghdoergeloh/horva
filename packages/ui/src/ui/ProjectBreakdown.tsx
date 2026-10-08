@@ -12,13 +12,13 @@ import {
 
 import { focusRing } from "@horva/ui";
 
+import type { ChartKey } from "../lib/chart";
+import type { FormatDuration } from "../lib/duration";
 import type { ProjectColor } from "./Chip";
-import type { ChartKey } from "./ProjectDonut.data";
-import type { FormatDuration } from "./TimerBar.format";
+import { formatDuration } from "../lib/duration";
 import { tv, twMerge } from "../lib/tw";
 import { Button } from "./Button";
 import { ProjectDot, projectColorValue } from "./Chip";
-import { formatDuration } from "./TimerBar.format";
 
 /** The texts of the ProjectBreakdown. German by default. */
 export interface ProjectBreakdownStrings {

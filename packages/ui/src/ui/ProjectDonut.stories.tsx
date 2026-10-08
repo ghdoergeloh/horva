@@ -1,7 +1,10 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
+import { useState } from "react";
 import { expect, userEvent, waitFor, within } from "storybook/test";
 
+import type { ProjectDonutProps } from "./ProjectDonut";
 import type { ProjectShare } from "./ProjectDonut.data";
+import { Button } from "./Button";
 import { ProjectDonut } from "./ProjectDonut";
 
 const week: ProjectShare[] = [
@@ -128,6 +131,13 @@ export const Keyboard: Story = {
     await expect(legend.getByText("ohne Aufgabe").closest("div")).toHaveClass(
       "bg-accent",
     );
+    // Tab moves on to the legend; a focused row highlights its segment.
+    await userEvent.tab();
+    const row = legend.getByText("Kranich").closest("[tabindex]");
+    await expect(row).toHaveFocus();
+    await expect(row).toHaveClass("bg-accent");
+    await expect(segments[0]).not.toHaveClass("opacity-35");
+    await expect(segments[1]).toHaveClass("opacity-35");
   },
   parameters: { screenshot: false },
 };
@@ -137,9 +147,9 @@ export const KeyboardOthers: Story = {
   args: { projects: many },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    await userEvent.tab();
-    await userEvent.tab();
     const others = canvas.getByRole("button", { name: /Weitere/ });
+    // The ring, then seven project rows, then "Weitere".
+    for (let i = 0; i < 9; i++) await userEvent.tab();
     await expect(others).toHaveFocus();
     const segment = canvas.getByRole("img", { name: /^Weitere/ });
     await expect(segment).not.toHaveClass("opacity-35");
@@ -147,6 +157,41 @@ export const KeyboardOthers: Story = {
     await waitFor(() =>
       expect(others).toHaveAttribute("aria-expanded", "true"),
     );
+  },
+  parameters: { screenshot: false },
+};
+
+/** Shows less data after a press, as when the period changes. */
+function Shrinking(args: ProjectDonutProps) {
+  const [few, setFew] = useState(false);
+  return (
+    <div className="flex max-w-160 flex-col items-start gap-3">
+      <Button variant="secondary" size="sm" onPress={() => setFew(true)}>
+        Weniger Daten
+      </Button>
+      <ProjectDonut
+        {...args}
+        projects={few ? args.projects.slice(0, 2) : args.projects}
+      />
+    </div>
+  );
+}
+
+/** With less data the chart stays reachable with Tab. */
+export const KeyboardFewerData: Story = {
+  render: (args) => <Shrinking {...args} />,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await userEvent.tab();
+    await userEvent.tab();
+    await userEvent.keyboard("{End}");
+    await userEvent.tab({ shift: true });
+    await expect(
+      canvas.getByRole("button", { name: "Weniger Daten" }),
+    ).toHaveFocus();
+    await userEvent.keyboard("{Enter}");
+    await userEvent.tab();
+    await expect(document.activeElement).toHaveAttribute("role", "img");
   },
   parameters: { screenshot: false },
 };

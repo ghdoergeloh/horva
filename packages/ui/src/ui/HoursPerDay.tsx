@@ -4,12 +4,14 @@ import type React from "react";
 import { useId, useLayoutEffect, useRef, useState } from "react";
 import { Table2 } from "lucide-react";
 
+import type { ChartKey } from "../lib/chart";
+import type { FormatDuration } from "../lib/duration";
 import type { ProjectColor } from "./Chip";
 import type { DayEntry, StackPart } from "./HoursPerDay.data";
-import type { ChartKey } from "./ProjectDonut.data";
-import type { FormatDuration } from "./TimerBar.format";
+import { formatDuration } from "../lib/duration";
 import { twMerge } from "../lib/tw";
 import { Button } from "./Button";
+import { ChartTooltip } from "./ChartTooltip";
 import { ProjectDot, projectColorValue } from "./Chip";
 import {
   dayTotal,
@@ -17,10 +19,9 @@ import {
   hourAxis,
   projectMinutes,
   stackDay,
+  valueLabelY,
   weekStarts,
 } from "./HoursPerDay.data";
-import { ChartTooltip } from "./ProjectDonut.tooltip";
-import { formatDuration } from "./TimerBar.format";
 
 /** The texts of HoursPerDay. German by default. */
 export interface HoursPerDayStrings {
@@ -133,7 +134,7 @@ export function HoursPerDay({
   const order = projects.map((project) => project.id);
   const byId = new Map(projects.map((project) => [project.id, project]));
   const stacks = days.map((day) => stackDay(day.minutes, order));
-  const totals = days.map(dayTotal);
+  const totals = days.map((day) => dayTotal(day, order));
   const grandTotal = totals.reduce((sum, value) => sum + value, 0);
   const axis = hourAxis(Math.max(0, ...totals), targetMinutes ?? 0);
   const dense = days.length >= DENSE_DAYS;
@@ -152,6 +153,8 @@ export function HoursPerDay({
     parts.forEach((part) => cells.push({ day, part, index: cells.length })),
   );
 
+  // The tab stop stays on an existing cell when the data shrinks.
+  const tabStop = Math.min(tabCell, Math.max(cells.length - 1, 0));
   const activeKey =
     hoverKey ?? hovered?.part.projectId ?? focused?.part.projectId ?? null;
   const tipCell = hovered ?? focused;
@@ -329,7 +332,7 @@ export function HoursPerDay({
                 fill={projectColorValue(project?.color ?? null)}
                 role="img"
                 aria-label={`${projectName(part.projectId)}, ${dayName(day)}: ${hours(part.minutes)}`}
-                tabIndex={cell.index === tabCell ? 0 : -1}
+                tabIndex={cell.index === tabStop ? 0 : -1}
                 className={twMerge(
                   "outline-ring outline-offset-2 focus-visible:outline-2 motion-safe:transition-opacity",
                   activeKey !== null && !isActive && "opacity-35",
@@ -363,7 +366,10 @@ export function HoursPerDay({
                 {!dense && total > 0 && (
                   <text
                     x={slotCenter(index)}
-                    y={y(total) - 6}
+                    y={valueLabelY(
+                      y(total),
+                      targetMinutes ? y(targetMinutes) : undefined,
+                    )}
                     textAnchor="middle"
                     className="fill-foreground font-mono text-xs font-medium"
                   >

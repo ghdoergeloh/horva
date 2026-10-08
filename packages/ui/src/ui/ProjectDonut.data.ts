@@ -1,7 +1,5 @@
+import type { ChartKey } from "../lib/chart";
 import type { ProjectColor } from "./Chip";
-
-/** An id of a project in a chart. */
-export type ChartKey = string | number;
 
 /** The time of one project in the chosen period. */
 export interface ProjectShare {
@@ -29,8 +27,8 @@ export interface DonutSlice {
 /** The id of the "Others" slice. */
 export const OTHERS_KEY = "__others__";
 
-/** The color of the "Others" slice: a neutral slate, not a default color. */
-export const OTHERS_COLOR = "project-17";
+/** The color of the "Others" slice: a neutral grey no project can have. */
+export const OTHERS_COLOR = "var(--muted-foreground)";
 
 /** The color of time without a task. */
 export const WITHOUT_TASK_COLOR = "project-none";

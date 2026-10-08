@@ -5,6 +5,7 @@ import {
   hourAxis,
   projectMinutes,
   stackDay,
+  valueLabelY,
   weekStarts,
 } from "./HoursPerDay.data";
 
@@ -54,7 +55,7 @@ describe("stackDay", () => {
     ]);
   });
 
-  it("puts unknown projects on top", () => {
+  it("drops projects that are not in the legend", () => {
     const parts = stackDay(
       [
         { projectId: "x", minutes: 10 },
@@ -62,7 +63,7 @@ describe("stackDay", () => {
       ],
       ["a"],
     );
-    expect(parts.map((p) => p.projectId)).toEqual(["a", "x"]);
+    expect(parts).toEqual([{ projectId: "a", minutes: 20, from: 0, to: 20 }]);
   });
 });
 
@@ -78,6 +79,18 @@ describe("dayTotal", () => {
         ],
       }),
     ).toBe(475);
+  });
+
+  it("counts only the projects of the legend when given", () => {
+    const day = {
+      date: "2026-10-05",
+      label: "Mo",
+      minutes: [
+        { projectId: 1, minutes: 445 },
+        { projectId: 9, minutes: 30 },
+      ],
+    };
+    expect(dayTotal(day, [1, 2])).toBe(445);
   });
 });
 
@@ -110,5 +123,20 @@ describe("weekStarts", () => {
 
   it("does not mark a Monday that is the first day", () => {
     expect(weekStarts(["2026-10-05", "2026-10-06"])).toEqual([]);
+  });
+});
+
+describe("valueLabelY", () => {
+  it("sits a few pixels above the column", () => {
+    expect(valueLabelY(100, undefined)).toBe(94);
+    expect(valueLabelY(100, 40)).toBe(94);
+  });
+
+  it("moves above a target line that the text would cross", () => {
+    expect(valueLabelY(45, 40)).toBe(36);
+  });
+
+  it("stays when the column is above the target line", () => {
+    expect(valueLabelY(30, 40)).toBe(24);
   });
 });

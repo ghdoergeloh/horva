@@ -1,10 +1,10 @@
 import type React from "react";
 
+import type { FormatDuration } from "../lib/duration";
 import type { ProjectColor } from "./Chip";
-import type { FormatDuration } from "./TimerBar.format";
+import { formatDuration, formatSignedDuration } from "../lib/duration";
 import { twMerge } from "../lib/tw";
 import { ProjectDot } from "./Chip";
-import { formatDuration, formatSignedDuration } from "./TimerBar.format";
 
 /**
  * One key figure. The value is a project (`project`), a duration

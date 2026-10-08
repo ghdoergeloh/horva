@@ -1,8 +1,10 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
+import { useState } from "react";
 import { expect, userEvent, within } from "storybook/test";
 
-import type { ChartProject } from "./HoursPerDay";
+import type { ChartProject, HoursPerDayProps } from "./HoursPerDay";
 import type { DayEntry } from "./HoursPerDay.data";
+import { Button } from "./Button";
 import { HoursPerDay } from "./HoursPerDay";
 
 const projects: ChartProject[] = [
@@ -103,6 +105,36 @@ export const Month: Story = {
 export const Empty: Story = {
   args: {
     days: week.map((day) => ({ ...day, minutes: [] })),
+  },
+};
+
+/** A sum just below the target sits above the line, not across it. */
+export const NearTarget: Story = {
+  args: {
+    days: [
+      {
+        date: "2026-10-05",
+        label: "Mo",
+        minutes: [{ projectId: 1, minutes: 470 }],
+      },
+      {
+        date: "2026-10-06",
+        label: "Di",
+        minutes: [{ projectId: 2, minutes: 200 }],
+      },
+    ],
+  },
+  play: async ({ canvasElement }) => {
+    // The table repeats the sum, so look in the chart only.
+    const chart = canvasElement.querySelector("svg") as SVGSVGElement;
+    const label = within(chart as unknown as HTMLElement).getByText(
+      "7:50",
+    ) as unknown as SVGTextElement;
+    const line = canvasElement.querySelector("line[stroke-dasharray='4 4']");
+    const lineY = Number(line?.getAttribute("y1"));
+    const box = label.getBBox();
+    const crosses = lineY > box.y && lineY < box.y + box.height;
+    await expect(crosses).toBe(false);
   },
 };
 
@@ -211,6 +243,38 @@ export const KeyboardTable: Story = {
     await expect(toggle).toHaveFocus();
     await userEvent.keyboard("{Enter}");
     await expect(canvas.getByRole("table")).toBeVisible();
+  },
+  parameters: { screenshot: false },
+};
+
+/** Shows less data after a press, as when the period changes. */
+function Shrinking(args: HoursPerDayProps) {
+  const [few, setFew] = useState(false);
+  return (
+    <div className="flex max-w-160 flex-col items-start gap-3">
+      <Button variant="secondary" size="sm" onPress={() => setFew(true)}>
+        Weniger Daten
+      </Button>
+      <HoursPerDay {...args} days={few ? args.days.slice(0, 1) : args.days} />
+    </div>
+  );
+}
+
+/** With less data the chart stays reachable with Tab. */
+export const KeyboardFewerData: Story = {
+  render: (args) => <Shrinking {...args} />,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await userEvent.tab();
+    await userEvent.tab();
+    await userEvent.keyboard("{End}");
+    await userEvent.tab({ shift: true });
+    await expect(
+      canvas.getByRole("button", { name: "Weniger Daten" }),
+    ).toHaveFocus();
+    await userEvent.keyboard("{Enter}");
+    await userEvent.tab();
+    await expect(document.activeElement).toHaveAttribute("role", "img");
   },
   parameters: { screenshot: false },
 };
