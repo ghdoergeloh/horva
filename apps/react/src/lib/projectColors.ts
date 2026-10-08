@@ -14,9 +14,3 @@ export const PROJECT_COLOR_PRESETS = [
   "#3b82f6",
   "#64748b",
 ] as const;
-
-/** A slot without a task, and so without a project color. */
-export const NO_PROJECT_COLOR = "#9ca3af";
-
-/** A slot whose task was deleted. */
-export const DELETED_TASK_COLOR = "#d1d5db";
