@@ -1,9 +1,9 @@
 name: PR Title
 
-# Merges into main are squashes, so the PR title becomes the commit message on
-# main — and that is what release-please reads to compute the next version.
-# commitlint only sees the individual commits of a branch, never the squash
-# title, so it is checked here instead.
+# Pull requests are merged with a merge commit whose title is the PR title.
+# release-please reads that title (next to the branch commits) to compute
+# the next version and the changelog. commitlint only checks the branch
+# commits, so the title is checked here.
 on:
   pull_request:
     types:
@@ -12,9 +12,7 @@ on:
       - reopened
       - synchronize
 
-permissions:
-  contents: read
-  pull-requests: read
+permissions: {}
 
 concurrency:
   group: pr-title-${{ github.event.pull_request.number }}
@@ -24,12 +22,16 @@ jobs:
   conventional-title:
     name: Conventional Commits
     runs-on: ubuntu-latest
+    permissions:
+      pull-requests: read
     steps:
-      - uses: amannn/action-semantic-pull-request@v6
+      - uses: amannn/action-semantic-pull-request@48f256284bd46cdaab1048c3721360e808335d50 # v6.1.1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          # Kept in sync with commitlint.config.js (@commitlint/config-conventional).
+          # The same list as commitlint.config.js
+          # (@commitlint/config-conventional). release.spec.ts in
+          # tooling/quality checks that they match.
           types: |
             build
             chore

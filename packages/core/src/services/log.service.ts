@@ -1,6 +1,8 @@
-import type { Db } from "@horva/db/client";
+import type { Database } from "@horva/db/client";
 import { and, gte, isNotNull, lte } from "@horva/db";
 import { slot } from "@horva/db/schema";
+
+import { NO_PROJECT_COLOR } from "../lib/project-colors.js";
 
 export type Period = "today" | "yesterday" | "week" | "month" | "all";
 
@@ -44,7 +46,7 @@ export function getPeriodRange(period: Period): { from: Date; to: Date } {
 }
 
 export async function getLog(
-  db: Db,
+  db: Database,
   period: Period | { from: Date; to: Date },
 ) {
   const { from, to } =
@@ -83,7 +85,7 @@ export interface SummaryEntry {
 }
 
 export async function getSummary(
-  db: Db,
+  db: Database,
   period: Period | { from: Date; to: Date },
 ) {
   const slots = await getLog(db, period);
@@ -110,7 +112,7 @@ export async function getSummary(
       projectMap.set(key, {
         projectId: s.task?.project.id ?? null,
         projectName: s.task?.project.name ?? "(no task)",
-        projectColor: s.task?.project.color ?? "#888888",
+        projectColor: s.task?.project.color ?? NO_PROJECT_COLOR,
         totalMinutes: 0,
         taskMap: new Map(),
       });

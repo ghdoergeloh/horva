@@ -1,0 +1,281 @@
+<!-- @dsCard group="Zeitleiste" height=520 subtitle="Kopf der Zeitleiste; Ansicht „Arbeitszeiten“ mit aufgeklapptem Tag" -->
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="utf-8" />
+    <title>WeekHeader</title>
+  </head>
+  <body>
+    <div class="hv-stack" style="gap: var(--space-4)">
+      <div class="hv-weekhead">
+        <div class="hv-weekhead__range">
+          <button
+            class="hv-btn hv-btn--quiet hv-btn--icon"
+            aria-label="Vorherige Woche"
+          >
+            <svg class="hv-icon" viewBox="0 0 24 24">
+              <path d="m15 18-6-6 6-6" />
+            </svg></button
+          ><span class="hv-weekhead__title">5.–11. Oktober 2026</span
+          ><button
+            class="hv-btn hv-btn--quiet hv-btn--icon"
+            aria-label="Nächste Woche"
+            disabled
+          >
+            <svg class="hv-icon" viewBox="0 0 24 24">
+              <path d="m9 18 6-6-6-6" />
+            </svg></button
+          ><button class="hv-btn hv-btn--secondary hv-btn--sm">
+            Diese Woche
+          </button>
+        </div>
+        <span class="hv-weekhead__spacer"></span>
+        <button class="hv-select" style="min-width: 170px">
+          <span class="is-placeholder">Alle Projekte</span
+          ><svg class="hv-icon" viewBox="0 0 24 24">
+            <path d="m6 9 6 6 6-6" />
+          </svg>
+        </button>
+        <div class="hv-segmented" role="group" aria-label="Ansicht">
+          <button aria-pressed="false">Slots</button
+          ><button aria-pressed="false">Aufgaben</button
+          ><button aria-pressed="true">Arbeitszeiten</button>
+        </div>
+      </div>
+      <div class="hv-panel">
+        <div class="hv-days">
+          <span></span>
+          <div class="hv-scale">
+            <span style="left: 0%">09:00</span
+            ><span style="left: 10%">10:00</span
+            ><span style="left: 20%">11:00</span
+            ><span style="left: 30%">12:00</span
+            ><span style="left: 40%">13:00</span
+            ><span style="left: 50%">14:00</span
+            ><span style="left: 60%">15:00</span
+            ><span style="left: 70%">16:00</span
+            ><span style="left: 80%">17:00</span
+            ><span style="left: 90%">18:00</span
+            ><span style="left: 100%">19:00</span>
+          </div>
+          <span></span><span class="hv-dayname">Mo., 5.</span>
+          <div class="hv-track">
+            <div
+              class="hv-slot"
+              style="--c: var(--primary); left: 0.83%; width: 32.5%"
+              tabindex="0"
+              data-tip="Arbeitszeit|09:05–12:20|3:15 h"
+              aria-label="Arbeitszeit 09:05 bis 12:20"
+            ></div>
+            <div
+              class="hv-slot"
+              style="--c: var(--primary); left: 45%; width: 44.67%"
+              tabindex="0"
+              data-tip="Arbeitszeit|13:30–17:58|4:28 h"
+              aria-label="Arbeitszeit 13:30 bis 17:58"
+            ></div>
+          </div>
+          <span class="hv-total">7:43</span
+          ><span class="hv-dayname">Di., 6.</span>
+          <div class="hv-track">
+            <div
+              class="hv-slot"
+              style="--c: var(--primary); left: 0.83%; width: 30%"
+              tabindex="0"
+              data-tip="Arbeitszeit|09:05–12:05|3:00 h"
+              aria-label="Arbeitszeit 09:05 bis 12:05"
+            ></div>
+            <div
+              class="hv-slot"
+              style="--c: var(--primary); left: 32.5%; width: 3.33%"
+              tabindex="0"
+              data-tip="Arbeitszeit|12:15–12:35|0:20 h"
+              aria-label="Arbeitszeit 12:15 bis 12:35"
+            ></div>
+            <div
+              class="hv-slot"
+              style="--c: var(--primary); left: 44.17%; width: 45%"
+              tabindex="0"
+              data-tip="Arbeitszeit|13:25–17:55|4:30 h"
+              aria-label="Arbeitszeit 13:25 bis 17:55"
+            ></div>
+          </div>
+          <span class="hv-total">7:50</span
+          ><span class="hv-dayname">Mi., 7.</span>
+          <div class="hv-track">
+            <div
+              class="hv-slot"
+              style="--c: var(--primary); left: 3.33%; width: 27%"
+              tabindex="0"
+              data-tip="Arbeitszeit|09:20–12:02|2:42 h"
+              aria-label="Arbeitszeit 09:20 bis 12:02"
+            ></div>
+            <div
+              class="hv-slot"
+              style="--c: var(--primary); left: 40.83%; width: 51.17%"
+              tabindex="0"
+              data-tip="Arbeitszeit|13:05–18:12|5:07 h"
+              aria-label="Arbeitszeit 13:05 bis 18:12"
+            ></div>
+          </div>
+          <span class="hv-total">7:49</span>
+          <div
+            class="hv-dayrow is-open"
+            style="
+              background: var(--muted);
+              border-radius: var(--radius-md);
+              padding: 4px 8px;
+            "
+          >
+            <table class="hv-table">
+              <thead>
+                <tr>
+                  <th>Von</th>
+                  <th>Bis</th>
+                  <th style="text-align: right">Dauer</th>
+                  <th>Enthält</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="t-time">09:20</td>
+                  <td class="t-time">12:02</td>
+                  <td class="t-dur">2:42</td>
+                  <td class="t-task" style="color: var(--muted-foreground)">
+                    4 Slots · Intern, KI Taskforce, Nordlicht
+                  </td>
+                  <td class="t-act">
+                    <button
+                      class="hv-btn hv-btn--quiet hv-btn--sm hv-btn--icon"
+                      aria-label="Zeitraum kopieren"
+                    >
+                      <svg class="hv-icon" viewBox="0 0 24 24">
+                        <rect width="14" height="14" x="8" y="8" rx="2" />
+                        <path
+                          d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"
+                        />
+                      </svg>
+                    </button>
+                  </td>
+                </tr>
+                <tr class="is-gap">
+                  <td class="t-time">12:02</td>
+                  <td class="t-time">13:05</td>
+                  <td class="t-dur">1:03</td>
+                  <td class="t-task">Pause</td>
+                  <td></td>
+                </tr>
+                <tr>
+                  <td class="t-time">13:05</td>
+                  <td class="t-time">18:12</td>
+                  <td class="t-dur">5:07</td>
+                  <td class="t-task" style="color: var(--muted-foreground)">
+                    6 Slots · Nordlicht, Intern
+                  </td>
+                  <td class="t-act">
+                    <button
+                      class="hv-btn hv-btn--quiet hv-btn--sm hv-btn--icon"
+                      aria-label="Zeitraum kopieren"
+                    >
+                      <svg class="hv-icon" viewBox="0 0 24 24">
+                        <rect width="14" height="14" x="8" y="8" rx="2" />
+                        <path
+                          d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"
+                        />
+                      </svg>
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+              <tfoot>
+                <tr>
+                  <td colspan="2" style="padding: 8px; font-weight: 600">
+                    Arbeitszeit
+                  </td>
+                  <td
+                    class="t-dur"
+                    style="
+                      padding: 8px;
+                      color: var(--foreground);
+                      font-weight: 600;
+                    "
+                  >
+                    7:49
+                  </td>
+                  <td
+                    style="
+                      padding: 8px;
+                      color: var(--muted-foreground);
+                      font-size: 13px;
+                    "
+                  >
+                    Pause 1:03
+                  </td>
+                  <td class="t-act" style="padding: 8px">
+                    <button class="hv-btn hv-btn--secondary hv-btn--sm">
+                      <svg class="hv-icon" viewBox="0 0 24 24">
+                        <rect width="14" height="14" x="8" y="8" rx="2" />
+                        <path
+                          d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"
+                        /></svg
+                      >Tag kopieren
+                    </button>
+                  </td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+          <span class="hv-dayname is-today">Do., 8.</span>
+          <div class="hv-track">
+            <div
+              class="hv-slot is-running"
+              style="--c: var(--primary); left: 1.67%; width: 25.33%"
+              tabindex="0"
+              data-tip="Arbeitszeit|09:10–jetzt|2:32 h"
+              aria-label="Arbeitszeit 09:10 bis 11:42"
+            ></div>
+          </div>
+          <span class="hv-total">2:32</span>
+        </div>
+      </div>
+    </div>
+    <script>
+      (function () {
+        var tip = document.createElement("div");
+        tip.className = "hv-tip";
+        tip.hidden = true;
+        document.body.appendChild(tip);
+        function show(el) {
+          var d = el.dataset.tip.split("|");
+          tip.innerHTML = '<b></b><div></div><div class="hv-num"></div>';
+          tip.children[0].textContent = d[0];
+          tip.children[1].textContent = d[1];
+          tip.children[2].textContent = d[2];
+          tip.hidden = false;
+          var r = el.getBoundingClientRect();
+          tip.style.left =
+            Math.min(
+              Math.max(8, r.left + r.width / 2 - tip.offsetWidth / 2),
+              innerWidth - tip.offsetWidth - 8,
+            ) + "px";
+          tip.style.top = r.top + scrollY - tip.offsetHeight - 8 + "px";
+        }
+        document.querySelectorAll("[data-tip]").forEach(function (el) {
+          el.addEventListener("mouseenter", function () {
+            show(el);
+          });
+          el.addEventListener("focus", function () {
+            show(el);
+          });
+          el.addEventListener("mouseleave", function () {
+            tip.hidden = true;
+          });
+          el.addEventListener("blur", function () {
+            tip.hidden = true;
+          });
+        });
+      })();
+    </script>
+  </body>
+</html>

@@ -1,5 +1,5 @@
 {
-  "extends": "@horva/tsconfig/compiled-package.json",
+  "extends": "@horva/tsconfig/base.json",
   "include": ["src"],
   "exclude": ["node_modules"]
 }

@@ -32,36 +32,39 @@ on:
         default: ""
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
   group: release-${{ github.ref }}
   cancel-in-progress: false
 
+# No dependency cache in this workflow: a release must not build from a
+# cache that another workflow could have written.
 jobs:
   verify:
     name: Verify
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: ${{ inputs.ref || inputs.tag || github.ref }}
+          persist-credentials: false
 
       - name: Setup pnpm
-        uses: pnpm/action-setup@v6
+        uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6.1.0
         with:
           run_install: false
 
       - name: Setup Node.js
-        uses: actions/setup-node@v7
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
-          node-version: "24"
-          cache: "pnpm"
+          node-version-file: ".nvmrc"
+          package-manager-cache: false
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Prettier Check
+      - name: Format Check
         run: pnpm format
 
       - name: Build
@@ -70,7 +73,7 @@ jobs:
       - name: Type Check
         run: pnpm typecheck
 
-      - name: ESLint Check
+      - name: Lint
         run: pnpm lint
 
   build:
@@ -103,20 +106,21 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: ${{ inputs.ref || inputs.tag || github.ref }}
+          persist-credentials: false
 
       - name: Setup pnpm
-        uses: pnpm/action-setup@v6
+        uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6.1.0
         with:
           run_install: false
 
       - name: Setup Node.js
-        uses: actions/setup-node@v7
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
-          node-version: "24"
-          cache: "pnpm"
+          node-version-file: ".nvmrc"
+          package-manager-cache: false
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -132,10 +136,10 @@ jobs:
         # --publish never: electron-builder would otherwise upload to the
         # release on its own (publish defaults to onTagOrDraft), racing the
         # upload step below.
-        run: pnpm --filter @horva/electron-app run pack -- --publish never
+        run: pnpm --filter @horva/electron-app run pack --publish never
 
       - name: Upload build artifacts
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: horva-${{ matrix.platform }}
           path: ${{ matrix.artifact_glob }}
@@ -152,7 +156,7 @@ jobs:
 
     steps:
       - name: Download all artifacts
-        uses: actions/download-artifact@v8
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
           path: artifacts
 
@@ -169,8 +173,10 @@ jobs:
 
           # release-please has already created a draft release holding the
           # changelog. A hand-pushed tag has not, so create one to attach to.
+          # --verify-tag stops when the tag does not exist, so a release never
+          # creates a tag on a commit that was not built.
           if ! gh release view "$TAG" >/dev/null 2>&1; then
-            gh release create "$TAG" --draft --title "$TAG" --generate-notes
+            gh release create "$TAG" --draft --verify-tag --title "$TAG" --generate-notes
           fi
 
           find artifacts -type f -print0 \

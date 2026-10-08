@@ -1,5 +1,7 @@
 import chalk from "chalk";
 
+import { projectColorHex } from "@horva/core";
+
 // Symbols per PRD
 export const sym = {
   start: "▶",
@@ -17,18 +19,19 @@ export const sym = {
   interactive: "?",
 };
 
+/**
+ * The name in the project color. A token name such as `project-3` shows
+ * in the light value of the design token.
+ */
 export function colorProject(name: string, color: string): string {
-  try {
-    return chalk.hex(color)(name);
-  } catch {
-    return name;
-  }
+  const hex = projectColorHex(color);
+  return /^#[0-9a-f]{6}$/i.test(hex) ? chalk.hex(hex)(name) : name;
 }
 
 /** Pad a string to `width` visible characters, ignoring ANSI escape codes. */
 export function padVisible(str: string, width: number): string {
   // Strip ANSI codes to measure visible length
-  // eslint-disable-next-line no-control-regex
+  // oxlint-disable-next-line no-control-regex
   const visible = str.replace(/\u001B\[[0-9;]*m/g, "");
   const pad = Math.max(0, width - visible.length);
   return str + " ".repeat(pad);

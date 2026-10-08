@@ -1,0 +1,613 @@
+<!-- @dsCard group="Zeitleiste" height=860 subtitle="Woche: Kopf, Tagesbalken, aufgeklappter Tag" -->
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="utf-8" />
+    <title>Timeline</title>
+  </head>
+  <body>
+    <div class="hv-stack" style="gap: var(--space-4)">
+      <div class="hv-weekhead">
+        <div class="hv-weekhead__range">
+          <button
+            class="hv-btn hv-btn--quiet hv-btn--icon"
+            aria-label="Vorherige Woche"
+          >
+            <svg class="hv-icon" viewBox="0 0 24 24">
+              <path d="m15 18-6-6 6-6" />
+            </svg></button
+          ><span class="hv-weekhead__title">5.–11. Oktober 2026</span
+          ><button
+            class="hv-btn hv-btn--quiet hv-btn--icon"
+            aria-label="Nächste Woche"
+            disabled
+          >
+            <svg class="hv-icon" viewBox="0 0 24 24">
+              <path d="m9 18 6-6-6-6" />
+            </svg></button
+          ><button class="hv-btn hv-btn--secondary hv-btn--sm">
+            Diese Woche
+          </button>
+        </div>
+        <span class="hv-weekhead__spacer"></span>
+        <button class="hv-select" style="min-width: 170px">
+          <span class="is-placeholder">Alle Projekte</span
+          ><svg class="hv-icon" viewBox="0 0 24 24">
+            <path d="m6 9 6 6 6-6" />
+          </svg>
+        </button>
+        <div class="hv-segmented" role="group" aria-label="Ansicht">
+          <button aria-pressed="true">Slots</button
+          ><button aria-pressed="false">Aufgaben</button
+          ><button aria-pressed="false">Arbeitszeiten</button>
+        </div>
+      </div>
+      <div class="hv-panel">
+        <div class="hv-days">
+          <span></span>
+          <div class="hv-scale">
+            <span style="left: 0%">09:00</span
+            ><span style="left: 10%">10:00</span
+            ><span style="left: 20%">11:00</span
+            ><span style="left: 30%">12:00</span
+            ><span style="left: 40%">13:00</span
+            ><span style="left: 50%">14:00</span
+            ><span style="left: 60%">15:00</span
+            ><span style="left: 70%">16:00</span
+            ><span style="left: 80%">17:00</span
+            ><span style="left: 90%">18:00</span
+            ><span style="left: 100%">19:00</span>
+          </div>
+          <span></span><span class="hv-dayname">Mo., 5.</span>
+          <div class="hv-track" role="list" aria-label="Mo., 5.">
+            <div
+              class="hv-slot"
+              style="--c: var(--project-1); left: 0.83%; width: 1.17%"
+              tabindex="0"
+              data-tip="Nachrichten checken|Intern|09:05–09:12 · 0:07 h"
+              aria-label="Nachrichten checken, Intern, 09:05 bis 09:12"
+            ></div>
+            <div
+              class="hv-slot"
+              style="--c: var(--project-7); left: 2%; width: 8%"
+              tabindex="0"
+              data-tip="Issue Adapter #161|Kranich|09:12–10:00 · 0:48 h"
+              aria-label="Issue Adapter #161, Kranich, 09:12 bis 10:00"
+            ></div>
+            <div
+              class="hv-slot"
+              style="--c: var(--project-7); left: 10%; width: 3.33%"
+              tabindex="0"
+              data-tip="Weekly Dev Meeting|Kranich|10:00–10:20 · 0:20 h"
+              aria-label="Weekly Dev Meeting, Kranich, 10:00 bis 10:20"
+            ></div>
+            <div
+              class="hv-slot"
+              style="--c: var(--project-7); left: 13.33%; width: 9.17%"
+              tabindex="0"
+              data-tip="Issue Adapter #161|Kranich|10:20–11:15 · 0:55 h"
+              aria-label="Issue Adapter #161, Kranich, 10:20 bis 11:15"
+            ></div>
+            <div
+              class="hv-slot"
+              style="--c: var(--project-7); left: 22.5%; width: 10.83%"
+              tabindex="0"
+              data-tip="Keycloak-Routen #158|Kranich|11:15–12:20 · 1:05 h"
+              aria-label="Keycloak-Routen #158, Kranich, 11:15 bis 12:20"
+            ></div>
+            <div
+              class="hv-slot"
+              style="--c: var(--project-7); left: 45%; width: 40.83%"
+              tabindex="0"
+              data-tip="Issue Adapter #161|Kranich|13:30–17:35 · 4:05 h"
+              aria-label="Issue Adapter #161, Kranich, 13:30 bis 17:35"
+            ></div>
+            <div
+              class="hv-slot"
+              style="--c: var(--project-1); left: 85.83%; width: 3.83%"
+              tabindex="0"
+              data-tip="Tag abschließen|Intern|17:35–17:58 · 0:23 h"
+              aria-label="Tag abschließen, Intern, 17:35 bis 17:58"
+            ></div>
+          </div>
+          <span class="hv-total">7:43</span
+          ><span class="hv-dayname">Di., 6.</span>
+          <div class="hv-track" role="list" aria-label="Di., 6.">
+            <div
+              class="hv-slot"
+              style="--c: var(--project-6); left: 0.83%; width: 1.67%"
+              tabindex="0"
+              data-tip="Abstimmung|Brückner GmbH|09:05–09:15 · 0:10 h"
+              aria-label="Abstimmung, Brückner GmbH, 09:05 bis 09:15"
+            ></div>
+            <div
+              class="hv-slot"
+              style="--c: var(--project-1); left: 2.5%; width: 1.67%"
+              tabindex="0"
+              data-tip="Nachrichten checken|Intern|09:15–09:25 · 0:10 h"
+              aria-label="Nachrichten checken, Intern, 09:15 bis 09:25"
+            ></div>
+            <div
+              class="hv-slot"
+              style="--c: var(--project-6); left: 4.17%; width: 12.5%"
+              tabindex="0"
+              data-tip="Workshop vorbereiten|Brückner GmbH|09:25–10:40 · 1:15 h"
+              aria-label="Workshop vorbereiten, Brückner GmbH, 09:25 bis 10:40"
+            ></div>
+            <div
+              class="hv-slot"
+              style="--c: var(--project-1); left: 16.67%; width: 8.33%"
+              tabindex="0"
+              data-tip="Tag planen|Intern|10:40–11:30 · 0:50 h"
+              aria-label="Tag planen, Intern, 10:40 bis 11:30"
+            ></div>
+            <div
+              class="hv-slot"
+              style="--c: var(--project-1); left: 25%; width: 5.83%"
+              tabindex="0"
+              data-tip="HITCH|Intern|11:30–12:05 · 0:35 h"
+              aria-label="HITCH, Intern, 11:30 bis 12:05"
+            ></div>
+            <div
+              class="hv-slot"
+              style="--c: var(--project-6); left: 32.5%; width: 3.33%"
+              tabindex="0"
+              data-tip="Call|Brückner GmbH|12:15–12:35 · 0:20 h"
+              aria-label="Call, Brückner GmbH, 12:15 bis 12:35"
+            ></div>
+            <div
+              class="hv-slot"
+              style="--c: var(--project-6); left: 44.17%; width: 5.5%"
+              tabindex="0"
+              data-tip="Workshop|Brückner GmbH|13:25–13:58 · 0:33 h"
+              aria-label="Workshop, Brückner GmbH, 13:25 bis 13:58"
+            ></div>
+            <div
+              class="hv-slot"
+              style="--c: var(--project-1); left: 49.67%; width: 2.83%"
+              tabindex="0"
+              data-tip="DevDays|Intern|13:58–14:15 · 0:17 h"
+              aria-label="DevDays, Intern, 13:58 bis 14:15"
+            ></div>
+            <div
+              class="hv-slot"
+              style="--c: var(--project-1); left: 52.5%; width: 12.5%"
+              tabindex="0"
+              data-tip="Einarbeiten|Intern|14:15–15:30 · 1:15 h"
+              aria-label="Einarbeiten, Intern, 14:15 bis 15:30"
+            ></div>
+            <div
+              class="hv-slot"
+              style="--c: var(--project-6); left: 65%; width: 0.5%"
+              tabindex="0"
+              data-tip="Rückruf|Brückner GmbH|15:30–15:33 · 0:03 h"
+              aria-label="Rückruf, Brückner GmbH, 15:30 bis 15:33"
+            ></div>
+            <div
+              class="hv-slot"
+              style="--c: var(--project-1); left: 65.5%; width: 23.67%"
+              tabindex="0"
+              data-tip="Brain aufsetzen|Intern|15:33–17:55 · 2:22 h"
+              aria-label="Brain aufsetzen, Intern, 15:33 bis 17:55"
+            ></div>
+          </div>
+          <span class="hv-total">7:50</span
+          ><span class="hv-dayname">Mi., 7.</span>
+          <div class="hv-track" role="list" aria-label="Mi., 7.">
+            <div
+              class="hv-slot"
+              style="--c: var(--project-1); left: 3.33%; width: 1.17%"
+              tabindex="0"
+              data-tip="Nachrichten checken|Intern|09:20–09:27 · 0:07 h"
+              aria-label="Nachrichten checken, Intern, 09:20 bis 09:27"
+            ></div>
+            <div
+              class="hv-slot"
+              style="--c: var(--project-1); left: 4.5%; width: 8.17%"
+              tabindex="0"
+              data-tip="Tag planen|Intern|09:27–10:16 · 0:49 h"
+              aria-label="Tag planen, Intern, 09:27 bis 10:16"
+            ></div>
+            <div
+              class="hv-slot"
+              style="--c: var(--project-8); left: 12.67%; width: 5.67%"
+              tabindex="0"
+              data-tip="Copilot kennenlernen und optimieren|KI Taskforce|10:16–10:50 · 0:34 h"
+              aria-label="Copilot kennenlernen und optimieren, KI Taskforce, 10:16 bis 10:50"
+            ></div>
+            <div
+              class="hv-slot"
+              style="--c: var(--project-2); left: 18.33%; width: 12%"
+              tabindex="0"
+              data-tip="Brain aufsetzen|Nordlicht|10:50–12:02 · 1:12 h"
+              aria-label="Brain aufsetzen, Nordlicht, 10:50 bis 12:02"
+            ></div>
+            <div
+              class="hv-slot"
+              style="--c: var(--project-2); left: 40.83%; width: 12.33%"
+              tabindex="0"
+              data-tip="Brain aufsetzen|Nordlicht|13:05–14:19 · 1:14 h"
+              aria-label="Brain aufsetzen, Nordlicht, 13:05 bis 14:19"
+            ></div>
+            <div
+              class="hv-slot"
+              style="--c: var(--project-2); left: 53.17%; width: 2.33%"
+              tabindex="0"
+              data-tip="Einarbeiten|Nordlicht|14:19–14:33 · 0:14 h"
+              aria-label="Einarbeiten, Nordlicht, 14:19 bis 14:33"
+            ></div>
+            <div
+              class="hv-slot"
+              style="--c: var(--project-1); left: 55.5%; width: 5.33%"
+              tabindex="0"
+              data-tip="HITCH|Intern|14:33–15:05 · 0:32 h"
+              aria-label="HITCH, Intern, 14:33 bis 15:05"
+            ></div>
+            <div
+              class="hv-slot"
+              style="--c: var(--project-1); left: 60.83%; width: 3.17%"
+              tabindex="0"
+              data-tip="DevDays|Intern|15:05–15:24 · 0:19 h"
+              aria-label="DevDays, Intern, 15:05 bis 15:24"
+            ></div>
+            <div
+              class="hv-slot"
+              style="--c: var(--project-2); left: 64%; width: 14.17%"
+              tabindex="0"
+              data-tip="Kick-Off|Nordlicht|15:24–16:49 · 1:25 h"
+              aria-label="Kick-Off, Nordlicht, 15:24 bis 16:49"
+            ></div>
+            <div
+              class="hv-slot"
+              style="--c: var(--project-2); left: 78.17%; width: 13.83%"
+              tabindex="0"
+              data-tip="Brain aufsetzen|Nordlicht|16:49–18:12 · 1:23 h"
+              aria-label="Brain aufsetzen, Nordlicht, 16:49 bis 18:12"
+            ></div>
+          </div>
+          <span class="hv-total">7:49</span>
+          <div
+            class="hv-dayrow is-open"
+            style="
+              background: var(--muted);
+              border-radius: var(--radius-md);
+              padding: 4px 8px;
+            "
+          >
+            <table class="hv-table">
+              <thead>
+                <tr>
+                  <th>Von</th>
+                  <th>Bis</th>
+                  <th style="text-align: right">Dauer</th>
+                  <th>Aufgabe</th>
+                  <th>Projekt</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr class="">
+                  <td class="t-time">09:20</td>
+                  <td class="t-time">09:27</td>
+                  <td class="t-dur">0:07</td>
+                  <td class="t-task">Nachrichten checken</td>
+                  <td>
+                    <span class="hv-chip"
+                      ><span class="hv-dot" style="--c: var(--project-1)"></span
+                      ><span>Intern</span></span
+                    >
+                  </td>
+                  <td class="t-act">
+                    <button
+                      class="hv-btn hv-btn--quiet hv-btn--sm hv-btn--icon"
+                      aria-label="Bearbeiten"
+                    >
+                      <svg class="hv-icon" viewBox="0 0 24 24">
+                        <path
+                          d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"
+                        />
+                      </svg>
+                    </button>
+                  </td>
+                </tr>
+                <tr class="">
+                  <td class="t-time">09:27</td>
+                  <td class="t-time">10:16</td>
+                  <td class="t-dur">0:49</td>
+                  <td class="t-task">Tag planen</td>
+                  <td>
+                    <span class="hv-chip"
+                      ><span class="hv-dot" style="--c: var(--project-1)"></span
+                      ><span>Intern</span></span
+                    >
+                  </td>
+                  <td class="t-act">
+                    <button
+                      class="hv-btn hv-btn--quiet hv-btn--sm hv-btn--icon"
+                      aria-label="Bearbeiten"
+                    >
+                      <svg class="hv-icon" viewBox="0 0 24 24">
+                        <path
+                          d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"
+                        />
+                      </svg>
+                    </button>
+                  </td>
+                </tr>
+                <tr class="">
+                  <td class="t-time">10:16</td>
+                  <td class="t-time">10:50</td>
+                  <td class="t-dur">0:34</td>
+                  <td class="t-task">Copilot kennenlernen und optimieren</td>
+                  <td>
+                    <span class="hv-chip"
+                      ><span class="hv-dot" style="--c: var(--project-8)"></span
+                      ><span>KI Taskforce</span></span
+                    >
+                  </td>
+                  <td class="t-act">
+                    <button
+                      class="hv-btn hv-btn--quiet hv-btn--sm hv-btn--icon"
+                      aria-label="Bearbeiten"
+                    >
+                      <svg class="hv-icon" viewBox="0 0 24 24">
+                        <path
+                          d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"
+                        />
+                      </svg>
+                    </button>
+                  </td>
+                </tr>
+                <tr class="">
+                  <td class="t-time">10:50</td>
+                  <td class="t-time">12:02</td>
+                  <td class="t-dur">1:12</td>
+                  <td class="t-task">Brain aufsetzen</td>
+                  <td>
+                    <span class="hv-chip"
+                      ><span class="hv-dot" style="--c: var(--project-2)"></span
+                      ><span>Nordlicht</span></span
+                    >
+                  </td>
+                  <td class="t-act">
+                    <button
+                      class="hv-btn hv-btn--quiet hv-btn--sm hv-btn--icon"
+                      aria-label="Bearbeiten"
+                    >
+                      <svg class="hv-icon" viewBox="0 0 24 24">
+                        <path
+                          d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"
+                        />
+                      </svg>
+                    </button>
+                  </td>
+                </tr>
+                <tr class="is-gap">
+                  <td class="t-time">12:02</td>
+                  <td class="t-time">13:05</td>
+                  <td class="t-dur">1:03</td>
+                  <td class="t-task">Lücke</td>
+                  <td></td>
+                  <td class="t-act">
+                    <button class="hv-btn hv-btn--quiet hv-btn--sm">
+                      <svg class="hv-icon" viewBox="0 0 24 24">
+                        <path d="M5 12h14" />
+                        <path d="M12 5v14" /></svg
+                      >Slot eintragen
+                    </button>
+                  </td>
+                </tr>
+                <tr class="">
+                  <td class="t-time">13:05</td>
+                  <td class="t-time">14:19</td>
+                  <td class="t-dur">1:14</td>
+                  <td class="t-task">Brain aufsetzen</td>
+                  <td>
+                    <span class="hv-chip"
+                      ><span class="hv-dot" style="--c: var(--project-2)"></span
+                      ><span>Nordlicht</span></span
+                    >
+                  </td>
+                  <td class="t-act">
+                    <button
+                      class="hv-btn hv-btn--quiet hv-btn--sm hv-btn--icon"
+                      aria-label="Bearbeiten"
+                    >
+                      <svg class="hv-icon" viewBox="0 0 24 24">
+                        <path
+                          d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"
+                        />
+                      </svg>
+                    </button>
+                  </td>
+                </tr>
+                <tr class="">
+                  <td class="t-time">14:19</td>
+                  <td class="t-time">14:33</td>
+                  <td class="t-dur">0:14</td>
+                  <td class="t-task">Einarbeiten</td>
+                  <td>
+                    <span class="hv-chip"
+                      ><span class="hv-dot" style="--c: var(--project-2)"></span
+                      ><span>Nordlicht</span></span
+                    >
+                  </td>
+                  <td class="t-act">
+                    <button
+                      class="hv-btn hv-btn--quiet hv-btn--sm hv-btn--icon"
+                      aria-label="Bearbeiten"
+                    >
+                      <svg class="hv-icon" viewBox="0 0 24 24">
+                        <path
+                          d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"
+                        />
+                      </svg>
+                    </button>
+                  </td>
+                </tr>
+                <tr class="">
+                  <td class="t-time">14:33</td>
+                  <td class="t-time">15:05</td>
+                  <td class="t-dur">0:32</td>
+                  <td class="t-task">HITCH</td>
+                  <td>
+                    <span class="hv-chip"
+                      ><span class="hv-dot" style="--c: var(--project-1)"></span
+                      ><span>Intern</span></span
+                    >
+                  </td>
+                  <td class="t-act">
+                    <button
+                      class="hv-btn hv-btn--quiet hv-btn--sm hv-btn--icon"
+                      aria-label="Bearbeiten"
+                    >
+                      <svg class="hv-icon" viewBox="0 0 24 24">
+                        <path
+                          d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"
+                        />
+                      </svg>
+                    </button>
+                  </td>
+                </tr>
+                <tr class="">
+                  <td class="t-time">15:05</td>
+                  <td class="t-time">15:24</td>
+                  <td class="t-dur">0:19</td>
+                  <td class="t-task">DevDays</td>
+                  <td>
+                    <span class="hv-chip"
+                      ><span class="hv-dot" style="--c: var(--project-1)"></span
+                      ><span>Intern</span></span
+                    >
+                  </td>
+                  <td class="t-act">
+                    <button
+                      class="hv-btn hv-btn--quiet hv-btn--sm hv-btn--icon"
+                      aria-label="Bearbeiten"
+                    >
+                      <svg class="hv-icon" viewBox="0 0 24 24">
+                        <path
+                          d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"
+                        />
+                      </svg>
+                    </button>
+                  </td>
+                </tr>
+                <tr class="">
+                  <td class="t-time">15:24</td>
+                  <td class="t-time">16:49</td>
+                  <td class="t-dur">1:25</td>
+                  <td class="t-task">Kick-Off</td>
+                  <td>
+                    <span class="hv-chip"
+                      ><span class="hv-dot" style="--c: var(--project-2)"></span
+                      ><span>Nordlicht</span></span
+                    >
+                  </td>
+                  <td class="t-act">
+                    <button
+                      class="hv-btn hv-btn--quiet hv-btn--sm hv-btn--icon"
+                      aria-label="Bearbeiten"
+                    >
+                      <svg class="hv-icon" viewBox="0 0 24 24">
+                        <path
+                          d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"
+                        />
+                      </svg>
+                    </button>
+                  </td>
+                </tr>
+                <tr class="">
+                  <td class="t-time">16:49</td>
+                  <td class="t-time">18:12</td>
+                  <td class="t-dur">1:23</td>
+                  <td class="t-task">Brain aufsetzen</td>
+                  <td>
+                    <span class="hv-chip"
+                      ><span class="hv-dot" style="--c: var(--project-2)"></span
+                      ><span>Nordlicht</span></span
+                    >
+                  </td>
+                  <td class="t-act">
+                    <button
+                      class="hv-btn hv-btn--quiet hv-btn--sm hv-btn--icon"
+                      aria-label="Bearbeiten"
+                    >
+                      <svg class="hv-icon" viewBox="0 0 24 24">
+                        <path
+                          d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"
+                        />
+                      </svg>
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <span class="hv-dayname is-today">Do., 8.</span>
+          <div class="hv-track" role="list" aria-label="Do., 8.">
+            <div
+              class="hv-slot"
+              style="--c: var(--project-1); left: 1.67%; width: 1.33%"
+              tabindex="0"
+              data-tip="Nachrichten checken|Intern|09:10–09:18 · 0:08 h"
+              aria-label="Nachrichten checken, Intern, 09:10 bis 09:18"
+            ></div>
+            <div
+              class="hv-slot"
+              style="--c: var(--project-2); left: 3%; width: 7.83%"
+              tabindex="0"
+              data-tip="Brain aufsetzen|Nordlicht|09:18–10:05 · 0:47 h"
+              aria-label="Brain aufsetzen, Nordlicht, 09:18 bis 10:05"
+            ></div>
+            <div
+              class="hv-slot is-running"
+              style="--c: var(--project-8); left: 10.83%; width: 16.17%"
+              tabindex="0"
+              data-tip="Copilot kennenlernen und optimieren|KI Taskforce|10:05–jetzt · 1:37 h"
+              aria-label="Copilot kennenlernen und optimieren, KI Taskforce, 10:05 bis 11:42"
+            ></div>
+          </div>
+          <span class="hv-total">2:32</span>
+        </div>
+      </div>
+    </div>
+    <script>
+      (function () {
+        var tip = document.createElement("div");
+        tip.className = "hv-tip";
+        tip.hidden = true;
+        document.body.appendChild(tip);
+        function show(el) {
+          var d = el.dataset.tip.split("|");
+          tip.innerHTML = '<b></b><div></div><div class="hv-num"></div>';
+          tip.children[0].textContent = d[0];
+          tip.children[1].textContent = d[1];
+          tip.children[2].textContent = d[2];
+          tip.hidden = false;
+          var r = el.getBoundingClientRect();
+          tip.style.left =
+            Math.min(
+              Math.max(8, r.left + r.width / 2 - tip.offsetWidth / 2),
+              innerWidth - tip.offsetWidth - 8,
+            ) + "px";
+          tip.style.top = r.top + scrollY - tip.offsetHeight - 8 + "px";
+        }
+        document.querySelectorAll("[data-tip]").forEach(function (el) {
+          el.addEventListener("mouseenter", function () {
+            show(el);
+          });
+          el.addEventListener("focus", function () {
+            show(el);
+          });
+          el.addEventListener("mouseleave", function () {
+            tip.hidden = true;
+          });
+          el.addEventListener("blur", function () {
+            tip.hidden = true;
+          });
+        });
+      })();
+    </script>
+  </body>
+</html>

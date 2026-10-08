@@ -2,31 +2,23 @@ import { StrictMode } from "react";
 import { createHashHistory } from "@tanstack/react-router";
 import { createRoot } from "react-dom/client";
 
-import { App } from "./App.js";
-import { createAppRouter } from "./router.js";
+import {
+  App,
+  applyStoredTheme,
+  createAppRouter,
+  setOrpcLink,
+} from "@horva/react";
 
-import "./styles/globals.css";
+import { SetupGate } from "./components/SetupGate.js";
+import { createMessagePortLink } from "./lib/messagePortLink.js";
 
-// Apply persisted theme synchronously to avoid a light/dark flash on boot.
-(() => {
-  const stored = localStorage.getItem("tt-theme");
-  const pref = stored === "light" || stored === "dark" ? stored : "system";
-  const resolved =
-    pref === "system"
-      ? window.matchMedia("(prefers-color-scheme: dark)").matches
-        ? "dark"
-        : "light"
-      : pref;
-  document.documentElement.classList.toggle("dark", resolved === "dark");
-})();
+import "@horva/react/styles.css";
 
+applyStoredTheme();
+setOrpcLink(createMessagePortLink);
+
+// Electron loads the app from a file, so there is no server for routes.
 const router = createAppRouter(createHashHistory());
-
-declare module "@tanstack/react-router" {
-  interface Register {
-    router: typeof router;
-  }
-}
 
 const root = document.getElementById("root");
 if (!root) throw new Error("Root element not found");
@@ -36,6 +28,9 @@ document.getElementById("app-boot-spinner")?.remove();
 
 createRoot(root).render(
   <StrictMode>
-    <App router={router} />
+    <App
+      router={router}
+      gate={(children) => <SetupGate>{children}</SetupGate>}
+    />
   </StrictMode>,
 );

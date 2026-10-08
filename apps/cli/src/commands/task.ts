@@ -169,7 +169,8 @@ export function registerTaskCommands(program: Command): void {
         try {
           let status: "open" | "done" | "archived" | undefined;
           let includeStatuses:
-            ("open" | "done" | "archived" | "deleted")[] | undefined;
+            | ("open" | "done" | "archived" | "deleted")[]
+            | undefined;
 
           if (opts.done) {
             status = "done";

@@ -1,112 +1,179 @@
+/* The fonts ship with the app, so text looks the same on every machine and
+   screenshot tests can compare pixels. */
+@import "@fontsource-variable/geist";
+@import "@fontsource-variable/geist-mono";
+
 @plugin "tailwindcss-react-aria-components";
 
 @plugin "tailwindcss-animate";
 
+/* Dark mode follows the `dark` class on <html>, which the apps set from the
+   saved preference or from the system setting. */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* Horva design system: forest green leads (`primary`), orange means only
+   "running" (`running*`), neutrals are greys with a slight green tint.
+   The source of the values is the design system in docs/design. */
 :root {
-  --background: oklch(0.9875 0.0045 314.8053);
-  --foreground: oklch(0.2277 0.0105 312.0161);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.2277 0.0105 312.0161);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.2277 0.0105 312.0161);
-  --primary: oklch(0.5605 0.1911 350.0331);
-  --primary-foreground: oklch(1 0 0);
-  --secondary: oklch(0.967 0.0106 316.4921);
-  --secondary-foreground: oklch(0.4536 0.0226 309.5036);
-  --muted: oklch(0.967 0.0106 316.4921);
-  --muted-foreground: oklch(0.5653 0.021 306.4429);
-  --accent: oklch(0.967 0.0106 316.4921);
-  --accent-foreground: oklch(0.5605 0.1911 350.0331);
-  --destructive: oklch(0.6368 0.2078 25.3313);
-  --destructive-foreground: oklch(1 0 0);
-  --warning: oklch(0.7686 0.1647 70.0804);
-  --warning-foreground: oklch(0.3 0.07 70);
-  --success: oklch(0.6907 0.1554 162.4796);
-  --success-foreground: oklch(1 0 0);
-  --border: oklch(0.9419 0.016 310.0997);
-  --input: oklch(1 0 0);
-  --ring: oklch(0.5605 0.1911 350.0331);
-  --chart-1: oklch(0.5605 0.1911 350.0331);
-  --chart-2: oklch(0.6747 0.1492 345.9482);
-  --chart-3: oklch(0.7729 0.1045 344.4709);
-  --chart-4: oklch(0.8625 0.0636 341.4088);
-  --chart-5: oklch(0.9411 0.0261 343.2843);
-  --sidebar: oklch(0.967 0.0106 316.4921);
-  --sidebar-foreground: oklch(0.4536 0.0226 309.5036);
-  --sidebar-primary: oklch(0.5605 0.1911 350.0331);
-  --sidebar-primary-foreground: oklch(1 0 0);
-  --sidebar-accent: oklch(0.9419 0.016 310.0997);
-  --sidebar-accent-foreground: oklch(0.5605 0.1911 350.0331);
-  --sidebar-border: oklch(0.9155 0.0235 310.6964);
-  --sidebar-ring: oklch(0.5605 0.1911 350.0331);
-  --radius: 0.75rem;
-  --shadow-2xs: 0px 2px 10px 0px hsl(0 0% 0% / 0.03);
-  --shadow-xs: 0px 2px 10px 0px hsl(0 0% 0% / 0.03);
-  --shadow-sm:
-    0px 2px 10px 0px hsl(0 0% 0% / 0.05), 0px 1px 2px -1px hsl(0 0% 0% / 0.05);
-  --shadow:
-    0px 2px 10px 0px hsl(0 0% 0% / 0.05), 0px 1px 2px -1px hsl(0 0% 0% / 0.05);
+  --background: #f6f7f5;
+  --foreground: #17201a;
+  --card: #ffffff;
+  --card-foreground: #17201a;
+  --popover: #ffffff;
+  --popover-foreground: #17201a;
+  --primary: #1d6a45;
+  --primary-foreground: #ffffff;
+  --primary-hover: #175538;
+  --secondary: #e9ece8;
+  --secondary-foreground: #334038;
+  --muted: #eef1ed;
+  --muted-foreground: #58635b;
+  --accent: #e3eee6;
+  --accent-foreground: #1a5e3d;
+  /* Only for the running state: timer, running slot, running card. A mark,
+     never running text; text uses `running-text`. */
+  --running: #e06d0c;
+  --running-foreground: #2a1404;
+  --running-text: #a94f05;
+  --running-soft: #fdeedd;
+  --destructive: #c5301f;
+  --destructive-foreground: #ffffff;
+  /* Yellow and petrol, so they are not mistaken for running orange and
+     forest green. Always shown with an icon or a word. */
+  --warning: #eabd2c;
+  --warning-foreground: #352800;
+  --success: #0e6f86;
+  --success-foreground: #ffffff;
+  --info: #3d58c9;
+  --info-foreground: #ffffff;
+  --border: #dfe4de;
+  --input: #ffffff;
+  --input-border: #878f89;
+  --ring: #1d6a45;
+  --sidebar: #eef1ed;
+  --sidebar-foreground: #334038;
+  --sidebar-primary: #1d6a45;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #dfe8e1;
+  --sidebar-accent-foreground: #174f34;
+  --sidebar-border: #dbe1da;
+  --sidebar-ring: #1d6a45;
+  /* Project colors: dot, chip, slot block, chart segment, never text.
+     1 to 8 are the default order for new projects and charts. */
+  --project-none: #858e87;
+  --project-deleted: #cfd5d0;
+  --project-1: #4b5dc3;
+  --project-2: #b77c00;
+  --project-3: #008777;
+  --project-4: #97297b;
+  --project-5: #909b2f;
+  --project-6: #006398;
+  --project-7: #d85164;
+  --project-8: #8459c3;
+  --project-9: #0099ae;
+  --project-10: #ba2c25;
+  --project-11: #6d9d2d;
+  --project-12: #783288;
+  --project-13: #2b7ad6;
+  --project-14: #c86890;
+  --project-15: #2e5297;
+  --project-16: #80512f;
+  --project-17: #5c6b7a;
+  --project-18: #8a7f6c;
+  --chart-1: var(--project-1);
+  --chart-2: var(--project-2);
+  --chart-3: var(--project-3);
+  --chart-4: var(--project-4);
+  --chart-5: var(--project-5);
+  --shadow-sm: 0 1px 2px rgba(23, 32, 26, 0.06);
   --shadow-md:
-    0px 2px 10px 0px hsl(0 0% 0% / 0.05), 0px 2px 4px -1px hsl(0 0% 0% / 0.05);
-  --shadow-lg:
-    0px 2px 10px 0px hsl(0 0% 0% / 0.05), 0px 4px 6px -1px hsl(0 0% 0% / 0.05);
-  --shadow-xl:
-    0px 2px 10px 0px hsl(0 0% 0% / 0.05), 0px 8px 10px -1px hsl(0 0% 0% / 0.05);
-  --shadow-2xl: 0px 2px 10px 0px hsl(0 0% 0% / 0.13);
-  --tracking-normal: 0rem;
-  --spacing: 0.25rem;
+    0 4px 12px -2px rgba(23, 32, 26, 0.1), 0 1px 3px rgba(23, 32, 26, 0.06);
+  --shadow-lg: 0 16px 40px -8px rgba(23, 32, 26, 0.18);
+  /* Motion: hover, unfold, dialog, and the calm pulse of the running slot. */
+  --duration-fast: 120ms;
+  --duration-base: 200ms;
+  --duration-slow: 320ms;
+  --duration-pulse: 2400ms;
+  /* Layers, lowest first. */
+  --z-sticky: 10;
+  --z-sidebar: 20;
+  --z-overlay: 40;
+  --z-modal: 50;
+  --z-popover: 60;
+  --z-toast: 70;
 
   @variant dark {
-    --background: oklch(0.1836 0.0111 311.9111);
-    --foreground: oklch(0.9788 0.0057 308.3962);
-    --card: oklch(0.1836 0.0111 311.9111);
-    --card-foreground: oklch(0.9788 0.0057 308.3962);
-    --popover: oklch(0.1836 0.0111 311.9111);
-    --popover-foreground: oklch(0.9788 0.0057 308.3962);
-    --primary: oklch(0.6747 0.1492 345.9482);
-    --primary-foreground: oklch(0.1836 0.0111 311.9111);
-    --secondary: oklch(0.2551 0.0142 310.7968);
-    --secondary-foreground: oklch(0.721 0.0184 308.1777);
-    --muted: oklch(0.2551 0.0142 310.7968);
-    --muted-foreground: oklch(0.6288 0.0177 309.9946);
-    --accent: oklch(0.2551 0.0142 310.7968);
-    --accent-foreground: oklch(0.6747 0.1492 345.9482);
-    --destructive: oklch(0.3958 0.1331 25.723);
-    --destructive-foreground: oklch(1 0 0);
-    --warning: oklch(0.5 0.13 70);
-    --warning-foreground: oklch(0.95 0.04 70);
-    --success: oklch(0.55 0.14 162);
-    --success-foreground: oklch(1 0 0);
-    --border: oklch(0.2941 0.0175 310.1142);
-    --input: oklch(0.2551 0.0142 310.7968);
-    --ring: oklch(0.6747 0.1492 345.9482);
-    --chart-1: oklch(0.6747 0.1492 345.9482);
-    --chart-2: oklch(0.5605 0.1911 350.0331);
-    --chart-3: oklch(0.4988 0.1668 350);
-    --chart-4: oklch(0.4373 0.1428 349.7487);
-    --chart-5: oklch(0.3738 0.1177 349.3988);
-    --sidebar: oklch(0.2103 0.0107 311.9806);
-    --sidebar-foreground: oklch(0.721 0.0184 308.1777);
-    --sidebar-primary: oklch(0.6747 0.1492 345.9482);
-    --sidebar-primary-foreground: oklch(0.1836 0.0111 311.9111);
-    --sidebar-accent: oklch(0.2551 0.0142 310.7968);
-    --sidebar-accent-foreground: oklch(0.6747 0.1492 345.9482);
-    --sidebar-border: oklch(0.2941 0.0175 310.1142);
-    --sidebar-ring: oklch(0.6747 0.1492 345.9482);
-    --radius: 0.75rem;
-    --shadow-2xs: 0px 2px 10px 0px hsl(0 0% 0% / 0.1);
-    --shadow-xs: 0px 2px 10px 0px hsl(0 0% 0% / 0.1);
-    --shadow-sm:
-      0px 2px 10px 0px hsl(0 0% 0% / 0.2), 0px 1px 2px -1px hsl(0 0% 0% / 0.2);
-    --shadow:
-      0px 2px 10px 0px hsl(0 0% 0% / 0.2), 0px 1px 2px -1px hsl(0 0% 0% / 0.2);
-    --shadow-md:
-      0px 2px 10px 0px hsl(0 0% 0% / 0.2), 0px 2px 4px -1px hsl(0 0% 0% / 0.2);
-    --shadow-lg:
-      0px 2px 10px 0px hsl(0 0% 0% / 0.2), 0px 4px 6px -1px hsl(0 0% 0% / 0.2);
-    --shadow-xl:
-      0px 2px 10px 0px hsl(0 0% 0% / 0.2), 0px 8px 10px -1px hsl(0 0% 0% / 0.2);
-    --shadow-2xl: 0px 2px 10px 0px hsl(0 0% 0% / 0.5);
+    --background: #111612;
+    --foreground: #e7ece8;
+    --card: #191f1b;
+    --card-foreground: #e7ece8;
+    --popover: #1e2520;
+    --popover-foreground: #e7ece8;
+    --primary: #5fc48f;
+    --primary-foreground: #0b1a11;
+    --primary-hover: #7bd3a4;
+    --secondary: #252d27;
+    --secondary-foreground: #c9d2cb;
+    --muted: #212923;
+    --muted-foreground: #9aa69d;
+    --accent: #1c3226;
+    --accent-foreground: #86d9ac;
+    --running: #ff9440;
+    --running-foreground: #2a1404;
+    --running-text: #ffa65e;
+    --running-soft: #3a2412;
+    --destructive: #ff7b6b;
+    --destructive-foreground: #2a0904;
+    --warning: #f0cb52;
+    --warning-foreground: #2b2100;
+    --success: #55c5dc;
+    --success-foreground: #04232a;
+    --info: #93a8ff;
+    --info-foreground: #0b1640;
+    --border: #2b342e;
+    --input: #191f1b;
+    --input-border: #6c7870;
+    --ring: #5fc48f;
+    --sidebar: #151b17;
+    --sidebar-foreground: #c9d2cb;
+    --sidebar-primary: #5fc48f;
+    --sidebar-primary-foreground: #0b1a11;
+    --sidebar-accent: #222b25;
+    --sidebar-accent-foreground: #86d9ac;
+    --sidebar-border: #242c26;
+    --sidebar-ring: #5fc48f;
+    --project-none: #7d877f;
+    --project-deleted: #454e47;
+    --project-1: #6076de;
+    --project-2: #c08500;
+    --project-3: #009d8c;
+    --project-4: #ae4090;
+    --project-5: #909b2f;
+    --project-6: #0072a8;
+    --project-7: #e75e70;
+    --project-8: #9065d0;
+    --project-9: #00a5bb;
+    --project-10: #e5564a;
+    --project-11: #73a434;
+    --project-12: #9750a7;
+    --project-13: #3986e4;
+    --project-14: #cf6e96;
+    --project-15: #4167ad;
+    --project-16: #b97340;
+    --project-17: #798898;
+    --project-18: #9c917e;
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+    --shadow-md: 0 4px 12px -2px rgba(0, 0, 0, 0.5);
+    --shadow-lg: 0 16px 40px -8px rgba(0, 0, 0, 0.6);
+  }
+}
+
+/* Reduced motion: no transitions. The pulse uses `motion-safe:`. */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --duration-fast: 0ms;
+    --duration-base: 0ms;
+    --duration-slow: 0ms;
   }
 }
 
@@ -119,20 +186,28 @@
   --color-popover-foreground: var(--popover-foreground);
   --color-primary: var(--primary);
   --color-primary-foreground: var(--primary-foreground);
+  --color-primary-hover: var(--primary-hover);
   --color-secondary: var(--secondary);
   --color-secondary-foreground: var(--secondary-foreground);
   --color-muted: var(--muted);
   --color-muted-foreground: var(--muted-foreground);
   --color-accent: var(--accent);
   --color-accent-foreground: var(--accent-foreground);
+  --color-running: var(--running);
+  --color-running-foreground: var(--running-foreground);
+  --color-running-text: var(--running-text);
+  --color-running-soft: var(--running-soft);
   --color-destructive: var(--destructive);
   --color-destructive-foreground: var(--destructive-foreground);
   --color-warning: var(--warning);
   --color-warning-foreground: var(--warning-foreground);
   --color-success: var(--success);
   --color-success-foreground: var(--success-foreground);
+  --color-info: var(--info);
+  --color-info-foreground: var(--info-foreground);
   --color-border: var(--border);
   --color-input: var(--input);
+  --color-input-border: var(--input-border);
   --color-ring: var(--ring);
   --color-chart-1: var(--chart-1);
   --color-chart-2: var(--chart-2);
@@ -147,28 +222,117 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
+  --color-project-none: var(--project-none);
+  --color-project-deleted: var(--project-deleted);
+  --color-project-1: var(--project-1);
+  --color-project-2: var(--project-2);
+  --color-project-3: var(--project-3);
+  --color-project-4: var(--project-4);
+  --color-project-5: var(--project-5);
+  --color-project-6: var(--project-6);
+  --color-project-7: var(--project-7);
+  --color-project-8: var(--project-8);
+  --color-project-9: var(--project-9);
+  --color-project-10: var(--project-10);
+  --color-project-11: var(--project-11);
+  --color-project-12: var(--project-12);
+  --color-project-13: var(--project-13);
+  --color-project-14: var(--project-14);
+  --color-project-15: var(--project-15);
+  --color-project-16: var(--project-16);
+  --color-project-17: var(--project-17);
+  --color-project-18: var(--project-18);
 
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: "Geist Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "Geist Mono Variable", ui-monospace, monospace;
 
-  --radius-sm: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 2px);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) + 4px);
+  /* Text styles: `text-display` for page titles, `text-heading` for section
+     heads, `text-body` (14px) for normal text. */
+  --text-display: 28px;
+  --text-display--line-height: 34px;
+  --text-display--font-weight: 600;
+  --text-display--letter-spacing: -0.02em;
+  --text-title: 20px;
+  --text-title--line-height: 28px;
+  --text-title--font-weight: 600;
+  --text-title--letter-spacing: -0.01em;
+  --text-heading: 15px;
+  --text-heading--line-height: 22px;
+  --text-heading--font-weight: 600;
+  --text-body: 14px;
+  --text-body--line-height: 20px;
+  --text-body-strong: 14px;
+  --text-body-strong--line-height: 20px;
+  --text-body-strong--font-weight: 500;
+  --text-small: 13px;
+  --text-small--line-height: 18px;
+  --text-caption: 12px;
+  --text-caption--line-height: 16px;
+  --text-caption--font-weight: 500;
+  --text-caption--letter-spacing: 0.01em;
 
-  --shadow-2xs: var(--shadow-2xs);
-  --shadow-xs: var(--shadow-xs);
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+
+  /* Only three depths: cards, menus and dialogs. */
+  --shadow-*: initial;
   --shadow-sm: var(--shadow-sm);
-  --shadow: var(--shadow);
   --shadow-md: var(--shadow-md);
   --shadow-lg: var(--shadow-lg);
-  --shadow-xl: var(--shadow-xl);
-  --shadow-2xl: var(--shadow-2xl);
 
-  --tracking-tighter: calc(var(--tracking-normal) - 0.05em);
-  --tracking-tight: calc(var(--tracking-normal) - 0.025em);
-  --tracking-normal: var(--tracking-normal);
-  --tracking-wide: calc(var(--tracking-normal) + 0.025em);
-  --tracking-wider: calc(var(--tracking-normal) + 0.05em);
-  --tracking-widest: calc(var(--tracking-normal) + 0.1em);
+  --ease-out: cubic-bezier(0.2, 0, 0, 1);
+  --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+  --default-transition-duration: var(--duration-fast);
+  --default-transition-timing-function: var(--ease-out);
+
+  /* The calm pulse of the running slot. Use it with `motion-safe:`. */
+  --animate-running-pulse: running-pulse var(--duration-pulse)
+    var(--ease-in-out) infinite;
+
+  /* Shows a loader only when waiting takes longer than 400 ms. */
+  --animate-delayed-show: delayed-show 1ms 400ms forwards;
+
+  @keyframes delayed-show {
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes running-pulse {
+    0%,
+    100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.55;
+    }
+  }
+}
+
+/* Times and durations: Geist Mono with digits of equal width. */
+@utility type-timer {
+  font-family: var(--font-mono);
+  font-size: 28px;
+  line-height: 32px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  font-variant-numeric: tabular-nums;
+}
+
+@utility type-duration {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+
+@utility type-duration-small {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  line-height: 16px;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
 }

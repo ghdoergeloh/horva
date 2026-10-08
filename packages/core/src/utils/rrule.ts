@@ -1,8 +1,11 @@
-import { createRequire } from "module";
-import type { RRule as RRuleType } from "rrule";
+import * as rruleModule from "rrule";
 
-const _require = createRequire(import.meta.url);
-const { RRule } = _require("rrule") as { RRule: typeof RRuleType };
+// rrule ships a CommonJS and an ESM build. Node.js loads the CommonJS build
+// and puts its exports under `default`. Bundlers that pick the ESM build
+// provide named exports only.
+type RRuleModule = typeof rruleModule;
+const loaded = rruleModule as RRuleModule & { default?: RRuleModule };
+const { RRule } = loaded.default ?? loaded;
 
 // rrule.js v2.x does not correctly handle DTSTART;TZID= when parsing from string:
 // it ignores the timezone offset and treats the wall-clock time as UTC, producing
@@ -16,7 +19,7 @@ function getUTCOffsetMinutes(date: Date, tzid: string): number {
   return (new Date(tzStr).getTime() - new Date(utcStr).getTime()) / 60000;
 }
 
-function fromString(str: string): RRuleType {
+function fromString(str: string): InstanceType<typeof RRule> {
   const dtMatch =
     /DTSTART;TZID=([^:\n]+):(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})/.exec(
       str,

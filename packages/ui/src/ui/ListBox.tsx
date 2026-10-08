@@ -14,9 +14,10 @@ import {
   Header,
   ListBoxSection,
 } from "react-aria-components";
-import { tv } from "tailwind-variants";
 
 import { composeTailwindRenderProps, focusRing } from "@horva/ui";
+
+import { tv } from "../lib/tw";
 
 interface ListBoxProps<T> extends Omit<
   AriaListBoxProps<T>,
@@ -32,7 +33,7 @@ export function ListBox<T extends object>({
       {...props}
       className={composeTailwindRenderProps(
         props.className,
-        "w-[200px] rounded-lg border border-neutral-300 bg-white p-1 font-sans outline-0 dark:border-neutral-700 dark:bg-neutral-900",
+        "border-border bg-popover w-[200px] rounded-lg border p-1 font-sans outline-0",
       )}
     >
       {children}
@@ -42,15 +43,15 @@ export function ListBox<T extends object>({
 
 export const itemStyles = tv({
   extend: focusRing,
-  base: "group relative flex items-center gap-8 cursor-default select-none py-1.5 px-2.5 rounded-md will-change-transform text-sm forced-color-adjust-none",
+  base: "group relative flex items-center gap-8 cursor-default select-none py-1.5 px-2.5 rounded-md will-change-transform text-body forced-color-adjust-none",
   variants: {
     isSelected: {
       false:
-        "text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 pressed:bg-neutral-100 dark:hover:bg-neutral-800 dark:pressed:bg-neutral-800 -outline-offset-2",
-      true: "bg-blue-600 text-white forced-colors:bg-[Highlight] forced-colors:text-[HighlightText] [&:has(+[data-selected])]:rounded-b-none [&+[data-selected]]:rounded-t-none -outline-offset-4 outline-white dark:outline-white forced-colors:outline-[HighlightText]",
+        "text-foreground hover:bg-accent pressed:bg-accent -outline-offset-2",
+      true: "bg-primary text-primary-foreground forced-colors:bg-[Highlight] forced-colors:text-[HighlightText] [&:has(+[data-selected])]:rounded-b-none [&+[data-selected]]:rounded-t-none -outline-offset-4 outline-primary-foreground forced-colors:outline-[HighlightText]",
     },
     isDisabled: {
-      true: "text-neutral-300 dark:text-neutral-600 forced-colors:text-[GrayText]",
+      true: "opacity-45 forced-colors:text-[GrayText]",
     },
   },
 });
@@ -64,7 +65,7 @@ export function ListBoxItem(props: ListBoxItemProps) {
       {composeRenderProps(props.children, (children) => (
         <>
           {children}
-          <div className="absolute right-4 bottom-0 left-4 hidden h-px bg-white/20 forced-colors:bg-[HighlightText] [.group[data-selected]:has(+[data-selected])_&]:block" />
+          <div className="bg-primary-foreground/20 absolute right-4 bottom-0 left-4 hidden h-px forced-colors:bg-[HighlightText] [.group[data-selected]:has(+[data-selected])_&]:block" />
         </>
       ))}
     </AriaListBoxItem>
@@ -72,24 +73,24 @@ export function ListBoxItem(props: ListBoxItemProps) {
 }
 
 export const dropdownItemStyles = tv({
-  base: "group flex items-center gap-4 cursor-default select-none py-2 pl-3 pr-3 selected:pr-1 rounded-lg outline outline-0 text-sm forced-color-adjust-none no-underline [&[href]]:cursor-pointer [-webkit-tap-highlight-color:transparent]",
+  base: "group flex items-center gap-4 min-h-8 cursor-default select-none py-1 pl-2 pr-2 selected:pr-1 rounded-md outline outline-0 text-body forced-color-adjust-none no-underline [&[href]]:cursor-pointer [-webkit-tap-highlight-color:transparent]",
   variants: {
     isDisabled: {
-      false: "text-neutral-900 dark:text-neutral-100",
-      true: "text-neutral-300 dark:text-neutral-600 forced-colors:text-[GrayText]",
+      false: "text-popover-foreground",
+      true: "opacity-45 forced-colors:text-[GrayText]",
     },
     isPressed: {
-      true: "bg-neutral-100 dark:bg-neutral-800",
+      true: "bg-accent text-accent-foreground",
     },
     isFocused: {
-      true: "bg-blue-600 dark:bg-blue-600 text-white forced-colors:bg-[Highlight] forced-colors:text-[HighlightText]",
+      true: "bg-accent text-accent-foreground forced-colors:bg-[Highlight] forced-colors:text-[HighlightText]",
     },
   },
   compoundVariants: [
     {
       isFocused: false,
       isOpen: true,
-      className: "bg-neutral-100 dark:bg-neutral-700/60",
+      className: "bg-accent",
     },
   ],
 });
@@ -110,7 +111,9 @@ export function DropdownItem(props: ListBoxItemProps) {
             {children}
           </span>
           <span className="flex w-5 items-center">
-            {isSelected && <Check className="h-4 w-4" />}
+            {isSelected && (
+              <Check aria-hidden className="text-primary h-4 w-4" />
+            )}
           </span>
         </>
       ))}
@@ -128,7 +131,7 @@ export function DropdownSection<T extends object>(
 ) {
   return (
     <ListBoxSection className="after:block after:h-[5px] after:content-[''] first:-mt-[5px] last:after:hidden">
-      <Header className="sticky -top-[5px] z-10 -mx-1 -mt-px truncate border-y border-y-neutral-200 bg-neutral-100/60 px-4 py-1 text-sm font-semibold text-neutral-500 backdrop-blur-md supports-[-moz-appearance:none]:bg-neutral-100 dark:border-y-neutral-700 dark:bg-neutral-700/60 dark:text-neutral-300 [&+*]:mt-1">
+      <Header className="border-t-border bg-popover text-popover-foreground text-small sticky -top-[5px] z-10 -mx-1 -mt-px flex items-center gap-2 truncate border-t px-3 pt-2.5 pb-1 font-semibold [&+*]:mt-1">
         {props.title}
       </Header>
       <Collection items={props.items}>{props.children}</Collection>

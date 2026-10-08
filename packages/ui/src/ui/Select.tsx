@@ -13,23 +13,23 @@ import {
   ListBox,
   SelectValue,
 } from "react-aria-components";
-import { tv } from "tailwind-variants";
 
 import { composeTailwindRenderProps, focusRing } from "@horva/ui";
 
 import type { DropdownSectionProps } from "./ListBox";
+import { tv } from "../lib/tw";
 import { Description, FieldError, Label } from "./Field";
 import { DropdownItem, DropdownSection } from "./ListBox";
 import { Popover } from "./Popover";
 
 const styles = tv({
   extend: focusRing,
-  base: "flex items-center text-start gap-4 w-full font-sans border border-black/10 dark:border-white/10 cursor-default rounded-lg pl-3 pr-2 h-9 min-w-[180px] transition bg-neutral-50 dark:bg-neutral-700 [-webkit-tap-highlight-color:transparent]",
+  base: "flex items-center text-start gap-2 w-full font-sans border border-input-border cursor-default rounded-md pl-2.5 pr-2 h-9 min-w-0 transition bg-input text-foreground [-webkit-tap-highlight-color:transparent]",
   variants: {
     isDisabled: {
       false:
-        "text-neutral-800 dark:text-neutral-300 hover:bg-neutral-100 pressed:bg-neutral-200 dark:hover:bg-neutral-600 dark:pressed:bg-neutral-500 group-invalid:outline group-invalid:outline-red-600 forced-colors:group-invalid:outline-[Mark]",
-      true: "border-transparent dark:border-transparent text-neutral-200 dark:text-neutral-600 forced-colors:text-[GrayText] bg-neutral-100 dark:bg-neutral-800",
+        "hover:bg-accent pressed:bg-accent group-invalid:border-destructive forced-colors:group-invalid:border-[Mark]",
+      true: "opacity-45 forced-colors:text-[GrayText]",
     },
   },
 });
@@ -58,19 +58,20 @@ export function Select<T extends object>({
       {...props}
       className={composeTailwindRenderProps(
         props.className,
-        "group relative flex flex-col gap-1 font-sans",
+        // The minimum width sits here, so `className` can change it.
+        "group relative flex min-w-[180px] flex-col gap-1 font-sans",
       )}
     >
       {label && <Label>{label}</Label>}
       <Button className={styles}>
-        <SelectValue className="flex-1 text-sm">
+        <SelectValue className="data-placeholder:text-muted-foreground text-body flex flex-1 items-center gap-2 truncate">
           {({ selectedText, defaultChildren }) =>
             selectedText || defaultChildren
           }
         </SelectValue>
         <ChevronDown
           aria-hidden
-          className="h-4 w-4 text-neutral-600 group-disabled:text-neutral-200 dark:text-neutral-400 dark:group-disabled:text-neutral-600 forced-colors:text-[ButtonText] forced-colors:group-disabled:text-[GrayText]"
+          className="text-muted-foreground h-4 w-4 shrink-0 forced-colors:text-[ButtonText] forced-colors:group-disabled:text-[GrayText]"
         />
       </Button>
       {description && <Description>{description}</Description>}
@@ -78,7 +79,7 @@ export function Select<T extends object>({
       <Popover className="min-w-(--trigger-width)">
         <ListBox
           items={items}
-          className="box-border max-h-[inherit] overflow-auto p-1 outline-hidden [clip-path:inset(0_0_0_0_round_.75rem)]"
+          className="box-border max-h-[inherit] overflow-auto p-1 outline-hidden [clip-path:inset(0_0_0_0_round_12px)]"
         >
           {children}
         </ListBox>

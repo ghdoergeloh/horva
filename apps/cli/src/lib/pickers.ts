@@ -82,7 +82,8 @@ export async function pickTask(
   const regularTasks = tasks.filter((t) => t.taskType === "task");
 
   type Choice =
-    { name: string; value: number | null } | InstanceType<typeof Separator>;
+    | { name: string; value: number | null }
+    | InstanceType<typeof Separator>;
   const choices: Choice[] = [];
 
   if (activities.length > 0) {
@@ -124,10 +125,7 @@ async function createProjectInline(
   prefill?: { name?: string; color?: string },
 ): Promise<number> {
   const name = prefill?.name ?? (await input({ message: "Project name:" }));
-  const project = await createProject(db, {
-    name,
-    color: prefill?.color ?? "#6366f1",
-  });
+  const project = await createProject(db, { name, color: prefill?.color });
   return project.id;
 }
 

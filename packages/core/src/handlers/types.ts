@@ -1,4 +1,4 @@
-import type { Db } from "@horva/db/client";
+import type { Database } from "@horva/db/client";
 
 export interface Session {
   user: {
@@ -9,7 +9,7 @@ export interface Session {
 }
 
 export interface HandlerContext {
-  db: Db;
+  db: Database;
   session: Session | null;
 }
 

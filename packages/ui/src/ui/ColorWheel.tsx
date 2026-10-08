@@ -17,7 +17,7 @@ export function ColorWheel(props: ColorWheelProps) {
   return (
     <AriaColorWheel {...props} outerRadius={100} innerRadius={74}>
       <ColorWheelTrack
-        className="disabled:bg-neutral-300 dark:disabled:bg-neutral-800 forced-colors:disabled:bg-[GrayText]"
+        className="disabled:bg-muted forced-colors:disabled:bg-[GrayText]"
         style={({ defaultStyle, isDisabled }) => ({
           ...defaultStyle,
           background: isDisabled

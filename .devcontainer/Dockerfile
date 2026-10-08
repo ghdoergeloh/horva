@@ -80,7 +80,7 @@ USER ${USERNAME}
 # COREPACK_ENABLE_DOWNLOAD_PROMPT=0 keeps the non-interactive postCreateCommand from
 # blocking on corepack's download prompt; `corepack prepare` bakes pnpm into the
 # image so no runtime fetch is needed.
-ARG PNPM_VERSION=11.16.0
+ARG PNPM_VERSION=12.5.1
 ENV COREPACK_ENABLE_DOWNLOAD_PROMPT=0 \
     PNPM_HOME=/home/${USERNAME}/.local/share/pnpm \
     PATH="/home/node/.local/bin:/home/node/.local/share/pnpm:${PATH}"

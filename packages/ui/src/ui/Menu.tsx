@@ -30,7 +30,7 @@ export function Menu<T extends object>(props: MenuProps<T>) {
   return (
     <AriaMenu
       {...props}
-      className="max-h-[inherit] overflow-auto p-1 font-sans outline outline-0 [clip-path:inset(0_0_0_0_round_.75rem)] empty:pb-2 empty:text-center"
+      className="max-h-[inherit] overflow-auto p-1 font-sans outline outline-0 [clip-path:inset(0_0_0_0_round_12px)] empty:pb-2 empty:text-center"
     />
   );
 }
@@ -68,12 +68,7 @@ export function MenuItem(props: MenuItemProps) {
 }
 
 export function MenuSeparator(props: SeparatorProps) {
-  return (
-    <Separator
-      {...props}
-      className="mx-3 my-1 border-b border-neutral-300 dark:border-neutral-700"
-    />
-  );
+  return <Separator {...props} className="border-border mx-3 my-1 border-b" />;
 }
 
 export interface MenuSectionProps<T> extends AriaMenuSectionProps<T> {
@@ -88,7 +83,7 @@ export function MenuSection<T extends object>(props: MenuSectionProps<T>) {
       className="after:block after:h-[5px] after:content-[''] first:-mt-[5px]"
     >
       {props.title && (
-        <Header className="sticky -top-[5px] z-10 -mx-1 -mt-px truncate border-y border-y-neutral-200 bg-neutral-100/60 px-4 py-1 text-sm font-semibold text-neutral-500 backdrop-blur-md supports-[-moz-appearance:none]:bg-neutral-100 dark:border-y-neutral-700 dark:bg-neutral-700/60 dark:text-neutral-300 [&+*]:mt-1">
+        <Header className="border-t-border bg-popover text-popover-foreground text-small sticky -top-[5px] z-10 -mx-1 -mt-px truncate border-t px-3 pt-2.5 pb-1 font-semibold [&+*]:mt-1">
           {props.title}
         </Header>
       )}

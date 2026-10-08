@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { readFileSync, writeFileSync } from "node:fs";
+import { cpSync, readFileSync, writeFileSync } from "node:fs";
 import { build, context } from "esbuild";
 
 const watchMode = process.argv.includes("--watch");
@@ -23,8 +23,13 @@ const options = {
   format: "esm",
   outfile: "dist/index.js",
   external: thirdPartyExternal,
-  loader: { ".sql": "text" },
+  // Makes the bundle executable.
+  banner: { js: "#!/usr/bin/env node" },
 };
+
+// The SQL migrations go next to the bundle, where `migrationsFolder()` of
+// @horva/db finds them.
+cpSync("../../packages/db/drizzle", "dist/drizzle", { recursive: true });
 
 if (watchMode) {
   const ctx = await context(options);

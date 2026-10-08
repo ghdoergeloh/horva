@@ -1,5 +1,6 @@
 "use client";
 
+import type { ReactNode } from "react";
 import type {
   CalendarProps as AriaCalendarProps,
   DateValue,
@@ -16,30 +17,57 @@ import {
   Text,
   useLocale,
 } from "react-aria-components";
-import { tv } from "tailwind-variants";
 
 import { composeTailwindRenderProps, focusRing } from "@horva/ui";
 
+import { tv } from "../lib/tw";
 import { Button } from "./Button";
 
-const cellStyles = tv({
+/**
+ * A day in the month grid. Today has a dot in `primary`, the selected day
+ * a `primary` fill. Range calendars add the start, end and middle states.
+ */
+export const dayStyles = tv({
   extend: focusRing,
-  base: "w-[calc(100cqw/7)] aspect-square text-sm cursor-default rounded-full flex items-center justify-center forced-color-adjust-none [-webkit-tap-highlight-color:transparent]",
+  base: [
+    "relative flex h-8.5 w-9 cursor-default items-center justify-center rounded-md font-mono text-small tabular-nums text-foreground outline-offset-[-2px] forced-color-adjust-none [-webkit-tap-highlight-color:transparent]",
+    "after:absolute after:bottom-[5px] after:size-1 after:rounded-full",
+  ],
   variants: {
-    isSelected: {
-      false:
-        "text-neutral-900 dark:text-neutral-200 hover:bg-neutral-200 dark:hover:bg-neutral-700 pressed:bg-neutral-300 dark:pressed:bg-neutral-600",
-      true: "bg-blue-600 invalid:bg-red-600 text-white forced-colors:bg-[Highlight] forced-colors:invalid:bg-[Mark] forced-colors:text-[HighlightText]",
+    state: {
+      none: "hover:bg-accent pressed:bg-accent",
+      selected:
+        "bg-primary font-semibold text-primary-foreground forced-colors:bg-[Highlight] forced-colors:text-[HighlightText]",
+      middle:
+        "rounded-none bg-accent text-accent-foreground forced-colors:bg-[Highlight] forced-colors:text-[HighlightText]",
+    },
+    isToday: {
+      true: "font-bold after:bg-primary",
+    },
+    isOutsideMonth: {
+      true: "text-muted-foreground opacity-55",
     },
     isDisabled: {
-      true: "text-neutral-300 dark:text-neutral-600 forced-colors:text-[GrayText]",
+      true: "text-muted-foreground opacity-55 forced-colors:text-[GrayText]",
     },
-    // Ring stays visible on top of the selected fill, so today remains
-    // identifiable even when another date is selected.
-    isToday: {
-      true: "ring-2 ring-blue-600 ring-inset dark:ring-blue-400 forced-colors:ring-[ButtonBorder]",
+    isInvalid: {
+      true: "",
     },
   },
+  compoundVariants: [
+    { isToday: true, state: "none", class: "text-accent-foreground" },
+    {
+      isToday: true,
+      state: "selected",
+      class: "after:bg-primary-foreground",
+    },
+    {
+      isInvalid: true,
+      state: "selected",
+      class:
+        "bg-destructive text-destructive-foreground forced-colors:bg-[Mark]",
+    },
+  ],
 });
 
 export interface CalendarProps<T extends DateValue> extends Omit<
@@ -47,73 +75,111 @@ export interface CalendarProps<T extends DateValue> extends Omit<
   "visibleDuration"
 > {
   errorMessage?: string;
+  /** Content below the grid, such as quick choices. */
+  footer?: ReactNode;
 }
 
+/** A month calendar. Weeks start on Monday unless `firstDayOfWeek` says else. */
 export function Calendar<T extends DateValue>({
   errorMessage,
+  footer,
+  firstDayOfWeek = "mon",
   ...props
 }: CalendarProps<T>) {
   return (
     <AriaCalendar
       {...props}
+      firstDayOfWeek={firstDayOfWeek}
       className={composeTailwindRenderProps(
         props.className,
-        "@container flex w-[calc(9*var(--spacing)*7)] max-w-full flex-col font-sans",
+        "flex w-max max-w-full flex-col font-sans",
       )}
     >
       <CalendarHeader />
-      <CalendarGrid className="border-spacing-0">
+      <CalendarGrid
+        weekdayStyle="short"
+        className="border-separate border-spacing-x-0 border-spacing-y-0.5 [&_td]:p-0"
+      >
         <CalendarGridHeader />
         <CalendarGridBody>
           {(date) => (
             <CalendarCell
               date={date}
-              className={(renderProps) => cellStyles(renderProps)}
+              className={({
+                isSelected,
+                isToday,
+                isOutsideMonth,
+                isDisabled,
+                isUnavailable,
+                isInvalid,
+                isFocusVisible,
+              }) =>
+                dayStyles({
+                  state: isSelected ? "selected" : "none",
+                  isToday,
+                  isOutsideMonth,
+                  isDisabled: (isDisabled && !isOutsideMonth) || isUnavailable,
+                  isInvalid,
+                  isFocusVisible,
+                })
+              }
             />
           )}
         </CalendarGridBody>
       </CalendarGrid>
       {errorMessage && (
-        <Text slot="errorMessage" className="text-sm text-red-600">
+        <Text slot="errorMessage" className="text-destructive text-caption">
           {errorMessage}
         </Text>
       )}
+      {footer}
     </AriaCalendar>
   );
 }
 
+/** Month name between the buttons for the previous and next month. */
 export function CalendarHeader() {
   const { direction } = useLocale();
 
   return (
-    <header className="border-box flex items-center gap-1 px-1 pb-4">
-      <Button variant="quiet" slot="previous">
+    <div className="mb-2 flex items-center justify-between gap-1">
+      <Button variant="quiet" size="sm" slot="previous">
         {direction === "rtl" ? (
-          <ChevronRight aria-hidden size={18} />
+          <ChevronRight aria-hidden />
         ) : (
-          <ChevronLeft aria-hidden size={18} />
+          <ChevronLeft aria-hidden />
         )}
       </Button>
-      <Heading className="mx-2 my-0 flex-1 text-center font-sans text-base font-semibold text-neutral-900 [font-variation-settings:normal] dark:text-neutral-200" />
-      <Button variant="quiet" slot="next">
+      <Heading className="text-foreground text-body m-0 flex-1 text-center font-sans font-semibold" />
+      <Button variant="quiet" size="sm" slot="next">
         {direction === "rtl" ? (
-          <ChevronLeft aria-hidden size={18} />
+          <ChevronLeft aria-hidden />
         ) : (
-          <ChevronRight aria-hidden size={18} />
+          <ChevronRight aria-hidden />
         )}
       </Button>
-    </header>
+    </div>
   );
 }
 
+/** Short weekday names above the grid. */
 export function CalendarGridHeader() {
   return (
     <AriaCalendarGridHeader>
       {(day) => (
-        <CalendarHeaderCell className="text-xs font-semibold text-neutral-500">
+        <CalendarHeaderCell className="text-muted-foreground text-caption h-6 w-9 p-0 font-medium">
           {day}
         </CalendarHeaderCell>
       )}
     </AriaCalendarGridHeader>
+  );
+}
+
+/** The line below a calendar with quick choices or a summary. */
+export function CalendarFooter({ children }: { children: ReactNode }) {
+  return (
+    <div className="border-border mt-2 flex max-w-[252px] flex-wrap items-center justify-between gap-x-2 gap-y-1 border-t pt-2">
+      {children}
+    </div>
   );
 }

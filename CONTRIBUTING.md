@@ -35,8 +35,8 @@ If you're planning something non-trivial, please open an issue first so we can a
 
 ### Prerequisites
 
-- **Node.js** `^24.13.0`
-- **pnpm** `^10.28.2`
+- **Node.js** `^24.21.0`
+- **pnpm** `^12.5.1`
 - **Docker** + Docker Compose (for PostgreSQL and Mailpit)
 
 ### Getting started
@@ -47,7 +47,7 @@ cd horva
 pnpm install
 cp .env.example .env
 docker compose up -d
-pnpm db:push
+pnpm db:migrate
 pnpm dev
 ```
 
@@ -58,7 +58,7 @@ See the [README](./README.md#development-setup) for the full walkthrough, includ
 ```
 apps/        # api, cli, electron, react
 packages/    # contract, auth, core, db, ui, transactional
-tooling/     # shared ESLint / Prettier / TS / Tailwind / Vitest configs
+tooling/     # shared TS / Tailwind / Vitest configs
 docs/        # feature specs and design docs
 ```
 
@@ -67,7 +67,7 @@ The **contract** package (`packages/contract`) is the source of truth for the AP
 1. Define the route in `packages/contract/src/index.ts`.
 2. Implement the handler in `packages/core/src/handlers/<section>.ts`.
 3. Wire it into `apps/api/src/router.ts` (and the Electron IPC bridge).
-4. Consume it from `apps/electron` or a future web frontend with full type inference.
+4. Consume it from `apps/react` with full type inference.
 
 ## Workflow
 
@@ -97,9 +97,10 @@ pnpm -F @horva/db typecheck
 
 - **TypeScript strict mode everywhere.** `noUncheckedIndexedAccess` is on; `verbatimModuleSyntax` requires `import type` for type-only imports.
 - **ESM only.** All packages are `"type": "module"`.
-- **Imports are auto-sorted** by Prettier: types → React → third-party → `@horva/*` → local (`~/`, `../`, `./`). Don't fight the sort.
+- **Imports are auto-sorted** by Oxfmt (`.oxfmtrc.json`): types → React → third-party → `@horva/*` → local (`~/`, `../`, `./`). Don't fight the sort.
 - **Tailwind classes** are sorted automatically inside `cn()` and `cva()`.
-- **Path aliases:** the Electron renderer uses `~/` → `src/renderer/src/`.
+- **Linting:** Oxlint with one root config (`.oxlintrc.json`), including type-aware rules. The React rules apply through an `overrides` entry: add new React workspaces to its `files` list.
+- **Imports inside `apps/react`:** `#/` → `src/` (subpath imports in its `package.json`), so the code resolves the same way when `apps/electron` bundles it.
 - **Dependency versions** live in `pnpm-workspace.yaml` catalogs. New deps should use `catalog:` references where appropriate.
 - **No mocks at the DB boundary.** Integration tests hit real PostgreSQL via Docker Compose.
 - **Comments** should explain _why_, not _what_. Most code doesn't need them.
@@ -179,7 +180,7 @@ Releases are versioned automatically from the Conventional Commits on `main` —
 **How it works**
 
 1. Every merge into `main` runs [release-please](https://github.com/googleapis/release-please), which opens or updates a single release PR titled `chore(main): release <version>`. That PR carries the next version (in `package.json`, `apps/electron/package.json` and `.release-please-manifest.json`) and the `CHANGELOG.md` entries for everything merged since the last release. Merging into `main` never releases on its own.
-2. Merging the release PR creates the tag and a draft GitHub Release holding the changelog.
+2. Merging the release PR creates a draft GitHub Release with the changelog. The tag does not exist yet.
 3. That in turn builds the Electron installers for macOS (`.dmg`), Windows (`.exe` via NSIS) and Linux (`.AppImage`), attaches them to the release and publishes it. The tag only becomes visible once the installers are downloadable.
 
 **Which commit bumps what** (while the version is below `1.0.0`):
@@ -195,7 +196,9 @@ Only `feat`, `fix`, `perf`, `revert`, `docs` and `refactor` appear in the change
 
 **Notes for maintainers**
 
-- Since PRs are squash-merged, the **PR title** becomes the commit on `main` and is therefore what the version is computed from. A workflow validates it against Conventional Commits — commitlint only ever sees the branch commits.
+- PRs are merged with a merge commit, and its title is the **PR title**. release-please reads this title and the branch commits, so both count for the version and can show up in the changelog. commitlint checks the branch commits; the _PR Title_ workflow checks the title.
+- If the installer build fails, the release stays a draft and has no tag. Re-run the failed jobs of the _Release Please_ run; do not create the tag by hand.
+- The release PR is opened with the `GITHUB_TOKEN`, so the CI workflow does not run on it by itself. It only changes version numbers and `CHANGELOG.md`.
 - A release can also be built by hand: push a `v*` tag, or run the _Release Electron App_ workflow with a tag as input.
 - Contributors don't need to create tags or touch version numbers.
 

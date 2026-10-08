@@ -4,39 +4,27 @@
   "license": "MIT",
   "type": "module",
   "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "default": "./src/index.ts"
-    }
+    ".": "./src/index.ts"
   },
   "scripts": {
-    "build": "tsc",
     "clean": "git clean -xdf .cache .turbo dist node_modules",
-    "dev": "tsc",
-    "format": "prettier --check . --ignore-path ../../.gitignore",
-    "lint": "eslint",
     "preview": "email dev --dir src/templates --port 3001",
-    "test:unit": "vitest run --passWithNoTests",
-    "test:unit:coverage": "vitest run --coverage --passWithNoTests",
-    "typecheck": "tsc --noEmit --emitDeclarationOnly false"
+    "typecheck": "tsc --noEmit",
+    "test:unit": "vitest run",
+    "test:unit:coverage": "vitest run --coverage"
   },
-  "prettier": "@horva/prettier-config",
   "dependencies": {
-    "@react-email/components": "^1.0.12",
-    "nodemailer": "^10.0.10",
-    "react": "catalog:react19"
+    "nodemailer": "catalog:",
+    "react": "catalog:react19",
+    "react-email": "catalog:"
   },
   "devDependencies": {
-    "@horva/eslint-config": "workspace:*",
-    "@horva/prettier-config": "workspace:*",
     "@horva/tsconfig": "workspace:*",
     "@horva/vitest": "workspace:*",
-    "@react-email/ui": "6.9.5",
+    "@react-email/ui": "catalog:",
     "@types/node": "catalog:",
+    "@types/nodemailer": "catalog:",
     "@types/react": "catalog:react19",
-    "eslint": "catalog:",
-    "prettier": "catalog:",
-    "react-email": "6.9.5",
     "typescript": "catalog:",
     "vitest": "catalog:"
   }

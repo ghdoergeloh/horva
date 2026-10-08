@@ -3,35 +3,31 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "tsc",
+    "build": "node build.mjs",
     "clean": "git clean -xdf .cache .turbo dist node_modules",
     "dev": "dotenv -e ../../.env -- tsx watch src/index.ts",
-    "format": "prettier --check . --ignore-path ../../.gitignore",
-    "lint": "eslint",
-    "start": "node dist/index.js",
-    "test:unit": "vitest run --passWithNoTests",
-    "test:unit:coverage": "vitest run --coverage --passWithNoTests",
+    "start": "node --enable-source-maps dist/index.js",
+    "test:unit": "vitest run",
+    "test:unit:coverage": "vitest run --coverage",
     "typecheck": "tsc --noEmit",
     "with-env": "dotenv -e ../../.env --"
   },
-  "prettier": "@horva/prettier-config",
   "dependencies": {
     "@hono/node-server": "catalog:",
     "@horva/auth": "workspace:*",
     "@horva/contract": "workspace:*",
     "@horva/core": "workspace:*",
     "@horva/db": "workspace:*",
+    "@horva/transactional": "workspace:*",
     "@orpc/server": "catalog:",
-    "hono": "catalog:"
+    "hono": "catalog:",
+    "zod": "catalog:"
   },
   "devDependencies": {
-    "@horva/eslint-config": "workspace:*",
-    "@horva/prettier-config": "workspace:*",
     "@horva/tsconfig": "workspace:*",
     "@horva/vitest": "workspace:*",
     "@types/node": "catalog:",
-    "eslint": "catalog:",
-    "prettier": "catalog:",
+    "esbuild": "catalog:",
     "tsx": "catalog:",
     "typescript": "catalog:",
     "vitest": "catalog:"

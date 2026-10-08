@@ -26,23 +26,32 @@ function parseId(ref: string): number {
   return id;
 }
 
-function resolveColor(color: string): string {
-  const named: Record<string, string> = {
-    red: "#e74c3c",
-    green: "#2ecc71",
-    blue: "#3498db",
-    yellow: "#f1c40f",
-    orange: "#e67e22",
-    purple: "#9b59b6",
-    pink: "#e91e63",
-    cyan: "#1abc9c",
-    grey: "#95a5a6",
-    gray: "#95a5a6",
-    white: "#ecf0f1",
-    black: "#2c3e50",
-    indigo: "#6366f1",
-  };
-  return named[color.toLowerCase()] ?? color;
+/** Color names the CLI accepts, mapped to the closest design token. */
+const NAMED_COLORS: Record<string, string> = {
+  indigo: "project-1",
+  amber: "project-2",
+  teal: "project-3",
+  magenta: "project-4",
+  olive: "project-5",
+  cyan: "project-9",
+  red: "project-10",
+  green: "project-11",
+  purple: "project-8",
+  blue: "project-13",
+  pink: "project-14",
+  navy: "project-15",
+  brown: "project-16",
+  orange: "project-16",
+  yellow: "project-2",
+  grey: "project-17",
+  gray: "project-17",
+};
+
+/** A color name, a token name (`project-3`) or a hex value, as stored. */
+export function resolveColor(color: string): string {
+  const value = color.trim().toLowerCase();
+  if (/^\d+$/.test(value)) return `project-${value}`;
+  return NAMED_COLORS[value] ?? value;
 }
 
 export function registerProjectCommands(program: Command): void {
@@ -55,15 +64,20 @@ export function registerProjectCommands(program: Command): void {
   projectCmd
     .command("new [name]")
     .description("Create a new project")
-    .option("-c, --color <color>", "Project color (name or hex)")
+    .option(
+      "-c, --color <color>",
+      "Project color (name, project-1 to project-18, or hex)",
+    )
     .action(async (name: string | undefined, opts: { color?: string }) => {
       try {
         const projectName = name ?? (await input({ message: "Project name:" }));
 
-        const color = opts.color ? resolveColor(opts.color) : "#6366f1";
-        const p = await createProject(db, { name: projectName, color });
+        const p = await createProject(db, {
+          name: projectName,
+          color: opts.color ? resolveColor(opts.color) : undefined,
+        });
         printSuccess(
-          `${sym.created} Project #${p.id} "${p.name}" created (${colorProject(color, color)})`,
+          `${sym.created} Project #${p.id} "${p.name}" created (${colorProject(p.color, p.color)})`,
         );
       } catch (err) {
         printError(String(err));
@@ -87,7 +101,7 @@ export function registerProjectCommands(program: Command): void {
 
         console.log(
           chalk.dim(
-            `  ${"#".padEnd(5)} ${"Project".padEnd(20)} ${"Color".padEnd(10)} Status`,
+            `  ${"#".padEnd(5)} ${"Project".padEnd(20)} ${"Color".padEnd(13)} Status`,
           ),
         );
         for (const p of projects) {
@@ -95,7 +109,7 @@ export function registerProjectCommands(program: Command): void {
             p.status !== "active" ? chalk.dim(` (${p.status})`) : "";
           const defaultStr = p.isDefault ? chalk.dim(" [default]") : "";
           console.log(
-            `  ${String(p.id).padEnd(5)} ${padVisible(colorProject(p.name.substring(0, 19), p.color), 20)} ${p.color.padEnd(10)}${statusStr}${defaultStr}`,
+            `  ${String(p.id).padEnd(5)} ${padVisible(colorProject(p.name.substring(0, 19), p.color), 20)} ${p.color.padEnd(13)}${statusStr}${defaultStr}`,
           );
         }
         const active = projects.filter((p) => p.status === "active").length;
@@ -160,7 +174,7 @@ export function registerProjectCommands(program: Command): void {
           if (newName !== current.name) changes.name = newName;
 
           const colorHint = chalk.dim(
-            "(name: red/green/blue/yellow/orange/purple/pink/cyan/grey or hex)",
+            "(name such as red or blue, project-1 to project-18, or hex)",
           );
           const newColorInput = await input({
             message: `Color ${colorHint}:`,

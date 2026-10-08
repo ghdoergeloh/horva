@@ -9,28 +9,25 @@
   },
   "scripts": {
     "clean": "git clean -xdf .cache .turbo dist node_modules",
-    "format": "prettier --check . --ignore-path ../../.gitignore",
-    "generate": "dotenv -e ../../.env -- pnpx @better-auth/cli generate --output ../db/src/schema/auth-schema.ts",
-    "lint": "eslint",
-    "test:unit": "vitest run --passWithNoTests",
-    "test:unit:coverage": "vitest run --coverage --passWithNoTests",
+    "generate": "auth generate --config src/cli-config.ts --output ../db/src/schema/auth-schema.ts --yes",
+    "test:unit": "vitest run",
+    "test:unit:coverage": "vitest run --coverage",
     "typecheck": "tsc --noEmit"
   },
-  "prettier": "@horva/prettier-config",
   "dependencies": {
     "@horva/db": "workspace:*",
-    "@horva/transactional": "workspace:*",
     "better-auth": "catalog:"
   },
   "devDependencies": {
-    "@better-auth/cli": "catalog:",
-    "@horva/eslint-config": "workspace:*",
-    "@horva/prettier-config": "workspace:*",
     "@horva/tsconfig": "workspace:*",
     "@horva/vitest": "workspace:*",
-    "eslint": "catalog:",
-    "prettier": "catalog:",
+    "@types/node": "catalog:",
+    "auth": "catalog:",
+    "react": "catalog:react19",
     "typescript": "catalog:",
     "vitest": "catalog:"
+  },
+  "peerDependencies": {
+    "react": "catalog:react19"
   }
 }

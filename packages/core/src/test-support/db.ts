@@ -1,32 +1,11 @@
-import type { Db } from "@horva/db/client";
-import { sql } from "@horva/db";
+import type { Database } from "@horva/db/client";
 import { project, task } from "@horva/db/schema";
 
-/**
- * slot.service.ts / task.service.ts lean on Drizzle transactions and chained
- * query-builder calls (unlike moco.service.ts's plain findMany, which a hand
- * rolled fake Db can mimic safely). Faking that surface would mean
- * re-implementing a chunk of Drizzle itself, so these tests run against a
- * real Postgres instead — `docker compose up -d postgres` + `pnpm -F
- * @horva/db migrate` locally, a `postgres` service container in CI.
- */
-export async function resetDb(db: Db): Promise<void> {
-  // RESTART IDENTITY only resets GENERATED ... AS IDENTITY columns; these
-  // tables' ids default to nextval() on named pgSequence objects instead, so
-  // the sequences need restarting explicitly or ids just keep climbing.
-  await db.execute(
-    sql`TRUNCATE TABLE task_moco_mapping, task_label, slot, task, label, project RESTART IDENTITY CASCADE`,
-  );
-  await db.execute(
-    sql`ALTER SEQUENCE project_id_seq RESTART WITH 1;
-        ALTER SEQUENCE task_id_seq RESTART WITH 1;
-        ALTER SEQUENCE label_id_seq RESTART WITH 1;
-        ALTER SEQUENCE slot_id_seq RESTART WITH 1`,
-  );
-}
+// Fixtures for the service tests, which run on `createTestDatabase()` from
+// `@horva/db/testing`.
 
 export async function createProjectFixture(
-  db: Db,
+  db: Database,
   overrides: { name?: string; isDefault?: boolean } = {},
 ) {
   const [row] = await db
@@ -41,7 +20,7 @@ export async function createProjectFixture(
 }
 
 export async function createTaskFixture(
-  db: Db,
+  db: Database,
   projectId: number,
   overrides: {
     name?: string;

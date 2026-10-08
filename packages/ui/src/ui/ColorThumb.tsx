@@ -2,7 +2,8 @@
 
 import type { ColorThumbProps } from "react-aria-components";
 import { ColorThumb as AriaColorThumb } from "react-aria-components";
-import { tv } from "tailwind-variants";
+
+import { tv } from "../lib/tw";
 
 const thumbStyles = tv({
   base: "w-4.5 h-4.5 top-[50%] left-[50%] rounded-full border-2 border-white box-border",
@@ -11,10 +12,10 @@ const thumbStyles = tv({
       true: "w-8 h-8",
     },
     isDragging: {
-      true: "bg-neutral-700 dark:bg-neutral-300 forced-colors:bg-[ButtonBorder]",
+      true: "bg-foreground forced-colors:bg-[ButtonBorder]",
     },
     isDisabled: {
-      true: "border-neutral-300 dark:border-neutral-700 forced-colors:border-[GrayText] bg-neutral-300 dark:bg-neutral-800 forced-colors:bg-[GrayText]",
+      true: "border-border forced-colors:border-[GrayText] bg-muted forced-colors:bg-[GrayText]",
     },
   },
 });

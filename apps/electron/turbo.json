@@ -3,11 +3,15 @@
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
-      "outputs": ["out/**", "src/renderer/src/routeTree.gen.ts"]
+      "outputs": ["out/**"]
     },
     "dev": {
       "cache": false,
       "persistent": true
+    },
+    // The Playwright tests start the built app from out/.
+    "test:e2e": {
+      "dependsOn": ["^topo", "build"]
     }
   }
 }

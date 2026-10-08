@@ -25,7 +25,6 @@
     { "type": "revert", "section": "Reverts" },
     { "type": "docs", "section": "Documentation" },
     { "type": "refactor", "section": "Refactors" },
-    { "type": "deps", "section": "Dependencies" },
     { "type": "build", "section": "Build System", "hidden": true },
     { "type": "chore", "section": "Chores", "hidden": true },
     { "type": "ci", "section": "CI", "hidden": true },

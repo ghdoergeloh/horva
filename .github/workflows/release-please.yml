@@ -1,18 +1,16 @@
 name: Release Please
 
-# Every merge into main updates (or opens) a release PR that carries the next
-# version and the CHANGELOG entries derived from the Conventional Commits since
-# the last release. Merging *that* PR is what cuts a release — a merge into main
-# on its own never does.
+# Every merge into main updates (or opens) a release PR. It carries the next
+# version and the CHANGELOG entries, both derived from the Conventional
+# Commits since the last release. Merging that PR cuts a release. A merge
+# into main on its own never does.
 on:
   push:
     branches:
       - main
   workflow_dispatch:
 
-permissions:
-  contents: write
-  pull-requests: write
+permissions: {}
 
 concurrency:
   group: release-please-${{ github.ref }}
@@ -22,25 +20,28 @@ jobs:
   release-please:
     name: Maintain release PR
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
     outputs:
       release_created: ${{ steps.release.outputs.release_created }}
       tag_name: ${{ steps.release.outputs.tag_name }}
       sha: ${{ steps.release.outputs.sha }}
     steps:
-      - uses: googleapis/release-please-action@v5
+      - uses: googleapis/release-please-action@45996ed1f6d02564a971a2fa1b5860e934307cf7 # v5.0.0
         id: release
         with:
           config-file: release-please-config.json
           manifest-file: .release-please-manifest.json
 
   installers:
-    # The release-please release is created as a draft, so GitHub has not
-    # created the tag ref yet — hence `ref: sha` for the checkout while `tag`
-    # addresses the draft release the installers get attached to.
+    # release-please creates the release as a draft, so the tag does not
+    # exist yet. The build checks out `sha`; `tag` names the draft release
+    # that gets the installers.
     #
-    # This is also why release.yml is *called* instead of being left to its own
-    # tag trigger: releases and tags created with the GITHUB_TOKEN deliberately
-    # do not start further workflow runs.
+    # release.yml is called here instead of waiting for its tag trigger:
+    # releases and tags created with the GITHUB_TOKEN start no other
+    # workflow runs.
     name: Build and publish installers
     needs: release-please
     if: needs.release-please.outputs.release_created == 'true'

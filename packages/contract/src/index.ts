@@ -1,11 +1,26 @@
 import { oc } from "@orpc/contract";
 import { z } from "zod";
 
+export { listProcedures } from "./procedures";
+export type { NamedProcedure } from "./procedures";
+
+/** Path under which the API serves the contract (oRPC protocol). */
+export const RPC_PATH = "/api/rpc";
+
 const userSchema = z.object({
   id: z.string(),
   email: z.string(),
   name: z.string(),
 });
+
+/**
+ * A project color as stored: a token name of the design system
+ * (`project-1` … `project-18`, `project-none`) or a custom `#rrggbb`. The
+ * same rule as `PROJECT_COLOR_PATTERN` in `@horva/core`.
+ */
+const projectColorSchema = z
+  .string()
+  .regex(/^(?:project-(?:[1-9]|1[0-8]|none)|#[0-9a-fA-F]{6})$/);
 
 // Lite shapes embedded inside other records.
 const projectLiteSchema = z.object({
@@ -90,6 +105,14 @@ const slotFlatSchema = z.object({
 
 const slotSchema = slotFlatSchema.extend({
   task: taskInSlotSchema.nullable().optional(),
+});
+
+const workPeriodSchema = z.object({
+  startedAt: z.date(),
+  endedAt: z.date().nullable(),
+  minutes: z.number().int().nonnegative(),
+  slotCount: z.number().int().positive(),
+  projectIds: z.array(z.number().nullable()),
 });
 
 const periodSchema = z.enum(["today", "yesterday", "week", "month", "all"]);
@@ -351,7 +374,8 @@ export const contract = oc.router({
       .input(
         z.object({
           name: z.string().min(1),
-          color: z.string().optional(),
+          // Without a color, the project gets the least used of the first eight.
+          color: projectColorSchema.optional(),
         }),
       )
       .output(z.object({ project: projectSchema })),
@@ -361,7 +385,7 @@ export const contract = oc.router({
         z.object({
           id: z.number(),
           name: z.string().min(1).optional(),
-          color: z.string().optional(),
+          color: projectColorSchema.optional(),
         }),
       )
       .output(z.object({ project: projectSchema })),
@@ -398,6 +422,17 @@ export const contract = oc.router({
       .route({ method: "GET", path: "/log/summary" })
       .input(rangeSchema.optional())
       .output(z.object({ summary: z.array(summaryEntrySchema) })),
+    /** Slots that follow each other merged into periods without a break. */
+    workPeriods: oc
+      .route({ method: "GET", path: "/log/work-periods" })
+      .input(
+        z
+          .object({ from: z.date(), to: z.date() })
+          .refine((range) => range.from <= range.to, {
+            message: "from must not be after to",
+          }),
+      )
+      .output(z.object({ periods: z.array(workPeriodSchema) })),
   }),
 
   moco: oc.router({

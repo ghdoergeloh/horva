@@ -10,10 +10,10 @@ import {
   Breadcrumb as AriaBreadcrumb,
   Breadcrumbs as AriaBreadcrumbs,
 } from "react-aria-components";
-import { twMerge } from "tailwind-merge";
 
 import { composeTailwindRenderProps } from "@horva/ui";
 
+import { twMerge } from "../lib/tw";
 import { Link } from "./Link";
 
 export function Breadcrumbs<T extends object>(props: BreadcrumbsProps<T>) {
@@ -40,7 +40,7 @@ export function Breadcrumb(
         <>
           <Link variant="secondary" {...props} />
           {!isCurrent && (
-            <ChevronRight className="h-3 w-3 text-neutral-600 dark:text-neutral-400" />
+            <ChevronRight className="text-muted-foreground h-3 w-3" />
           )}
         </>
       )}

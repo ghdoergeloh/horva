@@ -6,10 +6,10 @@ import {
   SliderOutput,
   SliderTrack,
 } from "react-aria-components";
-import { tv } from "tailwind-variants";
 
 import { composeTailwindRenderProps } from "@horva/ui";
 
+import { tv } from "../lib/tw";
 import { ColorThumb } from "./ColorThumb";
 import { Label } from "./Field";
 
@@ -21,7 +21,7 @@ const trackStyles = tv({
       vertical: "w-6 h-50",
     },
     isDisabled: {
-      true: "bg-neutral-300 dark:bg-neutral-800 forced-colors:bg-[GrayText]",
+      true: "bg-muted forced-colors:bg-[GrayText]",
     },
   },
 });
@@ -40,7 +40,7 @@ export function ColorSlider({ label, ...props }: ColorSliderProps) {
       )}
     >
       <Label>{label}</Label>
-      <SliderOutput className="orientation-vertical:hidden text-sm font-medium text-neutral-500 dark:text-neutral-400" />
+      <SliderOutput className="orientation-vertical:hidden text-muted-foreground text-sm font-medium" />
       <SliderTrack
         className={trackStyles}
         style={({ defaultStyle, isDisabled }) => ({

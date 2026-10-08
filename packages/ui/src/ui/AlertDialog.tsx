@@ -31,14 +31,11 @@ export function AlertDialog({
     <Dialog role="alertdialog" {...props}>
       {({ close }) => (
         <>
-          <Heading
-            slot="title"
-            className="my-0 text-xl leading-6 font-semibold"
-          >
+          <Heading slot="title" className="text-title my-0">
             {title}
           </Heading>
           <div
-            className={`absolute top-6 right-6 h-6 w-6 stroke-2 ${variant === "destructive" ? "text-red-500" : "text-blue-500"}`}
+            className={`absolute top-6 right-6 h-6 w-6 stroke-2 ${variant === "destructive" ? "text-destructive" : "text-primary"}`}
           >
             {variant === "destructive" ? (
               <AlertCircleIcon aria-hidden />
@@ -46,16 +43,26 @@ export function AlertDialog({
               <InfoIcon aria-hidden />
             )}
           </div>
-          <p className="mt-3 text-neutral-500 dark:text-neutral-400">
-            {children}
-          </p>
+          <p className="text-foreground text-body mt-3">{children}</p>
           <div className="mt-6 flex justify-end gap-2">
-            <Button variant="secondary" onPress={close}>
+            <Button
+              variant="secondary"
+              onPress={close}
+              // Before a destructive action, focus starts on the safe
+              // choice, so a second Enter does not delete by accident.
+              // oxlint-disable-next-line jsx-a11y/no-autofocus
+              autoFocus={variant === "destructive"}
+            >
               {cancelLabel ?? "Cancel"}
             </Button>
             <Button
               variant={variant === "destructive" ? "destructive" : "primary"}
-              autoFocus
+              // The dialog just opened in response to a user action; moving
+              // focus to its default action follows the WAI-ARIA Alert
+              // Dialog pattern, not the page-load anti-pattern this rule
+              // targets.
+              // oxlint-disable-next-line jsx-a11y/no-autofocus
+              autoFocus={variant !== "destructive"}
               onPress={chain(onAction, close)}
             >
               {actionLabel}

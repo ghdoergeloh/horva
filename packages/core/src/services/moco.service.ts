@@ -1,4 +1,4 @@
-import type { Db } from "@horva/db/client";
+import type { Database } from "@horva/db/client";
 import { eq } from "@horva/db";
 import { project, taskMocoMapping } from "@horva/db/schema";
 
@@ -59,7 +59,7 @@ interface Aggregate {
  * it can be unit-tested and shown as a preview before any write to Moco.
  */
 export async function buildSyncPreview(
-  db: Db,
+  db: Database,
   range: { from: Date; to: Date },
 ): Promise<SyncPreviewLine[]> {
   const slots = await getLog(db, range);
@@ -153,7 +153,7 @@ function toLineBase(g: Aggregate) {
  * failure does not abort the rest.
  */
 export async function runSync(
-  db: Db,
+  db: Database,
   range: {
     from: Date;
     to: Date;
@@ -231,7 +231,7 @@ export async function fetchRemoteProjects(
 }
 
 export async function setProjectLink(
-  db: Db,
+  db: Database,
   input: {
     projectId: number;
     mocoProjectId: number | null;
@@ -249,7 +249,7 @@ export async function setProjectLink(
 }
 
 export async function getTaskMapping(
-  db: Db,
+  db: Database,
   taskId: number,
 ): Promise<{ mocoTaskId: number | null }> {
   const row = await db.query.taskMocoMapping.findFirst({
@@ -259,7 +259,7 @@ export async function getTaskMapping(
 }
 
 export async function setTaskMapping(
-  db: Db,
+  db: Database,
   input: { taskId: number; mocoTaskId: number | null },
 ): Promise<void> {
   if (input.mocoTaskId === null) {
