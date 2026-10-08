@@ -1,0 +1,213 @@
+<!-- @dsCard group="Formulare" height=470 subtitle="Datum tippen, wählen oder mit × leeren" -->
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="utf-8" />
+    <title>DateField</title>
+  </head>
+  <body>
+    <div
+      style="
+        display: flex;
+        gap: var(--space-8);
+        flex-wrap: wrap;
+        align-items: flex-start;
+      "
+    >
+      <div class="hv-stack" style="width: max-content">
+        <div class="hv-field">
+          <label class="hv-label">Geplant für</label>
+          <div class="hv-input is-focus">
+            <div class="hv-input__text">
+              <span class="hv-seg">14</span>.<span class="hv-seg">10</span
+              >.<span class="hv-seg">2026</span>
+            </div>
+            <button class="hv-clear" aria-label="Datum entfernen">
+              <svg class="hv-icon" viewBox="0 0 24 24">
+                <path d="M18 6 6 18" />
+                <path d="m6 6 12 12" />
+              </svg></button
+            ><span class="hv-divider-v"></span
+            ><button
+              class="hv-input__btn"
+              aria-label="Kalender öffnen"
+              aria-expanded="true"
+            >
+              <svg class="hv-icon" viewBox="0 0 24 24">
+                <rect width="18" height="18" x="3" y="4" rx="2" />
+                <path d="M16 2v4" />
+                <path d="M8 2v4" />
+                <path d="M3 10h18" />
+              </svg>
+            </button>
+          </div>
+        </div>
+        <div class="hv-popover">
+          <div class="hv-cal">
+            <div class="hv-cal__head">
+              <button
+                class="hv-btn hv-btn--quiet hv-btn--sm hv-btn--icon"
+                aria-label="Vorheriger Monat"
+              >
+                <svg class="hv-icon" viewBox="0 0 24 24">
+                  <path d="m15 18-6-6 6-6" />
+                </svg></button
+              ><span>Oktober 2026</span
+              ><button
+                class="hv-btn hv-btn--quiet hv-btn--sm hv-btn--icon"
+                aria-label="Nächster Monat"
+              >
+                <svg class="hv-icon" viewBox="0 0 24 24">
+                  <path d="m9 18 6-6-6-6" />
+                </svg>
+              </button>
+            </div>
+            <div class="hv-cal__grid">
+              <span class="hv-cal__dow">Mo</span
+              ><span class="hv-cal__dow">Di</span
+              ><span class="hv-cal__dow">Mi</span
+              ><span class="hv-cal__dow">Do</span
+              ><span class="hv-cal__dow">Fr</span
+              ><span class="hv-cal__dow">Sa</span
+              ><span class="hv-cal__dow">So</span
+              ><button class="hv-day is-out">28</button
+              ><button class="hv-day is-out">29</button
+              ><button class="hv-day is-out">30</button
+              ><button class="hv-day">1</button><button class="hv-day">2</button
+              ><button class="hv-day">3</button><button class="hv-day">4</button
+              ><button class="hv-day">5</button><button class="hv-day">6</button
+              ><button class="hv-day">7</button
+              ><button class="hv-day is-today">8</button
+              ><button class="hv-day">9</button
+              ><button class="hv-day">10</button
+              ><button class="hv-day">11</button
+              ><button class="hv-day">12</button
+              ><button class="hv-day">13</button
+              ><button class="hv-day is-selected">14</button
+              ><button class="hv-day is-focus">15</button
+              ><button class="hv-day">16</button
+              ><button class="hv-day">17</button
+              ><button class="hv-day">18</button
+              ><button class="hv-day">19</button
+              ><button class="hv-day">20</button
+              ><button class="hv-day">21</button
+              ><button class="hv-day">22</button
+              ><button class="hv-day">23</button
+              ><button class="hv-day">24</button
+              ><button class="hv-day">25</button
+              ><button class="hv-day">26</button
+              ><button class="hv-day">27</button
+              ><button class="hv-day">28</button
+              ><button class="hv-day">29</button
+              ><button class="hv-day">30</button
+              ><button class="hv-day">31</button
+              ><button class="hv-day is-out">1</button>
+            </div>
+            <div class="hv-cal__foot">
+              <button class="hv-btn hv-btn--quiet hv-btn--sm">Heute</button
+              ><button class="hv-btn hv-btn--quiet hv-btn--sm">Morgen</button
+              ><button class="hv-btn hv-btn--quiet hv-btn--sm">
+                Entfernen
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="hv-stack" style="width: 240px">
+        <div class="hv-field">
+          <label class="hv-label">Leer</label>
+          <div class="hv-input">
+            <div class="hv-input__text">
+              <span class="hv-seg is-placeholder">TT</span>.<span
+                class="hv-seg is-placeholder"
+                >MM</span
+              >.<span class="hv-seg is-placeholder">JJJJ</span>
+            </div>
+            <button class="hv-input__btn" aria-label="Kalender öffnen">
+              <svg class="hv-icon" viewBox="0 0 24 24">
+                <rect width="18" height="18" x="3" y="4" rx="2" />
+                <path d="M16 2v4" />
+                <path d="M8 2v4" />
+                <path d="M3 10h18" />
+              </svg>
+            </button>
+          </div>
+          <div class="hv-help">Tippen oder im Kalender wählen.</div>
+        </div>
+        <div class="hv-field">
+          <label class="hv-label">Beim Tippen</label>
+          <div class="hv-input is-focus">
+            <div class="hv-input__text">
+              <span class="hv-seg">08</span>.<span class="hv-seg is-active"
+                >1</span
+              >.<span class="hv-seg is-placeholder">JJJJ</span>
+            </div>
+            <button class="hv-clear" aria-label="Datum entfernen">
+              <svg class="hv-icon" viewBox="0 0 24 24">
+                <path d="M18 6 6 18" />
+                <path d="m6 6 12 12" />
+              </svg></button
+            ><span class="hv-divider-v"></span
+            ><button class="hv-input__btn" aria-label="Kalender öffnen">
+              <svg class="hv-icon" viewBox="0 0 24 24">
+                <rect width="18" height="18" x="3" y="4" rx="2" />
+                <path d="M16 2v4" />
+                <path d="M8 2v4" />
+                <path d="M3 10h18" />
+              </svg>
+            </button>
+          </div>
+        </div>
+        <div class="hv-field">
+          <label class="hv-label">Ungültig</label>
+          <div class="hv-input is-invalid">
+            <div class="hv-input__text">
+              <span class="hv-seg">31</span>.<span class="hv-seg">02</span
+              >.<span class="hv-seg">2026</span>
+            </div>
+            <button class="hv-clear" aria-label="Datum entfernen">
+              <svg class="hv-icon" viewBox="0 0 24 24">
+                <path d="M18 6 6 18" />
+                <path d="m6 6 12 12" />
+              </svg></button
+            ><span class="hv-divider-v"></span
+            ><button class="hv-input__btn" aria-label="Kalender öffnen">
+              <svg class="hv-icon" viewBox="0 0 24 24">
+                <rect width="18" height="18" x="3" y="4" rx="2" />
+                <path d="M16 2v4" />
+                <path d="M8 2v4" />
+                <path d="M3 10h18" />
+              </svg>
+            </button>
+          </div>
+          <div class="hv-help is-error">Den 31. Februar gibt es nicht.</div>
+        </div>
+        <div class="hv-field">
+          <label class="hv-label">Mit Uhrzeit</label>
+          <div class="hv-input">
+            <div class="hv-input__text">
+              <span class="hv-seg">14</span>.<span class="hv-seg">10</span
+              >.<span class="hv-seg">2026</span>&nbsp;&nbsp;<span class="hv-seg"
+                >17</span
+              >:<span class="hv-seg">00</span>
+            </div>
+            <button class="hv-clear" aria-label="Datum entfernen">
+              <svg class="hv-icon" viewBox="0 0 24 24">
+                <path d="M18 6 6 18" />
+                <path d="m6 6 12 12" />
+              </svg></button
+            ><span class="hv-divider-v"></span
+            ><button class="hv-input__btn" aria-label="Kalender öffnen">
+              <svg class="hv-icon" viewBox="0 0 24 24">
+                <rect width="18" height="18" x="3" y="4" rx="2" />
+                <path d="M16 2v4" />
+                <path d="M8 2v4" />
+                <path d="M3 10h18" />
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

@@ -27,7 +27,7 @@ const colors = {
   green:
     "bg-success/15 text-success border-success/30 hover:border-success/60 ",
   yellow:
-    "bg-warning/20 text-warning-foreground border-warning/40 hover:border-warning/70 ",
+    "bg-warning text-warning-foreground border-warning hover:border-warning-foreground/40 ",
   blue: "bg-primary/10 text-primary border-primary/20 hover:border-primary/50 ",
 };
 

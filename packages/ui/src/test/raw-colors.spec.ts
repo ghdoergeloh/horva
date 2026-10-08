@@ -38,6 +38,13 @@ const rules: [string, RegExp][] = [
     ),
   ],
   ["arbitrary color class", /-\[(?:#|rgb|hsl|oklch|color:)/],
+  // The design has three depths only: shadow-sm, shadow-md, shadow-lg.
+  [
+    "shadow outside the design",
+    /\bshadow-(?:2xs|xs|xl|2xl)\b|\bshadow(?=["'`\s])/,
+  ],
+  // Warning yellow is a fill; its text is warning-foreground.
+  ["warning as text color", /\btext-warning(?!-)/],
 ];
 
 function files(dir: string): string[] {
@@ -92,6 +99,11 @@ describe("no raw colors in components and app code", () => {
     ["border-white", true],
     ["bg-primary text-primary-foreground", false],
     ["bg-foreground/30", false],
+    ["shadow-xl", true],
+    ["rounded shadow p-2", true],
+    ["shadow-md", false],
+    ["text-warning", true],
+    ["text-warning-foreground", false],
     ["text-destructive", false],
     ["forced-colors:outline-[Highlight]", false],
     ["C# and C++", false],

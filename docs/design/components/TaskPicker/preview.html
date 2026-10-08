@@ -1,0 +1,300 @@
+<!-- @dsCard group="Horva" height=560 subtitle="Ein Feld für Suche und neue Aufgabe, nach Projekt gruppiert – zum Ausprobieren" -->
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="utf-8" />
+    <title>TaskPicker</title>
+    <style>
+      .tp-wrap {
+        display: flex;
+        gap: var(--space-6);
+        flex-wrap: wrap;
+        align-items: flex-start;
+      }
+      .tp-col {
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-2);
+      }
+      .tp-cap {
+        font-size: 12px;
+        line-height: 16px;
+        color: var(--muted-foreground);
+        max-width: 360px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="tp-wrap">
+      <div class="tp-col">
+        <div class="hv-field" style="width: 360px">
+          <label class="hv-label" id="tp-l">Aufgabe</label>
+          <button
+            class="hv-select"
+            style="width: 100%"
+            aria-haspopup="listbox"
+            aria-expanded="true"
+          >
+            <span
+              class="hv-row"
+              style="gap: 8px; flex-wrap: nowrap; min-width: 0"
+              ><span class="hv-dot" style="--c: var(--project-2)"></span
+              ><span id="tp-current">Brain aufsetzen</span
+              ><span style="color: var(--muted-foreground)"
+                >· Nordlicht</span
+              ></span
+            ><svg class="hv-icon" viewBox="0 0 24 24">
+              <path d="m6 9 6 6 6-6" />
+            </svg>
+          </button>
+        </div>
+        <div class="hv-popover hv-picker" role="dialog" aria-labelledby="tp-l">
+          <div class="hv-picker__search">
+            <svg class="hv-icon" viewBox="0 0 24 24">
+              <circle cx="11" cy="11" r="8" />
+              <path d="m21 21-4.3-4.3" /></svg
+            ><input
+              id="tp-q"
+              value="Kick"
+              placeholder="Aufgabe suchen oder neu anlegen …"
+              role="combobox"
+              aria-controls="tp-list"
+              aria-expanded="true"
+              aria-autocomplete="list"
+              autofocus
+            />
+          </div>
+          <div class="hv-picker__list" id="tp-list" role="listbox">
+            <div
+              class="hv-option hv-option--create"
+              role="option"
+              data-create="1"
+            >
+              <svg class="hv-icon" viewBox="0 0 24 24">
+                <path d="M5 12h14" />
+                <path d="M12 5v14" /></svg
+              ><span>„Kick“ als neue Aufgabe in</span
+              ><button
+                class="hv-projsel"
+                title="Projekt für die neue Aufgabe"
+                aria-label="Projekt: Intern, ändern"
+              >
+                <span class="hv-dot" style="--c: var(--project-1)"></span
+                >Intern<svg class="hv-icon" viewBox="0 0 24 24">
+                  <path d="m6 9 6 6 6-6" />
+                </svg></button
+              ><span class="hv-kbd">⌘↵</span>
+            </div>
+            <div class="hv-picker__group" role="presentation">
+              <span class="hv-dot" style="--c: var(--project-2)"></span
+              >Nordlicht<small>1</small>
+            </div>
+            <div class="hv-option" role="option">
+              <span><mark>Kick</mark>-Off</span
+              ><span class="hv-option__meta">1:25</span>
+            </div>
+          </div>
+          <div class="hv-picker__keys">
+            <span><span class="hv-kbd">↑↓</span>wählen</span
+            ><span><span class="hv-kbd">↵</span>übernehmen</span
+            ><span><span class="hv-kbd">⌘↵</span>neu</span
+            ><span><span class="hv-kbd">esc</span>schließen</span>
+          </div>
+        </div>
+        <div class="tp-cap">
+          Ein einziges Eingabefeld mit Fokus beim Öffnen: Was du tippst, filtert
+          die Liste <b>und</b> ist zugleich der Titel einer neuen Aufgabe. Das
+          Projekt dafür wählst du direkt in der Neu-Zeile („als neue Aufgabe in
+          ▾“). Enter übernimmt den markierten Treffer, ⌘/Strg+Enter legt den
+          getippten Titel neu an; ohne Treffer legt schon Enter an.
+        </div>
+      </div>
+
+      <div class="tp-col">
+        <div class="hv-field" style="width: 360px">
+          <span class="hv-label">Neue Aufgabe: Projekt wählen</span>
+        </div>
+        <div class="hv-popover hv-picker">
+          <div class="hv-picker__step">
+            <button
+              class="hv-btn hv-btn--quiet hv-btn--sm hv-btn--icon"
+              aria-label="Zurück"
+            >
+              <svg class="hv-icon" viewBox="0 0 24 24">
+                <path d="m15 18-6-6 6-6" />
+              </svg></button
+            ><span>Projekt für <b>„Kick“</b></span>
+          </div>
+          <div class="hv-picker__search">
+            <svg class="hv-icon" viewBox="0 0 24 24">
+              <circle cx="11" cy="11" r="8" />
+              <path d="m21 21-4.3-4.3" /></svg
+            ><input value="" placeholder="Projekt suchen …" />
+          </div>
+          <div class="hv-picker__list" role="listbox" style="max-height: 220px">
+            <div class="hv-option" style="padding-left: 8px">
+              <span class="hv-dot" style="--c: var(--project-7)"></span>Kranich
+            </div>
+            <div class="hv-option is-active" style="padding-left: 8px">
+              <span class="hv-dot" style="--c: var(--project-1)"></span>Intern
+            </div>
+            <div class="hv-option" style="padding-left: 8px">
+              <span class="hv-dot" style="--c: var(--project-8)"></span>KI
+              Taskforce
+            </div>
+            <div class="hv-option" style="padding-left: 8px">
+              <span class="hv-dot" style="--c: var(--project-6)"></span>T-T
+              company
+            </div>
+            <div class="hv-option" style="padding-left: 8px">
+              <span class="hv-dot" style="--c: var(--project-2)"></span
+              >Nordlicht
+            </div>
+          </div>
+          <div class="hv-picker__foot">
+            <div class="hv-create">
+              <svg class="hv-icon" viewBox="0 0 24 24">
+                <path d="M5 12h14" />
+                <path d="M12 5v14" /></svg
+              >Neues Projekt …
+            </div>
+          </div>
+        </div>
+        <div class="tp-cap">
+          Ein Klick auf die Projektauswahl in der Neu-Zeile (oder
+          <span class="hv-kbd">⇥</span>, wenn die Zeile markiert ist) öffnet
+          diesen Schritt <b>im selben Popover</b>; danach springt der Fokus
+          zurück ins Feld. Enter legt die Aufgabe an und wählt sie direkt aus.
+          Projekte stehen alphabetisch; vorausgewählt ist das Projekt aus der
+          Neu-Zeile.
+        </div>
+      </div>
+    </div>
+    <script>
+      (function () {
+        var P = {
+          Nordlicht: 2,
+          Intern: 1,
+          Kranich: 7,
+          "KI Taskforce": 8,
+          "Brückner GmbH": 6,
+        };
+        var T = [
+          ["Nordlicht", "Brain aufsetzen", "12:44"],
+          ["Nordlicht", "Einarbeiten", "0:14"],
+          ["Nordlicht", "Kick-Off", "1:25"],
+          ["Intern", "DevDays", "0:19"],
+          ["Intern", "HITCH", "0:32"],
+          ["Intern", "Nachrichten checken", "0:07"],
+          ["Intern", "Tag planen", "0:49"],
+          ["Kranich", "Issue Adapter #161", "5:20"],
+          ["Kranich", "Keycloak-Routen untersuchen #158", "1:35"],
+          ["Kranich", "Weekly Dev Meeting", "0:21"],
+          ["KI Taskforce", "Copilot kennenlernen und optimieren", "1:52"],
+          ["Brückner GmbH", "Workshop vorbereiten", "2:24"],
+        ];
+        var q = document.getElementById("tp-q"),
+          list = document.getElementById("tp-list"),
+          act = 0,
+          opts = [];
+        function esc(s) {
+          return s.replace(/[&<>"]/g, function (c) {
+            return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c];
+          });
+        }
+        function hl(s, v) {
+          if (!v) return esc(s);
+          var i = s.toLowerCase().indexOf(v.toLowerCase());
+          return i < 0
+            ? esc(s)
+            : esc(s.slice(0, i)) +
+                "<mark>" +
+                esc(s.slice(i, i + v.length)) +
+                "</mark>" +
+                esc(s.slice(i + v.length));
+        }
+        var PLUS =
+          '<svg class="hv-icon" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="M12 5v14"/></svg>';
+        function render() {
+          var v = q.value.trim(),
+            h = "",
+            g = {};
+          T.forEach(function (t) {
+            if (
+              !v ||
+              t[1].toLowerCase().indexOf(v.toLowerCase()) >= 0 ||
+              t[0].toLowerCase().indexOf(v.toLowerCase()) >= 0
+            ) {
+              (g[t[0]] = g[t[0]] || []).push(t);
+            }
+          });
+          var ks = Object.keys(g).sort(function (a, b) {
+            return a.localeCompare(b, "de");
+          });
+          h += v
+            ? '<div class="hv-option hv-option--create" role="option" data-create="1">' +
+              PLUS +
+              "<span>„" +
+              esc(v) +
+              '“ als neue Aufgabe in</span><button class="hv-projsel" title="Projekt für die neue Aufgabe" aria-label="Projekt: Intern, ändern"><span class="hv-dot" style="--c:var(--project-1)"></span>Intern<svg class="hv-icon" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></button><span class="hv-kbd">⌘↵</span></div>'
+            : '<div class="hv-option is-plain" role="option">Ohne Aufgabe</div>';
+          ks.forEach(function (k) {
+            h +=
+              '<div class="hv-picker__group" role="presentation"><span class="hv-dot" style="--c:var(--project-' +
+              P[k] +
+              ')"></span>' +
+              hl(k, v) +
+              "<small>" +
+              g[k].length +
+              "</small></div>";
+            g[k]
+              .sort(function (a, b) {
+                return a[1].localeCompare(b[1], "de");
+              })
+              .forEach(function (t) {
+                h +=
+                  '<div class="hv-option' +
+                  (t[1] === "Brain aufsetzen" ? " is-selected" : "") +
+                  '" role="option"><span>' +
+                  hl(t[1], v) +
+                  '</span><span class="hv-option__meta">' +
+                  t[2] +
+                  "</span></div>";
+              });
+          });
+          if (!ks.length)
+            h +=
+              '<div class="hv-picker__empty">Keine Aufgabe gefunden – Enter legt sie neu an.</div>';
+          list.innerHTML = h;
+          opts = [].slice.call(list.querySelectorAll(".hv-option"));
+          act = v && ks.length ? 1 : 0;
+          mark();
+        }
+        function mark() {
+          opts.forEach(function (o, i) {
+            o.classList.toggle("is-active", i === act);
+          });
+          var o = opts[act];
+          if (o && o.scrollIntoView) o.scrollIntoView({ block: "nearest" });
+        }
+        q.addEventListener("input", render);
+        q.addEventListener("keydown", function (e) {
+          if (e.key === "ArrowDown") {
+            act = (act + 1) % opts.length;
+            mark();
+            e.preventDefault();
+          } else if (e.key === "ArrowUp") {
+            act = (act - 1 + opts.length) % opts.length;
+            mark();
+            e.preventDefault();
+          } else if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) {
+            act = 0;
+            mark();
+            e.preventDefault();
+          }
+        });
+        render();
+      })();
+    </script>
+  </body>
+</html>

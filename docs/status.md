@@ -7,9 +7,13 @@ numbered files in `docs/`.
 
 ## Now
 
-- The checks of the template (network guard, fixed coverage floors,
-  workspace checks, Storybook story tests, web end-to-end tests) run in
-  horva.
+- New design system (#77, source in `docs/design/`), in three steps:
+  1. tokens in `tooling/tailwind/theme.css` (#78),
+  2. the components in `@horva/ui` with stories and keyboard tests (#80),
+  3. the screens of `apps/react`, with logo and app icon (#79).
+- Project colors are stored as hex today; the design stores the token
+  name (`project-3`) so that dark mode picks its own value. Open until
+  step 3.
 
 ## Next
 
