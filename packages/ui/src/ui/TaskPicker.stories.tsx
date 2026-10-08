@@ -280,14 +280,15 @@ export const OpenOnMount: Story = {
 };
 
 /**
- * Enter opens, arrows skip the group heads, Enter picks and closes, the
- * focus goes back to the trigger. No Enter reaches the row around it.
+ * Arrow down opens the closed field, arrows skip the group heads, Enter
+ * picks and closes, the focus goes back to the trigger. No Enter from the
+ * open picker reaches the row around it.
  */
 export const KeyboardPick: Story = {
   play: async ({ args }) => {
     reset();
     await userEvent.tab();
-    await userEvent.keyboard("{Enter}");
+    await userEvent.keyboard("{ArrowDown}");
     const search = await body().findByRole("textbox");
     await waitFor(() => expect(search).toHaveFocus());
     await userEvent.keyboard("{ArrowDown}");
@@ -303,6 +304,63 @@ export const KeyboardPick: Story = {
     await waitFor(() => expect(trigger).toHaveFocus());
     await expect(body().queryByRole("listbox")).toBe(null);
     await expect(outerKeys).not.toHaveBeenCalledWith("Enter");
+  },
+  parameters: { screenshot: false },
+};
+
+/**
+ * Enter on the closed field belongs to the row around it, such as "save":
+ * it reaches the row and opens nothing.
+ */
+export const KeyboardEnterOnTrigger: Story = {
+  play: async ({ canvasElement, args }) => {
+    reset();
+    await userEvent.tab();
+    await expect(within(canvasElement).getByRole("button")).toHaveFocus();
+    await userEvent.keyboard("{Enter}");
+    await expect(outerKeys).toHaveBeenCalledWith("Enter");
+    await expect(body().queryByRole("dialog")).toBe(null);
+    await expect(args.onChange).not.toHaveBeenCalled();
+  },
+  parameters: { screenshot: false },
+};
+
+/** Alt with arrow down opens the closed field. */
+export const KeyboardOpenAltArrow: Story = {
+  play: async () => {
+    reset();
+    await userEvent.tab();
+    await userEvent.keyboard("{Alt>}{ArrowDown}{/Alt}");
+    await waitFor(() => expect(body().getByRole("textbox")).toHaveFocus());
+  },
+  parameters: { screenshot: false },
+};
+
+/** Space opens the closed field. */
+export const KeyboardOpenSpace: Story = {
+  play: async () => {
+    reset();
+    await userEvent.tab();
+    await userEvent.keyboard(" ");
+    const search = await body().findByRole("textbox");
+    await waitFor(() => expect(search).toHaveFocus());
+    await expect(search).toHaveValue("");
+  },
+  parameters: { screenshot: false },
+};
+
+/** A typed letter opens the closed field and starts the search. */
+export const KeyboardOpenTyping: Story = {
+  play: async () => {
+    reset();
+    await userEvent.tab();
+    await userEvent.keyboard("K");
+    const search = await body().findByRole("textbox");
+    await waitFor(() => expect(search).toHaveFocus());
+    await expect(search).toHaveValue("K");
+    await userEvent.keyboard("ick");
+    await expect(search).toHaveValue("Kick");
+    await waitFor(() => expect(option(/Kick-Off/)).toBeInTheDocument());
   },
   parameters: { screenshot: false },
 };
@@ -361,8 +419,9 @@ export const KeyboardCreate: Story = {
 };
 
 /**
- * Tab reaches the project chip; the project step picks a project, the
- * focus returns to the search, and Enter creates the task there.
+ * With the create row shown, Tab in the search goes to the project step;
+ * a picked project returns the focus to the search, and Enter creates the
+ * task there.
  */
 export const KeyboardProjectStep: Story = {
   play: async ({ canvasElement, args }) => {
@@ -370,9 +429,6 @@ export const KeyboardProjectStep: Story = {
     await open(canvasElement);
     await userEvent.keyboard("Kick");
     await userEvent.tab();
-    const chip = body().getByRole("button", { name: /^Projekt: / });
-    await expect(chip).toHaveFocus();
-    await userEvent.keyboard("{Enter}");
     const projectSearch = await body().findByRole("textbox", {
       name: "Projekt suchen …",
     });
@@ -440,6 +496,130 @@ export const CreateProject: Story = {
     await expect(
       await body().findByRole("button", { name: "Projekt: Kranich, ändern" }),
     ).toBeInTheDocument();
+  },
+  parameters: { screenshot: false },
+};
+
+/**
+ * A new project the app has not yet added to `projects` cannot take the
+ * task: Enter waits instead of using another project.
+ */
+export const CreateProjectPending: Story = {
+  args: { onCreateProject: fn(() => 77) },
+  play: async ({ canvasElement, args }) => {
+    reset();
+    await open(canvasElement);
+    await userEvent.keyboard("Kick");
+    await userEvent.click(body().getByRole("button", { name: /^Projekt: / }));
+    await body().findByRole("textbox", { name: "Projekt suchen …" });
+    await userEvent.click(
+      body().getByRole("button", { name: "Neues Projekt …" }),
+    );
+    await expect(
+      await body().findByRole("button", {
+        name: "Projekt: Projekt wird angelegt …, ändern",
+      }),
+    ).toBeInTheDocument();
+    await userEvent.keyboard("{Enter}");
+    await userEvent.keyboard("{Control>}{Enter}{/Control}");
+    await expect(args.onCreateTask).not.toHaveBeenCalled();
+  },
+  parameters: { screenshot: false },
+};
+
+/** "New project …" runs once, even when pressed twice. */
+export const CreateProjectOnce: Story = {
+  args: {
+    onCreateProject: fn(
+      () =>
+        new Promise<TaskPickerKey>((resolve) => {
+          setTimeout(() => resolve(3), 100);
+        }),
+    ),
+  },
+  play: async ({ canvasElement, args }) => {
+    reset();
+    await open(canvasElement);
+    await userEvent.keyboard("Kick");
+    await userEvent.click(body().getByRole("button", { name: /^Projekt: / }));
+    await body().findByRole("textbox", { name: "Projekt suchen …" });
+    await userEvent.dblClick(
+      body().getByRole("button", { name: "Neues Projekt …" }),
+    );
+    await expect(
+      await body().findByRole("button", { name: "Projekt: Kranich, ändern" }),
+    ).toBeInTheDocument();
+    await expect(args.onCreateProject).toHaveBeenCalledTimes(1);
+  },
+  parameters: { screenshot: false },
+};
+
+/** A failed "New project …" stays in the step and says so. */
+export const CreateProjectFails: Story = {
+  args: {
+    onCreateProject: fn(() => Promise.reject(new Error("offline"))),
+  },
+  play: async ({ canvasElement }) => {
+    reset();
+    await open(canvasElement);
+    await userEvent.keyboard("Kick");
+    await userEvent.click(body().getByRole("button", { name: /^Projekt: / }));
+    await body().findByRole("textbox", { name: "Projekt suchen …" });
+    await userEvent.click(
+      body().getByRole("button", { name: "Neues Projekt …" }),
+    );
+    await expect(await body().findByRole("alert")).toHaveTextContent(
+      "Das Projekt konnte nicht angelegt werden.",
+    );
+  },
+  parameters: { screenshot: false },
+};
+
+/** A task with exactly the typed name is offered, no duplicate. */
+export const ExactMatch: Story = {
+  play: async ({ canvasElement, args }) => {
+    reset();
+    await open(canvasElement);
+    await userEvent.keyboard("kick-off");
+    await expect(
+      body().queryByRole("button", { name: /als neue Aufgabe/ }),
+    ).toBe(null);
+    await userEvent.keyboard("{Control>}{Enter}{/Control}");
+    await expect(args.onCreateTask).not.toHaveBeenCalled();
+  },
+  parameters: { screenshot: false },
+};
+
+/** A value that is not in `tasks` has its own trigger text. */
+export const UnknownValue: Story = {
+  args: { value: 999 },
+  play: async ({ canvasElement }) => {
+    reset();
+    await expect(within(canvasElement).getByRole("button")).toHaveTextContent(
+      "Unbekannte Aufgabe",
+    );
+  },
+  parameters: { screenshot: false },
+};
+
+/** Longer key texts wrap in the foot instead of being cut off. */
+export const LongKeyHints: Story = {
+  args: {
+    labels: {
+      keyMove: "auswählen und bewegen",
+      keyPick: "übernehmen und schließen",
+      keyCreate: "neue Aufgabe",
+      keyClose: "alles schließen",
+    },
+  },
+  play: async ({ canvasElement }) => {
+    reset();
+    await open(canvasElement);
+    const hints = document.querySelector<HTMLElement>("[data-key-hints]");
+    await expect(hints).not.toBe(null);
+    await expect(hints?.scrollWidth).toBeLessThanOrEqual(
+      hints?.clientWidth ?? 0,
+    );
   },
   parameters: { screenshot: false },
 };

@@ -14,6 +14,28 @@ export const PROJECT_COLOR_PRESETS = Array.from(
   (_, i) => `project-${i + 1}`,
 );
 
+/** The German names of the presets, in the order of the presets. */
+export const PROJECT_COLOR_NAMES = [
+  "Indigo",
+  "Bernstein",
+  "Petrol",
+  "Magenta",
+  "Oliv",
+  "Himmelblau",
+  "Rosé",
+  "Violett",
+  "Cyan",
+  "Rot",
+  "Limette",
+  "Purpur",
+  "Blau",
+  "Pink",
+  "Marine",
+  "Braun",
+  "Schiefer",
+  "Stein",
+];
+
 /** Swatches per row; the arrow keys up and down move by one row. */
 const COLUMNS = 6;
 
@@ -39,26 +61,7 @@ export interface ProjectColorPickerLabels {
 }
 
 const defaultLabels: ProjectColorPickerLabels = {
-  presets: [
-    "Indigo",
-    "Bernstein",
-    "Petrol",
-    "Magenta",
-    "Oliv",
-    "Himmelblau",
-    "Rosé",
-    "Violett",
-    "Cyan",
-    "Rot",
-    "Limette",
-    "Purpur",
-    "Blau",
-    "Pink",
-    "Marine",
-    "Braun",
-    "Schiefer",
-    "Stein",
-  ],
+  presets: PROJECT_COLOR_NAMES,
   custom: "Eigene Farbe",
   customPlaceholder: "#RRGGBB",
   invalid: "Bitte einen Hex-Wert mit sechs Stellen eingeben.",
@@ -182,6 +185,14 @@ export function ProjectColorPicker({
               // One tab stop for the group: the chosen swatch or the first.
               tabIndex={index === Math.max(selected, 0) ? 0 : -1}
               onClick={() => choose(index)}
+              onKeyDown={(e) => {
+                if (e.key !== "Enter") return;
+                // Enter takes the swatch and does nothing else, such as
+                // submitting the form around the picker.
+                e.preventDefault();
+                e.stopPropagation();
+                choose(index);
+              }}
               className={twMerge(
                 "outline-ring grid size-7 cursor-default place-items-center rounded-full outline-offset-3 focus-visible:outline-2 disabled:opacity-45 forced-colors:outline-[Highlight]",
                 isSelected &&
