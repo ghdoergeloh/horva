@@ -46,7 +46,7 @@ export async function listTasks(db: Database, opts: ListTasksOpts = {}) {
     // priority, then by plan date.
     orderBy: (t, { asc, desc }) =>
       opts.status === "done"
-        ? [sql`${t.doneAt} DESC NULLS LAST`, desc(t.createdAt)]
+        ? [sql`${t.doneAt} DESC NULLS LAST`, desc(t.createdAt), desc(t.id)]
         : [
             sql`${t.priority} ASC NULLS LAST`,
             asc(t.scheduledAt),

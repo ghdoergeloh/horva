@@ -57,3 +57,45 @@ export const DisabledOpacity: Story = {
   },
   parameters: { screenshot: false },
 };
+
+/** The border of a box, read while it is hovered and while it is not. */
+async function bordersOnHover(canvasElement: HTMLElement) {
+  const label = canvasElement.querySelector("label");
+  const box = label?.querySelector("div");
+  if (!label || !box) throw new Error("checkbox not found");
+  await userEvent.unhover(label);
+  const before = getComputedStyle(box).borderColor;
+  await userEvent.hover(label);
+  // Wait longer than the colour transition.
+  await new Promise((resolve) => setTimeout(resolve, 300));
+  return { before, after: getComputedStyle(box).borderColor };
+}
+
+/** A disabled box does not react to the pointer. */
+export const DisabledHover: Story = {
+  args: { isDisabled: true },
+  play: async ({ canvasElement }) => {
+    const { before, after } = await bordersOnHover(canvasElement);
+    await expect(after).toBe(before);
+  },
+  parameters: { screenshot: false },
+};
+
+/** An invalid box keeps its red border on hover. */
+export const InvalidHover: Story = {
+  args: { isInvalid: true },
+  play: async ({ canvasElement }) => {
+    const { before, after } = await bordersOnHover(canvasElement);
+    await expect(after).toBe(before);
+  },
+  parameters: { screenshot: false },
+};
+
+/** An open box shows on hover that it can be ticked. */
+export const Hover: Story = {
+  play: async ({ canvasElement }) => {
+    const { before, after } = await bordersOnHover(canvasElement);
+    await expect(after).not.toBe(before);
+  },
+  parameters: { screenshot: false },
+};

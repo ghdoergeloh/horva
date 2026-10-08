@@ -133,7 +133,7 @@ const dayNameStyles = tv({
       false: "text-muted-foreground",
     },
     isButton: {
-      true: "cursor-default hover:underline underline-offset-4",
+      true: "flex w-full items-center justify-between gap-1 cursor-default hover:underline underline-offset-4",
     },
   },
 });
@@ -339,11 +339,12 @@ function DayRow({ isToday, content, ...track }: DayRowProps) {
               dayNameStyles({ ...renderProps, isToday, isButton: true })
             }
           >
+            {/* The chevrons stand in one column at the left of the day. */}
             <ChevronRight
               aria-hidden
-              className="me-0.5 inline size-3.5 align-[-2px] transition-transform group-data-[expanded]/day:rotate-90 motion-reduce:transition-none"
+              className="size-3.5 shrink-0 transition-transform group-data-[expanded]/day:rotate-90 motion-reduce:transition-none"
             />
-            {name}
+            <span className="truncate">{name}</span>
           </RACButton>
         )}
         <span className="type-duration-small text-foreground hidden @max-lg:block">

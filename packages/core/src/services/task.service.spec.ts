@@ -276,4 +276,21 @@ describe("listTasks", () => {
 
     expect(done.map((t) => t.name)).toEqual(["Erste", "Dritte", "Zweite"]);
   });
+
+  it("pages done tasks with the same done time without gaps or doubles", async () => {
+    vi.useFakeTimers({ toFake: ["Date"] });
+    vi.setSystemTime(new Date(2026, 9, 8, 9, 0));
+    const project = await createProjectFixture(db, { name: "Intern" });
+    const ids: number[] = [];
+    for (const name of ["A", "B", "C", "D"]) {
+      const row = await createTaskFixture(db, project.id, { name });
+      await markTaskDone(db, row.id);
+      ids.push(row.id);
+    }
+    const first = await listTasks(db, { status: "done", limit: 2, offset: 0 });
+    const second = await listTasks(db, { status: "done", limit: 2, offset: 2 });
+    expect([...first, ...second].map((t) => t.id)).toEqual(
+      [...ids].sort((a, b) => b - a),
+    );
+  });
 });

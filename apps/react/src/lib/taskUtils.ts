@@ -80,3 +80,15 @@ export function labelChanges(
     removeLabelIds: [...assigned].filter((id) => !next.has(id)),
   };
 }
+
+/**
+ * Done tasks with the last one ticked off first; tasks without a done time
+ * go last. Returns a new array.
+ */
+export function byDoneAtNewestFirst<T extends { doneAt: Date | string | null }>(
+  tasks: T[],
+): T[] {
+  const time = (task: T) =>
+    task.doneAt ? new Date(task.doneAt).getTime() : -Infinity;
+  return [...tasks].sort((a, b) => time(b) - time(a));
+}

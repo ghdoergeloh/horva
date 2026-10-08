@@ -346,10 +346,12 @@ export const CheckboxHover: Story = {
     await userEvent.unhover(target);
     await waitFor(() => expect(getComputedStyle(preview).opacity).toBe("0"));
     const before = getComputedStyle(visual).borderColor;
-    await userEvent.hover(target);
-    await waitFor(() =>
-      expect(getComputedStyle(visual).borderColor).not.toBe(before),
-    );
+    // Hover again until React Aria reports it; the pointer may come from
+    // the story before.
+    await waitFor(async () => {
+      await userEvent.hover(target);
+      await expect(getComputedStyle(visual).borderColor).not.toBe(before);
+    });
     await waitFor(() =>
       expect(Number(getComputedStyle(preview).opacity)).toBeGreaterThan(0.5),
     );

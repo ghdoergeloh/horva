@@ -3,6 +3,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 
 import i18n from "#/i18n/index.js";
 import {
+  byDoneAtNewestFirst,
   calcTotalMinutes,
   formatScheduledDate,
   labelChanges,
@@ -93,5 +94,16 @@ describe("labelChanges", () => {
       addLabelIds: [],
       removeLabelIds: [],
     });
+  });
+});
+
+describe("byDoneAtNewestFirst", () => {
+  it("puts the task ticked off last on top", () => {
+    const older = { id: 1, doneAt: new Date(2026, 9, 6) };
+    const newer = { id: 2, doneAt: new Date(2026, 9, 8) };
+    const none = { id: 3, doneAt: null };
+    expect(byDoneAtNewestFirst([older, none, newer]).map((t) => t.id)).toEqual([
+      2, 1, 3,
+    ]);
   });
 });

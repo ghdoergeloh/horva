@@ -33,7 +33,7 @@ const boxStyles = tv({
   variants: {
     isSelected: {
       false:
-        "bg-input border-(--color) [--color:var(--color-input-border)] group-hover:bg-accent group-hover:[--color:var(--color-primary)] group-pressed:[--color:var(--color-foreground)]",
+        "bg-input border-(--color) [--color:var(--color-input-border)] group-pressed:[--color:var(--color-foreground)]",
       true: "bg-(--color) border-(--color) [--color:var(--color-primary)] group-pressed:opacity-80 forced-colors:[--color:Highlight]!",
     },
     isInvalid: {
@@ -42,7 +42,21 @@ const boxStyles = tv({
     isDisabled: {
       true: "forced-colors:[--color:GrayText]!",
     },
+    isHovered: {
+      true: "",
+    },
   },
+  // Hover shows that the box can be ticked; not when disabled, and an
+  // invalid box keeps its red border.
+  compoundVariants: [
+    {
+      isSelected: false,
+      isHovered: true,
+      isDisabled: false,
+      isInvalid: false,
+      class: "bg-accent [--color:var(--color-primary)]",
+    },
+  ],
 });
 
 const iconStyles =
@@ -86,7 +100,7 @@ export function Checkbox({ previewCheck = false, ...props }: CheckboxProps) {
                 ) : previewCheck && !renderProps.isDisabled ? (
                   <Check
                     aria-hidden
-                    className="text-primary pointer-events-none h-3.5 w-3.5 opacity-0 transition-opacity group-hover:opacity-70"
+                    className={`text-primary pointer-events-none h-3.5 w-3.5 transition-opacity ${renderProps.isHovered ? "opacity-70" : "opacity-0"}`}
                   />
                 ) : null}
               </div>

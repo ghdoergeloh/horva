@@ -13,6 +13,7 @@ import { TextField } from "@horva/ui/TextField";
 import { DraggableTask } from "#/components/DraggableTask.js";
 import { useDetailDrawer } from "#/contexts/DetailDrawerContext.js";
 import { client } from "#/lib/orpc.js";
+import { byDoneAtNewestFirst } from "#/lib/taskUtils.js";
 import type { TaskRow } from "./-components/TaskListCard.js";
 import { TaskListCard } from "./-components/TaskListCard.js";
 
@@ -199,7 +200,8 @@ function DoneTasksSection({
       const existingIds = new Set(prev.map((task) => task.id));
       const newItems = fetched.filter((task) => !existingIds.has(task.id));
       if (newItems.length === 0) return prev;
-      return [...prev, ...newItems];
+      // A task ticked off while the section is open belongs on top.
+      return byDoneAtNewestFirst([...prev, ...newItems]);
     });
   }, [fetched]);
   /* oxlint-enable react-hooks/set-state-in-effect */
