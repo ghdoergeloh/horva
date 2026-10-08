@@ -101,8 +101,8 @@ const slotSchema = slotFlatSchema.extend({
 const workPeriodSchema = z.object({
   startedAt: z.date(),
   endedAt: z.date().nullable(),
-  minutes: z.number(),
-  slotCount: z.number(),
+  minutes: z.number().int().nonnegative(),
+  slotCount: z.number().int().positive(),
   projectIds: z.array(z.number().nullable()),
 });
 
@@ -415,7 +415,13 @@ export const contract = oc.router({
     /** Slots that follow each other merged into periods without a break. */
     workPeriods: oc
       .route({ method: "GET", path: "/log/work-periods" })
-      .input(z.object({ from: z.date(), to: z.date() }))
+      .input(
+        z
+          .object({ from: z.date(), to: z.date() })
+          .refine((range) => range.from <= range.to, {
+            message: "from must not be after to",
+          }),
+      )
       .output(z.object({ periods: z.array(workPeriodSchema) })),
   }),
 

@@ -38,20 +38,62 @@ describe("mergeWorkPeriods", () => {
     ]);
   });
 
-  it("joins slots with a gap of less than a minute", () => {
+  it("treats a gap of one minute as a break", () => {
     const periods = mergeWorkPeriods(
       [
-        {
-          startedAt: at("09:00"),
-          endedAt: new Date(at("10:00").getTime() - 30_000),
-          projectId: null,
-        },
+        { startedAt: at("09:00"), endedAt: at("09:59"), projectId: null },
         { startedAt: at("10:00"), endedAt: at("11:00"), projectId: null },
       ],
       at("18:00"),
     );
-    expect(periods).toHaveLength(1);
-    expect(periods[0]?.projectIds).toEqual([null]);
+    expect(periods).toHaveLength(2);
+  });
+
+  it("keeps the later end when slots overlap", () => {
+    const periods = mergeWorkPeriods(
+      [
+        { startedAt: at("09:00"), endedAt: at("11:00"), projectId: 1 },
+        { startedAt: at("10:00"), endedAt: at("10:30"), projectId: 2 },
+      ],
+      at("18:00"),
+    );
+    expect(periods).toEqual([
+      {
+        startedAt: at("09:00"),
+        endedAt: at("11:00"),
+        minutes: 120,
+        slotCount: 2,
+        projectIds: [1, 2],
+      },
+    ]);
+  });
+
+  it("stays open when a shorter slot overlaps the running one", () => {
+    const periods = mergeWorkPeriods(
+      [
+        { startedAt: at("14:00"), endedAt: null, projectId: 1 },
+        { startedAt: at("14:10"), endedAt: at("14:20"), projectId: 1 },
+      ],
+      at("15:00"),
+    );
+    expect(periods[0]?.endedAt).toBeNull();
+    expect(periods[0]?.minutes).toBe(60);
+  });
+
+  it("gives a slot over midnight to the day it starts on", () => {
+    const periods = mergeWorkPeriods(
+      [
+        { startedAt: at("23:00", 6), endedAt: at("01:00", 7), projectId: 1 },
+        { startedAt: at("01:00", 7), endedAt: at("02:00", 7), projectId: 1 },
+      ],
+      at("18:00"),
+    );
+    expect(periods).toHaveLength(2);
+    expect(periods[0]).toMatchObject({
+      startedAt: at("23:00", 6),
+      endedAt: at("01:00", 7),
+      minutes: 120,
+    });
   });
 
   it("keeps a running slot open and counts it up to now", () => {

@@ -24,9 +24,6 @@ export interface WorkPeriod {
   projectIds: (number | null)[];
 }
 
-/** Slots closer than this count as one period (seconds of rounding). */
-const JOIN_GAP_MS = 60_000;
-
 function sameLocalDay(a: Date, b: Date): boolean {
   return (
     a.getFullYear() === b.getFullYear() &&
@@ -36,9 +33,9 @@ function sameLocalDay(a: Date, b: Date): boolean {
 }
 
 /**
- * Merges slots that touch (a gap under one minute) into work periods. A
- * break ends a period, and so does midnight: every period belongs to the
- * local day it starts on.
+ * Merges slots that touch or overlap into work periods. Slots are stored
+ * in whole minutes, so any gap is a break and ends a period; so does
+ * midnight: every period belongs to the local day it starts on.
  */
 export function mergeWorkPeriods(slots: WorkSlot[], now: Date): WorkPeriod[] {
   const sorted = [...slots].sort(
@@ -51,7 +48,7 @@ export function mergeWorkPeriods(slots: WorkSlot[], now: Date): WorkPeriod[] {
     const end = s.endedAt ?? now;
     const joins =
       open !== null &&
-      s.startedAt.getTime() - open.end.getTime() < JOIN_GAP_MS &&
+      s.startedAt.getTime() <= open.end.getTime() &&
       sameLocalDay(s.startedAt, open.period.startedAt);
     if (open && joins) {
       open.period.slotCount += 1;
