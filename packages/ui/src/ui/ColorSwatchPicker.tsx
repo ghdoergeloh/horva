@@ -9,10 +9,10 @@ import {
   ColorSwatchPickerItem as AriaColorSwatchPickerItem,
   composeRenderProps,
 } from "react-aria-components";
-import { tv } from "tailwind-variants";
 
 import { focusRing } from "@horva/ui";
 
+import { tv } from "../lib/tw";
 import { ColorSwatch } from "./ColorSwatch";
 
 const pickerStyles = tv({
