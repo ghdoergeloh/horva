@@ -6,12 +6,12 @@ import { ChevronDown, ChevronRight, Plus, Settings2, X } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
 import { Button } from "@horva/ui/Button";
+import { Loader } from "@horva/ui/Logo";
 import { Select, SelectItem } from "@horva/ui/Select";
 import { TextField } from "@horva/ui/TextField";
 
 import type { LabelRow } from "#/components/TaskEditControls.js";
 import { DraggableTask } from "#/components/DraggableTask.js";
-import { LoadingSpinner } from "#/components/LoadingSpinner.js";
 import { TaskCard } from "#/components/TaskCard.js";
 import { useDetailDrawer } from "#/contexts/DetailDrawerContext.js";
 import { client } from "#/lib/orpc.js";
@@ -420,7 +420,11 @@ function ProjectTaskPage() {
   if (projectLoading || tasksLoading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <LoadingSpinner size={64} label={t("loading")} />
+        <Loader
+          size={64}
+          label={t("loading")}
+          className="animate-delayed-show opacity-0"
+        />
       </div>
     );
   }

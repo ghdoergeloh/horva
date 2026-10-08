@@ -19,10 +19,10 @@ import { useTranslation } from "react-i18next";
 import type { DateRangePreset } from "@horva/ui/DateRangePicker";
 import { Button } from "@horva/ui/Button";
 import { DateRangePicker } from "@horva/ui/DateRangePicker";
+import { Loader } from "@horva/ui/Logo";
 import { Select, SelectItem } from "@horva/ui/Select";
 
 import { FormattedMinutes } from "#/components/FormattedMinutes.js";
-import { LoadingSpinner } from "#/components/LoadingSpinner.js";
 import { MocoSyncModal } from "#/components/MocoSyncModal.js";
 import { ProjectPie } from "#/components/ProjectPie.js";
 import {
@@ -511,7 +511,11 @@ function Reports() {
 
       {isLoading ? (
         <div className="flex items-center justify-center py-20">
-          <LoadingSpinner size={64} label={t("loading")} />
+          <Loader
+            size={64}
+            label={t("loading")}
+            className="animate-delayed-show opacity-0"
+          />
         </div>
       ) : (
         <>
