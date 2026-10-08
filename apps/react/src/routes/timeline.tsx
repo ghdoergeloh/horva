@@ -1,5 +1,5 @@
 import type { Key } from "react-aria-components";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
@@ -36,18 +36,9 @@ import {
   slotTexts,
   weekHeaderLabels,
 } from "#/lib/timelineLabels.js";
+import { useNow } from "#/lib/useNow.js";
 
 const ALL_PROJECTS = "all";
-
-/** The current time, updated every 30 seconds for running slots. */
-function useNow(): Date {
-  const [now, setNow] = useState(() => new Date());
-  useEffect(() => {
-    const timer = setInterval(() => setNow(new Date()), 30_000);
-    return () => clearInterval(timer);
-  }, []);
-  return now;
-}
 
 /**
  * The timeline: the week as day bars, with the slots, the time per task or

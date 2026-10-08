@@ -426,3 +426,28 @@ test("an activity is done for today with its repeat button", async ({
   );
   expect(new Date(after.scheduledAt).getTime()).toBeGreaterThan(Date.now());
 });
+
+test("a task moves from later today to due now while the page is open", async ({
+  page,
+}) => {
+  await begin(page);
+  const projectId = await createProject(page, "Uhrzeit");
+  const start = new Date();
+  start.setHours(10, 0, 0, 0);
+  await createTask(page, "Telefonat um zehn", projectId, start);
+
+  const before = new Date(start.getTime() - 5 * 60_000);
+  await page.clock.install({ time: before });
+  await page.goto("/");
+  const later = page.locator("section", {
+    has: page.getByRole("heading", { name: /Später heute/ }),
+  });
+  const due = page.locator("section", {
+    has: page.getByRole("heading", { name: /Jetzt fällig/ }),
+  });
+  await expect(later.getByText("Telefonat um zehn")).toBeVisible();
+
+  // Half an hour later the page shows it as due, without a reload.
+  await page.clock.runFor(30 * 60_000);
+  await expect(due.getByText("Telefonat um zehn")).toBeVisible();
+});

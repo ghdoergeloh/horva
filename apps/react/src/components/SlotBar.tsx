@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 
@@ -10,19 +10,9 @@ import {
   useTimeFormat,
 } from "#/contexts/SettingsContext.js";
 import { client } from "#/lib/orpc.js";
+import { useNow } from "#/lib/useNow.js";
 import { StartTaskDialog } from "./StartTaskDialog.js";
 import { elapsedSeconds, workedMinutes } from "./timerRules.js";
-
-/** The current time, updated every second while `isTicking` is true. */
-function useNow(isTicking: boolean): number {
-  const [now, setNow] = useState(() => Date.now());
-  useEffect(() => {
-    if (!isTicking) return;
-    const timer = setInterval(() => setNow(Date.now()), 1000);
-    return () => clearInterval(timer);
-  }, [isTicking]);
-  return now;
-}
 
 /** The minutes of all closed slots in a period, from the log summary. */
 function useLoggedMinutes(period: "today" | "week"): number {
@@ -47,7 +37,7 @@ export function SlotBar() {
   const timeFormat = useTimeFormat();
   const { openSlot, invalidate } = useActiveSlot();
   const [dialog, setDialog] = useState<"start" | "switch" | null>(null);
-  const now = useNow(Boolean(openSlot));
+  const now = useNow(1000, Boolean(openSlot)).getTime();
   const todayLogged = useLoggedMinutes("today");
   const weekLogged = useLoggedMinutes("week");
 

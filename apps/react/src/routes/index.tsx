@@ -1,5 +1,5 @@
 import { useId, useState } from "react";
-import { CalendarDate, getLocalTimeZone, today } from "@internationalized/date";
+import { CalendarDate } from "@internationalized/date";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { AlertCircle, ChevronRight } from "lucide-react";
@@ -14,6 +14,7 @@ import { useDetailDrawer } from "#/contexts/DetailDrawerContext.js";
 import i18n from "#/i18n/index.js";
 import { client } from "#/lib/orpc.js";
 import { calcTotalMinutes } from "#/lib/taskUtils.js";
+import { useNow } from "#/lib/useNow.js";
 
 type TaskRow = Awaited<ReturnType<typeof client.task.list>>["tasks"][number];
 
@@ -70,13 +71,13 @@ function TaskSection({
 function DailyOverview() {
   const { t } = useTranslation();
   const { openTask } = useDetailDrawer();
-  const now = new Date();
-  const tz = getLocalTimeZone();
-  const todayDate = today(tz);
+  const now = useNow();
 
   function toCalendarDate(d: Date): CalendarDate {
     return new CalendarDate(d.getFullYear(), d.getMonth() + 1, d.getDate());
   }
+  // Today comes from the same clock reading as `now`.
+  const todayDate = toCalendarDate(now);
   const queryClient = useQueryClient();
 
   const { data: tasks = [], isLoading } = useQuery({
