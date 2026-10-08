@@ -16,10 +16,10 @@ import {
   Tabs as RACTabs,
   SelectionIndicator,
 } from "react-aria-components";
-import { twMerge } from "tailwind-merge";
-import { tv } from "tailwind-variants";
 
 import { focusRing } from "@horva/ui";
+
+import { twMerge, tv } from "../lib/tw";
 
 const tabsStyles = tv({
   base: "flex gap-4 font-sans max-w-full",

@@ -5,10 +5,10 @@ import type {
   ValidationResult,
 } from "react-aria-components";
 import { TextField as AriaTextField } from "react-aria-components";
-import { tv } from "tailwind-variants";
 
-import { composeTailwindRenderProps, focusRing } from "@horva/ui";
+import { composeTailwindRenderProps } from "@horva/ui";
 
+import { tv } from "../lib/tw";
 import {
   Description,
   fieldBorderStyles,
@@ -18,8 +18,7 @@ import {
 } from "./Field";
 
 const inputStyles = tv({
-  extend: focusRing,
-  base: "border-1 rounded-lg min-h-9 font-sans text-sm py-0 px-3 box-border transition",
+  base: "border-1 rounded-md min-h-9 font-sans text-body py-0 px-2.5 box-border transition",
   variants: {
     isFocused: fieldBorderStyles.variants.isFocusWithin,
     isInvalid: fieldBorderStyles.variants.isInvalid,

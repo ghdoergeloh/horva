@@ -12,10 +12,10 @@ import {
   DateRangePickerStateContext,
   Button as RACButton,
 } from "react-aria-components";
-import { tv } from "tailwind-variants";
 
 import { composeTailwindRenderProps, focusRing } from "@horva/ui";
 
+import { tv } from "../lib/tw";
 import { DateInput } from "./DateField";
 import { Description, FieldError, FieldGroup, Label } from "./Field";
 import { FieldButton } from "./FieldButton";
