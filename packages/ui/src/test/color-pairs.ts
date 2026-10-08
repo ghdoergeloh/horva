@@ -63,6 +63,14 @@ export const colorPairs: ColorPair[] = [
   text("running-text", "background"),
   text("running-text", "running-soft"),
   text("foreground", "running-soft"),
+  // Fields, hover and selection inside lists and menus.
+  text("foreground", "input"),
+  text("muted-foreground", "input"),
+  text("foreground", "accent"),
+  text("muted-foreground", "accent"),
+  text("foreground", "secondary"),
+  text("destructive", "popover"),
+  graphic("primary", "accent"),
   // Focus ring, selected borders and field borders.
   graphic("ring", "background"),
   graphic("ring", "card"),
@@ -73,5 +81,8 @@ export const colorPairs: ColorPair[] = [
   graphic("input-border", "card"),
   // The running mark and the project colors as dots and blocks.
   graphic("running", "card"),
+  graphic("running", "background"),
   ...projects.map((project) => graphic(project, "card")),
+  // The check mark on a selected swatch of the color picker.
+  ...projects.slice(1).map((project) => graphic("card", project)),
 ];

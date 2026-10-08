@@ -20,3 +20,16 @@ describe("isIconOnly", () => {
     expect(isIconOnly("Save")).toBe(false);
   });
 });
+
+describe("isIconOnly with a fragment", () => {
+  it("is false for a fragment with an icon and text", () => {
+    expect(
+      isIconOnly(
+        <>
+          <Play />
+          Start
+        </>,
+      ),
+    ).toBe(false);
+  });
+});

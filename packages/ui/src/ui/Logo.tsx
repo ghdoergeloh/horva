@@ -1,7 +1,18 @@
 import { twMerge } from "../lib/tw";
 
-/** The ring, the orange time arc and the pivot, shared by mark and loader. */
-function Clock() {
+interface ShapesProps {
+  /** Stroke class of ring and hands. */
+  ink: string;
+  /** Classes for the hour and minute hand, to turn them. */
+  hourClass?: string;
+  minuteClass?: string;
+}
+
+/**
+ * Ring, orange time arc, the two hands at 10 and 2 that form a check mark,
+ * and the orange pivot. Shared by mark, word mark and loader.
+ */
+function MarkShapes({ ink, hourClass, minuteClass }: ShapesProps) {
   return (
     <>
       <circle
@@ -10,7 +21,7 @@ function Clock() {
         r="19"
         fill="none"
         strokeWidth="6"
-        className="stroke-primary"
+        className={ink}
       />
       <path
         d="M22.5 15.55A19 19 0 0 1 48.45 22.5"
@@ -19,6 +30,21 @@ function Clock() {
         strokeLinecap="round"
         className="stroke-running"
       />
+      <path
+        d="M32 34L26 27"
+        fill="none"
+        strokeWidth="5"
+        strokeLinecap="round"
+        className={twMerge(ink, hourClass)}
+      />
+      <path
+        d="M32 34L40.5 21.5"
+        fill="none"
+        strokeWidth="5"
+        strokeLinecap="round"
+        className={twMerge(ink, minuteClass)}
+      />
+      <circle cx="32" cy="34" r="3.2" className="fill-running" />
     </>
   );
 }
@@ -31,6 +57,12 @@ export interface LogoProps {
   label?: string;
 }
 
+function a11y(label: string | undefined) {
+  return label
+    ? { role: "img" as const, "aria-label": label }
+    : { "aria-hidden": true as const };
+}
+
 /**
  * The Horva mark: a flat clock whose two hands at 10 and 2 form a check
  * mark. Ring and hands in `primary`, arc and pivot in `running`.
@@ -41,21 +73,10 @@ export function HorvaMark({ size = 32, className, label }: LogoProps) {
       viewBox="8 8 48 48"
       width={size}
       height={size}
-      role={label ? "img" : undefined}
-      aria-label={label}
-      aria-hidden={label ? undefined : true}
+      {...a11y(label)}
       className={twMerge("shrink-0", className)}
     >
-      <Clock />
-      <path
-        d="M26 27L32 34L40.5 21.5"
-        fill="none"
-        strokeWidth="5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        className="stroke-primary"
-      />
-      <circle cx="32" cy="34" r="3.2" className="fill-running" />
+      <MarkShapes ink="stroke-primary" />
     </svg>
   );
 }
@@ -67,22 +88,11 @@ export function HorvaWordmark({ size = 32, className, label }: LogoProps) {
       viewBox="0 0 172 48"
       height={size}
       width={(size * 172) / 48}
-      role={label ? "img" : undefined}
-      aria-label={label}
-      aria-hidden={label ? undefined : true}
+      {...a11y(label)}
       className={twMerge("shrink-0", className)}
     >
       <g transform="translate(-8 -8)">
-        <Clock />
-        <path
-          d="M26 27L32 34L40.5 21.5"
-          fill="none"
-          strokeWidth="5"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          className="stroke-primary"
-        />
-        <circle cx="32" cy="34" r="3.2" className="fill-running" />
+        <MarkShapes ink="stroke-primary" />
       </g>
       <path
         transform="translate(60 37)"
@@ -106,6 +116,8 @@ export interface LoaderProps {
   onFill?: boolean;
   /** @default 'Lädt' */
   label?: string;
+  /** Hidden from assistive technology, when a parent names the wait. */
+  decorative?: boolean;
   className?: string;
 }
 
@@ -118,9 +130,10 @@ export function Loader({
   size = 24,
   onFill = false,
   label = "Lädt",
+  decorative = false,
   className,
 }: LoaderProps) {
-  const ink = onFill ? "stroke-current" : "stroke-primary";
+  // The hands turn around the pivot at (32, 34).
   const hand =
     "origin-[32px_34px] [transform-box:view-box] motion-safe:animate-spin";
   return (
@@ -128,40 +141,14 @@ export function Loader({
       viewBox="8 8 48 48"
       width={size}
       height={size}
-      role="img"
-      aria-label={label}
+      {...a11y(decorative ? undefined : label)}
       className={twMerge("shrink-0", className)}
     >
-      <circle
-        cx="32"
-        cy="32"
-        r="19"
-        fill="none"
-        strokeWidth="6"
-        className={ink}
+      <MarkShapes
+        ink={onFill ? "stroke-current" : "stroke-primary"}
+        hourClass={twMerge(hand, "[animation-duration:14.4s]")}
+        minuteClass={twMerge(hand, "[animation-duration:1.2s]")}
       />
-      <path
-        d="M22.5 15.55A19 19 0 0 1 48.45 22.5"
-        fill="none"
-        strokeWidth="6"
-        strokeLinecap="round"
-        className="stroke-running"
-      />
-      <path
-        d="M32 34L26 27"
-        fill="none"
-        strokeWidth="5"
-        strokeLinecap="round"
-        className={twMerge(ink, hand, "[animation-duration:14.4s]")}
-      />
-      <path
-        d="M32 34L40.5 21.5"
-        fill="none"
-        strokeWidth="5"
-        strokeLinecap="round"
-        className={twMerge(ink, hand, "[animation-duration:1.2s]")}
-      />
-      <circle cx="32" cy="34" r="3.2" className="fill-running" />
     </svg>
   );
 }

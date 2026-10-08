@@ -51,7 +51,7 @@ export const itemStyles = tv({
       true: "bg-primary text-primary-foreground forced-colors:bg-[Highlight] forced-colors:text-[HighlightText] [&:has(+[data-selected])]:rounded-b-none [&+[data-selected]]:rounded-t-none -outline-offset-4 outline-primary-foreground forced-colors:outline-[HighlightText]",
     },
     isDisabled: {
-      true: "text-muted-foreground/50 forced-colors:text-[GrayText]",
+      true: "opacity-45 forced-colors:text-[GrayText]",
     },
   },
 });

@@ -40,7 +40,7 @@ const boxStyles = tv({
       true: "[--color:var(--color-destructive)] forced-colors:[--color:Mark]!",
     },
     isDisabled: {
-      true: "opacity-45 forced-colors:[--color:GrayText]!",
+      true: "forced-colors:[--color:GrayText]!",
     },
   },
 });

@@ -12,8 +12,7 @@ import {
 
 import { composeTailwindRenderProps, focusRing } from "@horva/ui";
 
-import { twMerge } from "../lib/tw";
-import { tv } from "../lib/tw";
+import { twMerge, tv } from "../lib/tw";
 import { Checkbox } from "./Checkbox";
 
 export function GridList<T extends object>({
