@@ -78,6 +78,8 @@ export function Sheet({
         if (e.target === e.currentTarget) onClose();
       }}
     >
+      {/* Tab handling of a modal dialog, which keeps the focus inside. */}
+      {/* oxlint-disable-next-line jsx-a11y/no-noninteractive-element-interactions */}
       <div
         ref={panel}
         role="dialog"
