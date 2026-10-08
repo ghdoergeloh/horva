@@ -121,12 +121,12 @@ test("the running slot stays in the day track after the last end (#75)", async (
   const running = await addSlot(page, at(day, "13:00"), null, task.id);
   try {
     await openTimeline(page, at(day, "15:30"));
-    await expect(page.locator("[data-running]")).toBeVisible();
+    await expect(page.locator("button[data-running]")).toBeVisible();
     // The scale grows with the running slot, up to 16:00.
     await expect(page.getByText("16:00", { exact: true })).toBeVisible();
     await expect(page.getByText("17:00", { exact: true })).toHaveCount(0);
-    const bar = await edges(page, "[data-running]");
-    const track = await edges(page, "[data-running] >> xpath=..");
+    const bar = await edges(page, "button[data-running]");
+    const track = await edges(page, "button[data-running] >> xpath=..");
     expect(bar.right).toBeLessThanOrEqual(track.right + 0.5);
     expect(bar.left).toBeGreaterThan(track.left);
   } finally {
@@ -148,8 +148,8 @@ test("a running slot alone in the week has a valid scale (#75)", async ({
     await expect(
       page.getByText("11:00", { exact: true }).first(),
     ).toBeVisible();
-    const bar = await edges(page, "[data-running]");
-    const track = await edges(page, "[data-running] >> xpath=..");
+    const bar = await edges(page, "button[data-running]");
+    const track = await edges(page, "button[data-running] >> xpath=..");
     expect(bar.right).toBeLessThanOrEqual(track.right + 0.5);
     expect(bar.left).toBeGreaterThan(track.left);
   } finally {
