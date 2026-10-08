@@ -24,7 +24,7 @@ import { Popover } from "./Popover";
 
 const styles = tv({
   extend: focusRing,
-  base: "flex items-center text-start gap-2 w-full font-sans border border-input-border cursor-default rounded-md pl-2.5 pr-2 h-9 min-w-[180px] transition bg-input text-foreground [-webkit-tap-highlight-color:transparent]",
+  base: "flex items-center text-start gap-2 w-full font-sans border border-input-border cursor-default rounded-md pl-2.5 pr-2 h-9 min-w-0 transition bg-input text-foreground [-webkit-tap-highlight-color:transparent]",
   variants: {
     isDisabled: {
       false:
@@ -58,7 +58,8 @@ export function Select<T extends object>({
       {...props}
       className={composeTailwindRenderProps(
         props.className,
-        "group relative flex flex-col gap-1 font-sans",
+        // The minimum width sits here, so `className` can change it.
+        "group relative flex min-w-[180px] flex-col gap-1 font-sans",
       )}
     >
       {label && <Label>{label}</Label>}

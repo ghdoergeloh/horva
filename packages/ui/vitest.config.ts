@@ -38,6 +38,9 @@ export default defineConfig({
         test: {
           name: "unit",
           environment: "jsdom",
+          // A zone with daylight saving time, so the day border tests see
+          // days of 23 and 25 hours.
+          env: { TZ: "Europe/Berlin" },
           globals: true,
           setupFiles: [noNetwork, "./vitest.setup.ts"],
           include: ["src/**/*.spec.{ts,tsx}"],
