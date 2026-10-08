@@ -42,11 +42,16 @@ export async function listTasks(db: Database, opts: ListTasksOpts = {}) {
       taskLabels: { with: { label: true } },
       slots: true,
     },
-    orderBy: (t, { asc, desc }) => [
-      sql`${t.priority} ASC NULLS LAST`,
-      asc(t.scheduledAt),
-      desc(t.createdAt),
-    ],
+    // Done tasks come with the last one ticked off first; the others by
+    // priority, then by plan date.
+    orderBy: (t, { asc, desc }) =>
+      opts.status === "done"
+        ? [sql`${t.doneAt} DESC NULLS LAST`, desc(t.createdAt)]
+        : [
+            sql`${t.priority} ASC NULLS LAST`,
+            asc(t.scheduledAt),
+            desc(t.createdAt),
+          ],
     limit: opts.limit,
     offset: opts.offset,
   });

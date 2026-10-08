@@ -3,6 +3,7 @@
 import type React from "react";
 import type { Key } from "react-aria-components";
 import { useContext, useRef, useState } from "react";
+import { ChevronRight } from "lucide-react";
 import {
   DisclosureStateContext,
   Button as RACButton,
@@ -338,6 +339,10 @@ function DayRow({ isToday, content, ...track }: DayRowProps) {
               dayNameStyles({ ...renderProps, isToday, isButton: true })
             }
           >
+            <ChevronRight
+              aria-hidden
+              className="me-0.5 inline size-3.5 align-[-2px] transition-transform group-data-[expanded]/day:rotate-90 motion-reduce:transition-none"
+            />
             {name}
           </RACButton>
         )}
@@ -354,7 +359,13 @@ function DayRow({ isToday, content, ...track }: DayRowProps) {
         {totalText}
       </span>
       {content !== undefined && (
-        <DisclosurePanel className="col-span-full">{content}</DisclosurePanel>
+        // The opened day sits under the bar, framed as a card, so it reads
+        // as part of its day and not as a new section of the page.
+        <DisclosurePanel className="col-start-2 -col-end-1 min-w-0 @max-lg:col-start-1">
+          <div className="border-border bg-card mt-1 mb-2 overflow-hidden rounded-lg border shadow-sm">
+            {content}
+          </div>
+        </DisclosurePanel>
       )}
     </>
   );
@@ -415,7 +426,10 @@ export function DayBars({
             <Disclosure
               key={day.id}
               id={day.id}
-              className="col-span-full grid min-w-0 grid-cols-subgrid items-center gap-y-2 rounded-none"
+              // An opened day gets a calm background that reaches a little
+              // past its grid cells (painted outwards, so the columns stay in
+              // place), so day, bar and table read as one block.
+              className="group/day data-[expanded]:bg-muted col-span-full grid min-w-0 grid-cols-subgrid items-center gap-y-2 rounded-none data-[expanded]:my-1 data-[expanded]:rounded-lg data-[expanded]:shadow-[0_0_0_8px_var(--color-muted)]"
             >
               {row}
             </Disclosure>

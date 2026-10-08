@@ -395,3 +395,34 @@ test("a card plans for today and removes the date", async ({ page }) => {
   const unplanned = (await openTasks(page)).find((t) => t.id === task);
   expect(unplanned?.scheduledAt).toBeNull();
 });
+
+test("an activity is done for today with its repeat button", async ({
+  page,
+}) => {
+  await begin(page);
+  const projectId = await createProject(page, "Aktivitäten");
+  const scheduledAt = startOfToday();
+  scheduledAt.setHours(0, 5);
+  const { task } = await rpc<{ task: { id: number } }>(
+    page,
+    "task/create",
+    {
+      name: "Posteingang leeren",
+      projectId,
+      taskType: "activity",
+      scheduledAt: scheduledAt.toISOString(),
+      recurrenceRule: "FREQ=DAILY",
+    },
+    [[1, "scheduledAt"]],
+  );
+  await page.goto("/");
+  const card = page.getByRole("group", { name: /Posteingang leeren/ });
+  await card.getByRole("button", { name: "Für heute erledigt" }).click();
+  await expect(card).toHaveCount(0);
+  const { task: after } = await rpc<{ task: { scheduledAt: string } }>(
+    page,
+    "task/get",
+    { id: task.id },
+  );
+  expect(new Date(after.scheduledAt).getTime()).toBeGreaterThan(Date.now());
+});

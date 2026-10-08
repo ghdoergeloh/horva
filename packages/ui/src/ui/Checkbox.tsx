@@ -33,7 +33,7 @@ const boxStyles = tv({
   variants: {
     isSelected: {
       false:
-        "bg-input border-(--color) [--color:var(--color-input-border)] group-pressed:[--color:var(--color-foreground)]",
+        "bg-input border-(--color) [--color:var(--color-input-border)] group-hover:bg-accent group-hover:[--color:var(--color-primary)] group-pressed:[--color:var(--color-foreground)]",
       true: "bg-(--color) border-(--color) [--color:var(--color-primary)] group-pressed:opacity-80 forced-colors:[--color:Highlight]!",
     },
     isInvalid: {
@@ -50,6 +50,8 @@ const iconStyles =
 
 export interface CheckboxProps extends CheckboxFieldProps {
   children?: ReactNode;
+  /** Shows a faint check mark on hover, where ticking off is the action. */
+  previewCheck?: boolean;
   description?: string;
   errorMessage?: string | ((validation: ValidationResult) => string);
 }
@@ -57,7 +59,7 @@ export interface CheckboxProps extends CheckboxFieldProps {
 /**
  * A checkbox with an optional description and error message below it.
  */
-export function Checkbox(props: CheckboxProps) {
+export function Checkbox({ previewCheck = false, ...props }: CheckboxProps) {
   return (
     <CheckboxField {...props} className="group flex flex-col gap-1">
       <CheckboxButton
@@ -81,6 +83,11 @@ export function Checkbox(props: CheckboxProps) {
                   <Minus aria-hidden className={iconStyles} />
                 ) : isSelected ? (
                   <Check aria-hidden className={iconStyles} />
+                ) : previewCheck && !renderProps.isDisabled ? (
+                  <Check
+                    aria-hidden
+                    className="text-primary pointer-events-none h-3.5 w-3.5 opacity-0 transition-opacity group-hover:opacity-70"
+                  />
                 ) : null}
               </div>
               {children}

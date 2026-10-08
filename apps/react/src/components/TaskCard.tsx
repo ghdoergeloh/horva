@@ -64,6 +64,7 @@ function cardStrings(t: TFunction) {
     date: t("taskCard.date"),
     overdue: t("taskCard.overdue"),
     activity: t("taskCard.activity"),
+    activityDone: t("taskCard.activityDone"),
     running: t("taskCard.running"),
     total: t("taskCard.total"),
   };
@@ -211,6 +212,7 @@ export function TaskCard({
         dateLabel={dateLabel}
         isPlannedToday={isPlannedToday}
         onToggleDone={isActivity ? undefined : onMarkDone}
+        onActivityDone={isActivity ? onMarkDone : undefined}
         onStart={() => void run("start")}
         onStop={() => void run("stop")}
         onPlanToday={onPlan ? planToday : undefined}

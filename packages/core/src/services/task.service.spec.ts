@@ -13,6 +13,7 @@ import {
   createTask,
   deleteTask,
   getTask,
+  listTasks,
   markTaskDone,
   planTask,
   reopenTask,
@@ -254,5 +255,25 @@ describe("planTask", () => {
 
     const cleared = await planTask(db, task.id, null);
     expect(cleared.scheduledAt).toBeNull();
+  });
+});
+
+describe("listTasks", () => {
+  it("lists done tasks with the last one ticked off first", async () => {
+    vi.useFakeTimers({ toFake: ["Date"] });
+    const project = await createProjectFixture(db, { name: "Intern" });
+    const first = await createTaskFixture(db, project.id, { name: "Erste" });
+    const second = await createTaskFixture(db, project.id, { name: "Zweite" });
+    const third = await createTaskFixture(db, project.id, { name: "Dritte" });
+    vi.setSystemTime(new Date(2026, 9, 6, 9, 0));
+    await markTaskDone(db, second.id);
+    vi.setSystemTime(new Date(2026, 9, 7, 9, 0));
+    await markTaskDone(db, third.id);
+    vi.setSystemTime(new Date(2026, 9, 8, 9, 0));
+    await markTaskDone(db, first.id);
+
+    const done = await listTasks(db, { status: "done" });
+
+    expect(done.map((t) => t.name)).toEqual(["Erste", "Dritte", "Zweite"]);
   });
 });

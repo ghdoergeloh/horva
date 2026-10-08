@@ -9,6 +9,7 @@ import { TaskCard } from "./TaskCard";
 
 const callbacks = {
   onToggleDone: fn(),
+  onActivityDone: fn(),
   onStart: fn(),
   onStop: fn(),
   onPlanToday: fn(),
@@ -300,17 +301,58 @@ export const KeyboardTabOrder: Story = {
   parameters: { screenshot: false },
 };
 
-/** An activity has no checkbox: Space does nothing, S still starts. */
+/**
+ * An activity has no checkbox: Space marks it done for today (it moves on
+ * to its next date) and never ticks it off; S still starts.
+ */
 export const KeyboardActivity: Story = {
   args: Activity.args,
   play: async ({ args }) => {
     const done = counter(args.onToggleDone);
+    const activityDone = counter(args.onActivityDone);
     const start = counter(args.onStart);
     await userEvent.tab();
     await userEvent.keyboard(" ");
     await userEvent.keyboard("s");
     await expect(done()).toBe(0);
+    await expect(activityDone()).toBe(1);
     await expect(start()).toBe(1);
+  },
+  parameters: { screenshot: false },
+};
+
+/** The repeat button in front of an activity marks it done for today. */
+export const ActivityDoneButton: Story = {
+  args: Activity.args,
+  play: async ({ args, canvasElement }) => {
+    const activityDone = counter(args.onActivityDone);
+    await userEvent.click(
+      within(canvasElement).getByRole("button", { name: "Für heute erledigt" }),
+    );
+    await expect(activityDone()).toBe(1);
+  },
+  parameters: { screenshot: false },
+};
+
+/** Hovering the checkbox shows that it ticks the task off. */
+export const CheckboxHover: Story = {
+  play: async ({ canvasElement }) => {
+    const box = within(canvasElement).getByRole("checkbox");
+    const target = box.closest("label") ?? box;
+    const visual = target.querySelector("div");
+    const preview = visual?.querySelector("svg");
+    if (!visual || !preview) throw new Error("checkbox box not found");
+    // The pointer may rest on the card from an earlier story.
+    await userEvent.unhover(target);
+    await waitFor(() => expect(getComputedStyle(preview).opacity).toBe("0"));
+    const before = getComputedStyle(visual).borderColor;
+    await userEvent.hover(target);
+    await waitFor(() =>
+      expect(getComputedStyle(visual).borderColor).not.toBe(before),
+    );
+    await waitFor(() =>
+      expect(Number(getComputedStyle(preview).opacity)).toBeGreaterThan(0.5),
+    );
   },
   parameters: { screenshot: false },
 };

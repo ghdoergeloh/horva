@@ -346,7 +346,8 @@
     "labels": "Labels",
     "recurrence": "Wiederholung …",
     "clearDate": "Datum entfernen",
-    "pickDate": "Datum wählen"
+    "pickDate": "Datum wählen",
+    "activityDone": "Für heute erledigt"
   },
   "taskEditControls": {
     "planDate": "Datum planen",
@@ -518,7 +519,8 @@
     "openDetails": "Details öffnen",
     "labels": "Labels",
     "recurrence": "Wiederholung…",
-    "recurrenceTitle": "Wiederholung"
+    "recurrenceTitle": "Wiederholung",
+    "activityDone": "Für heute erledigt"
   },
   "taskPicker": {
     "field": "Aufgabe",
