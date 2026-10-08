@@ -25,9 +25,9 @@ import { useTranslation } from "react-i18next";
 
 import { Button } from "@horva/ui/Button";
 import { ColorPicker } from "@horva/ui/ColorPicker";
+import { HorvaWordmark } from "@horva/ui/Logo";
 import { TextField } from "@horva/ui/TextField";
 
-import { AppIcon } from "#/components/AppIcon.js";
 import { DetailDrawerHost } from "#/components/DetailDrawerHost.js";
 import { SlotBar } from "#/components/SlotBar.js";
 import { ActiveSlotProvider } from "#/contexts/ActiveSlotContext.js";
@@ -297,12 +297,7 @@ function AppShell() {
               {/* Sidebar */}
               <aside className="border-sidebar-border bg-sidebar text-sidebar-foreground flex w-48 flex-col border-r">
                 <div className="border-sidebar-border border-b px-4 py-4">
-                  <div className="flex items-center gap-3">
-                    <AppIcon size={34} />
-                    <span className="text-sidebar-foreground text-sm font-semibold tracking-tight">
-                      {t("app.title")}
-                    </span>
-                  </div>
+                  <HorvaWordmark size={28} label={t("app.title")} />
                 </div>
                 <nav className="flex-1 overflow-y-auto p-2">
                   {/* Today */}

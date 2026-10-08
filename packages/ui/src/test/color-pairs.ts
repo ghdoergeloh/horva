@@ -71,6 +71,10 @@ export const colorPairs: ColorPair[] = [
   text("foreground", "secondary"),
   text("destructive", "popover"),
   graphic("primary", "accent"),
+  // Active presets and today in the calendar.
+  text("accent-foreground", "popover"),
+  text("accent-foreground", "background"),
+  text("accent-foreground", "card"),
   // Focus ring, selected borders and field borders.
   graphic("ring", "background"),
   graphic("ring", "card"),
@@ -91,4 +95,11 @@ export const colorPairs: ColorPair[] = [
   text("running-text", "accent"),
   graphic("info", "accent"),
   graphic("destructive", "accent"),
+
+  // Horva components: the done check, the chart tooltip, an overdue date
+  // and the focus ring on a running card.
+  graphic("primary-foreground", "success"),
+  text("background", "foreground"),
+  text("destructive", "running-soft"),
+  graphic("ring", "running-soft"),
 ];
