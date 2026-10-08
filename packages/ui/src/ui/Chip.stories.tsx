@@ -37,7 +37,7 @@ export const Overview: Story = {
       </div>
       <div className="text-muted-foreground flex items-center gap-4 text-sm">
         <span>
-          <Kbd>⌘</Kbd> <Kbd>↵</Kbd> neu anlegen
+          <Kbd>Strg</Kbd> <Kbd>Enter</Kbd> neu anlegen
         </span>
         <LiveBadge />
       </div>
