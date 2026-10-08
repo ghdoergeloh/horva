@@ -6,19 +6,16 @@ export default mergeConfig(
   viteConfig,
   defineConfig({
     test: {
-      // slot.service.spec.ts / task.service.spec.ts run against a real
-      // Postgres and share its tables across the whole file; running test
-      // files in parallel truncates/mutates rows out from under each other
-      // (and can deadlock on the TRUNCATE). Sequential files, parallel tests
-      // within each file (the default) is fine — files just don't overlap.
-      fileParallelism: false,
+      // The first createTestDatabase() of a file migrates PGlite, which
+      // takes seconds on a busy CI runner.
+      hookTimeout: 30_000,
       coverage: {
+        // Fixed floors below the measured values. Raise them by hand.
         thresholds: {
-          autoUpdate: true,
           statements: 60,
-          branches: 63.28,
-          functions: 54.66,
-          lines: 64.91,
+          branches: 63,
+          functions: 55,
+          lines: 65,
         },
       },
     },

@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+import { PROJECT_COLOR_PATTERN } from "../lib/project-colors.js";
+
 export const projectStatusSchema = z.enum(["active", "archived", "deleted"]);
 export const taskStatusSchema = z.enum(["open", "done", "archived", "deleted"]);
 export const taskTypeSchema = z.enum(["task", "activity"]);
@@ -51,14 +53,18 @@ export const slotSchema = z.object({
   createdAt: z.date(),
 });
 
+/** A stored project color: a token name such as `project-3`, or `#rrggbb`. */
+export const projectColorSchema = z.string().regex(PROJECT_COLOR_PATTERN);
+
 export const createProjectSchema = z.object({
   name: z.string().min(1),
-  color: z.string().default("#6366f1"),
+  /** Without a color, the project gets the least used of the first eight. */
+  color: projectColorSchema.optional(),
 });
 
 export const updateProjectSchema = z.object({
   name: z.string().min(1).optional(),
-  color: z.string().optional(),
+  color: projectColorSchema.optional(),
 });
 
 export const createTaskSchema = z.object({

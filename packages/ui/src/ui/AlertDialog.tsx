@@ -31,10 +31,7 @@ export function AlertDialog({
     <Dialog role="alertdialog" {...props}>
       {({ close }) => (
         <>
-          <Heading
-            slot="title"
-            className="my-0 text-xl leading-6 font-semibold"
-          >
+          <Heading slot="title" className="text-title my-0">
             {title}
           </Heading>
           <div
@@ -46,9 +43,16 @@ export function AlertDialog({
               <InfoIcon aria-hidden />
             )}
           </div>
-          <p className="text-muted-foreground mt-3">{children}</p>
+          <p className="text-foreground text-body mt-3">{children}</p>
           <div className="mt-6 flex justify-end gap-2">
-            <Button variant="secondary" onPress={close}>
+            <Button
+              variant="secondary"
+              onPress={close}
+              // Before a destructive action, focus starts on the safe
+              // choice, so a second Enter does not delete by accident.
+              // oxlint-disable-next-line jsx-a11y/no-autofocus
+              autoFocus={variant === "destructive"}
+            >
               {cancelLabel ?? "Cancel"}
             </Button>
             <Button
@@ -58,7 +62,7 @@ export function AlertDialog({
               // Dialog pattern, not the page-load anti-pattern this rule
               // targets.
               // oxlint-disable-next-line jsx-a11y/no-autofocus
-              autoFocus
+              autoFocus={variant !== "destructive"}
               onPress={chain(onAction, close)}
             >
               {actionLabel}

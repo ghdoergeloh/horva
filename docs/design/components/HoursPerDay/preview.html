@@ -1,0 +1,289 @@
+<!-- @dsCard group="Auswertung" height=400 subtitle="Stunden je Tag, gestapelt nach Projekt, mit Soll-Linie" -->
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="utf-8" />
+    <title>HoursPerDay</title>
+    <style>
+      .hp-grid {
+        stroke: var(--border);
+        stroke-width: 1;
+      }
+      .hp-ax {
+        font: 500 12px var(--font-mono);
+        fill: var(--muted-foreground);
+      }
+      .hp-val {
+        font: 500 12px var(--font-mono);
+        fill: var(--foreground);
+      }
+      .hp-target {
+        stroke: var(--foreground);
+        stroke-width: 1.5;
+        stroke-dasharray: 4 4;
+        opacity: 0.6;
+      }
+      .hp-tl {
+        font: 500 11px var(--font-sans);
+        fill: var(--muted-foreground);
+      }
+      .hp-seg {
+        cursor: pointer;
+        transition: opacity var(--duration-fast) var(--ease-out);
+      }
+      .hp-seg:focus-visible {
+        outline: 2px solid var(--ring);
+      }
+      .is-dim {
+        opacity: 0.35;
+      }
+      .hp-leg {
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--space-4);
+        font-size: 13px;
+        color: var(--foreground);
+        margin-bottom: var(--space-3);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="hv-panel" style="max-width: 620px">
+      <h3 class="hv-panel__title">Stunden je Tag</h3>
+      <div class="hp-leg">
+        <span class="hv-row" style="gap: 6px"
+          ><span class="hv-dot" style="--c: var(--project-7)"></span
+          >Kranich</span
+        ><span class="hv-row" style="gap: 6px"
+          ><span class="hv-dot" style="--c: var(--project-1)"></span
+          >Intern</span
+        ><span class="hv-row" style="gap: 6px"
+          ><span class="hv-dot" style="--c: var(--project-2)"></span
+          >Nordlicht</span
+        ><span class="hv-row" style="gap: 6px"
+          ><span class="hv-dot" style="--c: var(--project-6)"></span>T-T
+          company</span
+        ><span class="hv-row" style="gap: 6px"
+          ><span class="hv-dot" style="--c: var(--project-8)"></span>KI
+          Taskforce</span
+        >
+      </div>
+      <svg
+        viewBox="0 -14 560 240"
+        width="100%"
+        role="img"
+        aria-label="Stunden je Tag nach Projekt"
+      >
+        <line x1="36" x2="560" y1="200.0" y2="200.0" class="hp-grid" />
+        <text x="28" y="204.0" class="hp-ax" text-anchor="end">0h</text>
+        <line x1="36" x2="560" y1="160.0" y2="160.0" class="hp-grid" />
+        <text x="28" y="164.0" class="hp-ax" text-anchor="end">2h</text>
+        <line x1="36" x2="560" y1="120.0" y2="120.0" class="hp-grid" />
+        <text x="28" y="124.0" class="hp-ax" text-anchor="end">4h</text>
+        <line x1="36" x2="560" y1="80.0" y2="80.0" class="hp-grid" />
+        <text x="28" y="84.0" class="hp-ax" text-anchor="end">6h</text>
+        <line x1="36" x2="560" y1="40.0" y2="40.0" class="hp-grid" />
+        <text x="28" y="44.0" class="hp-ax" text-anchor="end">8h</text>
+        <line x1="36" x2="560" y1="0.0" y2="0.0" class="hp-grid" />
+        <text x="28" y="4.0" class="hp-ax" text-anchor="end">10h</text>
+        <line x1="36" x2="560" y1="40.0" y2="40.0" class="hp-target" />
+        <text x="560" y="34.0" class="hp-tl" text-anchor="end">Soll 8:00</text>
+        <rect
+          class="hp-seg"
+          x="51.4"
+          y="52.7"
+          width="44"
+          height="146.3"
+          rx="3"
+          style="fill: var(--project-7)"
+          tabindex="0"
+          data-k="Kranich"
+          data-tip="Kranich|Mo|7:25 h"
+        />
+        <rect
+          class="hp-seg"
+          x="51.4"
+          y="42.7"
+          width="44"
+          height="8.0"
+          rx="3"
+          style="fill: var(--project-1)"
+          tabindex="0"
+          data-k="Intern"
+          data-tip="Intern|Mo|0:30 h"
+        />
+        <rect
+          class="hp-seg"
+          x="126.3"
+          y="90.7"
+          width="44"
+          height="108.3"
+          rx="3"
+          style="fill: var(--project-1)"
+          tabindex="0"
+          data-k="Intern"
+          data-tip="Intern|Di|5:31 h"
+        />
+        <rect
+          class="hp-seg"
+          x="126.3"
+          y="42.7"
+          width="44"
+          height="46.0"
+          rx="3"
+          style="fill: var(--project-6)"
+          tabindex="0"
+          data-k="Brückner GmbH"
+          data-tip="Brückner GmbH|Di|2:24 h"
+        />
+        <rect
+          class="hp-seg"
+          x="201.1"
+          y="164.3"
+          width="44"
+          height="34.7"
+          rx="3"
+          style="fill: var(--project-1)"
+          tabindex="0"
+          data-k="Intern"
+          data-tip="Intern|Mi|1:50 h"
+        />
+        <rect
+          class="hp-seg"
+          x="201.1"
+          y="55.7"
+          width="44"
+          height="106.7"
+          rx="3"
+          style="fill: var(--project-2)"
+          tabindex="0"
+          data-k="Nordlicht"
+          data-tip="Nordlicht|Mi|5:26 h"
+        />
+        <rect
+          class="hp-seg"
+          x="201.1"
+          y="44.3"
+          width="44"
+          height="9.3"
+          rx="3"
+          style="fill: var(--project-8)"
+          tabindex="0"
+          data-k="KI Taskforce"
+          data-tip="KI Taskforce|Mi|0:34 h"
+        />
+        <rect
+          class="hp-seg"
+          x="276.0"
+          y="198.3"
+          width="44"
+          height="1.0"
+          rx="3"
+          style="fill: var(--project-1)"
+          tabindex="0"
+          data-k="Intern"
+          data-tip="Intern|Do|0:08 h"
+        />
+        <rect
+          class="hp-seg"
+          x="276.0"
+          y="182.7"
+          width="44"
+          height="13.7"
+          rx="3"
+          style="fill: var(--project-2)"
+          tabindex="0"
+          data-k="Nordlicht"
+          data-tip="Nordlicht|Do|0:47 h"
+        />
+        <rect
+          class="hp-seg"
+          x="276.0"
+          y="156.7"
+          width="44"
+          height="24.0"
+          rx="3"
+          style="fill: var(--project-8)"
+          tabindex="0"
+          data-k="KI Taskforce"
+          data-tip="KI Taskforce|Do|1:18 h"
+        />
+        <text x="73.4" y="218" class="hp-ax" text-anchor="middle">Mo</text>
+        <text x="73.4" y="35.7" class="hp-val" text-anchor="middle">7:55</text>
+        <text x="148.3" y="218" class="hp-ax" text-anchor="middle">Di</text>
+        <text x="148.3" y="35.7" class="hp-val" text-anchor="middle">7:55</text>
+        <text x="223.1" y="218" class="hp-ax" text-anchor="middle">Mi</text>
+        <text x="223.1" y="37.3" class="hp-val" text-anchor="middle">7:50</text>
+        <text x="298.0" y="218" class="hp-ax" text-anchor="middle">Do</text>
+        <text x="298.0" y="149.7" class="hp-val" text-anchor="middle">
+          2:13
+        </text>
+        <text x="372.9" y="218" class="hp-ax" text-anchor="middle">Fr</text>
+        <text x="447.7" y="218" class="hp-ax" text-anchor="middle">Sa</text>
+        <text x="522.6" y="218" class="hp-ax" text-anchor="middle">So</text>
+      </svg>
+      <div class="hv-help" style="margin-top: 8px">Tabelle anzeigen</div>
+    </div>
+    <script>
+      (function () {
+        var tip = document.createElement("div");
+        tip.className = "hv-tip";
+        tip.hidden = true;
+        document.body.appendChild(tip);
+        function show(el) {
+          var d = el.dataset.tip.split("|");
+          tip.innerHTML = '<b></b><div></div><div class="hv-num"></div>';
+          tip.children[0].textContent = d[0];
+          tip.children[1].textContent = d[1];
+          tip.children[2].textContent = d[2];
+          tip.hidden = false;
+          var r = el.getBoundingClientRect();
+          tip.style.left =
+            Math.min(
+              Math.max(8, r.left + r.width / 2 - tip.offsetWidth / 2),
+              innerWidth - tip.offsetWidth - 8,
+            ) + "px";
+          tip.style.top = r.top + scrollY - tip.offsetHeight - 8 + "px";
+        }
+        document.querySelectorAll("[data-tip]").forEach(function (el) {
+          el.addEventListener("mouseenter", function () {
+            show(el);
+          });
+          el.addEventListener("focus", function () {
+            show(el);
+          });
+          el.addEventListener("mouseleave", function () {
+            tip.hidden = true;
+          });
+          el.addEventListener("blur", function () {
+            tip.hidden = true;
+          });
+        });
+      })();
+    </script>
+    <script>
+      (function () {
+        function hl(k) {
+          document.querySelectorAll("[data-k]").forEach(function (e) {
+            e.classList.toggle("is-dim", k && e.dataset.k !== k);
+            e.classList.toggle("is-hover", k && e.dataset.k === k);
+          });
+        }
+        document.querySelectorAll("[data-k]").forEach(function (e) {
+          e.addEventListener("mouseenter", function () {
+            hl(e.dataset.k);
+          });
+          e.addEventListener("focus", function () {
+            hl(e.dataset.k);
+          });
+          e.addEventListener("mouseleave", function () {
+            hl(null);
+          });
+          e.addEventListener("blur", function () {
+            hl(null);
+          });
+        });
+      })();
+    </script>
+  </body>
+</html>

@@ -2,7 +2,8 @@
 
 import type { SeparatorProps } from "react-aria-components";
 import { Separator as RACSeparator } from "react-aria-components";
-import { tv } from "tailwind-variants";
+
+import { tv } from "../lib/tw";
 
 const styles = tv({
   base: "bg-border forced-colors:bg-[ButtonBorder] border-none",

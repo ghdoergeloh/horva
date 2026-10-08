@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { Check } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
 import { Button } from "@horva/ui/Button";
@@ -34,18 +35,16 @@ export function MocoSettings() {
   const effectiveSubdomain = subdomain.trim() || (status?.subdomain ?? "");
 
   return (
-    <div className="border-border bg-card space-y-4 rounded-xl border p-6">
+    <section className="border-border bg-card space-y-4 rounded-lg border p-6 shadow-sm">
       <div>
-        <h2 className="text-foreground text-lg font-semibold">
-          {t("moco.title")}
-        </h2>
-        <p className="text-muted-foreground mt-0.5 text-xs">
+        <h2 className="text-heading text-foreground">{t("moco.title")}</h2>
+        <p className="text-muted-foreground mt-0.5 text-sm">
           {t("moco.description")}
         </p>
       </div>
 
       {status?.configured && (
-        <p className="text-muted-foreground text-xs">
+        <p className="text-foreground text-sm">
           {t("moco.connectedAs", { subdomain: status.subdomain ?? "" })}
         </p>
       )}
@@ -66,7 +65,7 @@ export function MocoSettings() {
         placeholder={status?.configured ? "••••••••" : ""}
       />
 
-      <div className="flex items-center gap-2">
+      <div className="flex flex-wrap items-center gap-3">
         <Button
           variant="primary"
           isDisabled={
@@ -82,12 +81,13 @@ export function MocoSettings() {
           {t("moco.save")}
         </Button>
         {saveMutation.isSuccess && (
-          <span className="text-xs text-green-600 dark:text-green-400">
+          <span className="text-success inline-flex items-center gap-1 text-sm">
+            <Check aria-hidden className="size-4" />
             {t("moco.saved")}
           </span>
         )}
         {saveMutation.isError && (
-          <span className="text-destructive text-xs">
+          <span role="alert" className="text-destructive text-sm">
             {saveMutation.error instanceof Error
               ? saveMutation.error.message
               : t("moco.saveError")}
@@ -96,10 +96,10 @@ export function MocoSettings() {
       </div>
 
       {status?.configured && (
-        <p className="text-muted-foreground border-border border-t pt-3 text-xs">
+        <p className="text-muted-foreground border-border border-t pt-3 text-sm">
           {t("moco.linkingMovedHint")}
         </p>
       )}
-    </div>
+    </section>
   );
 }

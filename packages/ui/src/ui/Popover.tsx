@@ -7,7 +7,8 @@ import {
   composeRenderProps,
   OverlayArrow,
 } from "react-aria-components";
-import { tv } from "tailwind-variants";
+
+import { tv } from "../lib/tw";
 
 export interface PopoverProps extends Omit<AriaPopoverProps, "children"> {
   showArrow?: boolean;
@@ -15,7 +16,7 @@ export interface PopoverProps extends Omit<AriaPopoverProps, "children"> {
 }
 
 const styles = tv({
-  base: "font-sans bg-popover forced-colors:bg-[Canvas] shadow-2xl rounded-xl bg-clip-padding border border-border text-popover-foreground outline-0",
+  base: "font-sans bg-popover forced-colors:bg-[Canvas] shadow-md rounded-lg bg-clip-padding border border-border text-popover-foreground outline-0",
   variants: {
     isEntering: {
       true: "animate-in fade-in placement-bottom:slide-in-from-top-1 placement-top:slide-in-from-bottom-1 placement-left:slide-in-from-right-1 placement-right:slide-in-from-left-1 ease-out duration-200",

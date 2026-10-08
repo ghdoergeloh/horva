@@ -1,0 +1,234 @@
+<!-- @dsCard group="Auswertung" height=330 subtitle="Projektanteile als Ring mit verknüpfter Legende" -->
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="utf-8" />
+    <title>ProjectDonut</title>
+    <style>
+      .dn {
+        display: flex;
+        gap: var(--space-6);
+        align-items: center;
+        flex-wrap: wrap;
+      }
+      .dn svg {
+        flex: none;
+      }
+      .dn-seg {
+        fill: none;
+        stroke-width: 22;
+        transition:
+          opacity var(--duration-fast) var(--ease-out),
+          stroke-width var(--duration-fast) var(--ease-out);
+        cursor: pointer;
+      }
+      .dn-seg.is-hover,
+      .dn-seg:focus-visible {
+        stroke-width: 28;
+        outline: none;
+      }
+      .is-dim {
+        opacity: 0.35;
+      }
+      .dn-sep {
+        stroke: var(--card);
+        stroke-width: 2.5;
+        pointer-events: none;
+      }
+      .dn-gap {
+        fill: none;
+        stroke: var(--card);
+        stroke-width: 30;
+        stroke-dasharray: 2 439.822971502571;
+      }
+      .dn-total {
+        font: 500 22px/1 var(--font-mono);
+        fill: var(--foreground);
+        text-anchor: middle;
+      }
+      .dn-sub {
+        font: 400 12px/1 var(--font-sans);
+        fill: var(--muted-foreground);
+        text-anchor: middle;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="hv-panel" style="max-width: 640px">
+      <h3 class="hv-panel__title">Projektanteile</h3>
+      <div class="dn">
+        <svg
+          width="180"
+          height="180"
+          viewBox="0 0 180 180"
+          role="img"
+          aria-label="Projektanteile, gesamt 23:32 Stunden"
+        >
+          <path
+            d="M90.00 20.00A70 70 0 0 1 155.17 115.56"
+            stroke="var(--project-7)"
+            style="stroke: var(--project-7)"
+            class="dn-seg"
+            stroke-linecap="butt"
+            tabindex="0"
+            data-k="Kranich"
+            data-tip="Kranich|31 %|7:17 h"
+          />
+          <path
+            d="M155.17 115.56A70 70 0 0 1 54.10 150.10"
+            stroke="var(--project-1)"
+            style="stroke: var(--project-1)"
+            class="dn-seg"
+            stroke-linecap="butt"
+            tabindex="0"
+            data-k="Intern"
+            data-tip="Intern|28 %|6:30 h"
+          />
+          <path
+            d="M54.10 150.10A70 70 0 0 1 26.29 61.00"
+            stroke="var(--project-2)"
+            style="stroke: var(--project-2)"
+            class="dn-seg"
+            stroke-linecap="butt"
+            tabindex="0"
+            data-k="Nordlicht"
+            data-tip="Nordlicht|23 %|5:28 h"
+          />
+          <path
+            d="M26.29 61.00A70 70 0 0 1 56.27 28.66"
+            stroke="var(--project-6)"
+            style="stroke: var(--project-6)"
+            class="dn-seg"
+            stroke-linecap="butt"
+            tabindex="0"
+            data-k="Brückner GmbH"
+            data-tip="Brückner GmbH|10 %|2:24 h"
+          />
+          <path
+            d="M56.27 28.66A70 70 0 0 1 89.69 20.00"
+            stroke="var(--project-8)"
+            style="stroke: var(--project-8)"
+            class="dn-seg"
+            stroke-linecap="butt"
+            tabindex="0"
+            data-k="KI Taskforce"
+            data-tip="KI Taskforce|8 %|1:52 h"
+          />
+          <line x1="90.00" y1="34.00" x2="90.00" y2="6.00" class="dn-sep" />
+          <line
+            x1="142.13"
+            y1="110.45"
+            x2="168.20"
+            y2="120.67"
+            class="dn-sep"
+          />
+          <line x1="61.28" y1="138.08" x2="46.93" y2="162.12" class="dn-sep" />
+          <line x1="39.03" y1="66.80" x2="13.55" y2="55.20" class="dn-sep" />
+          <line x1="63.01" y1="40.93" x2="49.52" y2="16.40" class="dn-sep" />
+          <line x1="89.75" y1="34.00" x2="89.63" y2="6.00" class="dn-sep" />
+          <text x="90" y="92" class="dn-total">23:32</text>
+          <text x="90" y="112" class="dn-sub">Stunden</text>
+        </svg>
+        <div class="hv-legend">
+          <div class="hv-legend__row" data-k="Kranich">
+            <span class="hv-dot" style="--c: var(--project-7)"></span
+            ><span class="hv-legend__name">Kranich</span
+            ><span class="hv-legend__val">7:17 h</span
+            ><span class="hv-legend__pct">31 %</span>
+          </div>
+          <div class="hv-legend__row" data-k="Intern">
+            <span class="hv-dot" style="--c: var(--project-1)"></span
+            ><span class="hv-legend__name">Intern</span
+            ><span class="hv-legend__val">6:30 h</span
+            ><span class="hv-legend__pct">28 %</span>
+          </div>
+          <div class="hv-legend__row" data-k="Nordlicht">
+            <span class="hv-dot" style="--c: var(--project-2)"></span
+            ><span class="hv-legend__name">Nordlicht</span
+            ><span class="hv-legend__val">5:28 h</span
+            ><span class="hv-legend__pct">23 %</span>
+          </div>
+          <div class="hv-legend__row" data-k="Brückner GmbH">
+            <span class="hv-dot" style="--c: var(--project-6)"></span
+            ><span class="hv-legend__name">Brückner GmbH</span
+            ><span class="hv-legend__val">2:24 h</span
+            ><span class="hv-legend__pct">10 %</span>
+          </div>
+          <div class="hv-legend__row" data-k="KI Taskforce">
+            <span class="hv-dot" style="--c: var(--project-8)"></span
+            ><span class="hv-legend__name">KI Taskforce</span
+            ><span class="hv-legend__val">1:52 h</span
+            ><span class="hv-legend__pct">8 %</span>
+          </div>
+          <div class="hv-legend__row" data-k="ohne Aufgabe">
+            <span class="hv-dot" style="--c: var(--project-none)"></span
+            ><span class="hv-legend__name">ohne Aufgabe</span
+            ><span class="hv-legend__val">0:01 h</span
+            ><span class="hv-legend__pct">0 %</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script>
+      (function () {
+        var tip = document.createElement("div");
+        tip.className = "hv-tip";
+        tip.hidden = true;
+        document.body.appendChild(tip);
+        function show(el) {
+          var d = el.dataset.tip.split("|");
+          tip.innerHTML = '<b></b><div></div><div class="hv-num"></div>';
+          tip.children[0].textContent = d[0];
+          tip.children[1].textContent = d[1];
+          tip.children[2].textContent = d[2];
+          tip.hidden = false;
+          var r = el.getBoundingClientRect();
+          tip.style.left =
+            Math.min(
+              Math.max(8, r.left + r.width / 2 - tip.offsetWidth / 2),
+              innerWidth - tip.offsetWidth - 8,
+            ) + "px";
+          tip.style.top = r.top + scrollY - tip.offsetHeight - 8 + "px";
+        }
+        document.querySelectorAll("[data-tip]").forEach(function (el) {
+          el.addEventListener("mouseenter", function () {
+            show(el);
+          });
+          el.addEventListener("focus", function () {
+            show(el);
+          });
+          el.addEventListener("mouseleave", function () {
+            tip.hidden = true;
+          });
+          el.addEventListener("blur", function () {
+            tip.hidden = true;
+          });
+        });
+      })();
+    </script>
+    <script>
+      (function () {
+        function hl(k) {
+          document.querySelectorAll("[data-k]").forEach(function (e) {
+            e.classList.toggle("is-dim", k && e.dataset.k !== k);
+            e.classList.toggle("is-hover", k && e.dataset.k === k);
+          });
+        }
+        document.querySelectorAll("[data-k]").forEach(function (e) {
+          e.addEventListener("mouseenter", function () {
+            hl(e.dataset.k);
+          });
+          e.addEventListener("focus", function () {
+            hl(e.dataset.k);
+          });
+          e.addEventListener("mouseleave", function () {
+            hl(null);
+          });
+          e.addEventListener("blur", function () {
+            hl(null);
+          });
+        });
+      })();
+    </script>
+  </body>
+</html>

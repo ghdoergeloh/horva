@@ -123,6 +123,9 @@ export const router = base.router({
     summary: base.log.summary.handler(({ input, context }) =>
       handlers.log.summary({ input, context }),
     ),
+    workPeriods: base.log.workPeriods.handler(({ input, context }) =>
+      handlers.log.workPeriods({ input, context }),
+    ),
   },
 
   moco: {

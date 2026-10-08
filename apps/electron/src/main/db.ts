@@ -2,6 +2,7 @@ import { is } from "@electron-toolkit/utils";
 import { app } from "electron";
 
 import { readConfig } from "@horva/core/config";
+import { createLazyDatabase } from "@horva/db/lazy";
 
 // Load .env before importing db.
 // In dev: load from monorepo root so pnpm dev picks up the local docker URL.
@@ -30,4 +31,6 @@ if (!process.env["DATABASE_URL"]) {
   }
 }
 
-export { db } from "@horva/db/client";
+// Connects on the first query, so the setup wizard can set DATABASE_URL
+// first.
+export const { db } = createLazyDatabase(() => process.env["DATABASE_URL"]);

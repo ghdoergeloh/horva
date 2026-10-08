@@ -1,0 +1,244 @@
+/* Horva — generated from tokens.json */
+@font-face {
+  font-family: "Geist Variable";
+  src: url("fonts/Geist-Variable.woff2") format("woff2");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Geist Mono Variable";
+  src: url("fonts/GeistMono-Variable.woff2") format("woff2");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+:root,
+[data-theme="light"] {
+  --background: #f6f7f5;
+  --foreground: #17201a;
+  --card: #ffffff;
+  --card-foreground: #17201a;
+  --popover: #ffffff;
+  --popover-foreground: #17201a;
+  --primary: #1d6a45;
+  --primary-foreground: #ffffff;
+  --primary-hover: #175538;
+  --secondary: #e9ece8;
+  --secondary-foreground: #334038;
+  --muted: #eef1ed;
+  --muted-foreground: #58635b;
+  --accent: #e3eee6;
+  --accent-foreground: #1a5e3d;
+  --running: #e06d0c;
+  --running-foreground: #2a1404;
+  --running-text: #a94f05;
+  --running-soft: #fdeedd;
+  --destructive: #c5301f;
+  --destructive-foreground: #ffffff;
+  --warning: #eabd2c;
+  --warning-foreground: #352800;
+  --success: #0e6f86;
+  --success-foreground: #ffffff;
+  --info: #3d58c9;
+  --info-foreground: #ffffff;
+  --border: #dfe4de;
+  --input: #ffffff;
+  --input-border: #878f89;
+  --ring: #1d6a45;
+  --sidebar: #eef1ed;
+  --sidebar-foreground: #334038;
+  --sidebar-primary: #1d6a45;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #dfe8e1;
+  --sidebar-accent-foreground: #174f34;
+  --sidebar-border: #dbe1da;
+  --project-none: #858e87;
+  --project-deleted: #cfd5d0;
+  --project-1: #4b5dc3;
+  --project-2: #b77c00;
+  --project-3: #008777;
+  --project-4: #97297b;
+  --project-5: #909b2f;
+  --project-6: #006398;
+  --project-7: #d85164;
+  --project-8: #8459c3;
+  --project-9: #0099ae;
+  --project-10: #ba2c25;
+  --project-11: #6d9d2d;
+  --project-12: #783288;
+  --project-13: #2b7ad6;
+  --project-14: #c86890;
+  --project-15: #2e5297;
+  --project-16: #80512f;
+  --project-17: #5c6b7a;
+  --project-18: #8a7f6c;
+  --chart-1: var(--project-1);
+  --chart-2: var(--project-2);
+  --chart-3: var(--project-3);
+  --chart-4: var(--project-4);
+  --chart-5: var(--project-5);
+  --shadow-sm: 0 1px 2px rgba(23, 32, 26, 0.06);
+  --shadow-md:
+    0 4px 12px -2px rgba(23, 32, 26, 0.1), 0 1px 3px rgba(23, 32, 26, 0.06);
+  --shadow-lg: 0 16px 40px -8px rgba(23, 32, 26, 0.18);
+}
+[data-theme="dark"] {
+  --background: #111612;
+  --foreground: #e7ece8;
+  --card: #191f1b;
+  --card-foreground: #e7ece8;
+  --popover: #1e2520;
+  --popover-foreground: #e7ece8;
+  --primary: #5fc48f;
+  --primary-foreground: #0b1a11;
+  --primary-hover: #7bd3a4;
+  --secondary: #252d27;
+  --secondary-foreground: #c9d2cb;
+  --muted: #212923;
+  --muted-foreground: #9aa69d;
+  --accent: #1c3226;
+  --accent-foreground: #86d9ac;
+  --running: #ff9440;
+  --running-foreground: #2a1404;
+  --running-text: #ffa65e;
+  --running-soft: #3a2412;
+  --destructive: #ff7b6b;
+  --destructive-foreground: #2a0904;
+  --warning: #f0cb52;
+  --warning-foreground: #2b2100;
+  --success: #55c5dc;
+  --success-foreground: #04232a;
+  --info: #93a8ff;
+  --info-foreground: #0b1640;
+  --border: #2b342e;
+  --input: #191f1b;
+  --input-border: #6c7870;
+  --ring: #5fc48f;
+  --sidebar: #151b17;
+  --sidebar-foreground: #c9d2cb;
+  --sidebar-primary: #5fc48f;
+  --sidebar-primary-foreground: #0b1a11;
+  --sidebar-accent: #222b25;
+  --sidebar-accent-foreground: #86d9ac;
+  --sidebar-border: #242c26;
+  --project-none: #7d877f;
+  --project-deleted: #454e47;
+  --project-1: #6076de;
+  --project-2: #c08500;
+  --project-3: #009d8c;
+  --project-4: #ae4090;
+  --project-5: #909b2f;
+  --project-6: #0072a8;
+  --project-7: #e75e70;
+  --project-8: #9065d0;
+  --project-9: #00a5bb;
+  --project-10: #e5564a;
+  --project-11: #73a434;
+  --project-12: #9750a7;
+  --project-13: #3986e4;
+  --project-14: #cf6e96;
+  --project-15: #4167ad;
+  --project-16: #b97340;
+  --project-17: #798898;
+  --project-18: #9c917e;
+  --chart-1: var(--project-1);
+  --chart-2: var(--project-2);
+  --chart-3: var(--project-3);
+  --chart-4: var(--project-4);
+  --chart-5: var(--project-5);
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 4px 12px -2px rgba(0, 0, 0, 0.5);
+  --shadow-lg: 0 16px 40px -8px rgba(0, 0, 0, 0.6);
+}
+:root {
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-full: 999px;
+  --duration-fast: 120ms;
+  --duration-base: 200ms;
+  --duration-slow: 320ms;
+  --duration-pulse: 2400ms;
+  --ease-out: cubic-bezier(0.2, 0, 0, 1);
+  --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+  --z-sticky: 10;
+  --z-sidebar: 20;
+  --z-overlay: 40;
+  --z-modal: 50;
+  --z-popover: 60;
+  --z-toast: 70;
+  --font-sans: "Geist Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "Geist Mono Variable", ui-monospace, monospace;
+}
+.display {
+  font-family: var(--font-sans);
+  font-size: 28px;
+  line-height: 34px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+.title {
+  font-family: var(--font-sans);
+  font-size: 20px;
+  line-height: 28px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+.heading {
+  font-family: var(--font-sans);
+  font-size: 15px;
+  line-height: 22px;
+  font-weight: 600;
+}
+.body {
+  font-family: var(--font-sans);
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 400;
+}
+.body-strong {
+  font-family: var(--font-sans);
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 500;
+}
+.small {
+  font-family: var(--font-sans);
+  font-size: 13px;
+  line-height: 18px;
+  font-weight: 400;
+}
+.caption {
+  font-family: var(--font-sans);
+  font-size: 12px;
+  line-height: 16px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+}
+.timer {
+  font-family: var(--font-mono);
+  font-size: 28px;
+  line-height: 32px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+}
+.duration {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 500;
+}
+.duration-small {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  line-height: 16px;
+  font-weight: 500;
+}

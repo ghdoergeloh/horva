@@ -1,31 +1,71 @@
+import type { BetterAuthOptions } from "better-auth";
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 
-import { db } from "@horva/db/client";
+import type { Database } from "@horva/db/client";
 import * as schema from "@horva/db/schema";
-import {
-  sendPasswordResetEmail,
-  sendVerificationEmail,
-} from "@horva/transactional";
 
-export const auth = betterAuth({
-  database: drizzleAdapter(db, {
-    provider: "pg",
-    schema,
-  }),
-  emailAndPassword: {
-    enabled: true,
-    requireEmailVerification: true,
-    sendResetPassword: async ({ user, url }) => {
-      await sendPasswordResetEmail(user.email, url);
+/** Base path of the better-auth endpoints. */
+export const AUTH_BASE_PATH = "/api/auth";
+
+export interface AuthOptions {
+  db: Database;
+  /** `BETTER_AUTH_SECRET`, at least 32 characters. */
+  secret: string;
+  /**
+   * `BETTER_AUTH_URL`: the public origin of the app, where the browser loads
+   * the SPA and calls `/api`. Links in emails point there.
+   */
+  baseURL: string;
+  /** More origins that may call the API with a session, besides `baseURL`. */
+  trustedOrigins?: string[];
+  /**
+   * Sends the link that verifies a new email address. Without it, sign-up
+   * signs the user in at once and addresses are not verified.
+   */
+  sendVerificationEmail?: (email: string, url: string) => Promise<void>;
+  /**
+   * Sends the link that sets a new password. Without it, password reset is
+   * off.
+   */
+  sendResetPasswordEmail?: (email: string, url: string) => Promise<void>;
+}
+
+/** The better-auth options for the given settings. */
+export function authConfig(options: AuthOptions) {
+  const origin = new URL(options.baseURL).origin;
+  const send = options.sendVerificationEmail;
+  const sendReset = options.sendResetPasswordEmail;
+  return {
+    baseURL: origin,
+    basePath: AUTH_BASE_PATH,
+    secret: options.secret,
+    database: drizzleAdapter(options.db, { provider: "pg", schema }),
+    trustedOrigins: [...new Set([origin, ...(options.trustedOrigins ?? [])])],
+    // better-auth skips the origin check when NODE_ENV is "test". Keep it on,
+    // so tests see the behavior of production.
+    advanced: { disableOriginCheck: false },
+    emailAndPassword: {
+      enabled: true,
+      requireEmailVerification: send !== undefined,
+      ...(sendReset && {
+        sendResetPassword: ({ user, url }) => sendReset(user.email, url),
+      }),
     },
-  },
-  emailVerification: {
-    sendOnSignUp: true,
-    autoSignInAfterVerification: true,
-    sendVerificationEmail: async ({ user, url }) => {
-      await sendVerificationEmail(user.email, url);
-    },
-  },
-  trustedOrigins: ["http://localhost:5173", "http://localhost:5174"],
-});
+    ...(send && {
+      emailVerification: {
+        sendOnSignUp: true,
+        autoSignInAfterVerification: true,
+        sendVerificationEmail: ({ user, url }) => send(user.email, url),
+      },
+    }),
+  } satisfies BetterAuthOptions;
+}
+
+/** Creates the better-auth instance (see {@link authConfig}). */
+export function createAuth(options: AuthOptions) {
+  return betterAuth(authConfig(options));
+}
+
+/** The better-auth instance of the app. */
+export type Auth = ReturnType<typeof createAuth>;

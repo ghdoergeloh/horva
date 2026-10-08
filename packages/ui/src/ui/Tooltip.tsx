@@ -7,14 +7,15 @@ import {
   composeRenderProps,
   OverlayArrow,
 } from "react-aria-components";
-import { tv } from "tailwind-variants";
+
+import { tv } from "../lib/tw";
 
 export interface TooltipProps extends Omit<AriaTooltipProps, "children"> {
   children: React.ReactNode;
 }
 
 const styles = tv({
-  base: "group bg-foreground border border-foreground font-sans text-xs text-background rounded-lg drop-shadow-lg will-change-transform px-3 py-1.5 box-border",
+  base: "group bg-foreground border border-foreground font-sans text-caption font-normal text-background rounded-md shadow-md will-change-transform px-3 py-1.5 box-border",
   variants: {
     isEntering: {
       true: "animate-in fade-in placement-bottom:slide-in-from-top-0.5 placement-top:slide-in-from-bottom-0.5 placement-left:slide-in-from-right-0.5 placement-right:slide-in-from-left-0.5 ease-out duration-200",

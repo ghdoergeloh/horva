@@ -1,0 +1,145 @@
+<!-- @dsCard group="Formulare" height=440 subtitle="Zeitraum mit Voreinstellungen, leerbar" -->
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="utf-8" />
+    <title>DateRangePicker</title>
+  </head>
+  <body>
+    <div class="hv-stack" style="max-width: 560px">
+      <div class="hv-row">
+        <div class="hv-field" style="width: 300px">
+          <label class="hv-label">Zeitraum</label>
+          <div class="hv-input is-focus">
+            <div class="hv-input__text">
+              <span class="hv-seg">05</span>.<span class="hv-seg">10</span
+              >.<span class="hv-seg">2026</span>&nbsp;–&nbsp;<span
+                class="hv-seg"
+                >11</span
+              >.<span class="hv-seg">10</span>.<span class="hv-seg">2026</span>
+            </div>
+            <button class="hv-clear" aria-label="Zeitraum entfernen">
+              <svg class="hv-icon" viewBox="0 0 24 24">
+                <path d="M18 6 6 18" />
+                <path d="m6 6 12 12" />
+              </svg></button
+            ><span class="hv-divider-v"></span
+            ><button
+              class="hv-input__btn"
+              aria-label="Kalender öffnen"
+              aria-expanded="true"
+            >
+              <svg class="hv-icon" viewBox="0 0 24 24">
+                <rect width="18" height="18" x="3" y="4" rx="2" />
+                <path d="M16 2v4" />
+                <path d="M8 2v4" />
+                <path d="M3 10h18" />
+              </svg>
+            </button>
+          </div>
+        </div>
+        <div class="hv-field">
+          <span class="hv-label">&nbsp;</span>
+          <div class="hv-row" style="gap: 2px">
+            <button
+              class="hv-btn hv-btn--quiet hv-btn--icon"
+              aria-label="Vorheriger Zeitraum"
+            >
+              <svg class="hv-icon" viewBox="0 0 24 24">
+                <path d="m15 18-6-6 6-6" />
+              </svg></button
+            ><button
+              class="hv-btn hv-btn--quiet hv-btn--icon"
+              aria-label="Nächster Zeitraum"
+            >
+              <svg class="hv-icon" viewBox="0 0 24 24">
+                <path d="m9 18 6-6-6-6" />
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="hv-popover" style="display: flex; width: max-content">
+        <div class="hv-presets">
+          <button class="hv-preset">Heute</button
+          ><button class="hv-preset">Gestern</button
+          ><button class="hv-preset is-active">Diese Woche</button
+          ><button class="hv-preset">Letzte Woche</button
+          ><button class="hv-preset">Dieser Monat</button
+          ><button class="hv-preset">Letzter Monat</button
+          ><button class="hv-preset">Letzte 30 Tage</button>
+        </div>
+        <div>
+          <div class="hv-cal">
+            <div class="hv-cal__head">
+              <button
+                class="hv-btn hv-btn--quiet hv-btn--sm hv-btn--icon"
+                aria-label="Vorheriger Monat"
+              >
+                <svg class="hv-icon" viewBox="0 0 24 24">
+                  <path d="m15 18-6-6 6-6" />
+                </svg></button
+              ><span>Oktober 2026</span
+              ><button
+                class="hv-btn hv-btn--quiet hv-btn--sm hv-btn--icon"
+                aria-label="Nächster Monat"
+              >
+                <svg class="hv-icon" viewBox="0 0 24 24">
+                  <path d="m9 18 6-6-6-6" />
+                </svg>
+              </button>
+            </div>
+            <div class="hv-cal__grid">
+              <span class="hv-cal__dow">Mo</span
+              ><span class="hv-cal__dow">Di</span
+              ><span class="hv-cal__dow">Mi</span
+              ><span class="hv-cal__dow">Do</span
+              ><span class="hv-cal__dow">Fr</span
+              ><span class="hv-cal__dow">Sa</span
+              ><span class="hv-cal__dow">So</span
+              ><button class="hv-day is-out">28</button
+              ><button class="hv-day is-out">29</button
+              ><button class="hv-day is-out">30</button
+              ><button class="hv-day">1</button><button class="hv-day">2</button
+              ><button class="hv-day">3</button><button class="hv-day">4</button
+              ><button class="hv-day is-start">5</button
+              ><button class="hv-day is-in">6</button
+              ><button class="hv-day is-in">7</button
+              ><button class="hv-day is-today is-in">8</button
+              ><button class="hv-day is-in">9</button
+              ><button class="hv-day is-in">10</button
+              ><button class="hv-day is-end">11</button
+              ><button class="hv-day">12</button
+              ><button class="hv-day">13</button
+              ><button class="hv-day">14</button
+              ><button class="hv-day">15</button
+              ><button class="hv-day">16</button
+              ><button class="hv-day">17</button
+              ><button class="hv-day">18</button
+              ><button class="hv-day">19</button
+              ><button class="hv-day">20</button
+              ><button class="hv-day">21</button
+              ><button class="hv-day">22</button
+              ><button class="hv-day">23</button
+              ><button class="hv-day">24</button
+              ><button class="hv-day">25</button
+              ><button class="hv-day">26</button
+              ><button class="hv-day">27</button
+              ><button class="hv-day">28</button
+              ><button class="hv-day">29</button
+              ><button class="hv-day">30</button
+              ><button class="hv-day">31</button
+              ><button class="hv-day is-out">1</button>
+            </div>
+            <div class="hv-cal__foot">
+              <span class="hv-help" style="align-self: center">7 Tage</span
+              ><button class="hv-btn hv-btn--primary hv-btn--sm">
+                Übernehmen
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
