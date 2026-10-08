@@ -6,6 +6,7 @@ import {
   findMatch,
   formatMinutes,
   groupTasks,
+  hasTaskNamed,
   suggestProject,
 } from "./TaskPickerModel";
 
@@ -38,6 +39,12 @@ describe("findMatch", () => {
 
   it("ignores spaces around the query", () => {
     expect(findMatch("Tag planen", "  plan ")).toEqual([4, 8]);
+  });
+
+  it("marks nothing when lower case changes the length", () => {
+    // "İ" becomes two characters in lower case, so positions would shift.
+    expect(findMatch("İnventur", "vent")).toBeNull();
+    expect(findMatch("Inventur", "vent")).toEqual([2, 6]);
   });
 
   it("returns null for no match or an empty query", () => {
@@ -76,6 +83,15 @@ describe("groupTasks", () => {
     ]);
   });
 
+  it("still finds names whose lower case is longer", () => {
+    const groups = groupTasks(
+      projects,
+      [{ id: 1, name: "İnventur", projectId: 1 }],
+      "vent",
+    );
+    expect(names(groups)).toEqual([["Nordlicht", ["İnventur"]]]);
+  });
+
   it("returns no groups when nothing matches", () => {
     expect(groupTasks(projects, tasks, "nichts")).toEqual([]);
   });
@@ -84,6 +100,14 @@ describe("groupTasks", () => {
     const copy = structuredClone(tasks);
     groupTasks(projects, tasks, "a");
     expect(tasks).toEqual(copy);
+  });
+});
+
+describe("hasTaskNamed", () => {
+  it("finds a task with the same name, ignoring case and spaces", () => {
+    expect(hasTaskNamed(tasks, "  kick-off ")).toBe(true);
+    expect(hasTaskNamed(tasks, "Kick")).toBe(false);
+    expect(hasTaskNamed(tasks, "")).toBe(false);
   });
 });
 

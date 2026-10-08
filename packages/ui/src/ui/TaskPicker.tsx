@@ -7,7 +7,6 @@ import { Check, ChevronDown, ChevronLeft, Plus, Search } from "lucide-react";
 import {
   Autocomplete,
   Dialog,
-  DialogTrigger,
   Header,
   Input,
   ListBox,
@@ -20,6 +19,7 @@ import {
 import { focusRing } from "@horva/ui";
 
 import type {
+  TaskGroup,
   TaskPickerKey,
   TaskPickerProject,
   TaskPickerTask,
@@ -33,6 +33,7 @@ import {
   findMatch,
   formatMinutes,
   groupTasks,
+  hasTaskNamed,
   suggestProject,
 } from "./TaskPickerModel";
 
@@ -48,6 +49,8 @@ export interface TaskPickerLabels {
   field: string;
   /** The entry and trigger text for "no task". */
   noTask: string;
+  /** The trigger text when `value` is not in `tasks`. */
+  unknownTask: string;
   /** The name of the popover. */
   dialog: string;
   search: string;
@@ -65,6 +68,9 @@ export interface TaskPickerLabels {
   /** The name of the project chip in the create row. */
   changeProject: (project: string) => string;
   createFailed: string;
+  /** The chip text while a new project is not yet in `projects`. */
+  projectPending: string;
+  createProjectFailed: string;
   back: string;
   /** The text before the typed title in the project step. */
   projectFor: string;
@@ -72,15 +78,26 @@ export interface TaskPickerLabels {
   projectList: string;
   noProjects: string;
   newProject: string;
+  /** Key names in the hints. `keyMod` is Ctrl or Cmd. */
+  keyArrows: string;
+  keyEnter: string;
+  keyMod: string;
+  keyEscape: string;
   keyMove: string;
   keyPick: string;
   keyCreate: string;
   keyClose: string;
 }
 
+const isMac =
+  typeof navigator !== "undefined" &&
+  /mac|iphone|ipad/i.test(navigator.platform || navigator.userAgent);
+const modKey = isMac ? "⌘" : "Strg";
+
 const defaultLabels: TaskPickerLabels = {
   field: "Aufgabe",
   noTask: "Ohne Aufgabe",
+  unknownTask: "Unbekannte Aufgabe",
   dialog: "Aufgabe wählen",
   search: "Aufgabe suchen oder neu anlegen …",
   list: "Aufgaben",
@@ -92,12 +109,18 @@ const defaultLabels: TaskPickerLabels = {
     `„${title}“ als neue Aufgabe in ${project} anlegen`,
   changeProject: (project) => `Projekt: ${project}, ändern`,
   createFailed: "Die Aufgabe konnte nicht angelegt werden.",
+  projectPending: "Projekt wird angelegt …",
+  createProjectFailed: "Das Projekt konnte nicht angelegt werden.",
   back: "Zurück",
   projectFor: "Projekt für",
   projectSearch: "Projekt suchen …",
   projectList: "Projekte",
   noProjects: "Kein Projekt gefunden.",
   newProject: "Neues Projekt …",
+  keyArrows: "↑↓",
+  keyEnter: "Enter",
+  keyMod: modKey,
+  keyEscape: "esc",
   keyMove: "wählen",
   keyPick: "übernehmen",
   keyCreate: "neu",
@@ -134,6 +157,8 @@ export interface TaskPickerPanelProps {
   /** Formats tracked minutes. @default `h:mm` */
   formatDuration?: (minutes: number) => string;
   labels?: Partial<TaskPickerLabels>;
+  /** The search text the panel starts with. */
+  defaultQuery?: string;
   className?: string;
 }
 
@@ -142,11 +167,6 @@ const taskKey = (id: TaskPickerKey) => `task:${String(id)}`;
 const projectKey = (id: TaskPickerKey) => `project:${String(id)}`;
 /** The list is filtered by the picker, so the autocomplete keeps all. */
 const keepAll = () => true;
-
-const isMac =
-  typeof navigator !== "undefined" &&
-  /mac|iphone|ipad/i.test(navigator.platform || navigator.userAgent);
-const modKey = isMac ? "⌘" : "Strg";
 
 const optionStyles = tv({
   base: "group flex min-h-8 cursor-default items-center gap-2 rounded-md py-1 pr-2 text-body text-popover-foreground outline-0 forced-color-adjust-none hover:bg-accent hover:text-accent-foreground data-focused:bg-accent data-focused:text-accent-foreground forced-colors:data-focused:bg-[Highlight] forced-colors:data-focused:text-[HighlightText]",
@@ -199,7 +219,7 @@ function SearchInput({ label }: { label: string }) {
 }
 
 /**
- * Whatever Enter did inside the picker, such as opening it or picking a
+ * Whatever Enter did inside the open picker, such as picking or creating a
  * task, it does nothing more in a form or table row around it.
  */
 function keepEnterInside(e: React.KeyboardEvent) {
@@ -217,13 +237,15 @@ function CreateRow({
   onChangeProject,
 }: {
   title: string;
-  project: TaskPickerProject;
+  /** `undefined` while a new project is not yet in `projects`. */
+  project: TaskPickerProject | undefined;
   armed: boolean;
   pending: boolean;
   labels: TaskPickerLabels;
   onCreate: () => void;
   onChangeProject: () => void;
 }) {
+  const projectName = project?.name ?? labels.projectPending;
   return (
     <div className="border-border border-b p-1">
       <div
@@ -232,11 +254,13 @@ function CreateRow({
       >
         <RACButton
           onPress={onCreate}
-          isPending={pending}
-          // Keyboard users create with Ctrl/Cmd+Enter; Tab goes straight to
-          // the project chip.
+          // Not `isPending`: its announcement points at the button, which
+          // is gone once the task exists.
+          isDisabled={!project || pending}
+          // Keyboard users create with Ctrl/Cmd+Enter; Tab in the search
+          // opens the project step.
           excludeFromTabOrder
-          aria-label={labels.createTask(title, project.name)}
+          aria-label={labels.createTask(title, projectName)}
           className={(renderProps) =>
             focusRing({
               ...renderProps,
@@ -252,7 +276,7 @@ function CreateRow({
         </RACButton>
         <RACButton
           onPress={onChangeProject}
-          aria-label={labels.changeProject(project.name)}
+          aria-label={labels.changeProject(projectName)}
           className={(renderProps) =>
             focusRing({
               ...renderProps,
@@ -261,11 +285,13 @@ function CreateRow({
             })
           }
         >
-          <ProjectDot color={project.color} size="sm" />
-          <span className="truncate">{project.name}</span>
+          <ProjectDot color={project?.color} size="sm" />
+          <span className="truncate">{projectName}</span>
           <ChevronDown aria-hidden className="size-3 shrink-0" />
         </RACButton>
-        <Kbd className="ms-auto shrink-0 max-sm:hidden">{modKey} Enter</Kbd>
+        <Kbd className="ms-auto shrink-0 max-sm:hidden">
+          {labels.keyMod} {labels.keyEnter}
+        </Kbd>
       </div>
     </div>
   );
@@ -282,27 +308,89 @@ function KeyHints({
   return (
     <div
       aria-hidden
-      className="border-border bg-muted text-muted-foreground flex gap-3 border-t px-3 py-1.5 text-[11px] leading-4 whitespace-nowrap max-sm:hidden"
+      data-key-hints
+      className="border-border bg-muted text-muted-foreground flex flex-wrap gap-x-3 gap-y-0.5 border-t px-3 py-1.5 text-[11px] leading-4 max-sm:hidden"
     >
-      <span>
-        <Kbd className="me-1">↑↓</Kbd>
+      <span className="whitespace-nowrap">
+        <Kbd className="me-1">{labels.keyArrows}</Kbd>
         {labels.keyMove}
       </span>
-      <span>
-        <Kbd className="me-1">Enter</Kbd>
+      <span className="whitespace-nowrap">
+        <Kbd className="me-1">{labels.keyEnter}</Kbd>
         {labels.keyPick}
       </span>
       {canCreate && (
-        <span>
-          <Kbd className="me-1">{modKey} Enter</Kbd>
+        <span className="whitespace-nowrap">
+          <Kbd className="me-1">
+            {labels.keyMod} {labels.keyEnter}
+          </Kbd>
           {labels.keyCreate}
         </span>
       )}
-      <span>
-        <Kbd className="me-1">esc</Kbd>
+      <span className="whitespace-nowrap">
+        <Kbd className="me-1">{labels.keyEscape}</Kbd>
         {labels.keyClose}
       </span>
     </div>
+  );
+}
+
+/** One project in the list: its sticky head and its tasks. */
+function TaskGroupSection({
+  group,
+  query,
+  formatDuration,
+}: {
+  group: TaskGroup;
+  query: string;
+  formatDuration: (minutes: number) => string;
+}) {
+  return (
+    <ListBoxSection>
+      <Header className="border-border bg-popover text-popover-foreground text-small sticky top-(--picker-top) z-10 mt-1 flex items-center gap-2 border-t px-2 pt-2.5 pb-1 font-semibold [[role=option]+section>&]:mt-0 [[role=option]+section>&]:border-t-0 [section:first-child>&]:mt-0 [section:first-child>&]:border-t-0">
+        <ProjectDot color={group.project.color} />
+        <span className="truncate">
+          <Highlight text={group.project.name} query={query} />
+        </span>
+        <span className="text-muted-foreground ms-auto font-mono text-[11px] leading-4 font-normal">
+          {group.tasks.length}
+        </span>
+      </Header>
+      {group.tasks.map((task) => (
+        <ListBoxItem
+          key={taskKey(task.id)}
+          id={taskKey(task.id)}
+          textValue={task.name}
+          className={optionStyles({ indent: true })}
+        >
+          {({ isSelected }) => (
+            <>
+              <span className="min-w-0 flex-1 truncate">
+                <Highlight text={task.name} query={query} />
+              </span>
+              {task.trackedMinutes != null && (
+                <span className="type-duration-small text-muted-foreground group-hover:text-accent-foreground group-data-focused:text-accent-foreground shrink-0">
+                  {formatDuration(task.trackedMinutes)}
+                </span>
+              )}
+              <SelectedCheck isSelected={isSelected} />
+            </>
+          )}
+        </ListBoxItem>
+      ))}
+    </ListBoxSection>
+  );
+}
+
+/** A message that an action failed, read out at once. */
+function ErrorLine({ children }: { children: React.ReactNode }) {
+  return (
+    <p
+      role="alert"
+      className="text-destructive text-caption border-border border-b px-3 py-1.5"
+    >
+      {children}
+    </p>
   );
 }
 
@@ -369,10 +457,11 @@ export function TaskPickerPanel({
   allowNoTask = true,
   formatDuration = formatMinutes,
   labels: labelOverrides,
+  defaultQuery = "",
   className,
 }: TaskPickerPanelProps) {
   const labels = { ...defaultLabels, ...labelOverrides };
-  const [query, setQuery] = useState("");
+  const [query, setQuery] = useState(defaultQuery);
   const [projectQuery, setProjectQuery] = useState("");
   const [step, setStep] = useState<"tasks" | "project">("tasks");
   const [chosenProjectId, setChosenProjectId] = useState<TaskPickerKey>();
@@ -380,6 +469,10 @@ export function TaskPickerPanel({
   const [createArmed, setCreateArmed] = useState(false);
   const [pending, setPending] = useState(false);
   const [failed, setFailed] = useState(false);
+  const [projectPending, setProjectPending] = useState(false);
+  const [projectFailed, setProjectFailed] = useState(false);
+  // Guards against a second press before the pending state has rendered.
+  const busy = useRef(false);
 
   const title = query.trim();
   const groups = useMemo(
@@ -390,13 +483,23 @@ export function TaskPickerPanel({
     () => new Map(tasks.map((task) => [taskKey(task.id), task.id])),
     [tasks],
   );
-  const targetProject =
-    projects.find((project) => project.id === chosenProjectId) ??
-    suggestProject(projects, query, lastProjectId);
-  const canCreate = !!onCreateTask && title !== "" && !!targetProject;
+  const chosenProject = projects.find((p) => p.id === chosenProjectId);
+  // A picked or new project that is not yet in `projects`: wait for it
+  // instead of falling back to the suggestion.
+  const waitingForProject = chosenProjectId !== undefined && !chosenProject;
+  const targetProject = waitingForProject
+    ? undefined
+    : (chosenProject ?? suggestProject(projects, query, lastProjectId));
+  const showCreateRow =
+    !!onCreateTask &&
+    title !== "" &&
+    (!!targetProject || waitingForProject) &&
+    !hasTaskNamed(tasks, title);
+  const canCreate = showCreateRow && !!targetProject;
 
   async function create() {
-    if (!onCreateTask || !targetProject || title === "" || pending) return;
+    if (!onCreateTask || !targetProject || !canCreate || busy.current) return;
+    busy.current = true;
     setPending(true);
     setFailed(false);
     try {
@@ -404,6 +507,7 @@ export function TaskPickerPanel({
     } catch {
       setFailed(true);
     } finally {
+      busy.current = false;
       setPending(false);
     }
   }
@@ -420,8 +524,19 @@ export function TaskPickerPanel({
   }
 
   async function createProject() {
-    const id = await onCreateProject?.(projectQuery.trim());
-    if (id != null) pickProject(id);
+    if (!onCreateProject || busy.current) return;
+    busy.current = true;
+    setProjectPending(true);
+    setProjectFailed(false);
+    try {
+      const id = await onCreateProject(projectQuery.trim());
+      if (id != null) pickProject(id);
+    } catch {
+      setProjectFailed(true);
+    } finally {
+      busy.current = false;
+      setProjectPending(false);
+    }
   }
 
   function onTaskSelection(keys: Selection) {
@@ -449,13 +564,21 @@ export function TaskPickerPanel({
   // Runs before the search field and the list see the key.
   function onKeyDownCapture(e: React.KeyboardEvent) {
     if (e.key.startsWith("Arrow")) setCreateArmed(false);
-    if (e.key !== "Enter" || e.nativeEvent.isComposing) return;
     if (!(e.target instanceof HTMLInputElement)) return;
+    const inSearch = step === "tasks";
+    if (e.key === "Tab" && !e.shiftKey && inSearch && showCreateRow) {
+      // Tab moves on to the project of the new task.
+      e.preventDefault();
+      e.stopPropagation();
+      setStep("project");
+      return;
+    }
+    if (e.key !== "Enter" || e.nativeEvent.isComposing) return;
     // The search fields may sit in a form; Enter must not submit it.
     e.preventDefault();
     const wantsCreate =
       e.metaKey || e.ctrlKey || createArmed || groups.length === 0;
-    if (step === "tasks" && canCreate && wantsCreate) {
+    if (inSearch && showCreateRow && wantsCreate) {
       e.stopPropagation();
       void create();
     }
@@ -496,7 +619,7 @@ export function TaskPickerPanel({
             top={
               <>
                 <SearchInput label={labels.search} />
-                {canCreate && (
+                {showCreateRow && (
                   <CreateRow
                     title={title}
                     project={targetProject}
@@ -507,14 +630,7 @@ export function TaskPickerPanel({
                     onChangeProject={() => setStep("project")}
                   />
                 )}
-                {failed && (
-                  <p
-                    role="alert"
-                    className="text-destructive text-caption border-border border-b px-3 py-1.5"
-                  >
-                    {labels.createFailed}
-                  </p>
-                )}
+                {failed && <ErrorLine>{labels.createFailed}</ErrorLine>}
               </>
             }
             foot={<KeyHints labels={labels} canCreate={!!onCreateTask} />}
@@ -550,39 +666,12 @@ export function TaskPickerPanel({
                 </ListBoxItem>
               )}
               {groups.map((group) => (
-                <ListBoxSection key={projectKey(group.project.id)}>
-                  <Header className="border-border bg-popover text-popover-foreground text-small sticky top-(--picker-top) z-10 mt-1 flex items-center gap-2 border-t px-2 pt-2.5 pb-1 font-semibold [[role=option]+section>&]:mt-0 [[role=option]+section>&]:border-t-0 [section:first-child>&]:mt-0 [section:first-child>&]:border-t-0">
-                    <ProjectDot color={group.project.color} />
-                    <span className="truncate">
-                      <Highlight text={group.project.name} query={query} />
-                    </span>
-                    <span className="text-muted-foreground ms-auto font-mono text-[11px] leading-4 font-normal">
-                      {group.tasks.length}
-                    </span>
-                  </Header>
-                  {group.tasks.map((task) => (
-                    <ListBoxItem
-                      key={taskKey(task.id)}
-                      id={taskKey(task.id)}
-                      textValue={task.name}
-                      className={optionStyles({ indent: true })}
-                    >
-                      {({ isSelected }) => (
-                        <>
-                          <span className="min-w-0 flex-1 truncate">
-                            <Highlight text={task.name} query={query} />
-                          </span>
-                          {task.trackedMinutes != null && (
-                            <span className="type-duration-small text-muted-foreground group-hover:text-accent-foreground group-data-focused:text-accent-foreground shrink-0">
-                              {formatDuration(task.trackedMinutes)}
-                            </span>
-                          )}
-                          <SelectedCheck isSelected={isSelected} />
-                        </>
-                      )}
-                    </ListBoxItem>
-                  ))}
-                </ListBoxSection>
+                <TaskGroupSection
+                  key={projectKey(group.project.id)}
+                  group={group}
+                  query={query}
+                  formatDuration={formatDuration}
+                />
               ))}
             </ListBox>
           </ScrollFrame>
@@ -615,6 +704,9 @@ export function TaskPickerPanel({
                   </span>
                 </div>
                 <SearchInput label={labels.projectSearch} />
+                {projectFailed && (
+                  <ErrorLine>{labels.createProjectFailed}</ErrorLine>
+                )}
               </>
             }
             foot={
@@ -622,6 +714,7 @@ export function TaskPickerPanel({
                 <div className="border-border bg-popover border-t p-1">
                   <RACButton
                     onPress={() => void createProject()}
+                    isDisabled={projectPending}
                     className={(renderProps) =>
                       focusRing({
                         ...renderProps,
@@ -676,16 +769,8 @@ export function TaskPickerPanel({
   );
 }
 
-const triggerStyles = tv({
-  extend: focusRing,
-  base: "border-input-border bg-input text-foreground text-body flex h-9 w-full min-w-45 cursor-default items-center gap-2 rounded-md border ps-2.5 pe-2 text-start font-sans transition [-webkit-tap-highlight-color:transparent]",
-  variants: {
-    isDisabled: {
-      false: "hover:bg-accent pressed:bg-accent",
-      true: "opacity-45 forced-colors:text-[GrayText]",
-    },
-  },
-});
+const triggerStyles =
+  "border-input-border bg-input text-foreground text-body outline-ring flex h-9 w-full min-w-45 cursor-default items-center gap-2 rounded-md border ps-2.5 pe-2 text-start font-sans outline-offset-2 transition [-webkit-tap-highlight-color:transparent] focus-visible:outline-2 enabled:hover:bg-accent disabled:opacity-45 forced-colors:outline-[Highlight] forced-colors:disabled:text-[GrayText]";
 
 export interface TaskPickerProps extends TaskPickerPanelProps {
   /** The visible label above the field. */
@@ -703,6 +788,10 @@ export interface TaskPickerProps extends TaskPickerPanelProps {
  * A field to pick a task: the trigger shows project dot, task and project;
  * the popover holds the `TaskPickerPanel`. Picking or creating a task
  * closes it and gives the focus back to the trigger.
+ *
+ * Keys on the closed field: arrow down (also with Alt), Space or a typed
+ * character open it; the character starts the search. Enter does not open
+ * it and reaches the elements around, such as a row that saves on Enter.
  */
 export function TaskPicker({
   label,
@@ -716,7 +805,9 @@ export function TaskPicker({
 }: TaskPickerProps) {
   const labels = { ...defaultLabels, ...panel.labels };
   const [openState, setOpenState] = useState(defaultOpen);
+  const [startQuery, setStartQuery] = useState("");
   const open = isOpen ?? openState;
+  const triggerRef = useRef<HTMLButtonElement>(null);
   const id = useId();
   const labelId = `${id}-label`;
   const valueId = `${id}-value`;
@@ -724,6 +815,25 @@ export function TaskPicker({
   function setOpen(next: boolean) {
     setOpenState(next);
     onOpenChange?.(next);
+    if (!next) triggerRef.current?.focus();
+  }
+
+  function openWith(query: string) {
+    setStartQuery(query);
+    setOpen(true);
+  }
+
+  function onTriggerKeyDown(e: React.KeyboardEvent<HTMLButtonElement>) {
+    if (e.key === "Enter") {
+      // Belongs to the row or form around the field; no click, no opening.
+      e.preventDefault();
+    } else if (e.key === "ArrowDown" || e.key === " ") {
+      e.preventDefault();
+      openWith("");
+    } else if (e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey) {
+      e.preventDefault();
+      openWith(e.key);
+    }
   }
 
   const task =
@@ -733,14 +843,13 @@ export function TaskPicker({
   const project = task
     ? panel.projects.find((p) => p.id === task.projectId)
     : undefined;
+  let emptyText = placeholder ?? labels.noTask;
+  if (panel.value !== null && !task) emptyText = labels.unknownTask;
 
   return (
-    // The handler only keeps Enter inside; the trigger is the control.
-    // oxlint-disable-next-line jsx-a11y/no-static-element-interactions
     <div
       data-disabled={isDisabled ? true : undefined}
       className={twMerge("flex flex-col gap-1 font-sans", className)}
-      onKeyDown={keepEnterInside}
     >
       <span
         id={labelId}
@@ -750,52 +859,58 @@ export function TaskPicker({
       >
         {label ?? labels.field}
       </span>
-      <DialogTrigger isOpen={open} onOpenChange={setOpen}>
-        <RACButton
-          isDisabled={isDisabled}
-          aria-labelledby={`${labelId} ${valueId}`}
-          className={triggerStyles}
+      <button
+        ref={triggerRef}
+        type="button"
+        disabled={isDisabled}
+        aria-haspopup="dialog"
+        aria-expanded={open}
+        aria-labelledby={`${labelId} ${valueId}`}
+        className={triggerStyles}
+        onClick={() => openWith("")}
+        onKeyDown={onTriggerKeyDown}
+      >
+        <span id={valueId} className="flex min-w-0 flex-1 items-center gap-2">
+          {task ? (
+            <>
+              <ProjectDot color={project?.color} />
+              <span className="truncate">{task.name}</span>
+              {project && (
+                <span className="text-muted-foreground min-w-0 shrink-[2] truncate">
+                  · {project.name}
+                </span>
+              )}
+            </>
+          ) : (
+            <span className="text-muted-foreground truncate">{emptyText}</span>
+          )}
+        </span>
+        <ChevronDown
+          aria-hidden
+          className="text-muted-foreground size-4 shrink-0"
+        />
+      </button>
+      <Popover
+        triggerRef={triggerRef}
+        isOpen={open}
+        onOpenChange={setOpen}
+        placement="bottom start"
+        className="w-[max(var(--trigger-width),22.5rem)] overflow-hidden max-sm:w-[calc(100vw-1.5rem)]"
+      >
+        <Dialog
+          aria-label={labels.dialog}
+          className="max-h-[inherit] outline-0"
         >
-          <span id={valueId} className="flex min-w-0 flex-1 items-center gap-2">
-            {task ? (
-              <>
-                <ProjectDot color={project?.color} />
-                <span className="truncate">{task.name}</span>
-                {project && (
-                  <span className="text-muted-foreground min-w-0 shrink-[2] truncate">
-                    · {project.name}
-                  </span>
-                )}
-              </>
-            ) : (
-              <span className="text-muted-foreground truncate">
-                {placeholder ?? labels.noTask}
-              </span>
-            )}
-          </span>
-          <ChevronDown
-            aria-hidden
-            className="text-muted-foreground size-4 shrink-0"
+          <TaskPickerPanel
+            {...panel}
+            defaultQuery={startQuery}
+            onChange={(next) => {
+              panel.onChange(next);
+              setOpen(false);
+            }}
           />
-        </RACButton>
-        <Popover
-          placement="bottom start"
-          className="w-[max(var(--trigger-width),22.5rem)] overflow-hidden max-sm:w-[calc(100vw-1.5rem)]"
-        >
-          <Dialog
-            aria-label={labels.dialog}
-            className="max-h-[inherit] outline-0"
-          >
-            <TaskPickerPanel
-              {...panel}
-              onChange={(next) => {
-                panel.onChange(next);
-                setOpen(false);
-              }}
-            />
-          </Dialog>
-        </Popover>
-      </DialogTrigger>
+        </Dialog>
+      </Popover>
     </div>
   );
 }

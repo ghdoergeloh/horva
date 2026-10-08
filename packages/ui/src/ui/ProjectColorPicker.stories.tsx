@@ -120,6 +120,11 @@ export const Keyboard: Story = {
     await expect(args.onChange).toHaveBeenLastCalledWith("project-1");
     await userEvent.keyboard("{Home}{ArrowLeft}");
     await expect(args.onChange).toHaveBeenLastCalledWith("project-18");
+    // Enter on a swatch takes it and stays inside the picker.
+    await userEvent.keyboard("{ArrowLeft}{Enter}");
+    await expect(args.onChange).toHaveBeenLastCalledWith("project-17");
+    await expect(radio(canvasElement, "Schiefer")).toBeChecked();
+    await expect(outerKeys).not.toHaveBeenCalledWith("Enter");
     // One tab stop: Tab leaves the grid for the custom field.
     await userEvent.tab();
     await waitFor(() =>

@@ -1,8 +1,10 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 
+import { projectColorValue } from "./Chip";
 import {
   normalizeHex,
+  PROJECT_COLOR_NAMES,
   PROJECT_COLOR_PRESETS,
   ProjectColorPicker,
 } from "./ProjectColorPicker";
@@ -30,6 +32,24 @@ describe("ProjectColorPicker", () => {
     expect(PROJECT_COLOR_PRESETS).toHaveLength(18);
     expect(PROJECT_COLOR_PRESETS[0]).toBe("project-1");
     expect(PROJECT_COLOR_PRESETS[17]).toBe("project-18");
+  });
+
+  it("has one distinct name per preset", () => {
+    expect(PROJECT_COLOR_NAMES).toHaveLength(PROJECT_COLOR_PRESETS.length);
+    expect(new Set(PROJECT_COLOR_NAMES).size).toBe(PROJECT_COLOR_NAMES.length);
+  });
+
+  it("uses presets that the project dot shows as theme tokens", () => {
+    for (const token of PROJECT_COLOR_PRESETS) {
+      expect(projectColorValue(token)).toBe(`var(--${token})`);
+    }
+  });
+
+  it("names each swatch with its preset name", () => {
+    render(<ProjectColorPicker value={null} onChange={() => undefined} />);
+    expect(
+      screen.getAllByRole("radio").map((r) => r.getAttribute("aria-label")),
+    ).toEqual([...PROJECT_COLOR_NAMES]);
   });
 
   it("shows a custom value in the field and checks no preset", () => {
