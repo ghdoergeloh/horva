@@ -15,8 +15,5 @@ export const PROJECT_COLOR_PRESETS = [
   "#64748b",
 ] as const;
 
-/** The color of a new project. */
-export const DEFAULT_PROJECT_COLOR = PROJECT_COLOR_PRESETS[0];
-
 /** A slot without a task, and so without a project color. */
 export const NO_PROJECT_COLOR = "#9ca3af";
