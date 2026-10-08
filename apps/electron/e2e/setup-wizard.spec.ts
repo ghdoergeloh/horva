@@ -28,6 +28,13 @@ test("first launch (no config yet) shows the setup wizard", async () => {
     await expect(
       window.getByRole("button", { name: "Loslegen" }),
     ).toBeVisible();
+
+    // Each field is linked to its label, and the database field to its hint.
+    await expect(window.getByLabel("Dein Name")).toBeFocused();
+    const databaseUrl = window.getByLabel("PostgreSQL-Verbindungs-URL");
+    await expect(databaseUrl).toHaveAccessibleDescription(
+      "Wo deine Daten gespeichert werden. Voreingestellt ist eine lokale Docker-Instanz.",
+    );
   } finally {
     await app.close();
     await rm(configDir, { recursive: true, force: true });

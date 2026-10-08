@@ -173,33 +173,23 @@ function SetupWizard({ defaultDatabaseUrl, onDone }: SetupWizardProps) {
         </p>
 
         <div className="mt-6 space-y-4">
-          <div>
-            <label className="text-foreground mb-1 block text-xs font-medium">
-              {t("setup.nameLabel")}
-            </label>
-            <TextField
-              // oxlint-disable-next-line jsx-a11y/no-autofocus -- The setup form is the only content on this screen.
-              autoFocus
-              value={name}
-              onChange={setName}
-              placeholder={t("setup.namePlaceholder")}
-              className="w-full"
-            />
-          </div>
-          <div>
-            <label className="text-foreground mb-1 block text-xs font-medium">
-              {t("setup.databaseUrlLabel")}
-            </label>
-            <TextField
-              value={databaseUrl}
-              onChange={setDatabaseUrl}
-              placeholder="postgresql://…"
-              className="w-full font-mono text-xs"
-            />
-            <p className="text-muted-foreground mt-1 text-xs">
-              {t("setup.databaseUrlHint")}
-            </p>
-          </div>
+          <TextField
+            // oxlint-disable-next-line jsx-a11y/no-autofocus -- The setup form is the only content on this screen.
+            autoFocus
+            label={t("setup.nameLabel")}
+            value={name}
+            onChange={setName}
+            placeholder={t("setup.namePlaceholder")}
+            className="w-full"
+          />
+          <TextField
+            label={t("setup.databaseUrlLabel")}
+            description={t("setup.databaseUrlHint")}
+            value={databaseUrl}
+            onChange={setDatabaseUrl}
+            placeholder="postgresql://…"
+            className="w-full"
+          />
         </div>
 
         {error && (
