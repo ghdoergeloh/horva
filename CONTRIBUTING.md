@@ -110,7 +110,7 @@ See [`AGENTS.md`](./AGENTS.md) for the rules coding agents follow here — they 
 
 ## Commit messages
 
-We use [Conventional Commits](https://www.conventionalcommits.org/), enforced via commitlint + a husky pre-commit hook.
+We use [Conventional Commits](https://www.conventionalcommits.org/), checked by commitlint in the husky `commit-msg` hook. This hook runs only on your machine; in continuous integration the _PR Title_ workflow checks the pull request title.
 
 Format:
 
@@ -175,9 +175,36 @@ Small, well-scoped requests are much more likely to get picked up.
 
 ## Releases
 
-- The Electron desktop app is built and attached to [GitHub Releases](https://github.com/ghdoergeloh/horva/releases) automatically when a tag matching `v*` is pushed.
-- Release artifacts cover macOS (`.dmg`), Windows (`.exe` via NSIS), and Linux (`.AppImage`).
-- Maintainers cut releases; contributors don't need to create tags.
+Releases get their version from the Conventional Commits on `main`. Nobody picks a version number by hand.
+
+**How it works**
+
+1. Every merge into `main` runs [release-please](https://github.com/googleapis/release-please). It opens or updates one release PR with the title `chore(main): release <version>`. That PR carries the next version (in `package.json`, `apps/electron/package.json` and `.release-please-manifest.json`) and the `CHANGELOG.md` entries for everything merged since the last release. A merge into `main` never releases on its own.
+2. Merging the release PR creates the tag and a draft GitHub Release with the changelog.
+3. Then the Electron installers for macOS (`.dmg`), Windows (`.exe` via NSIS) and Linux (`.AppImage`) are built and attached, and the release is published. The release stays a draft until the installers can be downloaded.
+
+**Which commit bumps what** (while the version is below `1.0.0`):
+
+| Commit                                                      | Bump                           |
+| ----------------------------------------------------------- | ------------------------------ |
+| `fix: …`, `perf: …`, `revert: …`                            | patch: `0.1.0` → `0.1.1`       |
+| `feat: …`                                                   | minor: `0.1.1` → `0.2.0`       |
+| `feat!: …` or a `BREAKING CHANGE:` footer                   | minor: majors start at `1.0.0` |
+| `docs`, `refactor`, `build`, `chore`, `ci`, `style`, `test` | no release                     |
+
+Only the types that make a release appear in the changelog.
+
+To go to `1.0.0` (or any other version), add the footer `Release-As: 1.0.0` to a commit message or to a pull request description.
+
+**Notes for maintainers**
+
+- Pull requests are merged with a merge commit. Its title is the **PR title** and its body is the **PR description**. release-please reads this merge commit and the branch commits, so all of them count for the version and can show up in the changelog. Footers in the PR description, such as `BREAKING CHANGE:` or `Release-As:`, count as well.
+- commitlint checks the branch commits on your machine; the _PR Title_ workflow checks the title.
+- The release PR is opened with the `GITHUB_TOKEN`, so no checks run on it by themselves. It only changes version numbers and `CHANGELOG.md`.
+- release-please needs the repository setting "Allow GitHub Actions to create and approve pull requests" (Settings, Actions, General).
+- If the installer build fails, the release stays a draft. Re-run the failed jobs of the _Release Please_ run.
+- A release can also be built by hand: push a `v*` tag, or run the _Release Electron App_ workflow with an existing tag as input.
+- Contributors do not need to create tags or change version numbers.
 
 ## License
 

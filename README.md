@@ -130,7 +130,7 @@ pnpm db:studio            # Open Drizzle Studio
 # Electron desktop app
 pnpm -F @horva/electron-app dev       # Dev mode
 pnpm -F @horva/electron-app build     # Build main, preload and renderer (with the React app)
-pnpm -F @horva/electron-app pack      # Package a distributable (.dmg / .exe / .AppImage)
+pnpm -F @horva/electron-app run pack  # Package a distributable (.dmg / .exe / .AppImage)
 
 # Scaffold a new package
 pnpm turbo gen init

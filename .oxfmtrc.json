@@ -3,6 +3,7 @@
   "printWidth": 80,
   "ignorePatterns": [
     "pnpm-lock.yaml",
+    "CHANGELOG.md",
     "**/routeTree.gen.ts",
     "turbo/generators/templates/**"
   ],

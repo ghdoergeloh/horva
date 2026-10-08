@@ -9,10 +9,10 @@ export default mergeConfig(
       coverage: {
         // Fixed floors below the measured values. Raise them by hand.
         thresholds: {
-          statements: 3,
-          branches: 1,
-          functions: 1,
-          lines: 3,
+          statements: 19,
+          branches: 15,
+          functions: 14,
+          lines: 19,
         },
       },
     },
