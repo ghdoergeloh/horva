@@ -11,10 +11,10 @@ import {
   TreeItemContent as AriaTreeItemContent,
   Button,
 } from "react-aria-components";
-import { tv } from "tailwind-variants";
 
 import { composeTailwindRenderProps, focusRing } from "@horva/ui";
 
+import { tv } from "../lib/tw";
 import { Checkbox } from "./Checkbox";
 
 const itemStyles = tv({

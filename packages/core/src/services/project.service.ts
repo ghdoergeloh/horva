@@ -1,10 +1,12 @@
-import type { Db } from "@horva/db/client";
+import type { Database } from "@horva/db/client";
 import { eq, inArray, ne } from "@horva/db";
 import { project, task } from "@horva/db/schema";
 
 import type { CreateProject, UpdateProject } from "../schemas/index.js";
+import { nextProjectColor } from "../lib/project-colors.js";
+import { createProjectSchema, updateProjectSchema } from "../schemas/index.js";
 
-export async function listProjects(db: Db, includeArchived = false) {
+export async function listProjects(db: Database, includeArchived = false) {
   const rows = await db.query.project.findMany({
     where: includeArchived
       ? ne(project.status, "deleted")
@@ -14,33 +16,46 @@ export async function listProjects(db: Db, includeArchived = false) {
   return rows;
 }
 
-export async function getProject(db: Db, id: number) {
+export async function getProject(db: Database, id: number) {
   return db.query.project.findFirst({ where: eq(project.id, id) });
 }
 
-export async function getDefaultProject(db: Db) {
+export async function getDefaultProject(db: Database) {
   return db.query.project.findFirst({ where: eq(project.isDefault, true) });
 }
 
-export async function createProject(db: Db, input: CreateProject) {
-  const [row] = await db.insert(project).values(input).returning();
+/**
+ * Creates a project. Without a color it gets the least used of
+ * `project-1` … `project-8` among the projects that are not deleted.
+ */
+export async function createProject(db: Database, input: CreateProject) {
+  const { name, color } = createProjectSchema.parse(input);
+  const [row] = await db
+    .insert(project)
+    .values({ name, color: color ?? (await nextColor(db)) })
+    .returning();
   if (!row) throw new Error("Failed to create project");
   return row;
 }
 
-export async function updateProject(db: Db, id: number, input: UpdateProject) {
+export async function updateProject(
+  db: Database,
+  id: number,
+  input: UpdateProject,
+) {
+  const changes = updateProjectSchema.parse(input);
   const existing = await getProject(db, id);
   if (!existing) throw new Error(`Project #${id} not found`);
   const [row] = await db
     .update(project)
-    .set({ ...input, updatedAt: new Date() })
+    .set({ ...changes, updatedAt: new Date() })
     .where(eq(project.id, id))
     .returning();
   if (!row) throw new Error(`Project #${id} not found after update`);
   return row;
 }
 
-export async function archiveProject(db: Db, id: number) {
+export async function archiveProject(db: Database, id: number) {
   const existing = await getProject(db, id);
   if (!existing) throw new Error(`Project #${id} not found`);
   if (existing.isDefault) throw new Error("Cannot archive the default project");
@@ -53,7 +68,7 @@ export async function archiveProject(db: Db, id: number) {
   return row;
 }
 
-export async function deleteProject(db: Db, id: number) {
+export async function deleteProject(db: Database, id: number) {
   const existing = await getProject(db, id);
   if (!existing) throw new Error(`Project #${id} not found`);
   if (existing.isDefault) throw new Error("Cannot delete the default project");
@@ -89,4 +104,12 @@ export async function deleteProject(db: Db, id: number) {
     if (!row) throw new Error(`Project #${id} not found after delete`);
     return row;
   });
+}
+
+async function nextColor(db: Database): Promise<string> {
+  const rows = await db
+    .select({ color: project.color })
+    .from(project)
+    .where(ne(project.status, "deleted"));
+  return nextProjectColor(rows.map((row) => row.color));
 }

@@ -12,8 +12,8 @@
     "pack": "electron-vite build && electron-builder",
     "start": "electron-vite preview",
     "test:e2e": "playwright test",
-    "test:unit": "vitest run --passWithNoTests",
-    "test:unit:coverage": "vitest run --coverage --passWithNoTests",
+    "test:unit": "vitest run",
+    "test:unit:coverage": "vitest run --coverage",
     "typecheck": "tsc --noEmit --emitDeclarationOnly false -p tsconfig.node.json && tsc --noEmit --emitDeclarationOnly false -p tsconfig.web.json"
   },
   "dependencies": {
@@ -31,6 +31,7 @@
     "@horva/db": "workspace:*",
     "@horva/tsconfig": "workspace:*",
     "@horva/ui": "workspace:*",
+    "@horva/vitest": "workspace:*",
     "@playwright/test": "catalog:",
     "@tailwindcss/vite": "catalog:",
     "@tanstack/react-router": "catalog:",
@@ -41,7 +42,6 @@
     "electron": "catalog:",
     "electron-builder": "catalog:",
     "electron-vite": "catalog:",
-    "jsdom": "catalog:",
     "react": "catalog:react19",
     "react-dom": "catalog:react19",
     "typescript": "catalog:",

@@ -6,10 +6,10 @@ import {
   SliderOutput,
   SliderTrack,
 } from "react-aria-components";
-import { tv } from "tailwind-variants";
 
 import { composeTailwindRenderProps } from "@horva/ui";
 
+import { tv } from "../lib/tw";
 import { ColorThumb } from "./ColorThumb";
 import { Label } from "./Field";
 

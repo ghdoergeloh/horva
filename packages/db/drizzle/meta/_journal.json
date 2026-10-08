@@ -29,6 +29,20 @@
       "when": 1781513536539,
       "tag": "0003_moco_integration",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1790778541352,
+      "tag": "0004_task_priority",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1791459360742,
+      "tag": "0005_project_color_tokens",
+      "breakpoints": true
     }
   ]
 }

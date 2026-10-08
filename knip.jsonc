@@ -12,6 +12,20 @@
       // `@orpc/tanstack-query` entry point rather than deleted and re-added.
       "entry": ["src/lib/orpc.ts"],
     },
+    "apps/e2e": {
+      // Started by the web server command in playwright.config.ts.
+      "entry": ["src/prepare-db.ts"],
+      "ignoreDependencies": ["tsx"],
+    },
+    "apps/cli": {
+      // External in build.mjs, so the bundled @horva/db loads it from
+      // node_modules at runtime; no source file imports it directly.
+      "ignoreDependencies": ["pg"],
+    },
+    "packages/auth": {
+      // Loaded by the better-auth CLI (`pnpm -F @horva/auth generate`).
+      "entry": ["src/cli-config.ts"],
+    },
     "packages/db": {
       // The Drizzle plugin would execute drizzle.config.ts, which needs
       // DATABASE_URL. The config is read by drizzle-kit, not imported.

@@ -2,8 +2,8 @@ import type { ReactNode } from "react";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 
-import { LoadingSpinner } from "@horva/react";
 import { Button } from "@horva/ui/Button";
+import { Loader } from "@horva/ui/Logo";
 import { TextField } from "@horva/ui/TextField";
 
 import { setupBridge } from "../lib/setup.js";
@@ -56,7 +56,8 @@ export function SetupGate({ children }: SetupGateProps) {
   if (state.kind === "loading") {
     return (
       <div className="bg-background flex h-screen items-center justify-center">
-        <LoadingSpinner size={64} label={t("loading")} />
+        {/* No delay: the boot loader of index.html has shown the wait. */}
+        <Loader size={64} label={t("loading")} />
       </div>
     );
   }
@@ -109,13 +110,14 @@ function SetupError({ message, onRetry }: SetupErrorProps) {
   return (
     <div className="bg-background flex h-screen items-center justify-center p-6">
       <div className="border-border bg-card text-card-foreground w-full max-w-md rounded-xl border p-6 shadow-sm">
-        <h1 className="text-foreground text-xl font-semibold">
-          {t("bootError.title")}
-        </h1>
+        <h1 className="text-title">{t("bootError.title")}</h1>
         <p className="text-muted-foreground mt-1 text-sm">
           {t("bootError.subtitle")}
         </p>
-        <div className="bg-destructive/10 text-destructive mt-4 rounded-md p-3 font-mono text-xs break-all">
+        <div
+          role="alert"
+          className="border-destructive text-destructive mt-4 rounded-md border p-3 font-mono text-xs break-all"
+        >
           {message}
         </div>
         <div className="mt-6 flex justify-end">
@@ -165,35 +167,46 @@ function SetupWizard({ defaultDatabaseUrl, onDone }: SetupWizardProps) {
   return (
     <div className="bg-background flex h-screen items-center justify-center p-6">
       <div className="border-border bg-card text-card-foreground w-full max-w-md rounded-xl border p-6 shadow-sm">
-        <h1 className="text-foreground text-xl font-semibold">
-          {t("setup.title")}
-        </h1>
+        <h1 className="text-title">{t("setup.title")}</h1>
         <p className="text-muted-foreground mt-1 text-sm">
           {t("setup.subtitle")}
         </p>
 
         <div className="mt-6 space-y-4">
-          <TextField
-            // oxlint-disable-next-line jsx-a11y/no-autofocus -- The setup form is the only content on this screen.
-            autoFocus
-            label={t("setup.nameLabel")}
-            value={name}
-            onChange={setName}
-            placeholder={t("setup.namePlaceholder")}
-            className="w-full"
-          />
-          <TextField
-            label={t("setup.databaseUrlLabel")}
-            description={t("setup.databaseUrlHint")}
-            value={databaseUrl}
-            onChange={setDatabaseUrl}
-            placeholder="postgresql://…"
-            className="w-full"
-          />
+          <div>
+            <label className="text-foreground mb-1 block text-xs font-medium">
+              {t("setup.nameLabel")}
+            </label>
+            <TextField
+              // oxlint-disable-next-line jsx-a11y/no-autofocus -- The setup form is the only content on this screen.
+              autoFocus
+              value={name}
+              onChange={setName}
+              placeholder={t("setup.namePlaceholder")}
+              className="w-full"
+            />
+          </div>
+          <div>
+            <label className="text-foreground mb-1 block text-xs font-medium">
+              {t("setup.databaseUrlLabel")}
+            </label>
+            <TextField
+              value={databaseUrl}
+              onChange={setDatabaseUrl}
+              placeholder="postgresql://…"
+              className="w-full font-mono text-xs"
+            />
+            <p className="text-muted-foreground mt-1 text-xs">
+              {t("setup.databaseUrlHint")}
+            </p>
+          </div>
         </div>
 
         {error && (
-          <div className="bg-destructive/10 text-destructive mt-4 rounded-md p-3 text-xs">
+          <div
+            role="alert"
+            className="border-destructive text-destructive mt-4 rounded-md border p-3 text-xs"
+          >
             {error}
           </div>
         )}

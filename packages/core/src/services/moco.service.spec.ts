@@ -3,7 +3,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import type { Db } from "@horva/db/client";
+import type { Database } from "@horva/db/client";
 
 import { writeConfig } from "../config/config.js";
 import { buildSyncPreview, getTaskMapping, runSync } from "./moco.service.js";
@@ -28,7 +28,7 @@ interface FakeSlot {
 function makeDb(
   slots: FakeSlot[],
   overrides: { taskId: number; mocoTaskId: number }[] = [],
-): Db {
+): Database {
   return {
     query: {
       slot: {
@@ -40,7 +40,7 @@ function makeDb(
         findMany: () => Promise.resolve(overrides),
       },
     },
-  } as unknown as Db;
+  } as unknown as Database;
 }
 
 const linkedProject = {
@@ -192,7 +192,7 @@ describe("runSync select filter", () => {
   });
 
   // Two linked tasks on the same day → two syncable rows.
-  function twoRowDb(): Db {
+  function twoRowDb(): Database {
     const project = linkedProject;
     return makeDb([
       slot("2026-06-10T09:00:00", "2026-06-10T10:00:00", {
@@ -262,12 +262,14 @@ describe("runSync select filter", () => {
 });
 
 describe("getTaskMapping", () => {
-  function dbWith(row: { taskId: number; mocoTaskId: number } | undefined): Db {
+  function dbWith(
+    row: { taskId: number; mocoTaskId: number } | undefined,
+  ): Database {
     return {
       query: {
         taskMocoMapping: { findFirst: () => Promise.resolve(row) },
       },
-    } as unknown as Db;
+    } as unknown as Database;
   }
 
   it("returns null when no override exists", async () => {

@@ -12,10 +12,10 @@ import {
   RadioButton,
   RadioField,
 } from "react-aria-components";
-import { tv } from "tailwind-variants";
 
 import { composeTailwindRenderProps, focusRing } from "@horva/ui";
 
+import { tv } from "../lib/tw";
 import { Description, FieldError, Label } from "./Field";
 
 export interface RadioGroupProps extends Omit<RACRadioGroupProps, "children"> {

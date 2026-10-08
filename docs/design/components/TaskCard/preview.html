@@ -1,0 +1,193 @@
+<!-- @dsCard group="Horva" height=470 subtitle="Abhaken + Starten vorn, „Heute“ und Datum hinten" -->
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="utf-8" />
+    <title>TaskCard</title>
+  </head>
+  <body>
+    <div class="hv-stack" style="max-width: 680px">
+      <div class="hv-card is-running">
+        <div class="hv-card__lead">
+          <button class="hv-card__check" aria-label="Erledigt"></button>
+          <button class="hv-play is-running" aria-label="Stoppen">
+            <svg class="hv-icon" viewBox="0 0 24 24">
+              <rect width="12" height="12" x="6" y="6" rx="1.5" />
+            </svg>
+          </button>
+        </div>
+        <div class="hv-card__body">
+          <div class="hv-card__title">
+            Angebot für die Stadtwerke überarbeiten
+          </div>
+          <div class="hv-card__meta">
+            <span class="hv-live">läuft</span
+            ><span class="hv-chip"
+              ><span class="hv-dot" style="--c: var(--project-3)"></span
+              ><span>Kundenprojekte</span></span
+            ><button class="hv-when is-set">
+              <svg class="hv-icon" viewBox="0 0 24 24">
+                <rect width="18" height="18" x="3" y="4" rx="2" />
+                <path d="M16 2v4" />
+                <path d="M8 2v4" />
+                <path d="M3 10h18" /></svg
+              >Heute
+            </button>
+          </div>
+        </div>
+        <div class="hv-card__side">
+          <span class="hv-card__total">1:42</span>
+        </div>
+      </div>
+
+      <div class="hv-card is-hover">
+        <div class="hv-card__lead">
+          <button class="hv-card__check" aria-label="Erledigt"></button>
+          <button class="hv-play" aria-label="Starten">
+            <svg class="hv-icon" viewBox="0 0 24 24">
+              <polygon points="6 3 20 12 6 21 6 3" />
+            </svg>
+          </button>
+        </div>
+        <div class="hv-card__body">
+          <div class="hv-card__title">Rechnung an Kranich schreiben</div>
+          <div class="hv-card__meta">
+            <span class="hv-chip"
+              ><span class="hv-dot" style="--c: var(--project-7)"></span
+              ><span>Kranich</span></span
+            ><span class="hv-chip"><span>abrechnung</span></span
+            ><button class="hv-when" aria-label="Datum wählen">
+              <svg class="hv-icon" viewBox="0 0 24 24">
+                <rect width="18" height="18" x="3" y="4" rx="2" />
+                <path d="M16 2v4" />
+                <path d="M8 2v4" />
+                <path d="M3 10h18" /></svg
+              >Datum
+            </button>
+          </div>
+        </div>
+        <div
+          class="hv-card__side"
+          style="flex-direction: row; align-items: center"
+        >
+          <button class="hv-today">
+            <svg class="hv-icon" viewBox="0 0 24 24">
+              <path d="M8 2v4" />
+              <path d="M16 2v4" />
+              <path
+                d="M21 13V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h8"
+              />
+              <path d="M3 10h18" />
+              <path d="M16 19h6" />
+              <path d="M19 16v6" /></svg
+            >Heute
+          </button>
+          <button
+            class="hv-btn hv-btn--quiet hv-btn--sm hv-btn--icon"
+            aria-label="Mehr"
+          >
+            <svg class="hv-icon" viewBox="0 0 24 24">
+              <circle cx="5" cy="12" r="1" />
+              <circle cx="12" cy="12" r="1" />
+              <circle cx="19" cy="12" r="1" />
+            </svg>
+          </button>
+          <span class="hv-card__total">0:00</span>
+        </div>
+      </div>
+
+      <div class="hv-card">
+        <div class="hv-card__lead">
+          <button class="hv-card__check" aria-label="Erledigt"></button>
+          <button class="hv-play" aria-label="Starten">
+            <svg class="hv-icon" viewBox="0 0 24 24">
+              <polygon points="6 3 20 12 6 21 6 3" />
+            </svg>
+          </button>
+        </div>
+        <div class="hv-card__body">
+          <div class="hv-card__title">Reisekosten September einreichen</div>
+          <div class="hv-card__meta">
+            <button class="hv-when is-overdue">
+              <svg class="hv-icon" viewBox="0 0 24 24">
+                <rect width="18" height="18" x="3" y="4" rx="2" />
+                <path d="M16 2v4" />
+                <path d="M8 2v4" />
+                <path d="M3 10h18" /></svg
+              >gestern 17:00</button
+            ><span class="hv-chip"
+              ><span class="hv-dot" style="--c: var(--project-1)"></span
+              ><span>Intern</span></span
+            >
+          </div>
+        </div>
+        <div class="hv-card__side">
+          <span class="hv-card__total">0:25</span>
+        </div>
+      </div>
+
+      <div class="hv-card">
+        <div class="hv-card__lead">
+          <span
+            class="hv-card__check"
+            style="
+              border: 0;
+              background: transparent;
+              color: var(--muted-foreground);
+            "
+            title="Aktivität"
+            ><svg class="hv-icon" viewBox="0 0 24 24">
+              <path d="m17 2 4 4-4 4" />
+              <path d="M3 11v-1a4 4 0 0 1 4-4h14" />
+              <path d="m7 22-4-4 4-4" />
+              <path d="M21 13v1a4 4 0 0 1-4 4H3" /></svg
+          ></span>
+          <button class="hv-play" aria-label="Starten">
+            <svg class="hv-icon" viewBox="0 0 24 24">
+              <polygon points="6 3 20 12 6 21 6 3" />
+            </svg>
+          </button>
+        </div>
+        <div class="hv-card__body">
+          <div class="hv-card__title">Nachrichten checken</div>
+          <div class="hv-card__meta">
+            <span>Aktivität · wochentags 09:00</span
+            ><span class="hv-chip"
+              ><span class="hv-dot" style="--c: var(--project-1)"></span
+              ><span>Intern</span></span
+            >
+          </div>
+        </div>
+        <div class="hv-card__side">
+          <span class="hv-card__total">0:07</span>
+        </div>
+      </div>
+
+      <div class="hv-card is-done">
+        <div class="hv-card__lead">
+          <button class="hv-card__check" aria-label="Wieder öffnen">
+            <svg
+              class="hv-icon"
+              viewBox="0 0 24 24"
+              style="width: 14px; height: 14px; stroke-width: 3"
+            >
+              <path d="M20 6 9 17l-5-5" />
+            </svg>
+          </button>
+        </div>
+        <div class="hv-card__body">
+          <div class="hv-card__title">Zeitleiste: Stundenskala ausrichten</div>
+          <div class="hv-card__meta">
+            <span class="hv-chip"
+              ><span class="hv-dot" style="--c: var(--project-7)"></span
+              ><span>Horva</span></span
+            >
+          </div>
+        </div>
+        <div class="hv-card__side">
+          <span class="hv-card__total">0:48</span>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

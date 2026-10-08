@@ -1,33 +1,28 @@
-import {
-  afterAll,
-  afterEach,
-  beforeEach,
-  describe,
-  expect,
-  it,
-  vi,
-} from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { db } from "@horva/db/client";
+import type { Database } from "@horva/db/client";
+import type { TestDatabase } from "@horva/db/testing";
+import { createTestDatabase } from "@horva/db/testing";
 
-import {
-  createProjectFixture,
-  createTaskFixture,
-  resetDb,
-} from "../test-support/db.js";
+import { createProjectFixture, createTaskFixture } from "../test-support/db.js";
 import { getLog, getPeriodRange, getSummary } from "./log.service.js";
 import { insertSlot } from "./slot.service.js";
 
+// A fresh in-memory database per test (PGlite, all migrations applied).
+let testDb: TestDatabase;
+let db: Database;
+
 beforeEach(async () => {
-  await resetDb(db);
+  testDb = await createTestDatabase();
+  db = testDb.db;
 });
 
 afterEach(() => {
   vi.useRealTimers();
 });
 
-afterAll(async () => {
-  await db.close();
+afterEach(async () => {
+  await testDb.close();
 });
 
 // getPeriodRange works in the machine's local timezone (by design — "today"

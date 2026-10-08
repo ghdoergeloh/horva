@@ -1,0 +1,174 @@
+<!-- @dsCard group="Formulare" height=330 subtitle="18 abgestimmte Projektfarben + eigene Farbe" -->
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="utf-8" />
+    <title>ColorPicker</title>
+  </head>
+  <body>
+    <div
+      style="
+        display: flex;
+        gap: var(--space-8);
+        flex-wrap: wrap;
+        align-items: flex-start;
+      "
+    >
+      <div class="hv-field" style="width: 220px">
+        <label class="hv-label">Projektfarbe</label>
+        <button class="hv-select" aria-expanded="true">
+          <span class="hv-row" style="gap: 8px"
+            ><span
+              class="hv-dot"
+              style="--c: var(--project-3); width: 14px; height: 14px"
+            ></span
+            >Teal</span
+          ><svg class="hv-icon" viewBox="0 0 24 24">
+            <path d="m6 9 6 6 6-6" />
+          </svg>
+        </button>
+      </div>
+      <div class="hv-popover" style="width: max-content">
+        <div class="hv-help" style="margin-bottom: 8px">
+          Empfohlen (gut unterscheidbar)
+        </div>
+        <div class="hv-swatches" role="radiogroup" aria-label="Projektfarbe">
+          <button
+            class="hv-swatch"
+            style="--c: var(--project-1)"
+            aria-label="indigo"
+            title="indigo"
+          ></button
+          ><button
+            class="hv-swatch"
+            style="--c: var(--project-2)"
+            aria-label="amber"
+            title="amber"
+          ></button
+          ><button
+            class="hv-swatch is-selected"
+            style="--c: var(--project-3)"
+            aria-label="teal"
+            title="teal"
+          >
+            <svg class="hv-icon" viewBox="0 0 24 24">
+              <path d="M20 6 9 17l-5-5" />
+            </svg></button
+          ><button
+            class="hv-swatch"
+            style="--c: var(--project-4)"
+            aria-label="magenta"
+            title="magenta"
+          ></button
+          ><button
+            class="hv-swatch"
+            style="--c: var(--project-5)"
+            aria-label="olive"
+            title="olive"
+          ></button
+          ><button
+            class="hv-swatch"
+            style="--c: var(--project-6)"
+            aria-label="sky"
+            title="sky"
+          ></button
+          ><button
+            class="hv-swatch"
+            style="--c: var(--project-7)"
+            aria-label="rose"
+            title="rose"
+          ></button
+          ><button
+            class="hv-swatch"
+            style="--c: var(--project-8)"
+            aria-label="violet"
+            title="violet"
+          ></button
+          ><button
+            class="hv-swatch"
+            style="--c: var(--project-9)"
+            aria-label="cyan"
+            title="cyan"
+          ></button
+          ><button
+            class="hv-swatch"
+            style="--c: var(--project-10)"
+            aria-label="red"
+            title="red"
+          ></button
+          ><button
+            class="hv-swatch"
+            style="--c: var(--project-11)"
+            aria-label="lime"
+            title="lime"
+          ></button
+          ><button
+            class="hv-swatch"
+            style="--c: var(--project-12)"
+            aria-label="purple"
+            title="purple"
+          ></button
+          ><button
+            class="hv-swatch"
+            style="--c: var(--project-13)"
+            aria-label="blue"
+            title="blue"
+          ></button
+          ><button
+            class="hv-swatch"
+            style="--c: var(--project-14)"
+            aria-label="pink"
+            title="pink"
+          ></button
+          ><button
+            class="hv-swatch"
+            style="--c: var(--project-15)"
+            aria-label="navy"
+            title="navy"
+          ></button
+          ><button
+            class="hv-swatch"
+            style="--c: var(--project-16)"
+            aria-label="brown"
+            title="brown"
+          ></button
+          ><button
+            class="hv-swatch"
+            style="--c: var(--project-17)"
+            aria-label="slate"
+            title="slate"
+          ></button
+          ><button
+            class="hv-swatch"
+            style="--c: var(--project-18)"
+            aria-label="stone"
+            title="stone"
+          ></button>
+        </div>
+        <div class="hv-cal__foot" style="align-items: center">
+          <span class="hv-help">Eigene Farbe</span>
+          <div class="hv-input" style="width: 130px; height: 30px">
+            <span
+              class="hv-dot"
+              style="--c: #2f8f83; width: 14px; height: 14px"
+            ></span>
+            <div class="hv-input__text hv-num" style="font-size: 13px">
+              #2F8F83
+            </div>
+          </div>
+        </div>
+        <div class="hv-note" style="margin-top: 8px">
+          <svg
+            class="hv-icon"
+            viewBox="0 0 24 24"
+            style="color: var(--warning)"
+          >
+            <circle cx="12" cy="12" r="10" />
+            <line x1="12" x2="12" y1="8" y2="12" />
+            <line x1="12" x2="12.01" y1="16" y2="16" /></svg
+          >Eigene Farben werden für den dunklen Modus automatisch aufgehellt.
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

@@ -1,2 +1,3 @@
-export { sendEmail } from "./transport";
-export { sendVerificationEmail, sendPasswordResetEmail } from "./emails";
+export { createMailer } from "./transport";
+export type { Email, Mailer, SmtpConfig } from "./transport";
+export { sendPasswordResetEmail, sendVerificationEmail } from "./emails";

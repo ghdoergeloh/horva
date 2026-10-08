@@ -2,7 +2,8 @@
 
 import type { ColorThumbProps } from "react-aria-components";
 import { ColorThumb as AriaColorThumb } from "react-aria-components";
-import { tv } from "tailwind-variants";
+
+import { tv } from "../lib/tw";
 
 const thumbStyles = tv({
   base: "w-4.5 h-4.5 top-[50%] left-[50%] rounded-full border-2 border-white box-border",

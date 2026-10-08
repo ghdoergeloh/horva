@@ -5,7 +5,8 @@ import {
   composeRenderProps,
   DropZone as RACDropZone,
 } from "react-aria-components";
-import { tv } from "tailwind-variants";
+
+import { tv } from "../lib/tw";
 
 const dropZone = tv({
   base: "flex items-center justify-center p-8 min-h-24 w-[30%] font-sans text-base text-balance text-center rounded-lg border border-1 border-border bg-background",

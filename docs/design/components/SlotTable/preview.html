@@ -1,0 +1,296 @@
+<!-- @dsCard group="Zeitleiste" height=520 subtitle="Slots eines Tages: lesen, Lücke, bearbeiten, läuft" -->
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="utf-8" />
+    <title>SlotTable</title>
+  </head>
+  <body>
+    <div class="hv-stack">
+      <div class="hv-panel" style="padding: var(--space-2) var(--space-3)">
+        <table class="hv-table">
+          <thead>
+            <tr>
+              <th>Von</th>
+              <th>Bis</th>
+              <th style="text-align: right">Dauer</th>
+              <th>Aufgabe</th>
+              <th>Projekt</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="">
+              <td class="t-time">09:20</td>
+              <td class="t-time">09:27</td>
+              <td class="t-dur">0:07</td>
+              <td class="t-task">Nachrichten checken</td>
+              <td>
+                <span class="hv-chip"
+                  ><span class="hv-dot" style="--c: var(--project-1)"></span
+                  ><span>Intern</span></span
+                >
+              </td>
+              <td class="t-act">
+                <button
+                  class="hv-btn hv-btn--quiet hv-btn--sm hv-btn--icon"
+                  aria-label="Bearbeiten"
+                >
+                  <svg class="hv-icon" viewBox="0 0 24 24">
+                    <path
+                      d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"
+                    />
+                  </svg>
+                </button>
+              </td>
+            </tr>
+            <tr class="is-edit">
+              <td class="t-time">
+                <input class="hv-mini" value="09:27" aria-label="Start" />
+              </td>
+              <td class="t-time">
+                <input
+                  class="hv-mini"
+                  value="10:16"
+                  aria-label="Ende"
+                  style="outline: 2px solid var(--ring); outline-offset: 1px"
+                />
+              </td>
+              <td class="t-dur">0:49</td>
+              <td class="t-task" colspan="2">
+                <button class="hv-mini is-wide">
+                  <span class="hv-dot" style="--c: var(--project-1)"></span>Tag
+                  planen
+                  <span style="color: var(--muted-foreground)">· Intern</span>
+                </button>
+              </td>
+              <td class="t-act">
+                <button class="hv-btn hv-btn--quiet hv-btn--sm">
+                  Abbrechen
+                </button>
+                <button class="hv-btn hv-btn--primary hv-btn--sm">
+                  Speichern <span class="hv-kbd">↵</span>
+                </button>
+              </td>
+            </tr>
+            <tr class="is-edit">
+              <td colspan="6" style="padding-top: 0">
+                <div class="hv-note">
+                  <svg
+                    class="hv-icon"
+                    viewBox="0 0 24 24"
+                    style="color: var(--info)"
+                  >
+                    <circle cx="12" cy="12" r="10" />
+                    <path d="M12 16v-4" />
+                    <path d="M12 8h.01" /></svg
+                  >Der folgende Slot „Copilot kennenlernen und optimieren“
+                  beginnt dann um 10:16 statt 10:16.
+                </div>
+              </td>
+            </tr>
+            <tr class="">
+              <td class="t-time">10:16</td>
+              <td class="t-time">10:50</td>
+              <td class="t-dur">0:34</td>
+              <td class="t-task">Copilot kennenlernen und optimieren</td>
+              <td>
+                <span class="hv-chip"
+                  ><span class="hv-dot" style="--c: var(--project-8)"></span
+                  ><span>KI Taskforce</span></span
+                >
+              </td>
+              <td class="t-act">
+                <button
+                  class="hv-btn hv-btn--quiet hv-btn--sm hv-btn--icon"
+                  aria-label="Bearbeiten"
+                >
+                  <svg class="hv-icon" viewBox="0 0 24 24">
+                    <path
+                      d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"
+                    />
+                  </svg>
+                </button>
+              </td>
+            </tr>
+            <tr class="">
+              <td class="t-time">10:50</td>
+              <td class="t-time">12:02</td>
+              <td class="t-dur">1:12</td>
+              <td class="t-task">Brain aufsetzen</td>
+              <td>
+                <span class="hv-chip"
+                  ><span class="hv-dot" style="--c: var(--project-2)"></span
+                  ><span>Nordlicht</span></span
+                >
+              </td>
+              <td class="t-act">
+                <button
+                  class="hv-btn hv-btn--quiet hv-btn--sm hv-btn--icon"
+                  aria-label="Bearbeiten"
+                >
+                  <svg class="hv-icon" viewBox="0 0 24 24">
+                    <path
+                      d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"
+                    />
+                  </svg>
+                </button>
+              </td>
+            </tr>
+            <tr class="is-gap">
+              <td class="t-time">12:02</td>
+              <td class="t-time">13:05</td>
+              <td class="t-dur">1:03</td>
+              <td class="t-task">Lücke</td>
+              <td></td>
+              <td class="t-act">
+                <button class="hv-btn hv-btn--quiet hv-btn--sm">
+                  <svg class="hv-icon" viewBox="0 0 24 24">
+                    <path d="M5 12h14" />
+                    <path d="M12 5v14" /></svg
+                  >Slot eintragen
+                </button>
+              </td>
+            </tr>
+            <tr class="">
+              <td class="t-time">13:05</td>
+              <td class="t-time">14:19</td>
+              <td class="t-dur">1:14</td>
+              <td class="t-task">Brain aufsetzen</td>
+              <td>
+                <span class="hv-chip"
+                  ><span class="hv-dot" style="--c: var(--project-2)"></span
+                  ><span>Nordlicht</span></span
+                >
+              </td>
+              <td class="t-act">
+                <button
+                  class="hv-btn hv-btn--quiet hv-btn--sm hv-btn--icon"
+                  aria-label="Bearbeiten"
+                >
+                  <svg class="hv-icon" viewBox="0 0 24 24">
+                    <path
+                      d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"
+                    />
+                  </svg>
+                </button>
+              </td>
+            </tr>
+            <tr class="">
+              <td class="t-time">14:19</td>
+              <td class="t-time">14:33</td>
+              <td class="t-dur">0:14</td>
+              <td class="t-task">Einarbeiten</td>
+              <td>
+                <span class="hv-chip"
+                  ><span class="hv-dot" style="--c: var(--project-2)"></span
+                  ><span>Nordlicht</span></span
+                >
+              </td>
+              <td class="t-act">
+                <button
+                  class="hv-btn hv-btn--quiet hv-btn--sm hv-btn--icon"
+                  aria-label="Bearbeiten"
+                >
+                  <svg class="hv-icon" viewBox="0 0 24 24">
+                    <path
+                      d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"
+                    />
+                  </svg>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="hv-panel" style="padding: var(--space-2) var(--space-3)">
+        <table class="hv-table">
+          <thead>
+            <tr>
+              <th>Von</th>
+              <th>Bis</th>
+              <th style="text-align: right">Dauer</th>
+              <th>Aufgabe</th>
+              <th>Projekt</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="">
+              <td class="t-time">09:10</td>
+              <td class="t-time">09:18</td>
+              <td class="t-dur">0:08</td>
+              <td class="t-task">Nachrichten checken</td>
+              <td>
+                <span class="hv-chip"
+                  ><span class="hv-dot" style="--c: var(--project-1)"></span
+                  ><span>Intern</span></span
+                >
+              </td>
+              <td class="t-act">
+                <button
+                  class="hv-btn hv-btn--quiet hv-btn--sm hv-btn--icon"
+                  aria-label="Bearbeiten"
+                >
+                  <svg class="hv-icon" viewBox="0 0 24 24">
+                    <path
+                      d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"
+                    />
+                  </svg>
+                </button>
+              </td>
+            </tr>
+            <tr class="">
+              <td class="t-time">09:18</td>
+              <td class="t-time">10:05</td>
+              <td class="t-dur">0:47</td>
+              <td class="t-task">Brain aufsetzen</td>
+              <td>
+                <span class="hv-chip"
+                  ><span class="hv-dot" style="--c: var(--project-2)"></span
+                  ><span>Nordlicht</span></span
+                >
+              </td>
+              <td class="t-act">
+                <button
+                  class="hv-btn hv-btn--quiet hv-btn--sm hv-btn--icon"
+                  aria-label="Bearbeiten"
+                >
+                  <svg class="hv-icon" viewBox="0 0 24 24">
+                    <path
+                      d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"
+                    />
+                  </svg>
+                </button>
+              </td>
+            </tr>
+            <tr class="is-running">
+              <td class="t-time">10:05</td>
+              <td class="t-time"><span class="hv-live">jetzt</span></td>
+              <td class="t-dur">1:37</td>
+              <td class="t-task">Copilot kennenlernen und optimieren</td>
+              <td>
+                <span class="hv-chip"
+                  ><span class="hv-dot" style="--c: var(--project-8)"></span
+                  ><span>KI Taskforce</span></span
+                >
+              </td>
+              <td class="t-act">
+                <button
+                  class="hv-btn hv-btn--quiet hv-btn--sm hv-btn--icon"
+                  aria-label="Bearbeiten"
+                >
+                  <svg class="hv-icon" viewBox="0 0 24 24">
+                    <path
+                      d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"
+                    />
+                  </svg>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </body>
+</html>

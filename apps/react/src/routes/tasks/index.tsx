@@ -12,40 +12,24 @@ import { createFileRoute } from "@tanstack/react-router";
 import { GripVertical } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
+import { Loader } from "@horva/ui/Logo";
+
 import type { LabelRow } from "#/components/TaskEditControls.js";
 import type { TaskDragData } from "#/contexts/TaskDragContext.js";
-import { LoadingSpinner } from "#/components/LoadingSpinner.js";
-import { TaskCard } from "#/components/TaskCard.js";
-import { useDetailDrawer } from "#/contexts/DetailDrawerContext.js";
 import { useTaskDrag } from "#/contexts/TaskDragContext.js";
 import { client } from "#/lib/orpc.js";
-import { calcTotalMinutes } from "#/lib/taskUtils.js";
+import type { TaskRow } from "./-components/TaskListCard.js";
+import { TaskListCard } from "./-components/TaskListCard.js";
 
-type TaskRow = Awaited<ReturnType<typeof client.task.list>>["tasks"][number];
-
-interface SortableTaskRowProps {
-  task: TaskRow;
-  allLabels: LabelRow[];
-  onMarkDone: (id: number) => void;
-  onRename: (id: number, name: string) => void;
-  onPlan: (id: number, date: string | null) => void;
-  onSetRecurrence: (id: number, rule: string | null) => void;
-  onAddLabel: (taskId: number, labelId: number) => void;
-  onRemoveLabel: (taskId: number, labelId: number) => void;
-}
-
+/** One row of the list: the drag handle and the card. */
 function SortableTaskRow({
   task,
   allLabels,
-  onMarkDone,
-  onRename,
-  onPlan,
-  onSetRecurrence,
-  onAddLabel,
-  onRemoveLabel,
-}: SortableTaskRowProps) {
+}: {
+  task: TaskRow;
+  allLabels: LabelRow[];
+}) {
   const { t } = useTranslation();
-  const { openTask } = useDetailDrawer();
   const {
     attributes,
     listeners,
@@ -64,50 +48,29 @@ function SortableTaskRow({
       projectId: task.project.id,
     } satisfies TaskDragData,
   });
-  const isActivity = task.taskType === "activity";
 
   return (
-    <div
+    <li
       ref={setNodeRef}
       style={{
         transform: CSS.Transform.toString(transform),
         transition,
-        opacity: isDragging ? 0.5 : 1,
       }}
-      className="flex items-stretch gap-1"
+      className={`flex items-stretch gap-1 ${isDragging ? "relative z-10 opacity-80 [&>div]:shadow-md" : ""}`}
     >
       <button
         {...attributes}
         {...listeners}
         aria-label={t("tasks.overview.dragHandle")}
-        className="text-muted-foreground/70 hover:text-muted-foreground flex cursor-grab items-center px-1 active:cursor-grabbing"
+        className="text-muted-foreground hover:text-foreground focus-visible:outline-ring flex w-6 shrink-0 cursor-grab touch-none items-center justify-center rounded-md outline-offset-2 focus-visible:outline-2 active:cursor-grabbing"
         type="button"
       >
-        <GripVertical className="h-4 w-4" />
+        <GripVertical aria-hidden className="size-4" />
       </button>
       <div className="min-w-0 flex-1">
-        <TaskCard
-          id={task.id}
-          name={task.name}
-          project={task.project}
-          labels={task.taskLabels.map((tl) => tl.label)}
-          totalMinutes={calcTotalMinutes(task.slots)}
-          isActivity={isActivity}
-          scheduledAt={task.scheduledAt}
-          recurrenceRule={task.recurrenceRule}
-          allLabels={allLabels}
-          onMarkDone={() => onMarkDone(task.id)}
-          onRename={(name) => onRename(task.id, name)}
-          onPlan={(date) => onPlan(task.id, date)}
-          onSetRecurrence={
-            isActivity ? (rule) => onSetRecurrence(task.id, rule) : undefined
-          }
-          onAddLabel={(labelId) => onAddLabel(task.id, labelId)}
-          onRemoveLabel={(labelId) => onRemoveLabel(task.id, labelId)}
-          onOpenDetails={() => openTask(task.id)}
-        />
+        <TaskListCard task={task} allLabels={allLabels} />
       </div>
-    </div>
+    </li>
   );
 }
 
@@ -173,46 +136,6 @@ function TasksOverview() {
     onSuccess: invalidateTasks,
   });
 
-  const markDoneMutation = useMutation({
-    mutationFn: (taskId: number) => client.task.done({ id: taskId }),
-    onSuccess: () => {
-      invalidateTasks();
-      // Completing a running task stops its slot and starts a new empty one,
-      // so the active-slot UI needs to refresh too.
-      void queryClient.invalidateQueries({ queryKey: ["slots"] });
-    },
-  });
-
-  const renameMutation = useMutation({
-    mutationFn: ({ id, name }: { id: number; name: string }) =>
-      client.task.update({ id, name }),
-    onSuccess: invalidateTasks,
-  });
-
-  const planMutation = useMutation({
-    mutationFn: ({ id, date }: { id: number; date: string | null }) =>
-      client.task.plan({ id, date: date ? new Date(date) : null }),
-    onSuccess: invalidateTasks,
-  });
-
-  const setRecurrenceMutation = useMutation({
-    mutationFn: ({ id, rule }: { id: number; rule: string | null }) =>
-      client.task.update({ id, recurrenceRule: rule }),
-    onSuccess: invalidateTasks,
-  });
-
-  const addLabelMutation = useMutation({
-    mutationFn: ({ taskId, labelId }: { taskId: number; labelId: number }) =>
-      client.task.update({ id: taskId, addLabelIds: [labelId] }),
-    onSuccess: invalidateTasks,
-  });
-
-  const removeLabelMutation = useMutation({
-    mutationFn: ({ taskId, labelId }: { taskId: number; labelId: number }) =>
-      client.task.update({ id: taskId, removeLabelIds: [labelId] }),
-    onSuccess: invalidateTasks,
-  });
-
   // The DndContext lives in the app shell so tasks can be dropped onto the
   // sidebar; reordering stays here and is invoked for non-project drops.
   const { registerReorderHandler } = useTaskDrag();
@@ -244,52 +167,49 @@ function TasksOverview() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <LoadingSpinner size={64} label={t("loading")} />
+        <Loader
+          size={64}
+          label={t("loading")}
+          className="animate-delayed-show opacity-0"
+        />
       </div>
     );
   }
 
   return (
-    <div className="mx-auto max-w-5xl space-y-6">
-      <div>
-        <h1 className="text-foreground text-2xl font-bold">
+    <div className="mx-auto max-w-4xl space-y-6">
+      <header>
+        <h1 className="text-display text-foreground">
           {t("tasks.overview.title")}
         </h1>
         <p className="text-muted-foreground mt-1 text-sm">
           {t("tasks.overview.subtitle")}
         </p>
-      </div>
+      </header>
 
       {orderedTasks.length === 0 ? (
-        <p className="text-muted-foreground text-sm">
-          {t("tasks.overview.empty")}
-        </p>
+        <div className="border-border rounded-lg border border-dashed px-4 py-8 text-center">
+          <p className="text-body text-foreground">
+            {t("tasks.overview.empty")}
+          </p>
+          <p className="text-muted-foreground mt-1 text-sm">
+            {t("tasks.overview.emptyHint")}
+          </p>
+        </div>
       ) : (
         <SortableContext
           items={orderedIds}
           strategy={verticalListSortingStrategy}
         >
-          <div className="space-y-2">
+          <ul className="space-y-2">
             {orderedTasks.map((task) => (
               <SortableTaskRow
                 key={task.id}
                 task={task}
                 allLabels={allLabels}
-                onMarkDone={(id) => markDoneMutation.mutate(id)}
-                onRename={(id, name) => renameMutation.mutate({ id, name })}
-                onPlan={(id, date) => planMutation.mutate({ id, date })}
-                onSetRecurrence={(id, rule) =>
-                  setRecurrenceMutation.mutate({ id, rule })
-                }
-                onAddLabel={(taskId, labelId) =>
-                  addLabelMutation.mutate({ taskId, labelId })
-                }
-                onRemoveLabel={(taskId, labelId) =>
-                  removeLabelMutation.mutate({ taskId, labelId })
-                }
               />
             ))}
-          </div>
+          </ul>
         </SortableContext>
       )}
     </div>

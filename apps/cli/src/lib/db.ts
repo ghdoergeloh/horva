@@ -1,14 +1,20 @@
 import { config } from "dotenv";
 
+import type { Database } from "@horva/db/client";
+import { createLazyDatabase } from "@horva/db/lazy";
+
 import { readConfig } from "./config.js";
 
 config({ quiet: true });
 
-// Fall back to config file if env var not set
-if (!process.env["DATABASE_URL"]) {
-  const cfg = readConfig();
-  if (cfg?.databaseUrl) process.env["DATABASE_URL"] = cfg.databaseUrl;
-}
+// The database of the CLI. It connects on the first query, so `horva init`
+// can set DATABASE_URL first; without it, the URL of the config file counts.
+const connection = createLazyDatabase(
+  () => process.env["DATABASE_URL"] ?? readConfig()?.databaseUrl,
+);
 
-export { db } from "@horva/db/client";
-export type { Db } from "@horva/db/client";
+export const db: Database = connection.db;
+export type Db = Database;
+
+/** Ends the pool, so the process can exit. */
+export const closeDb = (): Promise<void> => connection.close();

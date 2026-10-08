@@ -11,8 +11,13 @@ node_modules
 
 # testing
 coverage
-playwright-report/
-test-results/
+# Vitest browser mode: failed screenshots and their diffs
+.vitest
+# Playwright
+playwright-report
+test-results
+# Storybook build
+storybook-static
 
 # next.js
 .next/
@@ -36,6 +41,8 @@ apps/expo/android
 
 # production
 build
+# Resources of electron-builder (icons), not a build output.
+!apps/electron/build/
 
 # misc
 .DS_Store

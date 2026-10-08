@@ -1,6 +1,7 @@
 import { relations, sql } from "drizzle-orm";
 import {
   boolean,
+  check,
   doublePrecision,
   integer,
   pgEnum,
@@ -40,24 +41,35 @@ export const slotStateEnum = pgEnum("slot_state", [
 ]);
 
 // Tables
-export const project = pgTable("project", {
-  id: integer("id")
-    .primaryKey()
-    .default(sql`nextval('project_id_seq')`),
-  name: text("name").notNull(),
-  color: text("color").notNull().default("#6366f1"),
-  status: projectStatusEnum("status").notNull().default("active"),
-  isDefault: boolean("is_default").notNull().default(false),
-  // Moco integration: linked Moco project + its default activity ("Leistung").
-  mocoProjectId: integer("moco_project_id"),
-  mocoDefaultTaskId: integer("moco_default_task_id"),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
-  updatedAt: timestamp("updated_at")
-    .defaultNow()
-    .$onUpdate(() => new Date())
-    .notNull(),
-  deletedAt: timestamp("deleted_at"),
-});
+export const project = pgTable(
+  "project",
+  {
+    id: integer("id")
+      .primaryKey()
+      .default(sql`nextval('project_id_seq')`),
+    name: text("name").notNull(),
+    // A token name such as `project-3`, or a custom `#rrggbb`.
+    color: text("color").notNull().default("project-1"),
+    status: projectStatusEnum("status").notNull().default("active"),
+    isDefault: boolean("is_default").notNull().default(false),
+    // Moco integration: linked Moco project + its default activity ("Leistung").
+    mocoProjectId: integer("moco_project_id"),
+    mocoDefaultTaskId: integer("moco_default_task_id"),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at")
+      .defaultNow()
+      .$onUpdate(() => new Date())
+      .notNull(),
+    deletedAt: timestamp("deleted_at"),
+  },
+  (table) => [
+    // The same rule as PROJECT_COLOR_PATTERN in @horva/core.
+    check(
+      "project_color_check",
+      sql`${table.color} ~ '^(project-([1-9]|1[0-8]|none)|#[0-9a-fA-F]{6})$'`,
+    ),
+  ],
+);
 
 export const task = pgTable("task", {
   id: integer("id")

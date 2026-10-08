@@ -5,10 +5,10 @@ import type {
   ValidationResult,
 } from "react-aria-components";
 import { ColorField as AriaColorField } from "react-aria-components";
-import { tv } from "tailwind-variants";
 
-import { composeTailwindRenderProps, focusRing } from "@horva/ui";
+import { composeTailwindRenderProps } from "@horva/ui";
 
+import { tv } from "../lib/tw";
 import {
   Description,
   fieldBorderStyles,
@@ -18,7 +18,6 @@ import {
 } from "./Field";
 
 const inputStyles = tv({
-  extend: focusRing,
   base: "border-1 rounded-lg min-h-9 font-sans text-sm py-0 px-3 box-border transition [-webkit-tap-highlight-color:transparent]",
   variants: {
     isFocused: fieldBorderStyles.variants.isFocusWithin,

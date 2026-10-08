@@ -174,7 +174,7 @@
     "typescript/no-unsafe-return": "error",
     "typescript/no-unsafe-unary-minus": "error",
     "typescript/no-wrapper-object-types": "error",
-    "typescript/non-nullable-type-assertion-style": "error",
+    "typescript/non-nullable-type-assertion-style": "off",
     "typescript/only-throw-error": "error",
     "typescript/prefer-as-const": "error",
     "typescript/prefer-find": "error",
@@ -412,6 +412,35 @@
       "files": ["packages/ui/**/*.{ts,tsx}"],
       "rules": {
         "typescript/no-empty-object-type": "off"
+      }
+    },
+    {
+      "files": [
+        "packages/ui/src/**/*.{ts,tsx}",
+        "apps/react/src/**/*.{ts,tsx}"
+      ],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "paths": [
+              {
+                "name": "tailwind-merge",
+                "message": "Import twMerge from packages/ui/src/lib/tw.ts; it knows the text styles of the theme."
+              },
+              {
+                "name": "tailwind-variants",
+                "message": "Import tv from packages/ui/src/lib/tw.ts; it knows the text styles of the theme."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "files": ["packages/ui/src/lib/tw.ts"],
+      "rules": {
+        "no-restricted-imports": "off"
       }
     }
   ]

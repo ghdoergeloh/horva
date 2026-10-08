@@ -1,5 +1,5 @@
 import type { HandlerContext } from "@horva/core";
-import type { Db } from "@horva/db/client";
+import type { Database } from "@horva/db/client";
 import { eq } from "@horva/db";
 import { user } from "@horva/db/schema";
 
@@ -15,7 +15,7 @@ export type LocalContext = HandlerContext;
  * interpret it as "re-bootstrap required".
  */
 export async function createLocalContext(
-  db: Db,
+  db: Database,
   userId: string,
 ): Promise<LocalContext> {
   const row = await db.query.user.findFirst({ where: eq(user.id, userId) });

@@ -1,21 +1,18 @@
-import { serve } from "@hono/node-server";
-
 import { seed } from "@horva/core";
-import { db } from "@horva/db/client";
+import { createDatabase } from "@horva/db/client";
 
-import app from "./app";
+import { loadEnv } from "./env";
+import { startServer } from "./server";
 
-const port = Number(process.env["API_PORT"]) || 3000;
+const env = loadEnv();
+startServer(env);
 
-// Creates the default project on first start. Task creation depends on it.
-await seed(db);
-
-serve(
-  {
-    fetch: app.fetch,
-    port,
-  },
-  (info) => {
-    console.log(`Server is running on http://localhost:${info.port}`);
-  },
-);
+// Creates the default project on first start; task creation depends on it.
+// A database that is not up yet does not stop the server: /health still
+// answers and /ready reports the database.
+const database = createDatabase(env.databaseUrl, { maxConnections: 1 });
+seed(database.db)
+  .catch((error: unknown) => {
+    console.error("Could not create the default project:", error);
+  })
+  .finally(() => void database.close());
