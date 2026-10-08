@@ -28,7 +28,7 @@ interface StartTaskDialogProps {
 }
 
 /** The texts of the task picker in the language of the app. */
-export function taskPickerLabels(t: TFunction): Partial<TaskPickerLabels> {
+function taskPickerLabels(t: TFunction): Partial<TaskPickerLabels> {
   return {
     field: t("taskPicker.field"),
     noTask: t("taskPicker.noTask"),

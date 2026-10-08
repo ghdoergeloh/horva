@@ -9,8 +9,6 @@ import { readSources } from "./sources";
  */
 const allowedValues: Record<string, readonly string[]> = {
   "App.tsx": ["I18nProvider"],
-  // Not yet moved to the Dialog of @horva/ui.
-  "components/TaskCard.tsx": ["DialogTrigger", "Heading"],
 };
 
 /**
@@ -24,7 +22,6 @@ const rawElementsAllowed: Record<string, string> = {
   "routes/tasks/index.tsx": "drag handle",
   // Not yet moved to @horva/ui.
   "components/RecurrenceRulePicker.tsx": "radio inputs, time zone button",
-  "components/TaskCard.tsx": "rename button",
   "components/TaskDrawer.tsx": "notes textarea, link",
 };
 

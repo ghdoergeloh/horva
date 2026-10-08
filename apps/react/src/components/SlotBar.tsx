@@ -16,7 +16,6 @@ import { StartTaskDialog } from "./StartTaskDialog.js";
 function useNow(isTicking: boolean): number {
   const [now, setNow] = useState(() => Date.now());
   useEffect(() => {
-    setNow(Date.now());
     if (!isTicking) return;
     const timer = setInterval(() => setNow(Date.now()), 1000);
     return () => clearInterval(timer);
