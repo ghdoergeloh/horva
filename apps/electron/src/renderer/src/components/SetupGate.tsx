@@ -2,8 +2,8 @@ import type { ReactNode } from "react";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 
-import { LoadingSpinner } from "@horva/react";
 import { Button } from "@horva/ui/Button";
+import { Loader } from "@horva/ui/Logo";
 import { TextField } from "@horva/ui/TextField";
 
 import { setupBridge } from "../lib/setup.js";
@@ -56,7 +56,11 @@ export function SetupGate({ children }: SetupGateProps) {
   if (state.kind === "loading") {
     return (
       <div className="flex h-screen items-center justify-center bg-gray-50">
-        <LoadingSpinner size={64} label={t("loading")} />
+        <Loader
+          size={64}
+          label={t("loading")}
+          className="animate-delayed-show opacity-0"
+        />
       </div>
     );
   }
