@@ -5,8 +5,12 @@ import { RRule } from "rrule";
 
 import { Button } from "@horva/ui/Button";
 import { NumberField } from "@horva/ui/NumberField";
+import { Radio, RadioGroup } from "@horva/ui/RadioGroup";
 import { Select, SelectItem } from "@horva/ui/Select";
+import { Switch } from "@horva/ui/Switch";
 import { TimeField } from "@horva/ui/TimeField";
+import { ToggleButton } from "@horva/ui/ToggleButton";
+import { ToggleButtonGroup } from "@horva/ui/ToggleButtonGroup";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -265,141 +269,93 @@ export function RecurrenceRulePicker({
   const tzShortLabel =
     state.tzid.split("/").at(-1)?.replace(/_/g, " ") ?? state.tzid;
 
+  const unit =
+    state.freq === "DAILY"
+      ? t("recurrence.days")
+      : state.freq === "WEEKLY"
+        ? t("recurrence.weeks")
+        : state.freq === "MONTHLY"
+          ? t("recurrence.months")
+          : t("recurrence.years");
+
   return (
-    <div className="space-y-2">
-      {/* Toggle */}
-      <Button
-        variant="quiet"
-        onPress={toggleEnabled}
-        className="text-muted-foreground hover:text-foreground/90 flex items-center gap-2 text-xs"
-      >
-        <span
-          className={`inline-block h-3.5 w-3.5 rounded-sm border ${enabled ? "border-primary bg-primary" : "border-border"}`}
-        />
+    <div className="space-y-3">
+      <Switch isSelected={enabled} onChange={toggleEnabled}>
         {enabled ? t("recurrence.repeats") : t("recurrence.doesNotRepeat")}
-      </Button>
+      </Switch>
 
-      {/* Rule builder */}
       {enabled && (
-        <div className="border-border bg-background space-y-3 rounded-lg border p-3">
-          {/* Frequency */}
-          <div className="flex flex-wrap gap-1">
+        <div className="border-border bg-background space-y-4 rounded-lg border p-3">
+          <ToggleButtonGroup
+            variant="segmented"
+            aria-label={t("recurrence.frequency")}
+            selectionMode="single"
+            disallowEmptySelection
+            selectedKeys={[state.freq]}
+            onSelectionChange={(keys) => {
+              const [next] = keys;
+              if (next !== undefined) update({ freq: String(next) as Freq });
+            }}
+            className="max-w-full flex-wrap"
+          >
             {(["DAILY", "WEEKLY", "MONTHLY", "YEARLY"] as Freq[]).map((f) => (
-              <Button
-                key={f}
-                variant={state.freq === f ? "primary" : "secondary"}
-                onPress={() => update({ freq: f })}
-                className="px-2 py-0.5 text-xs"
-              >
+              <ToggleButton key={f} id={f}>
                 {freqLabel[f]}
-              </Button>
+              </ToggleButton>
             ))}
-          </div>
+          </ToggleButtonGroup>
 
-          {/* Time + Timezone */}
-          <div className="flex items-center gap-2">
-            <span className="text-foreground/80 text-xs">
-              {t("taskEditControls.planTime")}
-            </span>
-            <TimeField
-              value={state.time}
-              onChange={(v) => {
-                if (v) update({ time: v });
-              }}
-              className="**:data-[slot=date-input]:h-7 **:data-[slot=date-input]:min-w-0 **:data-[slot=date-input]:rounded **:data-[slot=date-input]:px-2 **:data-[slot=date-input]:py-0 **:data-[slot=date-input]:text-xs"
-            />
-            {/* Timezone — subtle, expands to Select on click */}
-            {tzExpanded ? (
-              <Select<{ id: string; name: string }>
-                aria-label={t("recurrence.timezone")}
-                value={state.tzid}
-                onChange={(key) => {
-                  if (key !== null) update({ tzid: String(key) });
-                  setTzExpanded(false);
-                }}
-                onOpenChange={(isOpen) => {
-                  if (!isOpen) setTzExpanded(false);
-                }}
-                items={ALL_TIMEZONES.map((tz) => ({ id: tz, name: tz }))}
-                className="min-w-0 [&_button]:h-7 [&_button]:min-w-[160px] [&_button]:text-xs"
-              >
-                {(item) => <SelectItem id={item.id}>{item.name}</SelectItem>}
-              </Select>
-            ) : (
-              <button
-                type="button"
-                title={t("recurrence.timezone")}
-                onClick={() => setTzExpanded(true)}
-                className="text-muted-foreground hover:text-foreground/80 cursor-pointer rounded px-1 py-0.5 text-[10px] focus:outline-none"
-              >
-                {tzShortLabel}
-              </button>
-            )}
-          </div>
-
-          {/* Interval */}
-          <div className="flex items-center gap-2">
-            <span className="text-foreground/80 text-xs">
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="text-foreground text-sm">
               {t("recurrence.every")}
             </span>
             <NumberField
-              aria-label={t("recurrence.every")}
+              aria-label={`${t("recurrence.every")} (${unit})`}
               value={state.interval}
               minValue={1}
               maxValue={99}
               onChange={(v) => update({ interval: Math.max(1, v || 1) })}
-              className="**:data-[slot=field-group]:h-7 **:data-[slot=field-group]:text-xs [&_input]:w-10 [&_input]:text-center [&_input]:text-xs"
+              className="w-24"
             />
-            <span className="text-foreground/80 text-xs">
-              {state.freq === "DAILY"
-                ? t("recurrence.days")
-                : state.freq === "WEEKLY"
-                  ? t("recurrence.weeks")
-                  : state.freq === "MONTHLY"
-                    ? t("recurrence.months")
-                    : t("recurrence.years")}
-            </span>
+            <span className="text-foreground text-sm">{unit}</span>
           </div>
 
-          {/* Weekly: day-of-week checkboxes */}
           {state.freq === "WEEKLY" && (
-            <div className="flex flex-wrap gap-1">
-              {WEEKDAYS.map((wd, i) => {
-                const selected = state.byWeekday.includes(i);
-                const label = new Date(2024, 0, 1 + i).toLocaleDateString(
-                  locale,
-                  { weekday: "short" },
-                );
-                return (
-                  <Button
-                    key={wd.key}
-                    variant={selected ? "primary" : "secondary"}
-                    onPress={() => {
-                      const next = selected
-                        ? state.byWeekday.filter((d) => d !== i)
-                        : [...state.byWeekday, i].sort();
-                      if (next.length > 0) update({ byWeekday: next });
-                    }}
-                    className="px-2 py-0.5 text-xs"
-                  >
-                    {label}
-                  </Button>
-                );
-              })}
-            </div>
+            <ToggleButtonGroup
+              aria-label={t("recurrence.weekdays")}
+              selectionMode="multiple"
+              disallowEmptySelection
+              selectedKeys={state.byWeekday.map(String)}
+              onSelectionChange={(keys) => {
+                const next = [...keys].map(Number).sort();
+                if (next.length > 0) update({ byWeekday: next });
+              }}
+              className="flex-wrap"
+            >
+              {WEEKDAYS.map((wd, i) => (
+                <ToggleButton
+                  key={wd.key}
+                  id={String(i)}
+                  className="h-7.5 min-w-10 px-2 text-sm"
+                >
+                  {new Date(2024, 0, 1 + i).toLocaleDateString(locale, {
+                    weekday: "short",
+                  })}
+                </ToggleButton>
+              ))}
+            </ToggleButtonGroup>
           )}
 
-          {/* Monthly: day vs. position */}
           {state.freq === "MONTHLY" && (
-            <div className="space-y-2">
-              <label className="text-foreground/80 flex cursor-pointer items-center gap-2 text-xs">
-                <input
-                  type="radio"
-                  checked={state.monthlyMode === "byMonthDay"}
-                  onChange={() => update({ monthlyMode: "byMonthDay" })}
-                  className="accent-primary"
-                />
-                <span>{t("recurrence.onDay")}</span>
+            <RadioGroup
+              label={t("recurrence.monthlyMode")}
+              value={state.monthlyMode}
+              onChange={(mode) =>
+                update({ monthlyMode: mode as RuleState["monthlyMode"] })
+              }
+            >
+              <div className="flex flex-wrap items-center gap-2">
+                <Radio value="byMonthDay">{t("recurrence.onDay")}</Radio>
                 <NumberField
                   aria-label={t("recurrence.onDay")}
                   value={state.byMonthDay}
@@ -409,18 +365,11 @@ export function RecurrenceRulePicker({
                   onChange={(v) =>
                     update({ byMonthDay: Math.min(31, Math.max(1, v || 1)) })
                   }
-                  className="**:data-[slot=field-group]:h-7 [&_input]:w-10 [&_input]:text-center [&_input]:text-xs"
+                  className="w-24"
                 />
-              </label>
-
-              <label className="text-foreground/80 flex cursor-pointer items-center gap-2 text-xs">
-                <input
-                  type="radio"
-                  checked={state.monthlyMode === "bySetPos"}
-                  onChange={() => update({ monthlyMode: "bySetPos" })}
-                  className="accent-primary"
-                />
-                <span>{t("recurrence.onThe")}</span>
+              </div>
+              <div className="flex flex-wrap items-center gap-2">
+                <Radio value="bySetPos">{t("recurrence.onThe")}</Radio>
                 <Select<{ id: string; label: string }>
                   aria-label={t("recurrence.onThe")}
                   value={String(state.bySetPos)}
@@ -436,12 +385,12 @@ export function RecurrenceRulePicker({
                         pos
                       ] ?? String(pos),
                   }))}
-                  className="[&_button]:h-7 [&_button]:min-w-[90px] [&_button]:text-xs"
+                  className="w-28"
                 >
                   {(item) => <SelectItem id={item.id}>{item.label}</SelectItem>}
                 </Select>
                 <Select<{ id: string; label: string }>
-                  aria-label={t("recurrence.onThe")}
+                  aria-label={t("recurrence.weekdays")}
                   value={String(state.bySetPosDay)}
                   isDisabled={state.monthlyMode !== "bySetPos"}
                   onChange={(key) => {
@@ -454,13 +403,50 @@ export function RecurrenceRulePicker({
                       weekday: "long",
                     }),
                   }))}
-                  className="[&_button]:h-7 [&_button]:min-w-[100px] [&_button]:text-xs"
+                  className="w-36"
                 >
                   {(item) => <SelectItem id={item.id}>{item.label}</SelectItem>}
                 </Select>
-              </label>
-            </div>
+              </div>
+            </RadioGroup>
           )}
+
+          <div className="flex flex-wrap items-center gap-2">
+            <TimeField
+              label={t("taskEditControls.planTime")}
+              value={state.time}
+              onChange={(v) => {
+                if (v) update({ time: v });
+              }}
+            />
+            {tzExpanded ? (
+              <Select<{ id: string; name: string }>
+                label={t("recurrence.timezone")}
+                value={state.tzid}
+                onChange={(key) => {
+                  if (key !== null) update({ tzid: String(key) });
+                  setTzExpanded(false);
+                }}
+                onOpenChange={(isOpen) => {
+                  if (!isOpen) setTzExpanded(false);
+                }}
+                items={ALL_TIMEZONES.map((tz) => ({ id: tz, name: tz }))}
+                className="min-w-48"
+              >
+                {(item) => <SelectItem id={item.id}>{item.name}</SelectItem>}
+              </Select>
+            ) : (
+              <Button
+                variant="quiet"
+                size="sm"
+                onPress={() => setTzExpanded(true)}
+                aria-label={`${t("recurrence.timezone")}: ${state.tzid}`}
+                className="text-muted-foreground self-end"
+              >
+                {tzShortLabel}
+              </Button>
+            )}
+          </div>
         </div>
       )}
     </div>

@@ -108,7 +108,8 @@
       "subtitle": "Prioritize via drag & drop",
       "empty": "No open tasks.",
       "dragHandle": "Drag to reorder",
-      "dragToProject": "Drag onto a project to move"
+      "dragToProject": "Drag onto a project to move",
+      "emptyHint": "Create new tasks inside a project."
     },
     "taskType": {
       "task": "Task",
@@ -118,7 +119,13 @@
       "title": "Completed Tasks",
       "none": "No completed tasks.",
       "loadMore": "Load more"
-    }
+    },
+    "newTaskName": "Name of the new task",
+    "newActivityName": "Name of the new activity",
+    "openProject": "Edit project",
+    "createError": "The task could not be created. Try again?",
+    "projectNotFound": "Project not found",
+    "projectNotFoundHint": "It was deleted, or the address is wrong."
   },
   "slot": {
     "edit": "Edit Slot",
@@ -239,12 +246,17 @@
     "lastMonth": "Last month",
     "thisYear": "This year",
     "dateRange": "Period",
+    "filterLabel": "Filter by label",
+    "projectShares": "Project shares",
+    "hoursPerDay": "Hours per day",
+    "tasksWithLabel": "Tasks with label \"{{name}}\"",
+    "detailsPerProject": "Details per project",
+    "noData": "No time in this period",
     "openCalendar": "Open calendar",
     "previousRange": "Previous period",
     "nextRange": "Next period",
     "dayCount_one": "{{count}} day",
     "dayCount_other": "{{count}} days",
-    "filterLabel": "Filter by label",
     "allLabels": "All labels",
     "total": "Total",
     "averagePerDay": "Ø per work day",
@@ -253,22 +265,17 @@
     "largestProject": "Largest project",
     "withoutTask": "Without task",
     "shareOfTotal": "{{percent}} of the time",
-    "projectShares": "Project shares",
     "hours": "Hours",
     "others": "Others",
-    "hoursPerDay": "Hours per day",
     "showTable": "Show table",
     "hideTable": "Hide table",
     "hoursTable": "Hours per day as a table",
     "day": "Day",
     "sum": "Total",
-    "tasksWithLabel": "Tasks with label \"{{name}}\"",
-    "detailsPerProject": "Details per project",
     "noTasks": "No tasks",
     "transfer": "Send to Moco",
     "loadError": "Could not load the report.",
-    "transferTo": "to",
-    "noData": "No time in this period"
+    "transferTo": "to"
   },
   "labels": {
     "title": "Labels",
@@ -279,7 +286,17 @@
     "deleteTitle": "Delete label",
     "deleteConfirm": "Delete?",
     "yes": "Yes",
-    "tasks": "{{count}} tasks"
+    "tasks_one": "{{count}} task",
+    "tasks_other": "{{count}} tasks",
+    "empty": "No labels yet.",
+    "newLabel": "New label",
+    "add": "Add",
+    "deleteDialogTitle": "Delete label?",
+    "deleteDialogText": "“{{name}}” is removed from all tasks.",
+    "delete": "Delete",
+    "deleteNamed": "Delete label “{{name}}”",
+    "createError": "The label could not be created. Try again?",
+    "deleteError": "The label could not be deleted. Try again?"
   },
   "taskCard": {
     "markDone": "Mark as done",
@@ -362,7 +379,11 @@
     "third": "third",
     "fourth": "fourth",
     "last": "last",
-    "timezone": "Timezone"
+    "timezone": "Timezone",
+    "frequency": "Frequency",
+    "weekdays": "Weekdays",
+    "monthlyMode": "Monthly on",
+    "repeat": "Repeat"
   },
   "settings": {
     "title": "Settings",
@@ -375,7 +396,9 @@
     "theme_system": "System",
     "theme_light": "Light",
     "theme_dark": "Dark",
-    "preview": "Example"
+    "preview": "Example",
+    "display": "Display",
+    "languageHint": "Language of the interface"
   },
   "moco": {
     "title": "Moco integration",
@@ -403,11 +426,11 @@
     "noSyncable": "No entries to send in the selected period.",
     "selectAll": "Select all",
     "selectionSummary": "{{selected}} of {{syncable}} selected · {{skipped}} skipped",
-    "confirmSync_one": "Send {{count}} entry",
-    "confirmSync_other": "Send {{count}} entries",
     "syncDone": "{{created}} sent, {{failed}} failed",
     "syncError": "Sending failed",
-    "linkingMovedHint": "Project linking now lives in each project's detail panel."
+    "linkingMovedHint": "Project linking now lives in each project's detail panel.",
+    "confirmSync_one": "Send {{count}} entry",
+    "confirmSync_other": "Send {{count}} entries"
   },
   "drawer": {
     "projectTitle": "Project properties",
@@ -439,7 +462,63 @@
       "deleted": "Status: deleted",
       "open": "Status: open",
       "done": "Status: done"
-    }
+    },
+    "close": "Close",
+    "deleteProjectTitle": "Delete project?",
+    "deleteProjectText": "The tasks of the project move to the default project.",
+    "deleteTaskTitle": "Delete task?",
+    "deleteTaskText": "The tracked time stays, without a task.",
+    "notesPlaceholder": "Notes on the task",
+    "saveError": "Saving failed. Try again?",
+    "archiveError": "Archiving failed. Try again?",
+    "deleteError": "Deleting failed. Try again?"
+  },
+  "projectColors": {
+    "label": "Project color",
+    "presets": [
+      "Indigo",
+      "Amber",
+      "Teal",
+      "Magenta",
+      "Olive",
+      "Sky blue",
+      "Rose",
+      "Violet",
+      "Cyan",
+      "Red",
+      "Lime",
+      "Purple",
+      "Blue",
+      "Pink",
+      "Navy",
+      "Brown",
+      "Slate",
+      "Stone"
+    ],
+    "custom": "Custom color",
+    "customPlaceholder": "#RRGGBB",
+    "invalid": "Enter a hex value with six digits."
+  },
+  "taskList": {
+    "markDone": "Done",
+    "reopen": "Reopen",
+    "start": "Start",
+    "stop": "Stop",
+    "planToday": "Today",
+    "tomorrow": "Tomorrow",
+    "noDate": "Date",
+    "date": "Date",
+    "overdue": "overdue",
+    "activity": "Activity",
+    "running": "running",
+    "total": "Total time",
+    "chooseDate": "Choose a date",
+    "removeDate": "Remove",
+    "more": "More actions",
+    "openDetails": "Open details",
+    "labels": "Labels",
+    "recurrence": "Recurrence…",
+    "recurrenceTitle": "Recurrence"
   },
   "taskPicker": {
     "field": "Task",

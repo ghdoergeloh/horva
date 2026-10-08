@@ -108,7 +108,8 @@
       "subtitle": "Per Drag & Drop priorisieren",
       "empty": "Keine offenen Aufgaben.",
       "dragHandle": "Ziehen zum Neuordnen",
-      "dragToProject": "Auf Projekt ziehen zum Verschieben"
+      "dragToProject": "Auf Projekt ziehen zum Verschieben",
+      "emptyHint": "Neue Aufgaben im Projekt anlegen."
     },
     "taskType": {
       "task": "Aufgabe",
@@ -118,7 +119,13 @@
       "title": "Erledigte Aufgaben",
       "none": "Keine erledigten Aufgaben.",
       "loadMore": "Weitere laden"
-    }
+    },
+    "newTaskName": "Name der neuen Aufgabe",
+    "newActivityName": "Name der neuen Aktivität",
+    "openProject": "Projekt bearbeiten",
+    "createError": "Aufgabe konnte nicht angelegt werden. Erneut versuchen?",
+    "projectNotFound": "Projekt nicht gefunden",
+    "projectNotFoundHint": "Es wurde gelöscht, oder die Adresse stimmt nicht."
   },
   "slot": {
     "edit": "Slot bearbeiten",
@@ -239,12 +246,17 @@
     "lastMonth": "Letzter Monat",
     "thisYear": "Dieses Jahr",
     "dateRange": "Zeitraum",
+    "filterLabel": "Nach Label filtern",
+    "projectShares": "Projektanteile",
+    "hoursPerDay": "Stunden je Tag",
+    "tasksWithLabel": "Aufgaben mit Label „{{name}}“",
+    "detailsPerProject": "Details je Projekt",
+    "noData": "Keine Zeiten in diesem Zeitraum",
     "openCalendar": "Kalender öffnen",
     "previousRange": "Vorheriger Zeitraum",
     "nextRange": "Nächster Zeitraum",
     "dayCount_one": "{{count}} Tag",
     "dayCount_other": "{{count}} Tage",
-    "filterLabel": "Nach Label filtern",
     "allLabels": "Alle Labels",
     "total": "Gesamt",
     "averagePerDay": "Ø pro Arbeitstag",
@@ -253,22 +265,17 @@
     "largestProject": "Größtes Projekt",
     "withoutTask": "Ohne Aufgabe",
     "shareOfTotal": "{{percent}} der Zeit",
-    "projectShares": "Projektanteile",
     "hours": "Stunden",
     "others": "Weitere",
-    "hoursPerDay": "Stunden je Tag",
     "showTable": "Tabelle anzeigen",
     "hideTable": "Tabelle ausblenden",
     "hoursTable": "Stunden je Tag als Tabelle",
     "day": "Tag",
     "sum": "Summe",
-    "tasksWithLabel": "Aufgaben mit Label \u201e{{name}}\u201c",
-    "detailsPerProject": "Details je Projekt",
     "noTasks": "Keine Aufgaben",
     "transfer": "An Moco übertragen",
     "loadError": "Auswertung konnte nicht geladen werden.",
-    "transferTo": "nach",
-    "noData": "Keine Zeiten in diesem Zeitraum"
+    "transferTo": "nach"
   },
   "labels": {
     "title": "Labels",
@@ -279,7 +286,17 @@
     "deleteTitle": "Label löschen",
     "deleteConfirm": "Löschen?",
     "yes": "Ja",
-    "tasks": "{{count}} Tasks"
+    "tasks_one": "{{count}} Aufgabe",
+    "tasks_other": "{{count}} Aufgaben",
+    "empty": "Noch keine Labels.",
+    "newLabel": "Neues Label",
+    "add": "Hinzufügen",
+    "deleteDialogTitle": "Label löschen?",
+    "deleteDialogText": "„{{name}}“ wird von allen Aufgaben entfernt.",
+    "delete": "Löschen",
+    "deleteNamed": "Label „{{name}}“ löschen",
+    "createError": "Label konnte nicht angelegt werden. Erneut versuchen?",
+    "deleteError": "Label konnte nicht gelöscht werden. Erneut versuchen?"
   },
   "recurrence": {
     "doesNotRepeat": "Wiederholt sich nicht",
@@ -300,7 +317,11 @@
     "third": "dritten",
     "fourth": "vierten",
     "last": "letzten",
-    "timezone": "Zeitzone"
+    "timezone": "Zeitzone",
+    "frequency": "Häufigkeit",
+    "weekdays": "Wochentage",
+    "monthlyMode": "Monatlich am",
+    "repeat": "Wiederholen"
   },
   "taskCard": {
     "markDone": "Als erledigt markieren",
@@ -375,7 +396,9 @@
     "theme_system": "System",
     "theme_light": "Hell",
     "theme_dark": "Dunkel",
-    "preview": "Vorschau"
+    "preview": "Vorschau",
+    "display": "Darstellung",
+    "languageHint": "Sprache der Oberfläche"
   },
   "moco": {
     "title": "Moco-Integration",
@@ -403,11 +426,11 @@
     "noSyncable": "Keine übertragbaren Einträge im gewählten Zeitraum.",
     "selectAll": "Alle auswählen",
     "selectionSummary": "{{selected}} von {{syncable}} ausgewählt · {{skipped}} übersprungen",
-    "confirmSync_one": "{{count}} Eintrag übertragen",
-    "confirmSync_other": "{{count}} Einträge übertragen",
     "syncDone": "{{created}} übertragen, {{failed}} fehlgeschlagen",
     "syncError": "Übertragung fehlgeschlagen",
-    "linkingMovedHint": "Die Projekt-Verknüpfung findest du jetzt direkt im Detail-Panel des jeweiligen Projekts."
+    "linkingMovedHint": "Die Projekt-Verknüpfung findest du jetzt direkt im Detail-Panel des jeweiligen Projekts.",
+    "confirmSync_one": "{{count}} Eintrag übertragen",
+    "confirmSync_other": "{{count}} Einträge übertragen"
   },
   "drawer": {
     "projectTitle": "Projekt-Eigenschaften",
@@ -439,7 +462,63 @@
       "deleted": "Status: gelöscht",
       "open": "Status: offen",
       "done": "Status: erledigt"
-    }
+    },
+    "close": "Schließen",
+    "deleteProjectTitle": "Projekt löschen?",
+    "deleteProjectText": "Die Aufgaben des Projekts wandern in das Standardprojekt.",
+    "deleteTaskTitle": "Aufgabe löschen?",
+    "deleteTaskText": "Die erfassten Zeiten bleiben erhalten, ohne Aufgabe.",
+    "notesPlaceholder": "Notizen zur Aufgabe",
+    "saveError": "Speichern fehlgeschlagen. Erneut versuchen?",
+    "archiveError": "Archivieren fehlgeschlagen. Erneut versuchen?",
+    "deleteError": "Löschen fehlgeschlagen. Erneut versuchen?"
+  },
+  "projectColors": {
+    "label": "Projektfarbe",
+    "presets": [
+      "Indigo",
+      "Bernstein",
+      "Petrol",
+      "Magenta",
+      "Oliv",
+      "Himmelblau",
+      "Rosé",
+      "Violett",
+      "Cyan",
+      "Rot",
+      "Limette",
+      "Purpur",
+      "Blau",
+      "Pink",
+      "Marine",
+      "Braun",
+      "Schiefer",
+      "Stein"
+    ],
+    "custom": "Eigene Farbe",
+    "customPlaceholder": "#RRGGBB",
+    "invalid": "Bitte einen Hex-Wert mit sechs Stellen eingeben."
+  },
+  "taskList": {
+    "markDone": "Erledigt",
+    "reopen": "Wieder öffnen",
+    "start": "Starten",
+    "stop": "Stoppen",
+    "planToday": "Heute",
+    "tomorrow": "Morgen",
+    "noDate": "Datum",
+    "date": "Datum",
+    "overdue": "überfällig",
+    "activity": "Aktivität",
+    "running": "läuft",
+    "total": "Gesamtzeit",
+    "chooseDate": "Datum wählen",
+    "removeDate": "Entfernen",
+    "more": "Weitere Aktionen",
+    "openDetails": "Details öffnen",
+    "labels": "Labels",
+    "recurrence": "Wiederholung…",
+    "recurrenceTitle": "Wiederholung"
   },
   "taskPicker": {
     "field": "Aufgabe",

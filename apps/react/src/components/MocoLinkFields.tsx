@@ -47,11 +47,8 @@ export function MocoLinkFields({
   return (
     <div className="space-y-3">
       <div className="space-y-1">
-        <p className="text-foreground text-sm font-medium">
-          {t("moco.mocoProject")}
-        </p>
         <Select
-          aria-label={t("moco.mocoProject")}
+          label={t("moco.mocoProject")}
           value={mocoProjectId == null ? "" : String(mocoProjectId)}
           onChange={(value) => {
             // Changing the project resets the default activity.
@@ -73,11 +70,8 @@ export function MocoLinkFields({
 
       {selectedMocoProject && (
         <div className="space-y-1">
-          <p className="text-foreground text-sm font-medium">
-            {t("moco.defaultTask")}
-          </p>
           <Select
-            aria-label={t("moco.defaultTask")}
+            label={t("moco.defaultTask")}
             value={mocoDefaultTaskId == null ? "" : String(mocoDefaultTaskId)}
             onChange={(value) => {
               linkMutation.mutate({
@@ -122,7 +116,7 @@ export function MocoLoadButton({
         {query.data ? t("moco.reloadProjects") : t("moco.loadProjects")}
       </Button>
       {query.isError && (
-        <p className="text-destructive text-xs">
+        <p role="alert" className="text-destructive text-sm">
           {query.error instanceof Error
             ? query.error.message
             : t("moco.loadError")}

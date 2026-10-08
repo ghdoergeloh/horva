@@ -1,18 +1,32 @@
-import { useState } from "react";
+import type { CalendarDateTime } from "@internationalized/date";
+import { useRef, useState } from "react";
+import {
+  fromDate,
+  getLocalTimeZone,
+  toCalendarDateTime,
+  toZoned,
+} from "@internationalized/date";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { X } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
+import { AlertDialog } from "@horva/ui/AlertDialog";
 import { Button } from "@horva/ui/Button";
 import { Checkbox } from "@horva/ui/Checkbox";
+import { CheckboxGroup } from "@horva/ui/CheckboxGroup";
+import { ProjectDot } from "@horva/ui/Chip";
+import { DateTimePicker } from "@horva/ui/DateTimePicker";
+import { Link } from "@horva/ui/Link";
+import { Loader } from "@horva/ui/Logo";
+import { Modal } from "@horva/ui/Modal";
 import { Select, SelectItem } from "@horva/ui/Select";
 import { TextField } from "@horva/ui/TextField";
 
 import { RecurrenceRulePicker } from "#/components/RecurrenceRulePicker.js";
 import { Sheet } from "#/components/Sheet.js";
-import { PlanButton } from "#/components/TaskEditControls.js";
 import { useMocoConfigured, useRemoteMocoProjects } from "#/lib/mocoQueries.js";
 import { client } from "#/lib/orpc.js";
+import { labelChanges } from "#/lib/taskUtils.js";
 
 type Task = NonNullable<Awaited<ReturnType<typeof client.task.get>>["task"]>;
 
@@ -36,7 +50,7 @@ export function TaskDrawer({
         // Keyed so local edit state re-initialises when switching tasks.
         <TaskDrawerBody key={task.id} task={task} onClose={onClose} />
       ) : (
-        <p className="text-muted-foreground text-sm">{t("loading")}</p>
+        <Loader size={24} label={t("loading")} />
       )}
     </Sheet>
   );
@@ -81,11 +95,28 @@ function TaskDrawerBody({
     onSuccess: invalidate,
   });
 
+  const tz = getLocalTimeZone();
+  const [scheduled, setScheduled] = useState<CalendarDateTime | null>(() =>
+    task.scheduledAt
+      ? toCalendarDateTime(fromDate(new Date(task.scheduledAt), tz))
+      : null,
+  );
+
+  const draft = useRef(scheduled);
+  const saved = useRef(scheduled?.toString() ?? null);
+
   const planMutation = useMutation({
-    mutationFn: (date: string | null) =>
-      client.task.plan({ id, date: date ? new Date(date) : null }),
+    mutationFn: (date: Date | null) => client.task.plan({ id, date }),
     onSuccess: invalidate,
   });
+
+  function commitScheduled() {
+    const value = draft.current;
+    const key = value?.toString() ?? null;
+    if (key === saved.current) return;
+    saved.current = key;
+    planMutation.mutate(value ? toZoned(value, tz).toDate() : null);
+  }
 
   const statusMutation = useMutation({
     mutationFn: (action: "done" | "reopen" | "archive") =>
@@ -130,88 +161,74 @@ function TaskDrawerBody({
 
   return (
     <>
-      {/* Name */}
-      <div className="space-y-1">
-        <p className="text-foreground text-sm font-medium">
-          {t("drawer.name")}
-        </p>
-        <TextField
-          aria-label={t("drawer.name")}
-          value={name}
-          onChange={setName}
-          onBlur={commitName}
-        />
-      </div>
+      <TextField
+        label={t("drawer.name")}
+        value={name}
+        onChange={setName}
+        onBlur={commitName}
+        onKeyDown={(e) => {
+          if (e.key === "Enter") commitName();
+        }}
+      />
 
-      {/* Project */}
-      <div className="space-y-1">
-        <p className="text-foreground text-sm font-medium">
-          {t("drawer.project")}
-        </p>
-        <Select
-          aria-label={t("drawer.project")}
-          value={String(task.project.id)}
-          onChange={(value) => {
-            const projectId = Number(value);
-            if (projectId !== task.project.id) {
-              updateMutation.mutate({ id, projectId });
-            }
-          }}
-        >
-          {projectOptions.map((project) => (
-            <SelectItem key={project.id} id={String(project.id)}>
-              <span className="inline-flex items-center gap-2">
-                <span
-                  className="h-2.5 w-2.5 shrink-0 rounded-sm"
-                  style={{ backgroundColor: project.color }}
-                />
-                <span>{project.name}</span>
-              </span>
-            </SelectItem>
-          ))}
-        </Select>
-      </div>
+      <Select
+        label={t("drawer.project")}
+        value={String(task.project.id)}
+        onChange={(value) => {
+          const projectId = Number(value);
+          if (projectId !== task.project.id) {
+            updateMutation.mutate({ id, projectId });
+          }
+        }}
+      >
+        {projectOptions.map((project) => (
+          <SelectItem
+            key={project.id}
+            id={String(project.id)}
+            textValue={project.name}
+          >
+            <ProjectDot color={project.color} />
+            <span className="truncate">{project.name}</span>
+          </SelectItem>
+        ))}
+      </Select>
 
-      {/* Labels */}
       {allLabels.length > 0 && (
-        <div className="space-y-1.5">
-          <p className="text-foreground text-sm font-medium">
-            {t("drawer.labels")}
-          </p>
-          <div className="space-y-1.5">
-            {allLabels.map((label) => (
-              <Checkbox
-                key={label.id}
-                isSelected={assignedLabelIds.has(label.id)}
-                onChange={(selected) =>
-                  updateMutation.mutate(
-                    selected
-                      ? { id, addLabelIds: [label.id] }
-                      : { id, removeLabelIds: [label.id] },
-                  )
-                }
-              >
-                {label.name}
-              </Checkbox>
-            ))}
-          </div>
-        </div>
+        <CheckboxGroup
+          label={t("drawer.labels")}
+          value={[...assignedLabelIds].map(String)}
+          onChange={(values) =>
+            updateMutation.mutate({
+              id,
+              ...labelChanges(assignedLabelIds, new Set(values.map(Number))),
+            })
+          }
+        >
+          {allLabels.map((label) => (
+            <Checkbox key={label.id} value={String(label.id)}>
+              {label.name}
+            </Checkbox>
+          ))}
+        </CheckboxGroup>
       )}
 
-      {/* Scheduled date */}
-      <div className="space-y-1">
-        <p className="text-foreground text-sm font-medium">
-          {t("drawer.scheduledAt")}
-        </p>
-        <PlanButton
-          scheduledDate={task.scheduledAt}
-          onPlan={(date) => planMutation.mutate(date)}
-        />
-      </div>
+      <DateTimePicker
+        label={t("drawer.scheduledAt")}
+        value={scheduled}
+        onChange={(value) => {
+          draft.current = value;
+          setScheduled(value);
+        }}
+        // Typing changes the value per segment; it is saved once, when the
+        // field loses the focus or the calendar closes.
+        onBlur={commitScheduled}
+        onOpenChange={(isOpen) => {
+          if (!isOpen) commitScheduled();
+        }}
+      />
 
-      {/* Recurrence (activities only) */}
       {isActivity && (
-        <div className="space-y-1.5">
+        <div className="space-y-2">
           <p className="text-foreground text-sm font-medium">
             {t("drawer.recurrence")}
           </p>
@@ -225,70 +242,84 @@ function TaskDrawerBody({
         </div>
       )}
 
-      {/* Notes */}
-      <div className="space-y-1">
-        <p className="text-foreground text-sm font-medium">
+      {/* No TextArea in @horva/ui yet; the styles follow its TextField. */}
+      <div className="flex flex-col gap-1">
+        <label
+          htmlFor={`task-notes-${String(id)}`}
+          className="text-foreground text-sm font-medium"
+        >
           {t("drawer.notes")}
-        </p>
+        </label>
         <textarea
-          aria-label={t("drawer.notes")}
+          id={`task-notes-${String(id)}`}
           value={notes}
           onChange={(e) => setNotes(e.target.value)}
           onBlur={commitNotes}
-          rows={3}
-          className="border-border bg-background text-foreground focus:border-primary w-full rounded-lg border px-3 py-2 text-sm outline-none"
+          rows={4}
+          placeholder={t("drawer.notesPlaceholder")}
+          className="border-input-border bg-input text-foreground text-body placeholder:text-muted-foreground focus-visible:outline-ring min-h-20 w-full rounded-md border px-2.5 py-2 outline-offset-1 focus-visible:outline-2"
         />
       </div>
 
-      {/* Links */}
-      <div className="space-y-1.5">
+      <div className="space-y-2">
         <p className="text-foreground text-sm font-medium">
           {t("drawer.links")}
         </p>
-        {links.map((link) => (
-          <div key={link} className="flex items-center gap-2">
-            <a
-              href={link}
-              target="_blank"
-              rel="noreferrer"
-              className="text-primary min-w-0 flex-1 truncate text-sm hover:underline"
-            >
-              {link}
-            </a>
-            <Button
-              variant="quiet"
-              onPress={() => updateMutation.mutate({ id, removeLinks: [link] })}
-              className="text-muted-foreground hover:text-destructive rounded p-0.5"
-              aria-label={t("drawer.removeLink")}
-            >
-              <X className="h-3.5 w-3.5" />
-            </Button>
-          </div>
-        ))}
-        <div className="flex items-center gap-2">
+        {links.length > 0 && (
+          <ul className="space-y-1">
+            {links.map((link) => (
+              <li key={link} className="flex items-center gap-2">
+                <Link
+                  href={link}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-body min-w-0 flex-1 truncate"
+                >
+                  {link}
+                </Link>
+                <Button
+                  variant="quiet"
+                  size="sm"
+                  onPress={() =>
+                    updateMutation.mutate({ id, removeLinks: [link] })
+                  }
+                  className="text-muted-foreground hover:text-destructive"
+                  aria-label={t("drawer.removeLink")}
+                >
+                  <X aria-hidden />
+                </Button>
+              </li>
+            ))}
+          </ul>
+        )}
+        <form
+          className="flex items-center gap-2"
+          onSubmit={(e) => {
+            e.preventDefault();
+            const v = newLink.trim();
+            if (!v || links.includes(v)) return;
+            updateMutation.mutate({ id, addLinks: [v] });
+            setNewLink("");
+          }}
+        >
           <TextField
             aria-label={t("drawer.addLink")}
             value={newLink}
             onChange={setNewLink}
             placeholder="https://…"
+            type="url"
             className="min-w-0 flex-1"
           />
           <Button
+            type="submit"
             variant="secondary"
             isDisabled={!newLink.trim()}
-            onPress={() => {
-              const v = newLink.trim();
-              if (!v || links.includes(v)) return;
-              updateMutation.mutate({ id, addLinks: [v] });
-              setNewLink("");
-            }}
           >
             {t("drawer.add")}
           </Button>
-        </div>
+        </form>
       </div>
 
-      {/* Moco activity override */}
       {mocoConfigured && (
         <MocoTaskOverride
           taskId={id}
@@ -297,57 +328,65 @@ function TaskDrawerBody({
         />
       )}
 
-      {/* Status / actions */}
-      <div className="border-border space-y-3 border-t pt-5">
-        <div className="flex flex-wrap gap-2">
-          {!isActivity &&
-            (task.status === "done" ? (
-              <Button
-                variant="secondary"
-                onPress={() => statusMutation.mutate("reopen")}
-              >
-                {t("drawer.reopen")}
-              </Button>
-            ) : (
-              <Button
-                variant="secondary"
-                onPress={() => statusMutation.mutate("done")}
-              >
-                {t("drawer.markDone")}
-              </Button>
-            ))}
-          {task.status !== "archived" && (
+      {(updateMutation.isError ||
+        planMutation.isError ||
+        statusMutation.isError ||
+        deleteMutation.isError) && (
+        <p role="alert" className="text-destructive text-sm">
+          {deleteMutation.isError
+            ? t("drawer.deleteError")
+            : statusMutation.isError && statusMutation.variables === "archive"
+              ? t("drawer.archiveError")
+              : t("drawer.saveError")}
+        </p>
+      )}
+
+      <div className="border-border flex flex-wrap gap-2 border-t pt-5">
+        {!isActivity &&
+          (task.status === "done" ? (
             <Button
               variant="secondary"
-              onPress={() => statusMutation.mutate("archive")}
+              onPress={() => statusMutation.mutate("reopen")}
             >
-              {t("drawer.archive")}
+              {t("drawer.reopen")}
             </Button>
-          )}
-          {confirmDelete ? (
-            <>
-              <Button
-                variant="destructive"
-                isPending={deleteMutation.isPending}
-                onPress={() => deleteMutation.mutate()}
-              >
-                {t("drawer.confirmDelete")}
-              </Button>
-              <Button variant="quiet" onPress={() => setConfirmDelete(false)}>
-                {t("common.cancel")}
-              </Button>
-            </>
           ) : (
             <Button
-              variant="quiet"
-              className="text-destructive"
-              onPress={() => setConfirmDelete(true)}
+              variant="secondary"
+              onPress={() => statusMutation.mutate("done")}
             >
-              {t("drawer.delete")}
+              {t("drawer.markDone")}
             </Button>
-          )}
-        </div>
+          ))}
+        {task.status !== "archived" && (
+          <Button
+            variant="secondary"
+            onPress={() => statusMutation.mutate("archive")}
+          >
+            {t("drawer.archive")}
+          </Button>
+        )}
+        <Button
+          variant="quiet"
+          className="text-destructive"
+          isPending={deleteMutation.isPending}
+          onPress={() => setConfirmDelete(true)}
+        >
+          {t("drawer.delete")}
+        </Button>
       </div>
+
+      <Modal isOpen={confirmDelete} onOpenChange={setConfirmDelete}>
+        <AlertDialog
+          variant="destructive"
+          title={t("drawer.deleteTaskTitle")}
+          actionLabel={t("drawer.delete")}
+          cancelLabel={t("common.cancel")}
+          onAction={() => deleteMutation.mutate()}
+        >
+          {t("drawer.deleteTaskText")}
+        </AlertDialog>
+      </Modal>
     </>
   );
 }
@@ -402,10 +441,10 @@ function MocoTaskOverride({
 
   return (
     <div className="border-border space-y-1.5 border-t pt-5">
-      <p className="text-foreground text-sm font-semibold">
+      <h3 className="text-heading text-foreground">
         {t("drawer.mocoOverride")}
-      </p>
-      <p className="text-muted-foreground text-xs">
+      </h3>
+      <p className="text-muted-foreground text-sm">
         {t("drawer.mocoOverrideHint")}
       </p>
       {remoteQuery.data ? (

@@ -1,4 +1,5 @@
 import i18n from "#/i18n/index.js";
+import { startOfDay } from "#/lib/dateUtils.js";
 
 export function formatScheduledDate(d: Date | string): string {
   const date = new Date(d);
@@ -39,4 +40,43 @@ export function calcTotalMinutes(
       )
     );
   }, 0);
+}
+
+/**
+ * The day `day` at the time of day of `planned`, so that moving a task to
+ * another day keeps its time. Midnight when it has no date yet.
+ */
+export function onDayKeepingTime(
+  day: { year: number; month: number; day: number },
+  planned: Date | null,
+): Date {
+  return new Date(
+    day.year,
+    day.month - 1,
+    day.day,
+    planned?.getHours() ?? 0,
+    planned?.getMinutes() ?? 0,
+  );
+}
+
+/** Whether a date is today or on a day before today. */
+export function scheduleState(
+  planned: Date | null,
+  now: Date = new Date(),
+): { isPlannedToday: boolean; isOverdue: boolean } {
+  if (!planned) return { isPlannedToday: false, isOverdue: false };
+  const day = startOfDay(planned).getTime();
+  const today = startOfDay(now).getTime();
+  return { isPlannedToday: day === today, isOverdue: day < today };
+}
+
+/** The label ids to add and to remove to get from `assigned` to `next`. */
+export function labelChanges(
+  assigned: ReadonlySet<number>,
+  next: ReadonlySet<number>,
+): { addLabelIds: number[]; removeLabelIds: number[] } {
+  return {
+    addLabelIds: [...next].filter((id) => !assigned.has(id)),
+    removeLabelIds: [...assigned].filter((id) => !next.has(id)),
+  };
 }

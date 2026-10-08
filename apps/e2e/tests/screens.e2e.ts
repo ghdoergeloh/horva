@@ -28,6 +28,8 @@ const screens: {
   { name: "login", path: "/", signedIn: false, heading: "Anmelden" },
   { name: "today", path: "/", signedIn: true, heading: "Tagesübersicht" },
   { name: "tasks", path: "/tasks", signedIn: true, heading: "Alle Aufgaben" },
+  // The default project, which the API creates on its first start.
+  { name: "project", path: "/tasks/1", signedIn: true, heading: "Default" },
   // The heading is the week, e.g. "KW 23 · 1.–7. Jun. 2026".
   { name: "timeline", path: "/timeline", signedIn: true, heading: /\d/ },
   { name: "reports", path: "/reports", signedIn: true, heading: "Auswertung" },

@@ -10,7 +10,7 @@ export async function seed(db: Database) {
   if (!existing) {
     await db.insert(project).values({
       name: "Default",
-      color: "#6366f1",
+      color: "project-1",
       status: "active",
       isDefault: true,
     });

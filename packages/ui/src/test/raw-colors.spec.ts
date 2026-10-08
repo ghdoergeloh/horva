@@ -24,7 +24,6 @@ const exceptions: [RegExp, string][] = [
     "a project color the user picked",
   ],
   [/\/routeTree\.gen\.ts$/, "generated"],
-  [/\/lib\/projectColors\.ts$/, "project colors are data the user picks"],
 ];
 
 const palette =
