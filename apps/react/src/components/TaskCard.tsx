@@ -1,28 +1,22 @@
-import { useState } from "react";
-import { getLocalTimeZone, today, toZoned } from "@internationalized/date";
-import {
-  CheckCircle2,
-  Circle,
-  PanelRightOpen,
-  Pause,
-  Play,
-  RefreshCw,
-  Repeat,
-  Sun,
-} from "lucide-react";
-import { DialogTrigger, Heading } from "react-aria-components";
+import type { TFunction } from "i18next";
+import type { Selection } from "react-aria-components";
+import { useId, useState } from "react";
+import { CalendarDate, getLocalTimeZone, today } from "@internationalized/date";
+import { MoreHorizontal } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
 import { Button } from "@horva/ui/Button";
+import { Calendar } from "@horva/ui/Calendar";
 import { Dialog } from "@horva/ui/Dialog";
+import { Form } from "@horva/ui/Form";
+import { Menu, MenuItem, MenuTrigger, SubmenuTrigger } from "@horva/ui/Menu";
 import { Modal } from "@horva/ui/Modal";
+import { Popover } from "@horva/ui/Popover";
+import { TaskCard as HorvaTaskCard } from "@horva/ui/TaskCard";
+import { TextField } from "@horva/ui/TextField";
 
 import type { LabelRow } from "#/components/TaskEditControls.js";
 import { RecurrenceRulePicker } from "#/components/RecurrenceRulePicker.js";
-import {
-  InlineRenameInput,
-  LabelPicker,
-} from "#/components/TaskEditControls.js";
 import { useActiveSlot } from "#/contexts/ActiveSlotContext.js";
 import {
   formatMinutesWithFormat,
@@ -30,6 +24,7 @@ import {
 } from "#/contexts/SettingsContext.js";
 import { startOfDay } from "#/lib/dateUtils.js";
 import { client } from "#/lib/orpc.js";
+import { formatScheduledDate } from "#/lib/taskUtils.js";
 
 interface TaskCardProps {
   id: number;
@@ -38,16 +33,18 @@ interface TaskCardProps {
   labels?: LabelRow[];
   totalMinutes?: number;
   dimmed?: boolean;
+  /** Text of the date chip; by default it comes from `scheduledAt`. */
   scheduledTime?: string | null;
   scheduledAt?: Date | string | null;
   recurrenceRule?: string | null;
   isActivity?: boolean;
   isDone?: boolean;
   overdue?: boolean;
+  /** Ticks a task off (or on again when done); takes an activity off today. */
   onMarkDone?: () => void;
-  // Optional editing
   allLabels?: LabelRow[];
   onRename?: (name: string) => void;
+  /** Plans the task for a date (ISO string), or removes the date (`null`). */
   onPlan?: (date: string | null) => void;
   onSetRecurrence?: (rule: string | null) => void;
   onAddLabel?: (labelId: number) => void;
@@ -55,92 +52,48 @@ interface TaskCardProps {
   onOpenDetails?: () => void;
 }
 
-function RecurrenceModal({
-  recurrenceRule,
-  scheduledAt,
-  onSetRecurrence,
-}: {
-  recurrenceRule: string | null | undefined;
-  scheduledAt: Date | string | null | undefined;
-  onSetRecurrence: (rule: string | null) => void;
-}) {
-  const { t } = useTranslation();
-  const scheduledDate = scheduledAt ? new Date(scheduledAt) : null;
-  return (
-    <DialogTrigger>
-      <Button
-        variant="quiet"
-        className={`shrink-0 rounded p-0.5 transition-colors ${
-          recurrenceRule
-            ? "text-primary/80 hover:text-primary"
-            : "text-muted-foreground/70 hover:text-primary/80 opacity-0 group-hover:opacity-100"
-        }`}
-        aria-label={t("taskCard.recurring")}
-      >
-        <RefreshCw className="h-3 w-3" />
-      </Button>
-      <Modal>
-        <Dialog>
-          {({ close }) => (
-            <RecurrenceModalContent
-              recurrenceRule={recurrenceRule ?? null}
-              scheduledDate={scheduledDate}
-              onSetRecurrence={onSetRecurrence}
-              onClose={close}
-            />
-          )}
-        </Dialog>
-      </Modal>
-    </DialogTrigger>
-  );
+/** The texts of the card in the language of the app. */
+function cardStrings(t: TFunction) {
+  return {
+    markDone: t("taskCard.markDone"),
+    reopen: t("taskCard.reopen"),
+    start: t("taskCard.start"),
+    stop: t("taskCard.stop"),
+    planToday: t("taskCard.planToday"),
+    noDate: t("taskCard.noDate"),
+    date: t("taskCard.date"),
+    overdue: t("taskCard.overdue"),
+    activity: t("taskCard.activity"),
+    running: t("taskCard.running"),
+    total: t("taskCard.total"),
+  };
 }
 
-function RecurrenceModalContent({
-  recurrenceRule,
-  scheduledDate,
-  onSetRecurrence,
-  onClose,
-}: {
-  recurrenceRule: string | null;
-  scheduledDate: Date | null;
-  onSetRecurrence: (rule: string | null) => void;
-  onClose: () => void;
-}) {
-  const { t } = useTranslation();
-  const [draft, setDraft] = useState<string | null>(recurrenceRule);
-
-  return (
-    <>
-      <Heading
-        slot="title"
-        className="text-foreground mb-4 text-base font-semibold"
-      >
-        {t("taskCard.recurrenceModalTitle")}
-      </Heading>
-      <RecurrenceRulePicker
-        key={recurrenceRule ?? "new"}
-        value={draft}
-        scheduledAt={scheduledDate}
-        onChange={setDraft}
-      />
-      <div className="mt-4 flex justify-end gap-2">
-        <Button variant="secondary" onPress={onClose}>
-          {t("common.cancel")}
-        </Button>
-        <Button
-          variant="primary"
-          onPress={() => {
-            onSetRecurrence(draft);
-            onClose();
-          }}
-        >
-          {t("common.save")}
-        </Button>
-      </div>
-    </>
-  );
+/** Whether a plan is for today, and the text of the date chip. */
+function planState(
+  scheduledAt: Date | string | null | undefined,
+  scheduledTime: string | null | undefined,
+) {
+  if (!scheduledAt)
+    return { isPlannedToday: false, dateLabel: scheduledTime ?? null };
+  return {
+    isPlannedToday:
+      startOfDay(new Date(scheduledAt)).getTime() ===
+      startOfDay(new Date()).getTime(),
+    dateLabel: scheduledTime ?? formatScheduledDate(scheduledAt),
+  };
 }
 
+function toCalendarDate(value: Date | string): CalendarDate {
+  const d = new Date(value);
+  return new CalendarDate(d.getFullYear(), d.getMonth() + 1, d.getDate());
+}
+
+/**
+ * A task or activity of the app as the `TaskCard` of `@horva/ui`: start
+ * and stop through the running slot, "Today" and the date chip plan it,
+ * and a menu holds rename, labels, recurrence and details.
+ */
 export function TaskCard({
   id,
   name,
@@ -167,218 +120,324 @@ export function TaskCard({
   const timeFormat = useTimeFormat();
   const { openSlot, invalidate } = useActiveSlot();
   const isRunning = openSlot?.task?.id === id;
-  const [editing, setEditing] = useState(false);
-  const [editValue, setEditValue] = useState(name);
+  const [dialog, setDialog] = useState<"rename" | "recurrence" | null>(null);
 
-  const canEdit = Boolean(onRename ?? onPlan ?? allLabels);
+  const { isPlannedToday, dateLabel } = planState(scheduledAt, scheduledTime);
 
-  async function handleStart() {
-    await client.slot.start({ taskId: id });
-    await invalidate();
+  const [failed, setFailed] = useState<"start" | "stop" | null>(null);
+
+  async function run(action: "start" | "stop") {
+    setFailed(null);
+    try {
+      // Stop ends the work, like the stop of the timer.
+      if (action === "start") await client.slot.start({ taskId: id });
+      else await client.slot.done({});
+      await invalidate();
+    } catch {
+      setFailed(action);
+    }
   }
 
-  async function handleStop() {
-    await client.slot.stop({});
-    await invalidate();
+  function planToday() {
+    const tz = getLocalTimeZone();
+    onPlan?.(today(tz).toDate(tz).toISOString());
   }
 
-  function startEditing() {
-    if (!onRename) return;
-    setEditValue(name);
-    setEditing(true);
+  /** Moves the plan to another day and keeps its time of day. */
+  function planOn(day: CalendarDate) {
+    const next = scheduledAt ? new Date(scheduledAt) : new Date(0, 0, 1);
+    next.setFullYear(day.year, day.month - 1, day.day);
+    onPlan?.(next.toISOString());
   }
 
-  function commitEdit() {
-    const trimmed = editValue.trim();
-    if (trimmed && trimmed !== name) onRename?.(trimmed);
-    setEditing(false);
-  }
+  const datePopover = onPlan ? (
+    <Popover placement="bottom start">
+      <Dialog aria-label={t("taskCard.pickDate")} className="p-3">
+        {({ close }) => (
+          <>
+            <Calendar
+              aria-label={t("taskCard.pickDate")}
+              value={scheduledAt ? toCalendarDate(scheduledAt) : null}
+              onChange={(day) => {
+                planOn(day);
+                close();
+              }}
+            />
+            {scheduledAt && (
+              <div className="border-border mt-2 border-t pt-2">
+                <Button
+                  variant="quiet"
+                  size="sm"
+                  onPress={() => {
+                    onPlan(null);
+                    close();
+                  }}
+                >
+                  {t("taskCard.clearDate")}
+                </Button>
+              </div>
+            )}
+          </>
+        )}
+      </Dialog>
+    </Popover>
+  ) : undefined;
 
-  const assignedLabelIds = labels.map((l) => l.id);
-  const isScheduledToday = scheduledAt
-    ? startOfDay(new Date(scheduledAt)).getTime() ===
-      startOfDay(new Date()).getTime()
-    : false;
+  const actions = (
+    <CardMenu
+      isActivity={isActivity}
+      labels={labels}
+      allLabels={onAddLabel && onRemoveLabel ? allLabels : undefined}
+      onRename={onRename ? () => setDialog("rename") : undefined}
+      onRecurrence={onSetRecurrence ? () => setDialog("recurrence") : undefined}
+      onRemoveFromToday={isActivity ? onMarkDone : undefined}
+      onAddLabel={onAddLabel}
+      onRemoveLabel={onRemoveLabel}
+      onOpenDetails={onOpenDetails}
+    />
+  );
 
   return (
-    <div
-      className={`group bg-card flex items-center gap-3 rounded-lg border p-3 transition-colors hover:shadow-sm ${
-        isRunning
-          ? "border-primary/50 ring-primary/30 ring-2"
-          : "border-border hover:border-border"
-      } ${dimmed ? "opacity-60" : ""}`}
-    >
-      {/* Done / unschedule button */}
-      {onMarkDone && (
-        <Button
-          variant="quiet"
-          onPress={onMarkDone}
-          className={`shrink-0 ${
-            isDone
-              ? "text-success hover:text-muted-foreground/70"
-              : "text-muted-foreground/70 hover:text-success"
-          }`}
-          aria-label={
-            isActivity
-              ? t("taskCard.removeFromToday")
-              : isDone
-                ? t("taskCard.markOpen")
-                : t("taskCard.markDone")
-          }
-        >
-          {isActivity ? (
-            <Repeat className="h-5 w-5" />
-          ) : isDone ? (
-            <CheckCircle2 className="h-5 w-5" />
-          ) : (
-            <Circle className="h-5 w-5" />
-          )}
-        </Button>
-      )}
-
-      {/* Project color bar */}
-      <div
-        className={`h-8 w-1 shrink-0 rounded-full ${isRunning ? "animate-pulse" : ""}`}
-        style={{ backgroundColor: project.color }}
+    <>
+      <HorvaTaskCard
+        title={name}
+        kind={isActivity ? "activity" : "task"}
+        isDone={isDone}
+        isRunning={isRunning}
+        isOverdue={overdue}
+        project={project}
+        labels={labels.map((l) => l.name)}
+        totalMinutes={totalMinutes}
+        dateLabel={dateLabel}
+        isPlannedToday={isPlannedToday}
+        onToggleDone={isActivity ? undefined : onMarkDone}
+        onStart={() => void run("start")}
+        onStop={() => void run("stop")}
+        onPlanToday={onPlan ? planToday : undefined}
+        datePopover={datePopover}
+        actions={actions}
+        formatDuration={(minutes) =>
+          formatMinutesWithFormat(minutes, timeFormat)
+        }
+        strings={cardStrings(t)}
+        className={dimmed ? "opacity-60" : undefined}
       />
+      {failed && (
+        <p role="alert" className="text-destructive text-small mt-1">
+          {failed === "start"
+            ? t("startTaskDialog.failed")
+            : t("slotBar.stopFailed")}
+        </p>
+      )}
+      {onRename && dialog === "rename" && (
+        <RenameDialog
+          name={name}
+          onClose={() => setDialog(null)}
+          onRename={onRename}
+        />
+      )}
+      {onSetRecurrence && dialog === "recurrence" && (
+        <RecurrenceDialog
+          recurrenceRule={recurrenceRule ?? null}
+          scheduledAt={scheduledAt ? new Date(scheduledAt) : null}
+          onClose={() => setDialog(null)}
+          onSetRecurrence={onSetRecurrence}
+        />
+      )}
+    </>
+  );
+}
 
-      {/* Task info */}
-      <div className="min-w-0 flex-1">
-        {editing ? (
-          <InlineRenameInput
-            value={editValue}
-            onChange={setEditValue}
-            onCommit={commitEdit}
-            onCancel={() => setEditing(false)}
-          />
-        ) : (
-          <div className="flex items-center gap-2">
-            {canEdit && onRename ? (
-              <button
-                type="button"
-                onClick={startEditing}
-                title={t("taskCard.clickToEdit")}
-                className="text-foreground hover:text-sidebar-accent-foreground cursor-text truncate text-left text-sm font-medium"
-              >
-                {name}
-              </button>
-            ) : (
-              <span
-                title={onRename ? t("taskCard.clickToEdit") : undefined}
-                className={`text-foreground truncate text-sm font-medium ${onRename ? "hover:text-sidebar-accent-foreground cursor-text" : ""}`}
-              >
-                {name}
-              </span>
-            )}
-            {isActivity && onSetRecurrence && (
-              <RecurrenceModal
-                recurrenceRule={recurrenceRule}
-                scheduledAt={scheduledAt}
-                onSetRecurrence={onSetRecurrence}
-              />
-            )}
-            {scheduledTime && (
-              <span
-                className={`text-xs ${overdue ? "text-destructive font-medium" : "text-muted-foreground"}`}
-              >
-                {scheduledTime}
-              </span>
-            )}
-          </div>
+/** The "more actions" menu of a card. Hidden when it would be empty. */
+function CardMenu({
+  isActivity,
+  labels,
+  allLabels,
+  onRename,
+  onRecurrence,
+  onRemoveFromToday,
+  onAddLabel,
+  onRemoveLabel,
+  onOpenDetails,
+}: {
+  isActivity: boolean;
+  labels: LabelRow[];
+  allLabels?: LabelRow[];
+  onRename?: () => void;
+  onRecurrence?: () => void;
+  onRemoveFromToday?: () => void;
+  onAddLabel?: (labelId: number) => void;
+  onRemoveLabel?: (labelId: number) => void;
+  onOpenDetails?: () => void;
+}) {
+  const { t } = useTranslation();
+  const hasLabels = Boolean(allLabels && allLabels.length > 0);
+  if (
+    !onRename &&
+    !onRecurrence &&
+    !onRemoveFromToday &&
+    !hasLabels &&
+    !onOpenDetails
+  )
+    return null;
+
+  const assigned = new Set(labels.map((l) => l.id));
+  const actions: Record<string, (() => void) | undefined> = {
+    rename: onRename,
+    recurrence: onRecurrence,
+    removeFromToday: onRemoveFromToday,
+    details: onOpenDetails,
+  };
+
+  function onLabelsChange(selection: Selection) {
+    if (selection === "all") return;
+    for (const label of allLabels ?? []) {
+      const selected = selection.has(label.id);
+      if (selected && !assigned.has(label.id)) onAddLabel?.(label.id);
+      if (!selected && assigned.has(label.id)) onRemoveLabel?.(label.id);
+    }
+  }
+
+  return (
+    <MenuTrigger placement="bottom end">
+      <Button variant="quiet" size="sm" aria-label={t("taskCard.actions")}>
+        <MoreHorizontal aria-hidden />
+      </Button>
+      <Menu onAction={(key) => actions[String(key)]?.()}>
+        {onRename && <MenuItem id="rename">{t("taskCard.rename")}</MenuItem>}
+        {hasLabels && (
+          <SubmenuTrigger>
+            <MenuItem id="labels">{t("taskCard.labels")}</MenuItem>
+            <Menu
+              aria-label={t("taskCard.labels")}
+              selectionMode="multiple"
+              selectedKeys={assigned}
+              onSelectionChange={onLabelsChange}
+              items={allLabels}
+            >
+              {(label) => <MenuItem id={label.id}>{label.name}</MenuItem>}
+            </Menu>
+          </SubmenuTrigger>
         )}
-        <div className="mt-0.5 flex flex-wrap items-center gap-2">
-          <span
-            className="rounded px-1.5 py-0.5 text-xs font-medium"
-            style={{
-              backgroundColor: `${project.color}22`,
-              color: project.color,
+        {isActivity && onRecurrence && (
+          <MenuItem id="recurrence">{t("taskCard.recurrence")}</MenuItem>
+        )}
+        {onRemoveFromToday && (
+          <MenuItem id="removeFromToday">
+            {t("taskCard.removeFromToday")}
+          </MenuItem>
+        )}
+        {onOpenDetails && (
+          <MenuItem id="details">{t("taskCard.openDetails")}</MenuItem>
+        )}
+      </Menu>
+    </MenuTrigger>
+  );
+}
+
+function RenameDialog({
+  name,
+  onClose,
+  onRename,
+}: {
+  name: string;
+  onClose: () => void;
+  onRename: (name: string) => void;
+}) {
+  const { t } = useTranslation();
+  const titleId = useId();
+  const [value, setValue] = useState(name);
+
+  return (
+    <Modal
+      isDismissable
+      isOpen
+      onOpenChange={(open) => {
+        if (!open) onClose();
+      }}
+    >
+      <Dialog aria-labelledby={titleId}>
+        <Form
+          className="gap-4"
+          onSubmit={(e) => {
+            e.preventDefault();
+            const trimmed = value.trim();
+            if (trimmed && trimmed !== name) onRename(trimmed);
+            onClose();
+          }}
+        >
+          <h2 id={titleId} className="text-title text-foreground">
+            {t("taskCard.renameTitle")}
+          </h2>
+          <TextField
+            // oxlint-disable-next-line jsx-a11y/no-autofocus -- The dialog opens on a user action. Focus goes to the field.
+            autoFocus
+            label={t("taskCard.name")}
+            value={value}
+            onChange={setValue}
+            isRequired
+          />
+          <div className="flex justify-end gap-2">
+            <Button variant="secondary" onPress={onClose}>
+              {t("common.cancel")}
+            </Button>
+            <Button type="submit" isDisabled={!value.trim()}>
+              {t("common.save")}
+            </Button>
+          </div>
+        </Form>
+      </Dialog>
+    </Modal>
+  );
+}
+
+function RecurrenceDialog({
+  recurrenceRule,
+  scheduledAt,
+  onClose,
+  onSetRecurrence,
+}: {
+  recurrenceRule: string | null;
+  scheduledAt: Date | null;
+  onClose: () => void;
+  onSetRecurrence: (rule: string | null) => void;
+}) {
+  const { t } = useTranslation();
+  const titleId = useId();
+  const [draft, setDraft] = useState<string | null>(recurrenceRule);
+
+  return (
+    <Modal
+      isDismissable
+      isOpen
+      onOpenChange={(open) => {
+        if (!open) onClose();
+      }}
+    >
+      <Dialog aria-labelledby={titleId}>
+        <h2 id={titleId} className="text-title text-foreground mb-4">
+          {t("taskCard.recurrenceModalTitle")}
+        </h2>
+        <RecurrenceRulePicker
+          key={recurrenceRule ?? "new"}
+          value={draft}
+          scheduledAt={scheduledAt}
+          onChange={setDraft}
+        />
+        <div className="mt-4 flex justify-end gap-2">
+          <Button variant="secondary" onPress={onClose}>
+            {t("common.cancel")}
+          </Button>
+          <Button
+            onPress={() => {
+              onSetRecurrence(draft);
+              onClose();
             }}
           >
-            {project.name}
-          </span>
-          {labels.map((l) => (
-            <span
-              key={l.id}
-              className="bg-muted text-foreground/80 rounded px-1.5 py-0.5 text-xs"
-            >
-              {l.name}
-            </span>
-          ))}
-          {totalMinutes > 0 && (
-            <span className="text-muted-foreground text-xs">
-              {t("taskCard.totalTime", {
-                time: formatMinutesWithFormat(totalMinutes, timeFormat),
-              })}
-            </span>
-          )}
+            {t("common.save")}
+          </Button>
         </div>
-      </div>
-
-      {/* Edit controls (label picker + plan button) — only when editing is enabled */}
-      {(canEdit || onOpenDetails) && (
-        <div className="flex shrink-0 items-center gap-1">
-          {allLabels && onAddLabel && onRemoveLabel && (
-            <LabelPicker
-              assignedLabelIds={assignedLabelIds}
-              allLabels={allLabels}
-              onAdd={onAddLabel}
-              onRemove={onRemoveLabel}
-            />
-          )}
-          {onPlan && (
-            <Button
-              variant="quiet"
-              onPress={() => {
-                const tz = getLocalTimeZone();
-                onPlan(toZoned(today(tz), tz).toDate().toISOString());
-              }}
-              className={`flex items-center rounded p-0.5 transition-colors ${
-                isScheduledToday
-                  ? "text-primary/80 hover:text-primary"
-                  : "text-muted-foreground/70 hover:text-foreground opacity-0 transition-opacity group-hover:opacity-100"
-              }`}
-              aria-label={t("taskEditControls.planToday")}
-            >
-              <Sun className="h-3.5 w-3.5" />
-            </Button>
-          )}
-          {onOpenDetails && (
-            <Button
-              variant="quiet"
-              onPress={onOpenDetails}
-              className="text-muted-foreground/70 hover:text-foreground flex items-center rounded p-0.5 opacity-0 transition-opacity group-hover:opacity-100"
-              aria-label={t("taskCard.openDetails")}
-            >
-              <PanelRightOpen className="h-3.5 w-3.5" />
-            </Button>
-          )}
-        </div>
-      )}
-
-      {/* Start / Stop button */}
-      {isRunning ? (
-        <Button
-          variant="secondary"
-          onPress={() => void handleStop()}
-          className="bg-running text-running-foreground hover:bg-running/90 hover:text-running-foreground w-24 shrink-0 px-3 py-1.5 text-sm font-medium transition-colors"
-        >
-          <span className="inline-flex items-center justify-center gap-1">
-            <Pause className="h-3 w-3" />
-            {t("taskCard.pause")}
-          </span>
-        </Button>
-      ) : (
-        <Button
-          variant="primary"
-          onPress={() => void handleStart()}
-          className="text-primary-foreground hover:bg-primary w-24 shrink-0 px-3 py-1.5 text-sm font-medium opacity-0 transition-opacity group-hover:opacity-100"
-        >
-          <span className="inline-flex items-center justify-center gap-1">
-            <Play className="h-3 w-3" />
-            {t("taskCard.start")}
-          </span>
-        </Button>
-      )}
-    </div>
+      </Dialog>
+    </Modal>
   );
 }
