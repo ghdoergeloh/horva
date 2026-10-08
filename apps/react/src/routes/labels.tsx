@@ -5,9 +5,9 @@ import { Plus, Tag, Trash2, X } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
 import { Button } from "@horva/ui/Button";
+import { Loader } from "@horva/ui/Logo";
 import { TextField } from "@horva/ui/TextField";
 
-import { LoadingSpinner } from "#/components/LoadingSpinner.js";
 import { client } from "#/lib/orpc.js";
 
 function LabelsPage() {
@@ -63,7 +63,11 @@ function LabelsPage() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <LoadingSpinner size={64} label={t("loading")} />
+        <Loader
+          size={64}
+          label={t("loading")}
+          className="animate-delayed-show opacity-0"
+        />
       </div>
     );
   }

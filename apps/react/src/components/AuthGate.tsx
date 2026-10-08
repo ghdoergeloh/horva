@@ -4,9 +4,8 @@ import { useTranslation } from "react-i18next";
 
 import { initAuthClient } from "@horva/auth/client";
 import { Button } from "@horva/ui/Button";
+import { Loader } from "@horva/ui/Logo";
 import { TextField } from "@horva/ui/TextField";
-
-import { LoadingSpinner } from "#/components/LoadingSpinner.js";
 
 // Gate of the browser app: a better-auth email/password login wall plus the
 // password-reset flow. The reset page lives here (not in src/routes/),
@@ -36,7 +35,11 @@ export function AuthGate({ children }: AuthGateProps) {
   if (isPending) {
     return (
       <main className="bg-background flex h-screen items-center justify-center">
-        <LoadingSpinner size={64} label={t("loading")} />
+        <Loader
+          size={64}
+          label={t("loading")}
+          className="animate-delayed-show opacity-0"
+        />
       </main>
     );
   }
