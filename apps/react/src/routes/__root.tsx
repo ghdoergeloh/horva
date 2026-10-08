@@ -124,6 +124,14 @@ function NewProjectModal({
             label={t("project.color")}
             value={color}
             onChange={setPicked}
+            labels={{
+              presets: t("projectColors.presets", {
+                returnObjects: true,
+              }) as string[],
+              custom: t("projectColors.custom"),
+              customPlaceholder: t("projectColors.customPlaceholder"),
+              invalid: t("projectColors.invalid"),
+            }}
           />
           {createProjectMutation.isError && (
             <p role="alert" className="text-destructive text-small">

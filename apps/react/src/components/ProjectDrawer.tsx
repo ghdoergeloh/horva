@@ -121,7 +121,7 @@ function ProjectDrawerBody({
       <ProjectColorPicker
         value={project.color}
         onChange={(color) => updateMutation.mutate({ color })}
-        label={t("projectColors.label")}
+        label={t("project.color")}
         labels={{
           presets: t("projectColors.presets", {
             returnObjects: true,
@@ -130,7 +130,6 @@ function ProjectDrawerBody({
           customPlaceholder: t("projectColors.customPlaceholder"),
           invalid: t("projectColors.invalid"),
         }}
-        className="bg-popover border-border rounded-lg border p-3"
       />
 
       {/* Moco linking */}

@@ -475,7 +475,6 @@
     "deleteError": "Löschen fehlgeschlagen. Erneut versuchen?"
   },
   "projectColors": {
-    "label": "Projektfarbe",
     "presets": [
       "Indigo",
       "Bernstein",
