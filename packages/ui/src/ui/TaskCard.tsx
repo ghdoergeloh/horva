@@ -35,6 +35,8 @@ export interface TaskCardStrings {
   date: string;
   overdue: string;
   activity: string;
+  /** Button of an activity: done for today, on to its next date. */
+  activityDone: string;
   running: string;
   /** Accessible name of the total time, before the time. */
   total: string;
@@ -50,6 +52,7 @@ export const taskCardStrings: TaskCardStrings = {
   date: "Datum",
   overdue: "überfällig",
   activity: "Aktivität",
+  activityDone: "Für heute erledigt",
   running: "läuft",
   total: "Gesamtzeit",
 };
@@ -73,6 +76,11 @@ export interface TaskCardProps {
   /** Hides the "Heute" button. */
   isPlannedToday?: boolean;
   onToggleDone?: (isDone: boolean) => void;
+  /**
+   * An activity is done for today: it moves on to its next date. Shown as
+   * the repeat button in front of the card.
+   */
+  onActivityDone?: () => void;
   onStart?: () => void;
   onStop?: () => void;
   onPlanToday?: () => void;
@@ -222,6 +230,7 @@ export function TaskCard({
   dateLabel,
   isPlannedToday = false,
   onToggleDone,
+  onActivityDone,
   onStart,
   onStop,
   onPlanToday,
@@ -247,14 +256,17 @@ export function TaskCard({
     handleCardKey(
       event,
       {
-        canToggleDone: !isActivity && Boolean(onToggleDone),
+        canToggleDone: isActivity
+          ? Boolean(onActivityDone)
+          : Boolean(onToggleDone),
         isDone: done,
         isRunning: running,
         canPlanToday: showToday,
         canOpenDate: showDate,
       },
       {
-        toggleDone: () => onToggleDone?.(!done),
+        toggleDone: () =>
+          isActivity ? onActivityDone?.() : onToggleDone?.(!done),
         start: () => onStart?.(),
         stop: () => onStop?.(),
         planToday: () => onPlanToday?.(),
@@ -300,6 +312,7 @@ export function TaskCard({
         isDone={done}
         isRunning={running}
         onToggleDone={onToggleDone}
+        onActivityDone={onActivityDone}
         onStart={onStart}
         onStop={onStop}
         t={t}
@@ -446,6 +459,7 @@ function Lead({
   isDone,
   isRunning,
   onToggleDone,
+  onActivityDone,
   onStart,
   onStop,
   t,
@@ -454,13 +468,28 @@ function Lead({
   isDone: boolean;
   isRunning: boolean;
   onToggleDone?: (isDone: boolean) => void;
+  onActivityDone?: () => void;
   onStart?: () => void;
   onStop?: () => void;
   t: TaskCardStrings;
 }) {
   return (
     <div className="flex shrink-0 items-center gap-2">
-      {isActivity ? (
+      {isActivity && onActivityDone ? (
+        <Button
+          variant="quiet"
+          size="sm"
+          aria-label={t.activityDone}
+          onPress={onActivityDone}
+          className={twMerge(
+            "size-5 rounded-sm p-0",
+            isRunning ? "text-foreground" : "text-muted-foreground",
+            "hover:text-primary",
+          )}
+        >
+          <Repeat aria-hidden className="size-4" />
+        </Button>
+      ) : isActivity ? (
         <span
           title={t.activity}
           className={twMerge(
@@ -472,6 +501,7 @@ function Lead({
         </span>
       ) : (
         <Checkbox
+          previewCheck
           aria-label={isDone ? t.reopen : t.markDone}
           isSelected={isDone}
           onChange={(selected) => onToggleDone?.(selected)}

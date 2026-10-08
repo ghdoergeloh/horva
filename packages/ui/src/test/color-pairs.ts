@@ -63,6 +63,9 @@ export const colorPairs: ColorPair[] = [
   text("running-text", "background"),
   text("running-text", "running-soft"),
   text("foreground", "running-soft"),
+  // An opened day of the timeline sits on muted.
+  text("foreground", "muted"),
+  text("primary", "muted"),
   // Fields, hover and selection inside lists and menus.
   text("foreground", "input"),
   text("muted-foreground", "input"),

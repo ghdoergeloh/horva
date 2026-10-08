@@ -3,6 +3,7 @@
 import type React from "react";
 import type { Key } from "react-aria-components";
 import { useContext, useRef, useState } from "react";
+import { ChevronRight } from "lucide-react";
 import {
   DisclosureStateContext,
   Button as RACButton,
@@ -132,7 +133,7 @@ const dayNameStyles = tv({
       false: "text-muted-foreground",
     },
     isButton: {
-      true: "cursor-default hover:underline underline-offset-4",
+      true: "flex w-full items-center justify-between gap-1 cursor-default hover:underline underline-offset-4",
     },
   },
 });
@@ -338,7 +339,12 @@ function DayRow({ isToday, content, ...track }: DayRowProps) {
               dayNameStyles({ ...renderProps, isToday, isButton: true })
             }
           >
-            {name}
+            {/* The chevrons stand in one column at the left of the day. */}
+            <ChevronRight
+              aria-hidden
+              className="size-3.5 shrink-0 transition-transform group-data-[expanded]/day:rotate-90 motion-reduce:transition-none"
+            />
+            <span className="truncate">{name}</span>
           </RACButton>
         )}
         <span className="type-duration-small text-foreground hidden @max-lg:block">
@@ -354,7 +360,13 @@ function DayRow({ isToday, content, ...track }: DayRowProps) {
         {totalText}
       </span>
       {content !== undefined && (
-        <DisclosurePanel className="col-span-full">{content}</DisclosurePanel>
+        // The opened day sits under the bar, framed as a card, so it reads
+        // as part of its day and not as a new section of the page.
+        <DisclosurePanel className="col-start-2 -col-end-1 min-w-0 @max-lg:col-start-1">
+          <div className="border-border bg-card mt-1 mb-2 overflow-hidden rounded-lg border shadow-sm">
+            {content}
+          </div>
+        </DisclosurePanel>
       )}
     </>
   );
@@ -415,7 +427,10 @@ export function DayBars({
             <Disclosure
               key={day.id}
               id={day.id}
-              className="col-span-full grid min-w-0 grid-cols-subgrid items-center gap-y-2 rounded-none"
+              // An opened day gets a calm background that reaches a little
+              // past its grid cells (painted outwards, so the columns stay in
+              // place), so day, bar and table read as one block.
+              className="group/day data-[expanded]:bg-muted col-span-full grid min-w-0 grid-cols-subgrid items-center gap-y-2 rounded-none data-[expanded]:my-1 data-[expanded]:rounded-lg data-[expanded]:shadow-[0_0_0_8px_var(--color-muted)]"
             >
               {row}
             </Disclosure>

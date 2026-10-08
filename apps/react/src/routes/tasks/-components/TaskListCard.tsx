@@ -222,6 +222,9 @@ export function TaskListCard({
         dateLabel={scheduledAt ? formatScheduledDate(scheduledAt) : null}
         isPlannedToday={isPlannedToday}
         onToggleDone={(done) => doneMutation.mutate(done)}
+        onActivityDone={
+          isActivity ? () => doneMutation.mutate(true) : undefined
+        }
         onStart={() => slotMutation.mutate(true)}
         onStop={() => slotMutation.mutate(false)}
         onPlanToday={() =>
@@ -239,6 +242,7 @@ export function TaskListCard({
           date: t("taskList.date"),
           overdue: t("taskList.overdue"),
           activity: t("taskList.activity"),
+          activityDone: t("taskList.activityDone"),
           running: t("taskList.running"),
           total: t("taskList.total"),
         }}

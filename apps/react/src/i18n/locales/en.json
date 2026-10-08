@@ -321,7 +321,8 @@
     "labels": "Labels",
     "recurrence": "Recurrence …",
     "clearDate": "Remove date",
-    "pickDate": "Pick a date"
+    "pickDate": "Pick a date",
+    "activityDone": "Done for today"
   },
   "taskEditControls": {
     "planDate": "Plan date",
@@ -518,7 +519,8 @@
     "openDetails": "Open details",
     "labels": "Labels",
     "recurrence": "Recurrence…",
-    "recurrenceTitle": "Recurrence"
+    "recurrenceTitle": "Recurrence",
+    "activityDone": "Done for today"
   },
   "taskPicker": {
     "field": "Task",

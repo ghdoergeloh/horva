@@ -42,7 +42,21 @@ const boxStyles = tv({
     isDisabled: {
       true: "forced-colors:[--color:GrayText]!",
     },
+    isHovered: {
+      true: "",
+    },
   },
+  // Hover shows that the box can be ticked; not when disabled, and an
+  // invalid box keeps its red border.
+  compoundVariants: [
+    {
+      isSelected: false,
+      isHovered: true,
+      isDisabled: false,
+      isInvalid: false,
+      class: "bg-accent [--color:var(--color-primary)]",
+    },
+  ],
 });
 
 const iconStyles =
@@ -50,6 +64,8 @@ const iconStyles =
 
 export interface CheckboxProps extends CheckboxFieldProps {
   children?: ReactNode;
+  /** Shows a faint check mark on hover, where ticking off is the action. */
+  previewCheck?: boolean;
   description?: string;
   errorMessage?: string | ((validation: ValidationResult) => string);
 }
@@ -57,7 +73,7 @@ export interface CheckboxProps extends CheckboxFieldProps {
 /**
  * A checkbox with an optional description and error message below it.
  */
-export function Checkbox(props: CheckboxProps) {
+export function Checkbox({ previewCheck = false, ...props }: CheckboxProps) {
   return (
     <CheckboxField {...props} className="group flex flex-col gap-1">
       <CheckboxButton
@@ -81,6 +97,11 @@ export function Checkbox(props: CheckboxProps) {
                   <Minus aria-hidden className={iconStyles} />
                 ) : isSelected ? (
                   <Check aria-hidden className={iconStyles} />
+                ) : previewCheck && !renderProps.isDisabled ? (
+                  <Check
+                    aria-hidden
+                    className={`text-primary pointer-events-none h-3.5 w-3.5 transition-opacity ${renderProps.isHovered ? "opacity-70" : "opacity-0"}`}
+                  />
                 ) : null}
               </div>
               {children}

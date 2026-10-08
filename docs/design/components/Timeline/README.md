@@ -9,3 +9,4 @@ Wochenansicht der Zeitleiste: je Tag ein waagerechter Balken mit Stundenskala, S
 - Hover und Tastaturfokus auf einem Block zeigen den Tooltip (Aufgabe, Projekt, Von–Bis, Dauer) und heben ihn mit Ring hervor; Klick öffnet den Slot in der Tabelle.
 - Heute: Tagesname in `primary`. Lücken bleiben als leere Spur sichtbar.
 - Bei 400 px: Skala nur jede zweite Stunde, Summe unter dem Tagesnamen.
+- Aufgeklappter Tag: ruhige Fläche `muted` um Tagesname, Balken und Inhalt; ein Pfeil links am Tagesnamen zeigt offen/zu; die Tabelle steht als Karte eingerückt unter dem Balken (Rückmeldung vom 08.10.2026).

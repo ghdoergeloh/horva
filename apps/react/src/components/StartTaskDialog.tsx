@@ -88,7 +88,7 @@ export function StartTaskDialog({
         if (!open) onClose();
       }}
     >
-      <Dialog aria-labelledby={titleId} className="p-0">
+      <Dialog aria-labelledby={titleId} className="flex flex-col p-0">
         <div className="border-border flex items-center justify-between gap-2 border-b py-2 ps-4 pe-2">
           <h2 id={titleId} className="text-heading text-foreground">
             {switchMode
@@ -252,6 +252,7 @@ function StartTaskPanel({
           formatMinutesWithFormat(minutes, timeFormat)
         }
         labels={taskPickerLabels(t)}
+        className="flex-1"
       />
       {failed && (
         <p role="alert" className="text-destructive text-small px-4 pb-3">
