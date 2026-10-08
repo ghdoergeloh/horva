@@ -1,3 +1,5 @@
+import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
 
 import {
@@ -86,5 +88,22 @@ describe("nextProjectColor", () => {
     expect(nextProjectColor(PROJECT_COLOR_TOKENS.slice(0, 8))).toBe(
       "project-1",
     );
+  });
+});
+
+describe("PROJECT_COLOR_HEX", () => {
+  it("matches the light values of tooling/tailwind/theme.css", () => {
+    const css = readFileSync(
+      resolve(import.meta.dirname, "../../../../tooling/tailwind/theme.css"),
+      "utf8",
+    );
+    // The first block of the file holds the light values.
+    const light = new Map<string, string>();
+    for (const [, name, value] of css.matchAll(
+      /--(project-(?:\d+|none)):\s*(#[0-9a-fA-F]{6})/g,
+    ))
+      if (name && value && !light.has(name))
+        light.set(name, value.toLowerCase());
+    expect(Object.fromEntries(light)).toEqual(PROJECT_COLOR_HEX);
   });
 });

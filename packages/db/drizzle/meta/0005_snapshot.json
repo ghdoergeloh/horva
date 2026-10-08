@@ -1,5 +1,5 @@
 {
-  "id": "0cab131f-2c96-4fe6-be0b-b53f972b354e",
+  "id": "4b03d722-eb37-4d92-8f03-e4e2e7f522d2",
   "prevId": "113df6de-0905-47a5-9069-ecbe4ebd38c0",
   "version": "7",
   "dialect": "postgresql",
@@ -463,7 +463,12 @@
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
       "policies": {},
-      "checkConstraints": {},
+      "checkConstraints": {
+        "project_color_check": {
+          "name": "project_color_check",
+          "value": "\"project\".\"color\" ~ '^(project-([1-9]|1[0-8]|none)|#[0-9a-fA-F]{6})$'"
+        }
+      },
       "isRLSEnabled": false
     },
     "public.slot": {

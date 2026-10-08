@@ -1,6 +1,10 @@
 export * from "./schemas/index";
 export * from "./services/project.service";
-export { PROJECT_COLOR_TOKENS, projectColorHex } from "./lib/project-colors";
+export {
+  PROJECT_COLOR_PATTERN,
+  PROJECT_COLOR_TOKENS,
+  projectColorHex,
+} from "./lib/project-colors";
 export * from "./services/label.service";
 export * from "./services/task.service";
 export * from "./services/slot.service";
