@@ -1,8 +1,8 @@
-import { useState } from "react";
+import { useId, useState } from "react";
 import { CalendarDate, getLocalTimeZone, today } from "@internationalized/date";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
-import { ChevronDown, ChevronRight } from "lucide-react";
+import { AlertCircle, ChevronRight } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
 import { Button } from "@horva/ui/Button";
@@ -17,46 +17,52 @@ import { calcTotalMinutes } from "#/lib/taskUtils.js";
 
 type TaskRow = Awaited<ReturnType<typeof client.task.list>>["tasks"][number];
 
-interface CollapsibleSectionProps {
+interface TaskSectionProps {
   title: string;
   count: number;
-  titleClassName?: string;
+  /** Overdue tasks get a red heading with a warning icon. */
+  tone?: "default" | "destructive";
   defaultOpen?: boolean;
   children: React.ReactNode;
 }
 
-function CollapsibleSection({
+/** A group of task cards under a heading that opens and closes it. */
+function TaskSection({
   title,
   count,
-  titleClassName = "text-muted-foreground",
+  tone = "default",
   defaultOpen = true,
   children,
-}: CollapsibleSectionProps) {
+}: TaskSectionProps) {
   const [open, setOpen] = useState(defaultOpen);
+  const panelId = useId();
+  const headingId = useId();
 
   return (
-    <section>
-      <Button
-        variant="quiet"
-        onPress={() => setOpen((v) => !v)}
-        className="mb-3 flex items-center gap-1.5 text-left"
-        aria-label={title}
-      >
-        {open ? (
-          <ChevronDown className={`h-3.5 w-3.5 ${titleClassName}`} />
-        ) : (
-          <ChevronRight className={`h-3.5 w-3.5 ${titleClassName}`} />
-        )}
-        <h2
-          className={`text-sm font-semibold tracking-wide uppercase ${titleClassName}`}
+    <section aria-labelledby={headingId} className="space-y-2">
+      <h2 id={headingId} className="text-heading">
+        <Button
+          variant="quiet"
+          size="sm"
+          aria-expanded={open}
+          aria-controls={panelId}
+          onPress={() => setOpen((v) => !v)}
+          className={`-ms-2.5 ${tone === "destructive" ? "text-destructive" : "text-foreground"}`}
         >
-          {title}
-        </h2>
-        <span className="text-muted-foreground text-xs font-normal tracking-normal normal-case">
-          ({count})
-        </span>
-      </Button>
-      {open && children}
+          <ChevronRight
+            aria-hidden
+            className={`motion-safe:transition-transform ${open ? "rotate-90" : ""}`}
+          />
+          {tone === "destructive" && <AlertCircle aria-hidden />}
+          <span className="text-heading">{title}</span>
+          <span className="text-muted-foreground type-duration-small">
+            {count}
+          </span>
+        </Button>
+      </h2>
+      <div id={panelId} hidden={!open} className="space-y-2">
+        {children}
+      </div>
     </section>
   );
 }
@@ -240,12 +246,10 @@ function DailyOverview() {
   }
 
   return (
-    <div className="mx-auto max-w-5xl space-y-8">
+    <div className="mx-auto max-w-4xl space-y-6">
       <div>
-        <h1 className="text-foreground text-2xl font-bold">
-          {t("dashboard.title")}
-        </h1>
-        <p className="text-muted-foreground mt-1 text-sm">
+        <h1 className="text-display text-foreground">{t("dashboard.title")}</h1>
+        <p className="text-muted-foreground text-small mt-1">
           {now.toLocaleDateString(locale, {
             weekday: "long",
             day: "numeric",
@@ -256,75 +260,59 @@ function DailyOverview() {
       </div>
 
       {/* Due now */}
-      <CollapsibleSection title={t("dashboard.dueNow")} count={dueNow.length}>
+      <TaskSection title={t("dashboard.dueNow")} count={dueNow.length}>
         {dueNow.length === 0 ? (
-          <p className="text-muted-foreground text-sm">
-            {t("dashboard.noTasksToday")}
-          </p>
+          <div className="border-border rounded-lg border border-dashed px-4 py-6 text-center">
+            <p className="text-body-strong text-foreground">
+              {t("dashboard.noTasksToday")}
+            </p>
+            <p className="text-muted-foreground text-small mt-1">
+              {t("dashboard.noTasksHint")}
+            </p>
+          </div>
         ) : (
-          <div className="space-y-2">{dueNow.map((t) => renderCard(t))}</div>
+          dueNow.map((t) => renderCard(t))
         )}
-      </CollapsibleSection>
+      </TaskSection>
 
       {/* Later today */}
       {laterToday.length > 0 && (
-        <CollapsibleSection
+        <TaskSection
           title={t("dashboard.laterToday")}
           count={laterToday.length}
         >
-          <div className="space-y-2">
-            {laterToday.map((t) =>
-              renderCard(t, {
-                scheduledTime: t.scheduledAt?.toLocaleTimeString(locale, {
-                  hour: "2-digit",
-                  minute: "2-digit",
-                }),
-              }),
-            )}
-          </div>
-        </CollapsibleSection>
+          {laterToday.map((t) => renderCard(t))}
+        </TaskSection>
       )}
 
       {/* Overdue */}
       {overdue.length > 0 && (
-        <CollapsibleSection
+        <TaskSection
           title={t("dashboard.overdue")}
           count={overdue.length}
-          titleClassName="text-destructive"
+          tone="destructive"
         >
-          <div className="space-y-2">
-            {overdue.map((t) =>
-              renderCard(t, {
-                overdue: true,
-                scheduledTime: t.scheduledAt?.toLocaleDateString(locale, {
-                  day: "numeric",
-                  month: "short",
-                }),
-              }),
-            )}
-          </div>
-        </CollapsibleSection>
+          {overdue.map((t) => renderCard(t, { overdue: true }))}
+        </TaskSection>
       )}
 
       {/* Planned (future) */}
       {planned.length > 0 && (
-        <CollapsibleSection
+        <TaskSection
           title={t("dashboard.planned")}
           count={planned.length}
           defaultOpen={false}
         >
-          <div className="space-y-2">
-            {planned.map((t) =>
-              renderCard(t, {
-                scheduledTime: t.scheduledAt?.toLocaleDateString(locale, {
-                  weekday: "short",
-                  day: "numeric",
-                  month: "short",
-                }),
+          {planned.map((t) =>
+            renderCard(t, {
+              scheduledTime: t.scheduledAt?.toLocaleDateString(locale, {
+                weekday: "short",
+                day: "numeric",
+                month: "short",
               }),
-            )}
-          </div>
-        </CollapsibleSection>
+            }),
+          )}
+        </TaskSection>
       )}
     </div>
   );

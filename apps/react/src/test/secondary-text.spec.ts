@@ -2,8 +2,11 @@ import { describe, expect, it } from "vitest";
 
 import { readSources } from "./sources";
 
-/** Sizes for side lines: hints, meta data, values next to a label. */
-const smallSize = /\btext-(?:sm|xs)\b/;
+/**
+ * Sizes for side lines: hints, meta data, values next to a label. `small`
+ * and `caption` are the type styles of the design for them.
+ */
+const smallSize = /\btext-(?:sm|xs|small|caption)\b/;
 
 /**
  * The opening tag that starts at `start`, up to the `>` outside of braces
@@ -61,6 +64,9 @@ describe("running text is never in muted-foreground", () => {
     ["<p className={`text-muted-foreground ${x ? 'a' : 'b'}`}>", true],
     ['<p className="text-muted-foreground text-sm">', false],
     ['<p className="text-xs text-muted-foreground">', false],
+    ['<p className="text-muted-foreground text-small">', false],
+    ['<p className="text-caption text-muted-foreground">', false],
+    ['<p className="text-muted-foreground text-body">', true],
     ['<p className="text-foreground">', false],
     ["<p>", false],
     ['<pre className="text-muted-foreground">', false],
