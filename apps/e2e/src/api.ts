@@ -38,3 +38,18 @@ export async function signUp(page: Page, user = account()) {
   expect(signedIn.ok(), await signedUp.text()).toBe(true);
   return user;
 }
+
+/** Calls a procedure of the API with the session of the page, as the app does. */
+export async function rpc<T>(
+  page: Page,
+  path: string,
+  input: unknown,
+): Promise<T> {
+  const response = await page.request.post(`/api/rpc/${path}`, {
+    data: { json: input },
+    headers: { Origin: WEB_URL },
+  });
+  const body = (await response.json()) as { json: T };
+  expect(response.ok(), JSON.stringify(body)).toBe(true);
+  return body.json;
+}

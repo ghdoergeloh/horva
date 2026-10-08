@@ -115,7 +115,10 @@
     },
     "newTaskName": "Name of the new task",
     "newActivityName": "Name of the new activity",
-    "openProject": "Edit project"
+    "openProject": "Edit project",
+    "createError": "The task could not be created. Try again?",
+    "projectNotFound": "Project not found",
+    "projectNotFoundHint": "It was deleted, or the address is wrong."
   },
   "slot": {
     "edit": "Edit Slot",
@@ -201,7 +204,9 @@
     "deleteDialogTitle": "Delete label?",
     "deleteDialogText": "“{{name}}” is removed from all tasks.",
     "delete": "Delete",
-    "deleteNamed": "Delete label “{{name}}”"
+    "deleteNamed": "Delete label “{{name}}”",
+    "createError": "The label could not be created. Try again?",
+    "deleteError": "The label could not be deleted. Try again?"
   },
   "taskCard": {
     "markDone": "Mark as done",
@@ -369,7 +374,10 @@
     "deleteProjectText": "The tasks of the project move to the default project.",
     "deleteTaskTitle": "Delete task?",
     "deleteTaskText": "The tracked time stays, without a task.",
-    "notesPlaceholder": "Notes on the task"
+    "notesPlaceholder": "Notes on the task",
+    "saveError": "Saving failed. Try again?",
+    "archiveError": "Archiving failed. Try again?",
+    "deleteError": "Deleting failed. Try again?"
   },
   "projectColors": {
     "label": "Project color",

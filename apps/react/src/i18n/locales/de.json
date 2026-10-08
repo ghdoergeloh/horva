@@ -102,7 +102,7 @@
       "empty": "Keine offenen Aufgaben.",
       "dragHandle": "Ziehen zum Neuordnen",
       "dragToProject": "Auf Projekt ziehen zum Verschieben",
-      "emptyHint": "Neue Aufgaben legst du in einem Projekt an."
+      "emptyHint": "Neue Aufgaben im Projekt anlegen."
     },
     "taskType": {
       "task": "Aufgabe",
@@ -115,7 +115,10 @@
     },
     "newTaskName": "Name der neuen Aufgabe",
     "newActivityName": "Name der neuen Aktivität",
-    "openProject": "Projekt bearbeiten"
+    "openProject": "Projekt bearbeiten",
+    "createError": "Aufgabe konnte nicht angelegt werden. Erneut versuchen?",
+    "projectNotFound": "Projekt nicht gefunden",
+    "projectNotFoundHint": "Es wurde gelöscht, oder die Adresse stimmt nicht."
   },
   "slot": {
     "edit": "Slot bearbeiten",
@@ -201,7 +204,9 @@
     "deleteDialogTitle": "Label löschen?",
     "deleteDialogText": "„{{name}}“ wird von allen Aufgaben entfernt.",
     "delete": "Löschen",
-    "deleteNamed": "Label „{{name}}“ löschen"
+    "deleteNamed": "Label „{{name}}“ löschen",
+    "createError": "Label konnte nicht angelegt werden. Erneut versuchen?",
+    "deleteError": "Label konnte nicht gelöscht werden. Erneut versuchen?"
   },
   "recurrence": {
     "doesNotRepeat": "Wiederholt sich nicht",
@@ -369,7 +374,10 @@
     "deleteProjectText": "Die Aufgaben des Projekts wandern in das Standardprojekt.",
     "deleteTaskTitle": "Aufgabe löschen?",
     "deleteTaskText": "Die erfassten Zeiten bleiben erhalten, ohne Aufgabe.",
-    "notesPlaceholder": "Notizen zur Aufgabe"
+    "notesPlaceholder": "Notizen zur Aufgabe",
+    "saveError": "Speichern fehlgeschlagen. Erneut versuchen?",
+    "archiveError": "Archivieren fehlgeschlagen. Erneut versuchen?",
+    "deleteError": "Löschen fehlgeschlagen. Erneut versuchen?"
   },
   "projectColors": {
     "label": "Projektfarbe",

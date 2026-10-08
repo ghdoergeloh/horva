@@ -1,5 +1,5 @@
 import type { CalendarDateTime } from "@internationalized/date";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import {
   fromDate,
   getLocalTimeZone,
@@ -26,6 +26,7 @@ import { RecurrenceRulePicker } from "#/components/RecurrenceRulePicker.js";
 import { Sheet } from "#/components/Sheet.js";
 import { useMocoConfigured, useRemoteMocoProjects } from "#/lib/mocoQueries.js";
 import { client } from "#/lib/orpc.js";
+import { labelChanges } from "#/lib/taskUtils.js";
 
 type Task = NonNullable<Awaited<ReturnType<typeof client.task.get>>["task"]>;
 
@@ -101,10 +102,21 @@ function TaskDrawerBody({
       : null,
   );
 
+  const draft = useRef(scheduled);
+  const saved = useRef(scheduled?.toString() ?? null);
+
   const planMutation = useMutation({
     mutationFn: (date: Date | null) => client.task.plan({ id, date }),
     onSuccess: invalidate,
   });
+
+  function commitScheduled() {
+    const value = draft.current;
+    const key = value?.toString() ?? null;
+    if (key === saved.current) return;
+    saved.current = key;
+    planMutation.mutate(value ? toZoned(value, tz).toDate() : null);
+  }
 
   const statusMutation = useMutation({
     mutationFn: (action: "done" | "reopen" | "archive") =>
@@ -185,16 +197,12 @@ function TaskDrawerBody({
         <CheckboxGroup
           label={t("drawer.labels")}
           value={[...assignedLabelIds].map(String)}
-          onChange={(values) => {
-            const next = new Set(values.map(Number));
-            const addLabelIds = [...next].filter(
-              (labelId) => !assignedLabelIds.has(labelId),
-            );
-            const removeLabelIds = [...assignedLabelIds].filter(
-              (labelId) => !next.has(labelId),
-            );
-            updateMutation.mutate({ id, addLabelIds, removeLabelIds });
-          }}
+          onChange={(values) =>
+            updateMutation.mutate({
+              id,
+              ...labelChanges(assignedLabelIds, new Set(values.map(Number))),
+            })
+          }
         >
           {allLabels.map((label) => (
             <Checkbox key={label.id} value={String(label.id)}>
@@ -208,8 +216,14 @@ function TaskDrawerBody({
         label={t("drawer.scheduledAt")}
         value={scheduled}
         onChange={(value) => {
+          draft.current = value;
           setScheduled(value);
-          planMutation.mutate(value ? toZoned(value, tz).toDate() : null);
+        }}
+        // Typing changes the value per segment; it is saved once, when the
+        // field loses the focus or the calendar closes.
+        onBlur={commitScheduled}
+        onOpenChange={(isOpen) => {
+          if (!isOpen) commitScheduled();
         }}
       />
 
@@ -312,6 +326,19 @@ function TaskDrawerBody({
           projectId={task.project.id}
           onSaved={invalidate}
         />
+      )}
+
+      {(updateMutation.isError ||
+        planMutation.isError ||
+        statusMutation.isError ||
+        deleteMutation.isError) && (
+        <p role="alert" className="text-destructive text-sm">
+          {deleteMutation.isError
+            ? t("drawer.deleteError")
+            : statusMutation.isError && statusMutation.variables === "archive"
+              ? t("drawer.archiveError")
+              : t("drawer.saveError")}
+        </p>
       )}
 
       <div className="border-border flex flex-wrap gap-2 border-t pt-5">

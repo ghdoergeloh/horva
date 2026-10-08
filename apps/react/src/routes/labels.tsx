@@ -54,6 +54,8 @@ function LabelsPage() {
     mutationFn: (name: string) => client.label.create({ name }),
     onSuccess: () =>
       void queryClient.invalidateQueries({ queryKey: ["labels"] }),
+    // Back in the field, so it can be sent again.
+    onError: (_error, name) => setNewName(name),
   });
 
   const deleteLabelMutation = useMutation({
@@ -113,6 +115,14 @@ function LabelsPage() {
           {t("labels.add")}
         </Button>
       </form>
+
+      {(createLabelMutation.isError || deleteLabelMutation.isError) && (
+        <p role="alert" className="text-destructive text-sm">
+          {createLabelMutation.isError
+            ? t("labels.createError")
+            : t("labels.deleteError")}
+        </p>
+      )}
 
       {labels.length === 0 ? (
         <div className="border-border rounded-lg border border-dashed px-4 py-8 text-center">

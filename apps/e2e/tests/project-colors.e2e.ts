@@ -1,24 +1,12 @@
 import type { Page } from "@playwright/test";
 import { expect, test } from "@playwright/test";
 
-import { signUp } from "../src/api";
-import { WEB_URL } from "../src/env";
+import { rpc, signUp } from "../src/api";
 
 interface Project {
   id: number;
   name: string;
   color: string;
-}
-
-/** Calls a procedure of the API, as the app does. */
-async function rpc<T>(page: Page, path: string, input: unknown): Promise<T> {
-  const response = await page.request.post(`/api/rpc/${path}`, {
-    data: { json: input },
-    headers: { Origin: WEB_URL },
-  });
-  const body = (await response.json()) as { json: T };
-  expect(response.ok(), JSON.stringify(body)).toBe(true);
-  return body.json;
 }
 
 /** Projects of the current test; deleted after it, so other screens stay the same. */

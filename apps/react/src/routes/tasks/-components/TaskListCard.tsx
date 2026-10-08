@@ -21,25 +21,19 @@ import {
   formatMinutesWithFormat,
   useTimeFormat,
 } from "#/contexts/SettingsContext.js";
-import { startOfDay } from "#/lib/dateUtils.js";
 import { client } from "#/lib/orpc.js";
-import { calcTotalMinutes, formatScheduledDate } from "#/lib/taskUtils.js";
+import {
+  calcTotalMinutes,
+  formatScheduledDate,
+  labelChanges,
+  onDayKeepingTime,
+  scheduleState,
+} from "#/lib/taskUtils.js";
 
 /** A task as the task lists load it. */
 export type TaskRow = Awaited<
   ReturnType<typeof client.task.list>
 >["tasks"][number];
-
-/** The day of `date` at the time of day of `keep` (midnight without one). */
-function onDay(date: CalendarDate, keep: Date | null): Date {
-  return new Date(
-    date.year,
-    date.month - 1,
-    date.day,
-    keep?.getHours() ?? 0,
-    keep?.getMinutes() ?? 0,
-  );
-}
 
 /**
  * A task or activity of the task lists, as the `TaskCard` of `@horva/ui`.
@@ -68,14 +62,9 @@ export function TaskListCard({
   const isDone = task.status === "done";
   const isRunning = openSlot?.task?.id === id;
   const scheduledAt = task.scheduledAt ? new Date(task.scheduledAt) : null;
-  const todayStart = startOfDay(new Date()).getTime();
-  const isPlannedToday =
-    scheduledAt !== null && startOfDay(scheduledAt).getTime() === todayStart;
-  const isOverdue =
-    !isDone &&
-    !isActivity &&
-    scheduledAt !== null &&
-    startOfDay(scheduledAt).getTime() < todayStart;
+  const schedule = scheduleState(scheduledAt);
+  const isPlannedToday = schedule.isPlannedToday;
+  const isOverdue = schedule.isOverdue && !isDone && !isActivity;
   const totalMinutes = calcTotalMinutes(task.slots);
   const assigned = new Set(task.taskLabels.map(({ label }) => label.id));
 
@@ -113,13 +102,9 @@ export function TaskListCard({
 
   function setLabels(selection: Selection) {
     if (selection === "all") return;
-    const next = new Set([...selection].map(Number));
-    const addLabelIds = [...next].filter((labelId) => !assigned.has(labelId));
-    const removeLabelIds = [...assigned].filter(
-      (labelId) => !next.has(labelId),
-    );
-    if (addLabelIds.length + removeLabelIds.length > 0)
-      updateMutation.mutate({ addLabelIds, removeLabelIds });
+    const changes = labelChanges(assigned, new Set([...selection].map(Number)));
+    if (changes.addLabelIds.length + changes.removeLabelIds.length > 0)
+      updateMutation.mutate(changes);
   }
 
   function onAction(key: Key) {
@@ -133,7 +118,9 @@ export function TaskListCard({
       <Dialog aria-label={t("taskList.chooseDate")} className="p-0 outline-0">
         {({ close }) => {
           const pick = (date: CalendarDate | null) => {
-            planMutation.mutate(date ? onDay(date, scheduledAt) : null);
+            planMutation.mutate(
+              date ? onDayKeepingTime(date, scheduledAt) : null,
+            );
             close();
           };
           return (
@@ -237,7 +224,9 @@ export function TaskListCard({
         onToggleDone={(done) => doneMutation.mutate(done)}
         onStart={() => slotMutation.mutate(true)}
         onStop={() => slotMutation.mutate(false)}
-        onPlanToday={() => planMutation.mutate(onDay(today(tz), scheduledAt))}
+        onPlanToday={() =>
+          planMutation.mutate(onDayKeepingTime(today(tz), scheduledAt))
+        }
         datePopover={datePopover}
         actions={isDone ? undefined : actions}
         strings={{

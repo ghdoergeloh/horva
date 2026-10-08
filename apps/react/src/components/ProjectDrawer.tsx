@@ -74,7 +74,11 @@ function ProjectDrawerBody({
   const updateMutation = useMutation({
     mutationFn: (input: { name?: string; color?: string }) =>
       client.project.update({ id, ...input }),
-    onSuccess: invalidate,
+    onSuccess: () => {
+      setActionError(null);
+      invalidate();
+    },
+    onError: () => setActionError(t("drawer.saveError")),
   });
 
   const archiveMutation = useMutation({
@@ -83,8 +87,7 @@ function ProjectDrawerBody({
       invalidate();
       onClose();
     },
-    onError: (e) =>
-      setActionError(e instanceof Error ? e.message : t("drawer.actionError")),
+    onError: () => setActionError(t("drawer.archiveError")),
   });
 
   const deleteMutation = useMutation({
@@ -93,8 +96,7 @@ function ProjectDrawerBody({
       invalidate();
       onClose();
     },
-    onError: (e) =>
-      setActionError(e instanceof Error ? e.message : t("drawer.actionError")),
+    onError: () => setActionError(t("drawer.deleteError")),
   });
 
   function commitName() {

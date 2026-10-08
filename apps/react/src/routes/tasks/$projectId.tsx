@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { useEffect, useId, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, useParams } from "@tanstack/react-router";
 import { ChevronRight, Plus, Settings2 } from "lucide-react";
@@ -263,6 +263,8 @@ function ProjectTaskPage() {
   const { openProject } = useDetailDrawer();
 
   const [adding, setAdding] = useState<TaskType | null>(null);
+  // The "new" button the focus returns to when its form closes.
+  const returnFocusTo = useRef<TaskType | null>(null);
   const [open, setOpen] = useState({ task: true, activity: true });
 
   const { data: project, isLoading: projectLoading } = useQuery({
@@ -299,6 +301,19 @@ function ProjectTaskPage() {
       void queryClient.invalidateQueries({ queryKey: ["tasks"] }),
   });
 
+  if (!projectLoading && !project) {
+    return (
+      <div className="mx-auto max-w-4xl space-y-1">
+        <h1 className="text-display text-foreground">
+          {t("tasks.projectNotFound")}
+        </h1>
+        <p className="text-muted-foreground text-sm">
+          {t("tasks.projectNotFoundHint")}
+        </p>
+      </div>
+    );
+  }
+
   if (projectLoading || tasksLoading) {
     return (
       <div className="flex items-center justify-center py-20">
@@ -327,27 +342,47 @@ function ProjectTaskPage() {
         onOpenChange={(isOpen) => setOpen((o) => ({ ...o, [type]: isOpen }))}
         action={
           adding !== type && (
-            <Button
-              variant="quiet"
-              size="sm"
-              onPress={() => {
-                setOpen((o) => ({ ...o, [type]: true }));
-                setAdding(type);
+            // The Button of @horva/ui takes no ref; the span finds it.
+            <span
+              className="contents"
+              ref={(span) => {
+                if (span && returnFocusTo.current === type) {
+                  returnFocusTo.current = null;
+                  span.querySelector("button")?.focus();
+                }
               }}
             >
-              <Plus aria-hidden />
-              {isTask ? t("tasks.newTask") : t("tasks.newActivity")}
-            </Button>
+              <Button
+                variant="quiet"
+                size="sm"
+                onPress={() => {
+                  setOpen((o) => ({ ...o, [type]: true }));
+                  setAdding(type);
+                }}
+              >
+                <Plus aria-hidden />
+                {isTask ? t("tasks.newTask") : t("tasks.newActivity")}
+              </Button>
+            </span>
           )
         }
       >
         <div className="space-y-2">
+          {createTaskMutation.isError &&
+            createTaskMutation.variables.taskType === type && (
+              <p role="alert" className="text-destructive text-sm">
+                {t("tasks.createError")}
+              </p>
+            )}
           {adding === type && (
             <NewTaskForm
               label={
                 isTask ? t("tasks.newTaskName") : t("tasks.newActivityName")
               }
-              onClose={() => setAdding(null)}
+              onClose={() => {
+                returnFocusTo.current = type;
+                setAdding(null);
+              }}
               onCreate={(name) =>
                 createTaskMutation.mutate({ name, taskType: type })
               }
