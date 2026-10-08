@@ -46,7 +46,10 @@ test("a project created with a color shows it on its page", async ({
   await expect(heading).toBeVisible();
   // The dot before the title takes the CSS variable of the token.
   await expect(
-    page.locator("header span[aria-hidden]").first(),
+    page
+      .locator("header", { has: heading })
+      .locator("span[aria-hidden]")
+      .first(),
   ).toHaveAttribute("style", /var\(--project-5\)/);
 });
 
