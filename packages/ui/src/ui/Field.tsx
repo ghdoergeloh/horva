@@ -16,10 +16,9 @@ import {
   Text,
 } from "react-aria-components";
 
-import { composeTailwindRenderProps, focusRing } from "@horva/ui";
+import { composeTailwindRenderProps } from "@horva/ui";
 
-import { twMerge } from "../lib/tw";
-import { tv } from "../lib/tw";
+import { twMerge, tv } from "../lib/tw";
 
 export function Label(props: LabelProps) {
   return (
@@ -62,7 +61,8 @@ export const fieldBorderStyles = tv({
   base: "transition",
   variants: {
     isFocusWithin: {
-      false: "border-input-border forced-colors:border-[ButtonBorder]",
+      false:
+        "border-input-border outline-0 forced-colors:border-[ButtonBorder]",
       true: "border-input-border outline-2 outline-offset-1 outline-ring forced-colors:outline-[Highlight]",
     },
     isInvalid: {
@@ -80,7 +80,6 @@ export const fieldBorderStyles = tv({
 });
 
 export const fieldGroupStyles = tv({
-  extend: focusRing,
   base: "group flex items-center h-9 box-border bg-input forced-colors:bg-[Field] border rounded-md overflow-hidden transition",
   variants: fieldBorderStyles.variants,
   defaultVariants: {

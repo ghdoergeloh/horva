@@ -15,7 +15,7 @@ import { SegmentedContext } from "./ToggleButtonGroup";
 
 const styles = tv({
   extend: focusRing,
-  base: "relative inline-flex items-center justify-center gap-2 box-border font-sans font-medium text-center transition-colors cursor-default forced-color-adjust-none [-webkit-tap-highlight-color:transparent] [&_svg]:size-4 [&_svg]:shrink-0",
+  base: "relative inline-flex items-center justify-center gap-2 box-border font-sans font-medium text-center transition-colors cursor-default forced-color-adjust-none [-webkit-tap-highlight-color:transparent] [&_svg:not([class*='size-'])]:size-4 [&_svg]:shrink-0",
   variants: {
     segmented: {
       false: "h-9 px-3.5 text-body rounded-md border border-transparent",

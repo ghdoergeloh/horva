@@ -41,7 +41,10 @@ export const Open: Story = {
 
 export const Closed: Story = {};
 
-/** Focus starts on the action; Escape closes and returns focus. */
+/**
+ * Before a delete, focus starts on "Abbrechen"; Escape closes and returns
+ * focus to the trigger.
+ */
 export const Keyboard: Story = {
   play: async ({ canvasElement }) => {
     const trigger = within(canvasElement).getByRole("button");
@@ -50,7 +53,7 @@ export const Keyboard: Story = {
     const dialog = await within(document.body).findByRole("alertdialog");
     await waitFor(() =>
       expect(
-        within(dialog).getByRole("button", { name: "Löschen" }),
+        within(dialog).getByRole("button", { name: "Abbrechen" }),
       ).toHaveFocus(),
     );
     await userEvent.keyboard("{Escape}");

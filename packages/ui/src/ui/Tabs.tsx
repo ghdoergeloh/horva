@@ -19,8 +19,7 @@ import {
 
 import { focusRing } from "@horva/ui";
 
-import { twMerge } from "../lib/tw";
-import { tv } from "../lib/tw";
+import { twMerge, tv } from "../lib/tw";
 
 const tabsStyles = tv({
   base: "flex gap-4 font-sans max-w-full",
