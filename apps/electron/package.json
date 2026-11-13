@@ -17,6 +17,7 @@
     "typecheck": "tsc --noEmit --emitDeclarationOnly false -p tsconfig.node.json && tsc --noEmit --emitDeclarationOnly false -p tsconfig.web.json"
   },
   "dependencies": {
+    "@electric-sql/pglite": "catalog:",
     "@horva/react": "workspace:*",
     "@orpc/client": "catalog:",
     "@orpc/server": "catalog:",

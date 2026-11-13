@@ -632,6 +632,9 @@ importers:
 
   apps/electron:
     dependencies:
+      '@electric-sql/pglite':
+        specifier: 'catalog:'
+        version: 0.5.16
       '@horva/react':
         specifier: workspace:*
         version: link:../react

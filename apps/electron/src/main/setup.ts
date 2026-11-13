@@ -7,15 +7,17 @@ import { readConfig, updateConfig } from "@horva/core/config";
 import { eq } from "@horva/db";
 import { user } from "@horva/db/schema";
 
-const DEFAULT_DATABASE_URL =
-  "postgresql://postgres:postgres@localhost:5432/horva";
+const DATABASE_URL_PATTERN = /^(postgres(ql)?:\/\/|file:\/\/\/)/;
 const LOCAL_USER_EMAIL_SUFFIX = "@horva.local";
 
 interface SetupStatus {
   ready: boolean;
   error: string | null;
   defaults: {
+    /** The URL of config.json, else the local database. */
     databaseUrl: string;
+    /** The `file:` URL of the local database in the app's data folder. */
+    localDatabaseUrl: string;
   };
 }
 
@@ -32,6 +34,22 @@ interface CompleteSetupInput {
  */
 let isReady = false;
 let bootError: string | null = null;
+
+/**
+ * The message of an error and of its causes, one per line. Drizzle wraps a
+ * driver error ("Failed query: …"), and the cause says what went wrong.
+ */
+export function errorMessage(err: unknown): string {
+  const lines: string[] = [];
+  let current: unknown = err;
+  while (current !== undefined && lines.length < 5) {
+    lines.push(
+      current instanceof Error ? current.message : JSON.stringify(current),
+    );
+    current = current instanceof Error ? current.cause : undefined;
+  }
+  return lines.join("\n");
+}
 
 export function markReady(): void {
   isReady = true;
@@ -52,12 +70,16 @@ export interface SetupDeps {
   db: Database;
   /** Ends the open pool, so the next query connects to the new URL. */
   disconnect: () => Promise<void>;
+  /** The `file:` URL of the local database in the app's data folder. */
+  localDatabaseUrl: string;
+  /** Brings the database at the URL to the current schema. */
+  prepare: (databaseUrl: string) => Promise<void>;
   onReady: (databaseUrl: string, userId: string) => Promise<void>;
 }
 
 export function registerSetupHandlers(
   ipcMain: Pick<IpcMain, "handle">,
-  { db, disconnect, onReady }: SetupDeps,
+  { db, disconnect, localDatabaseUrl, prepare, onReady }: SetupDeps,
 ): void {
   ipcMain.handle("setup:status", (): SetupStatus => {
     const cfg = readConfig();
@@ -65,7 +87,8 @@ export function registerSetupHandlers(
       ready: isReady,
       error: bootError,
       defaults: {
-        databaseUrl: cfg?.databaseUrl ?? DEFAULT_DATABASE_URL,
+        databaseUrl: cfg?.databaseUrl ?? localDatabaseUrl,
+        localDatabaseUrl,
       },
     };
   });
@@ -75,13 +98,17 @@ export function registerSetupHandlers(
     if (!cfg?.userId || !cfg.databaseUrl) {
       throw new Error("Not configured yet");
     }
+    // A database that failed to start (e.g. a PGlite folder that was in
+    // use) must not be reused: the next query opens it again.
+    await disconnect().catch(() => undefined);
     process.env["DATABASE_URL"] = cfg.databaseUrl;
     try {
+      await prepare(cfg.databaseUrl);
       await seed(db);
       markReady();
     } catch (err) {
-      bootError = err instanceof Error ? err.message : String(err);
-      throw err;
+      bootError = errorMessage(err);
+      throw new Error(bootError, { cause: err });
     }
   });
 
@@ -90,13 +117,14 @@ export function registerSetupHandlers(
     async (_e, input: CompleteSetupInput): Promise<void> => {
       const trimmedName = input.name.trim();
       if (!trimmedName) throw new Error("Display name is required");
-      if (!input.databaseUrl.startsWith("postgres")) {
-        throw new Error("Database URL must be a postgres:// URL");
+      if (!DATABASE_URL_PATTERN.test(input.databaseUrl)) {
+        throw new Error("Database URL must be a postgres:// or file:/// URL");
       }
 
       // An earlier try with a wrong URL may have opened a pool. Close it, so
-      // the first query below connects to this URL.
-      await disconnect();
+      // the first query below connects to this URL. A database that failed
+      // to start also fails to close; that must not stop this try.
+      await disconnect().catch(() => undefined);
       process.env["DATABASE_URL"] = input.databaseUrl;
 
       const existing = readConfig();
@@ -104,6 +132,11 @@ export function registerSetupHandlers(
 
       updateConfig({ databaseUrl: input.databaseUrl, userId });
 
+      try {
+        await prepare(input.databaseUrl);
+      } catch (err) {
+        throw new Error(errorMessage(err), { cause: err });
+      }
       await onReady(input.databaseUrl, userId);
 
       // db is a lazy Proxy over the pool — first access below creates it,
