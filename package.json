@@ -8,6 +8,7 @@
     "clean": "git clean -xdf node_modules",
     "clean:workspaces": "turbo run clean",
     "crap": "node tooling/quality/crap-score.mjs",
+    "db:copy": "pnpm -F @horva/db copy",
     "db:generate": "pnpm -F @horva/db generate",
     "db:migrate": "pnpm -F @horva/db migrate",
     "db:push": "pnpm -F @horva/db push",

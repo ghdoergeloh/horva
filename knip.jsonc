@@ -18,9 +18,9 @@
       "ignoreDependencies": ["tsx"],
     },
     "apps/cli": {
-      // External in build.mjs, so the bundled @horva/db loads it from
-      // node_modules at runtime; no source file imports it directly.
-      "ignoreDependencies": ["pg"],
+      // External in build.mjs, so the bundled @horva/db loads them from
+      // node_modules at runtime; no source file imports them directly.
+      "ignoreDependencies": ["pg", "@electric-sql/pglite"],
     },
     "packages/auth": {
       // Loaded by the better-auth CLI (`pnpm -F @horva/auth generate`).
