@@ -19,6 +19,12 @@ PGlite allows one process per folder. The process that opens it writes its
 id into `<folder>.lock`; a second process gets `DatabaseLockedError`. A lock
 of a process that no longer runs is taken over.
 
+The desktop app offers a local database in its data folder
+(`<userData>/data`) as the default in the setup wizard. It migrates that
+folder on every start and closes it on quit. A PostgreSQL server is still
+migrated with `horva migrate`: it may be shared, and older databases there
+have no migration journal.
+
 `pnpm db:copy <from> <to>` copies all rows between any two databases, e.g.
 from PostgreSQL to PGlite and back (`packages/db/src/copy.ts`).
 

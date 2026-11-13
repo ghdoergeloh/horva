@@ -7,15 +7,17 @@ import { readConfig, updateConfig } from "@horva/core/config";
 import { eq } from "@horva/db";
 import { user } from "@horva/db/schema";
 
-const DEFAULT_DATABASE_URL =
-  "postgresql://postgres:postgres@localhost:5432/horva";
+const DATABASE_URL_PATTERN = /^(postgres(ql)?:\/\/|file:\/\/\/)/;
 const LOCAL_USER_EMAIL_SUFFIX = "@horva.local";
 
 interface SetupStatus {
   ready: boolean;
   error: string | null;
   defaults: {
+    /** The URL of config.json, else the local database. */
     databaseUrl: string;
+    /** The `file:` URL of the local database in the app's data folder. */
+    localDatabaseUrl: string;
   };
 }
 
@@ -52,12 +54,16 @@ export interface SetupDeps {
   db: Database;
   /** Ends the open pool, so the next query connects to the new URL. */
   disconnect: () => Promise<void>;
+  /** The `file:` URL of the local database in the app's data folder. */
+  localDatabaseUrl: string;
+  /** Brings the database at the URL to the current schema. */
+  prepare: (databaseUrl: string) => Promise<void>;
   onReady: (databaseUrl: string, userId: string) => Promise<void>;
 }
 
 export function registerSetupHandlers(
   ipcMain: Pick<IpcMain, "handle">,
-  { db, disconnect, onReady }: SetupDeps,
+  { db, disconnect, localDatabaseUrl, prepare, onReady }: SetupDeps,
 ): void {
   ipcMain.handle("setup:status", (): SetupStatus => {
     const cfg = readConfig();
@@ -65,7 +71,8 @@ export function registerSetupHandlers(
       ready: isReady,
       error: bootError,
       defaults: {
-        databaseUrl: cfg?.databaseUrl ?? DEFAULT_DATABASE_URL,
+        databaseUrl: cfg?.databaseUrl ?? localDatabaseUrl,
+        localDatabaseUrl,
       },
     };
   });
@@ -77,6 +84,7 @@ export function registerSetupHandlers(
     }
     process.env["DATABASE_URL"] = cfg.databaseUrl;
     try {
+      await prepare(cfg.databaseUrl);
       await seed(db);
       markReady();
     } catch (err) {
@@ -90,8 +98,8 @@ export function registerSetupHandlers(
     async (_e, input: CompleteSetupInput): Promise<void> => {
       const trimmedName = input.name.trim();
       if (!trimmedName) throw new Error("Display name is required");
-      if (!input.databaseUrl.startsWith("postgres")) {
-        throw new Error("Database URL must be a postgres:// URL");
+      if (!DATABASE_URL_PATTERN.test(input.databaseUrl)) {
+        throw new Error("Database URL must be a postgres:// or file:/// URL");
       }
 
       // An earlier try with a wrong URL may have opened a pool. Close it, so
@@ -104,6 +112,7 @@ export function registerSetupHandlers(
 
       updateConfig({ databaseUrl: input.databaseUrl, userId });
 
+      await prepare(input.databaseUrl);
       await onReady(input.databaseUrl, userId);
 
       // db is a lazy Proxy over the pool — first access below creates it,

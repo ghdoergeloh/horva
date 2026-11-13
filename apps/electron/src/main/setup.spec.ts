@@ -14,6 +14,7 @@ import { registerSetupHandlers } from "./setup";
 type Handler = Parameters<IpcMain["handle"]>[1];
 
 const URL = "postgresql://postgres:postgres@localhost:5432/horva";
+const LOCAL = "file:///Users/robin/Library/Application%20Support/Horva/data";
 
 let database: TestDatabase;
 let configHome: string;
@@ -49,9 +50,13 @@ function setup() {
     calls.push(`onReady (DATABASE_URL=${process.env["DATABASE_URL"]})`);
     return Promise.resolve();
   });
+  const prepare = vi.fn((url: string) => {
+    calls.push(`prepare ${url}`);
+    return Promise.resolve();
+  });
   registerSetupHandlers(
     { handle: (channel, handler) => handlers.set(channel, handler) },
-    { db: database.db, disconnect, onReady },
+    { db: database.db, disconnect, onReady, prepare, localDatabaseUrl: LOCAL },
   );
   const invoke = (channel: string, ...args: unknown[]) => {
     const handler = handlers.get(channel);
@@ -68,8 +73,17 @@ describe("setup:complete", () => {
     await invoke("setup:complete", { name: "Robin", databaseUrl: URL });
     expect(calls).toEqual([
       "disconnect (DATABASE_URL=postgresql://wrong@localhost:1/horva)",
+      `prepare ${URL}`,
       `onReady (DATABASE_URL=${URL})`,
     ]);
+  });
+
+  it("sets up the local database in a folder", async () => {
+    const { invoke, calls } = setup();
+    await invoke("setup:complete", { name: "Robin", databaseUrl: LOCAL });
+    expect(readConfig()?.databaseUrl).toBe(LOCAL);
+    expect(calls).toContain(`prepare ${LOCAL}`);
+    expect(await invoke("setup:status")).toMatchObject({ ready: true });
   });
 
   it("creates the local user and writes config.json", async () => {
@@ -99,12 +113,21 @@ describe("setup:complete", () => {
     ).rejects.toThrow("Display name is required");
   });
 
-  it("refuses a URL that is not PostgreSQL", async () => {
+  it("refuses a URL that is not PostgreSQL or a folder", async () => {
     const { invoke } = setup();
     await expect(
       invoke("setup:complete", { name: "Robin", databaseUrl: "mysql://x" }),
-    ).rejects.toThrow("Database URL must be a postgres:// URL");
+    ).rejects.toThrow("Database URL must be a postgres:// or file:/// URL");
     expect(readConfig()).toBeNull();
+  });
+});
+
+describe("setup:status", () => {
+  it("offers the local database before the first setup", async () => {
+    const { invoke } = setup();
+    expect(await invoke("setup:status")).toMatchObject({
+      defaults: { databaseUrl: LOCAL, localDatabaseUrl: LOCAL },
+    });
   });
 });
 
@@ -115,15 +138,17 @@ describe("setup:retry", () => {
   });
 
   it("seeds again with the URL of config.json", async () => {
-    const { invoke } = setup();
+    const { invoke, calls } = setup();
     await invoke("setup:complete", { name: "Robin", databaseUrl: URL });
     process.env["DATABASE_URL"] = "postgresql://other@localhost:1/horva";
+    calls.length = 0;
     await invoke("setup:retry");
+    expect(calls).toEqual([`prepare ${URL}`]);
     expect(process.env["DATABASE_URL"]).toBe(URL);
     expect(await invoke("setup:status")).toMatchObject({
       ready: true,
       error: null,
-      defaults: { databaseUrl: URL },
+      defaults: { databaseUrl: URL, localDatabaseUrl: LOCAL },
     });
   });
 

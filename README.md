@@ -34,7 +34,7 @@ Horva is a time tracking suite built around the idea that your day is a sequence
 - **Web frontend** — React 19 + TanStack Router/Query SPA backed by the same API.
 - **CLI** — scriptable access to your data, works both locally and against a remote API.
 - **End-to-end typed** — a shared oRPC contract means the API, web app, and CLI can't drift out of sync.
-- **Self-hosted by default** — bring your own PostgreSQL; no third-party services required.
+- **Self-hosted by default** — the desktop app keeps its data in a local folder, or uses your own PostgreSQL; no third-party services required.
 
 ## Downloads
 
@@ -56,7 +56,7 @@ Prefer to build from source? See [Development setup](#development-setup).
 
 1. Download the desktop app for your platform from the [Releases page](https://github.com/ghdoergeloh/horva/releases/latest).
 2. Install and launch Horva.
-3. On first launch, point the app at your PostgreSQL instance (or use the built-in local database if available on your platform build).
+3. On first launch, choose where your data lives: on this device (a built-in PostgreSQL in the app's data folder, no server needed) or on your own PostgreSQL server. `pnpm db:copy <from> <to>` moves the data between the two.
 4. Start tracking — create a project, add tasks, and open a slot.
 
 The desktop app bundles its own renderer; no separate web server is required for local-only usage.
