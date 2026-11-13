@@ -33,4 +33,5 @@ if (!process.env["DATABASE_URL"]) {
 
 // Connects on the first query, so the setup wizard can set DATABASE_URL
 // first.
-export const { db } = createLazyDatabase(() => process.env["DATABASE_URL"]);
+export const connection = createLazyDatabase(() => process.env["DATABASE_URL"]);
+export const { db } = connection;

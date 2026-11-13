@@ -17,17 +17,16 @@ export default mergeConfig(
           // entry); the Playwright tests start it.
           "src/main/index.ts",
           "src/main/db.ts",
-          "src/main/setup.ts",
           "src/main/orpc/handler.ts",
           "src/preload/**",
           "src/renderer/**",
         ],
         // Fixed floors below the measured values. Raise them by hand.
         thresholds: {
-          statements: 14,
-          branches: 100,
-          functions: 4,
-          lines: 14,
+          statements: 50,
+          branches: 84,
+          functions: 14,
+          lines: 50,
         },
       },
     },

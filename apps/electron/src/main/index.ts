@@ -6,7 +6,7 @@ import { app, BrowserWindow, ipcMain, shell } from "electron";
 import { seed } from "@horva/core";
 import { readConfig } from "@horva/core/config";
 
-import { db } from "./db.js";
+import { connection, db } from "./db.js";
 import { registerOrpcHandler } from "./orpc/handler.js";
 import { markReady, registerSetupHandlers, setBootError } from "./setup.js";
 
@@ -53,6 +53,8 @@ void app.whenReady().then(async () => {
   // paint and drives the bootstrap via setup:* IPC.
   registerOrpcHandler(ipcMain, db);
   registerSetupHandlers(ipcMain, {
+    db,
+    disconnect: () => connection.close(),
     async onReady() {
       // Called by setup:complete after the user confirms. By this point
       // DATABASE_URL is set, the user row is ensured. Seed the rest of the
