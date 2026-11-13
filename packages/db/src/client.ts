@@ -1,3 +1,4 @@
+import { existsSync, readdirSync } from "node:fs";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import type { PgDatabase, PgQueryResultHKT } from "drizzle-orm/pg-core";
 import { PGlite } from "@electric-sql/pglite";
@@ -69,7 +70,23 @@ export function createDatabase(
   };
 }
 
+/**
+ * PGlite creates a database in any folder, also next to other files. A
+ * folder must be missing, empty or already hold a database.
+ */
+function checkDataDir(dataDir: string): void {
+  if (!existsSync(dataDir)) return;
+  const entries = readdirSync(dataDir);
+  if (entries.length > 0 && !entries.includes("PG_VERSION")) {
+    throw new Error(
+      `The folder ${dataDir} is not empty and holds no database. ` +
+        "Choose a new or empty folder.",
+    );
+  }
+}
+
 function createPgliteDatabase(dataDir: string): DatabaseConnection {
+  checkDataDir(dataDir);
   const lock = acquireLock(dataDir);
   let client: PGlite;
   try {

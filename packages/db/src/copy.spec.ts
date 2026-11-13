@@ -1,4 +1,12 @@
-import { afterAll, afterEach, beforeAll, describe, expect, it } from "vitest";
+import {
+  afterAll,
+  afterEach,
+  beforeAll,
+  describe,
+  expect,
+  it,
+  vi,
+} from "vitest";
 
 import type { Database } from "./client";
 import type { PostgresTestDatabase, TestDatabase } from "./testing";
@@ -124,6 +132,21 @@ describe("copyDatabase", () => {
     expect(next?.id).toBe(inSource?.id);
   });
 
+  it("keeps timestamps to the microsecond", async () => {
+    const source = await database();
+    const target = await database();
+    await source.db.execute(
+      sql`insert into slot (started_at, state) values ('2026-01-01 10:00:00.123456', 'active')`,
+    );
+    await copyDatabase(source.db, target.db);
+
+    const read = (db: Database) =>
+      db.execute(sql`select started_at::text as value from slot`);
+    expect(await read(target.db)).toMatchObject({
+      rows: [{ value: "2026-01-01 10:00:00.123456" }],
+    });
+  });
+
   it("refuses a target that has data", async () => {
     const source = await database();
     const target = await database();
@@ -146,6 +169,17 @@ describe("copyDatabase", () => {
     await expect(copyDatabase(source.db, target.db)).rejects.toThrow(
       /not on the same migration/,
     );
+  });
+
+  it("reads the source in one read-only snapshot", async () => {
+    const source = await database();
+    const target = await database();
+    const transaction = vi.spyOn(source.db, "transaction");
+    await copyDatabase(source.db, target.db);
+    expect(transaction).toHaveBeenCalledWith(expect.any(Function), {
+      isolationLevel: "repeatable read",
+      accessMode: "read only",
+    });
   });
 
   it("leaves the target empty when a row fails", async () => {

@@ -1,5 +1,12 @@
 import { spawn } from "node:child_process";
-import { existsSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import {
+  existsSync,
+  mkdirSync,
+  mkdtempSync,
+  readdirSync,
+  rmSync,
+  writeFileSync,
+} from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
@@ -81,11 +88,26 @@ describe("createDatabase with a file URL (PGlite)", () => {
     await openAt(dataDir).ping();
   });
 
+  it("treats a lock without a process id as held", () => {
+    const dataDir = join(dir, "data");
+    writeFileSync(`${dataDir}.lock`, "");
+    expect(() => openAt(dataDir)).toThrow(DatabaseLockedError);
+  });
+
+  it("refuses a folder with other files in it", () => {
+    const home = join(dir, "home");
+    mkdirSync(home);
+    writeFileSync(join(home, "notes.txt"), "mine");
+    expect(() => openAt(home)).toThrow(/not empty and holds no database/);
+    expect(readdirSync(home)).toEqual(["notes.txt"]);
+    expect(existsSync(`${home}.lock`)).toBe(false);
+  });
+
   it("names the process that holds the lock", () => {
     const dataDir = join(dir, "data");
     writeFileSync(`${dataDir}.lock`, String(process.ppid));
     expect(() => openAt(dataDir)).toThrow(
-      new RegExp(`process ${process.ppid}`),
+      new RegExp(`process ${process.ppid}[\\s\\S]*${dataDir}\\.lock`),
     );
   });
 });

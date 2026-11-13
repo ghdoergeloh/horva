@@ -6,7 +6,7 @@ import { getTableConfig, PgTable as PgTableClass } from "drizzle-orm/pg-core";
 import type { Database } from "./client.js";
 import * as schema from "./schema/index.js";
 
-/** Rows per insert; far below the parameter limit of PostgreSQL. */
+/** Rows per insert statement. */
 const CHUNK_SIZE = 500;
 
 /** Rows copied per table, by table name. */
@@ -53,7 +53,10 @@ async function queryRows<T>(
   return result.rows;
 }
 
-async function migrationHashes(db: Database): Promise<string[]> {
+/** The hashes of the applied migrations, oldest first. */
+export async function migrationHashes(
+  db: Pick<Database, "execute">,
+): Promise<string[]> {
   const result = await queryRows<{ hash: string }>(
     db,
     sql`select hash from drizzle.__drizzle_migrations order by id`,
@@ -61,7 +64,12 @@ async function migrationHashes(db: Database): Promise<string[]> {
   return result.map((row) => row.hash);
 }
 
-async function sequences(db: Database): Promise<string[]> {
+/** The names of the tables of the app schema. */
+export function appTableNames(): string[] {
+  return tablesInInsertOrder().map((table) => getTableName(table));
+}
+
+async function sequences(db: Pick<Database, "execute">): Promise<string[]> {
   const result = await queryRows<{ name: string }>(
     db,
     sql`select sequence_name as name from information_schema.sequences
@@ -74,62 +82,80 @@ async function sequences(db: Database): Promise<string[]> {
  * Copies all rows of the app schema from `source` to `target`, e.g. from a
  * PostgreSQL server to PGlite or back. Both must be migrated to the same
  * migration, and every table of `target` must be empty. The rows keep their
- * ids, and the sequences continue after them. Runs in one transaction on
- * `target`: on an error, `target` stays empty. `source` is only read.
+ * ids and every value (timestamps to the microsecond), and the sequences
+ * continue after them. `source` is read in one read-only snapshot. `target`
+ * is written in one transaction: on an error, it stays empty.
  */
 export async function copyDatabase(
   source: Database,
   target: Database,
 ): Promise<CopyReport> {
-  const [sourceMigrations, targetMigrations] = await Promise.all([
-    migrationHashes(source),
-    migrationHashes(target),
-  ]);
-  if (sourceMigrations.join() !== targetMigrations.join()) {
-    throw new Error(
-      "The databases are not on the same migration " +
-        `(source: ${sourceMigrations.length}, target: ${targetMigrations.length}). ` +
-        "Migrate both to the latest version first.",
-    );
-  }
-
-  const tables = tablesInInsertOrder();
-  const filled: string[] = [];
-  for (const table of tables) {
-    const [row] = await target
-      .select({ one: sql`1` })
-      .from(table)
-      .limit(1);
-    if (row) filled.push(getTableName(table));
-  }
-  if (filled.length > 0) {
-    throw new Error(`The target database is not empty (${filled.join(", ")}).`);
-  }
-
-  const report: CopyReport = { rows: {} };
-  const sequenceNames = await sequences(source);
-  await target.transaction(async (tx) => {
-    for (const table of tables) {
-      const rows = await source.select().from(table);
-      for (let start = 0; start < rows.length; start += CHUNK_SIZE) {
-        await tx.insert(table).values(rows.slice(start, start + CHUNK_SIZE));
+  return source.transaction(
+    async (read) => {
+      const [sourceMigrations, targetMigrations] = await Promise.all([
+        migrationHashes(read),
+        migrationHashes(target),
+      ]);
+      if (sourceMigrations.join() !== targetMigrations.join()) {
+        throw new Error(
+          "The databases are not on the same migration " +
+            `(source: ${sourceMigrations.length}, target: ${targetMigrations.length}). ` +
+            "Migrate both to the latest version first.",
+        );
       }
-      report.rows[getTableName(table)] = rows.length;
-    }
-    for (const name of sequenceNames) {
-      const [state] = await queryRows<{
-        last_value: string;
-        is_called: boolean;
-      }>(
-        source,
-        sql`select last_value, is_called from ${sql.identifier(name)}`,
-      );
-      if (!state) continue;
-      const { last_value, is_called } = state;
-      await tx.execute(
-        sql`select setval(${`public.${name}`}::regclass, ${last_value}, ${is_called})`,
-      );
-    }
-  });
-  return report;
+
+      const tables = tablesInInsertOrder();
+      const filled: string[] = [];
+      for (const table of tables) {
+        const [row] = await target
+          .select({ one: sql`1` })
+          .from(table)
+          .limit(1);
+        if (row) filled.push(getTableName(table));
+      }
+      if (filled.length > 0) {
+        throw new Error(
+          `The target database is not empty (${filled.join(", ")}).`,
+        );
+      }
+
+      const report: CopyReport = { rows: {} };
+      const sequenceNames = await sequences(read);
+      await target.transaction(async (write) => {
+        for (const table of tables) {
+          const name = getTableName(table);
+          const id = sql.identifier(name);
+          // JSON in PostgreSQL keeps every value as it is; JavaScript Date
+          // objects would cut timestamps to milliseconds.
+          const rows = await queryRows<{ row: string }>(
+            read,
+            sql`select row_to_json(t)::text as row from ${id} t`,
+          );
+          for (let start = 0; start < rows.length; start += CHUNK_SIZE) {
+            const chunk = rows.slice(start, start + CHUNK_SIZE);
+            const json = `[${chunk.map((r) => r.row).join(",")}]`;
+            await write.execute(
+              sql`insert into ${id} select * from json_populate_recordset(null::${id}, ${json}::json)`,
+            );
+          }
+          report.rows[name] = rows.length;
+        }
+        for (const name of sequenceNames) {
+          const [state] = await queryRows<{
+            last_value: string;
+            is_called: boolean;
+          }>(
+            read,
+            sql`select last_value, is_called from ${sql.identifier(name)}`,
+          );
+          if (!state) continue;
+          await write.execute(
+            sql`select setval(${`public.${name}`}::regclass, ${state.last_value}, ${state.is_called})`,
+          );
+        }
+      });
+      return report;
+    },
+    { isolationLevel: "repeatable read", accessMode: "read only" },
+  );
 }
