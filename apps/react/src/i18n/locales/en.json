@@ -10,7 +10,7 @@
     "namePlaceholder": "How should we address you?",
     "storageLabel": "Where should your data live?",
     "storageLocal": "On this device",
-    "storageLocalHint": "In a folder of the app. You need no database server.",
+    "storageLocalHint": "In {{folder}}. You need no database server.",
     "storageServer": "On a PostgreSQL server",
     "storageServerHint": "For example your own server or a Docker container.",
     "databaseUrlLabel": "PostgreSQL connection URL",

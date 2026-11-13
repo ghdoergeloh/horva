@@ -36,10 +36,16 @@ schema and second migrations.
 
 ## Consequences
 
-- The desktop app and the CLI cannot use one PGlite folder at the same
+- The desktop app and the CLI share `config.json`, so with a local folder
+  the CLI gets `DatabaseLockedError` while the app runs. They cannot use
+  one PGlite folder at the same
   time. Sharing it would need a socket server in the app
   (`@electric-sql/pglite-socket`).
 - A PGlite version with a new PostgreSQL major version may not read an old
   folder. Before such an update, copy the data out with `pnpm db:copy`
   and back in.
 - Back up a folder only while no process has it open.
+- After a crash the lock file stays. It is taken over when its process id
+  no longer runs. If the system has given that id to another process by
+  then, the folder counts as locked; the error names the lock file to
+  delete.

@@ -35,6 +35,22 @@ interface CompleteSetupInput {
 let isReady = false;
 let bootError: string | null = null;
 
+/**
+ * The message of an error and of its causes, one per line. Drizzle wraps a
+ * driver error ("Failed query: …"), and the cause says what went wrong.
+ */
+export function errorMessage(err: unknown): string {
+  const lines: string[] = [];
+  let current: unknown = err;
+  while (current !== undefined && lines.length < 5) {
+    lines.push(
+      current instanceof Error ? current.message : JSON.stringify(current),
+    );
+    current = current instanceof Error ? current.cause : undefined;
+  }
+  return lines.join("\n");
+}
+
 export function markReady(): void {
   isReady = true;
   bootError = null;
@@ -82,14 +98,17 @@ export function registerSetupHandlers(
     if (!cfg?.userId || !cfg.databaseUrl) {
       throw new Error("Not configured yet");
     }
+    // A database that failed to start (e.g. a PGlite folder that was in
+    // use) must not be reused: the next query opens it again.
+    await disconnect().catch(() => undefined);
     process.env["DATABASE_URL"] = cfg.databaseUrl;
     try {
       await prepare(cfg.databaseUrl);
       await seed(db);
       markReady();
     } catch (err) {
-      bootError = err instanceof Error ? err.message : String(err);
-      throw err;
+      bootError = errorMessage(err);
+      throw new Error(bootError, { cause: err });
     }
   });
 
@@ -103,8 +122,9 @@ export function registerSetupHandlers(
       }
 
       // An earlier try with a wrong URL may have opened a pool. Close it, so
-      // the first query below connects to this URL.
-      await disconnect();
+      // the first query below connects to this URL. A database that failed
+      // to start also fails to close; that must not stop this try.
+      await disconnect().catch(() => undefined);
       process.env["DATABASE_URL"] = input.databaseUrl;
 
       const existing = readConfig();
@@ -112,7 +132,11 @@ export function registerSetupHandlers(
 
       updateConfig({ databaseUrl: input.databaseUrl, userId });
 
-      await prepare(input.databaseUrl);
+      try {
+        await prepare(input.databaseUrl);
+      } catch (err) {
+        throw new Error(errorMessage(err), { cause: err });
+      }
       await onReady(input.databaseUrl, userId);
 
       // db is a lazy Proxy over the pool — first access below creates it,

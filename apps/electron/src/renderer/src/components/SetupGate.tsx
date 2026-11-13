@@ -7,8 +7,10 @@ import { Loader } from "@horva/ui/Logo";
 import { Radio, RadioGroup } from "@horva/ui/RadioGroup";
 import { TextField } from "@horva/ui/TextField";
 
+import type { Storage } from "../lib/storage.js";
 import { ipcErrorMessage } from "../lib/ipc-error.js";
 import { setupBridge } from "../lib/setup.js";
+import { folderOf, initialStorage } from "../lib/storage.js";
 
 type GateState =
   | { kind: "loading" }
@@ -145,9 +147,6 @@ interface SetupWizardProps {
   onDone: () => void;
 }
 
-/** Where the data lives: a folder on this device, or a PostgreSQL server. */
-type Storage = "local" | "server";
-
 function SetupWizard({
   defaultDatabaseUrl,
   localDatabaseUrl,
@@ -155,16 +154,15 @@ function SetupWizard({
 }: SetupWizardProps) {
   const { t } = useTranslation();
   const [name, setName] = useState("");
-  const [storage, setStorage] = useState<Storage>(
-    defaultDatabaseUrl.startsWith("postgres") ? "server" : "local",
+  const [initial] = useState(() =>
+    initialStorage(defaultDatabaseUrl, localDatabaseUrl),
   );
-  const [serverUrl, setServerUrl] = useState(
-    defaultDatabaseUrl.startsWith("postgres") ? defaultDatabaseUrl : "",
-  );
+  const [storage, setStorage] = useState<Storage>(initial.storage);
+  const [serverUrl, setServerUrl] = useState(initial.serverUrl);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const databaseUrl = storage === "local" ? localDatabaseUrl : serverUrl.trim();
+  const databaseUrl = storage === "local" ? initial.localUrl : serverUrl.trim();
   const canSubmit = name.trim().length > 0 && databaseUrl.length > 0;
 
   async function handleSubmit() {
@@ -203,7 +201,12 @@ function SetupWizard({
             value={storage}
             onChange={(value) => setStorage(value as Storage)}
           >
-            <Radio value="local" description={t("setup.storageLocalHint")}>
+            <Radio
+              value="local"
+              description={t("setup.storageLocalHint", {
+                folder: folderOf(initial.localUrl),
+              })}
+            >
               {t("setup.storageLocal")}
             </Radio>
             <Radio value="server" description={t("setup.storageServerHint")}>

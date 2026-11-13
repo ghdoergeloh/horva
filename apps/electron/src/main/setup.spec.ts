@@ -39,12 +39,16 @@ afterEach(async () => {
 });
 
 /** The handlers as the main process registers them, with a fake ipcMain. */
-function setup() {
+function setup(
+  options: { disconnectError?: Error; prepareError?: Error } = {},
+) {
   const handlers = new Map<string, Handler>();
   const calls: string[] = [];
   const disconnect = vi.fn(() => {
     calls.push(`disconnect (DATABASE_URL=${process.env["DATABASE_URL"]})`);
-    return Promise.resolve();
+    return options.disconnectError
+      ? Promise.reject(options.disconnectError)
+      : Promise.resolve();
   });
   const onReady = vi.fn(() => {
     calls.push(`onReady (DATABASE_URL=${process.env["DATABASE_URL"]})`);
@@ -52,7 +56,9 @@ function setup() {
   });
   const prepare = vi.fn((url: string) => {
     calls.push(`prepare ${url}`);
-    return Promise.resolve();
+    return options.prepareError
+      ? Promise.reject(options.prepareError)
+      : Promise.resolve();
   });
   registerSetupHandlers(
     { handle: (channel, handler) => handlers.set(channel, handler) },
@@ -76,6 +82,27 @@ describe("setup:complete", () => {
       `prepare ${URL}`,
       `onReady (DATABASE_URL=${URL})`,
     ]);
+  });
+
+  it("connects even if closing the earlier database fails", async () => {
+    const { invoke } = setup({
+      disconnectError: new Error("PGlite failed to initialize properly"),
+    });
+    await invoke("setup:complete", { name: "Robin", databaseUrl: URL });
+    expect(readConfig()?.databaseUrl).toBe(URL);
+  });
+
+  it("shows the cause of a failed migration", async () => {
+    const { invoke } = setup({
+      prepareError: new Error('Failed query: CREATE SCHEMA "drizzle"', {
+        cause: new Error("PGlite failed to initialize properly"),
+      }),
+    });
+    await expect(
+      invoke("setup:complete", { name: "Robin", databaseUrl: LOCAL }),
+    ).rejects.toThrow(
+      'Failed query: CREATE SCHEMA "drizzle"\nPGlite failed to initialize properly',
+    );
   });
 
   it("sets up the local database in a folder", async () => {
@@ -143,7 +170,11 @@ describe("setup:retry", () => {
     process.env["DATABASE_URL"] = "postgresql://other@localhost:1/horva";
     calls.length = 0;
     await invoke("setup:retry");
-    expect(calls).toEqual([`prepare ${URL}`]);
+    // A database that failed to start must not be reused.
+    expect(calls).toEqual([
+      `disconnect (DATABASE_URL=postgresql://other@localhost:1/horva)`,
+      `prepare ${URL}`,
+    ]);
     expect(process.env["DATABASE_URL"]).toBe(URL);
     expect(await invoke("setup:status")).toMatchObject({
       ready: true,

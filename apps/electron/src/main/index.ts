@@ -10,7 +10,12 @@ import { pgliteUrl } from "@horva/db/client";
 import { connection, db } from "./db.js";
 import { registerOrpcHandler } from "./orpc/handler.js";
 import { prepareDatabase } from "./prepare.js";
-import { markReady, registerSetupHandlers, setBootError } from "./setup.js";
+import {
+  errorMessage,
+  markReady,
+  registerSetupHandlers,
+  setBootError,
+} from "./setup.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -81,7 +86,7 @@ void app.whenReady().then(async () => {
       await seed(db);
       markReady();
     } catch (err) {
-      setBootError(err instanceof Error ? err.message : String(err));
+      setBootError(errorMessage(err));
     }
   }
 
@@ -99,10 +104,15 @@ let closed = false;
 app.on("before-quit", (event) => {
   if (closed) return;
   event.preventDefault();
-  void connection.close().finally(() => {
-    closed = true;
-    app.quit();
-  });
+  void connection
+    .close()
+    .catch((err: unknown) => {
+      console.error("Closing the database failed", err);
+    })
+    .finally(() => {
+      closed = true;
+      app.quit();
+    });
 });
 
 app.on("window-all-closed", () => {
