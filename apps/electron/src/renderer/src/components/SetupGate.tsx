@@ -6,6 +6,7 @@ import { Button } from "@horva/ui/Button";
 import { Loader } from "@horva/ui/Logo";
 import { TextField } from "@horva/ui/TextField";
 
+import { ipcErrorMessage } from "../lib/ipc-error.js";
 import { setupBridge } from "../lib/setup.js";
 
 type GateState =
@@ -44,7 +45,7 @@ export function SetupGate({ children }: SetupGateProps) {
         console.error("setup:status failed", err);
         setState({
           kind: "error",
-          message: err instanceof Error ? err.message : String(err),
+          message: ipcErrorMessage(err),
         });
       });
   };
@@ -158,7 +159,7 @@ function SetupWizard({ defaultDatabaseUrl, onDone }: SetupWizardProps) {
       });
       onDone();
     } catch (err) {
-      setError(err instanceof Error ? err.message : String(err));
+      setError(ipcErrorMessage(err));
     } finally {
       setSubmitting(false);
     }

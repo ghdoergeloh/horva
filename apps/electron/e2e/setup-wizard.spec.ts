@@ -41,3 +41,27 @@ test("first launch (no config yet) shows the setup wizard", async () => {
     await rm(userDataDir, { recursive: true, force: true });
   }
 });
+
+test("the wizard shows the message of the main process as it is", async () => {
+  const configDir = await mkdtemp(path.join(tmpdir(), "horva-e2e-config-"));
+  const userDataDir = await mkdtemp(path.join(tmpdir(), "horva-e2e-userdata-"));
+  const app = await electron.launch({
+    args: [MAIN_ENTRY, `--user-data-dir=${userDataDir}`, "--no-sandbox"],
+    env: { ...process.env, XDG_CONFIG_HOME: configDir },
+  });
+
+  try {
+    const window = await app.firstWindow();
+    await window.getByLabel("Dein Name").fill("Robin");
+    await window.getByLabel("PostgreSQL-Verbindungs-URL").fill("mysql://x");
+    await window.getByRole("button", { name: "Loslegen" }).click();
+    // Without "Error invoking remote method 'setup:complete': Error: ".
+    await expect(window.getByRole("alert")).toHaveText(
+      "Database URL must be a postgres:// URL",
+    );
+  } finally {
+    await app.close();
+    await rm(configDir, { recursive: true, force: true });
+    await rm(userDataDir, { recursive: true, force: true });
+  }
+});

@@ -1,12 +1,11 @@
 import { randomUUID } from "node:crypto";
 import type { IpcMain } from "electron";
 
+import type { Database } from "@horva/db/client";
 import { seed } from "@horva/core";
 import { readConfig, updateConfig } from "@horva/core/config";
 import { eq } from "@horva/db";
 import { user } from "@horva/db/schema";
-
-import { db } from "./db.js";
 
 const DEFAULT_DATABASE_URL =
   "postgresql://postgres:postgres@localhost:5432/horva";
@@ -48,11 +47,17 @@ export function setBootError(message: string): void {
  * oRPC contract: they operate outside the DB-ready context and are only
  * meaningful to the Electron bootstrap flow.
  */
+export interface SetupDeps {
+  /** The lazy connection; it connects with DATABASE_URL on first use. */
+  db: Database;
+  /** Ends the open pool, so the next query connects to the new URL. */
+  disconnect: () => Promise<void>;
+  onReady: (databaseUrl: string, userId: string) => Promise<void>;
+}
+
 export function registerSetupHandlers(
-  ipcMain: IpcMain,
-  hooks: {
-    onReady: (databaseUrl: string, userId: string) => Promise<void>;
-  },
+  ipcMain: Pick<IpcMain, "handle">,
+  { db, disconnect, onReady }: SetupDeps,
 ): void {
   ipcMain.handle("setup:status", (): SetupStatus => {
     const cfg = readConfig();
@@ -89,7 +94,9 @@ export function registerSetupHandlers(
         throw new Error("Database URL must be a postgres:// URL");
       }
 
-      // Write DATABASE_URL before touching the db proxy for the first time.
+      // An earlier try with a wrong URL may have opened a pool. Close it, so
+      // the first query below connects to this URL.
+      await disconnect();
       process.env["DATABASE_URL"] = input.databaseUrl;
 
       const existing = readConfig();
@@ -97,7 +104,7 @@ export function registerSetupHandlers(
 
       updateConfig({ databaseUrl: input.databaseUrl, userId });
 
-      await hooks.onReady(input.databaseUrl, userId);
+      await onReady(input.databaseUrl, userId);
 
       // db is a lazy Proxy over the pool — first access below creates it,
       // which is safe because we set DATABASE_URL a few lines up.
