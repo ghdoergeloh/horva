@@ -4,6 +4,7 @@ import { confirm, input } from "@inquirer/prompts";
 import { seed } from "@horva/core";
 
 import { configPath, readConfig, writeConfig } from "../lib/config.js";
+import { validateDatabaseUrl } from "../lib/database-url.js";
 import { printError, printSuccess, sym } from "../lib/display.js";
 import { runMigrations } from "../lib/migrate.js";
 
@@ -27,10 +28,9 @@ export function registerInitCommand(program: Command): void {
         }
 
         const databaseUrl = await input({
-          message: "PostgreSQL connection URL:",
+          message: "Database URL (postgres://… or file:///folder):",
           default: existing?.databaseUrl ?? "postgres://localhost:5432/horva",
-          validate: (v) =>
-            v.startsWith("postgres") || "Must be a postgres:// URL",
+          validate: validateDatabaseUrl,
         });
 
         writeConfig({ databaseUrl });
