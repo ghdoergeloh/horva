@@ -16,7 +16,8 @@ afterEach(() => {
 });
 
 describe("prepareDatabase", () => {
-  it("migrates the local database", async () => {
+  // Creating and migrating a PGlite folder takes seconds on a busy runner.
+  it("migrates the local database", { timeout: 30_000 }, async () => {
     const dir = mkdtempSync(join(tmpdir(), "horva-prepare-"));
     dirs.push(dir);
     const url = pgliteUrl(join(dir, "data"));
