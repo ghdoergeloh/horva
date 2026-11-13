@@ -5,9 +5,9 @@ Instructions for coding agents in this repository. Only rules that cannot be rea
 ## Repository Rules
 
 - Business logic lives in `packages/core/src/services/*`. Handlers in `packages/core/src/handlers/*` and the routes in `apps/api` only wire things up. `.dependency-cruiser.cjs` enforces the package boundaries.
-- A new API endpoint starts in `packages/contract/src/index.ts`, then a handler in `packages/core/src/handlers/`, then one line in `apps/api/src/router.ts`. Every procedure needs a session; a public one goes into `PUBLIC_PROCEDURES` there, and `router.spec.ts` checks all of them.
+- A new API endpoint starts in `packages/contract/src/index.ts`, then a handler in `packages/core/src/handlers/`, then one line in `apps/api/src/router.ts` and one in `apps/tauri/src/backend/router.ts`. Every procedure needs a session; a public one goes into `PUBLIC_PROCEDURES` there, and `router.spec.ts` checks all of them.
 - Configuration is read once, in `apps/api/src/env.ts` (`loadEnv`), and passed on. Packages export factories (`createAuth`, `createDatabase`, `createMailer`, `createApp`) and never read `process.env` on import.
-- The SPA and the API share one origin (`docs/decisions/0001-*`). The SPA calls relative paths under `/api`; no API URL goes into the frontend build. In Electron the same React app talks to the main process over a MessagePort (`apps/electron/src/main/orpc`), not over HTTP.
+- The SPA and the API share one origin (`docs/decisions/0001-*`). The SPA calls relative paths under `/api`; no API URL goes into the frontend build. In the desktop app the same React app talks to a Node.js sidecar through the Rust shell (`apps/tauri`, `docs/decisions/0004-*`), not over HTTP.
 - A schema change needs a migration: `pnpm db:generate`, and commit `packages/db/drizzle`. CI fails when they differ.
 - Dependency versions come from the `pnpm-workspace.yaml` catalogs. Write `catalog:` (or `catalog:react19`) in `package.json`, never a literal version.
 - `pnpm -F <pkg> pack` runs pnpm's builtin pack command, not the package script. Use `pnpm --filter <pkg> run pack`.

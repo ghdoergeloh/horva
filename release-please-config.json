@@ -9,7 +9,7 @@
       "extra-files": [
         {
           "type": "json",
-          "path": "apps/electron/package.json",
+          "path": "apps/tauri/package.json",
           "jsonpath": "$.version"
         }
       ]

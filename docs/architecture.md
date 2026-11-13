@@ -21,15 +21,16 @@ tracking, `auth-schema.ts` for better-auth). Migrations in
 - **Browser:** `apps/react` calls `apps/api` under `/api` on its own
   origin (`decisions/0001-*`). The API checks the session (better-auth)
   and calls the handlers of `packages/core`.
-- **Electron:** the same React app talks to the main process over a
-  MessagePort (`decisions/0002-*`). The main process calls the same
-  handlers with the local user of the setup wizard.
+- **Desktop (Tauri):** the same React app talks to a Node.js sidecar;
+  the Rust shell passes the lines between them (`decisions/0004-*`).
+  The sidecar calls the same handlers with the local user of the setup
+  wizard.
 - **CLI:** `apps/cli` calls the services of `packages/core` directly
   against the database of its config file.
 
 ## Rules across packages
 
-- Business logic lives in `packages/core`. The API, the CLI and Electron
-  only wire it up (`.dependency-cruiser.cjs`).
+- Business logic lives in `packages/core`. The API, the CLI and the
+  desktop app only wire it up (`.dependency-cruiser.cjs`).
 - Every procedure of the API needs a session, except the ones in
   `PUBLIC_PROCEDURES` (`apps/api/src/router.ts`).

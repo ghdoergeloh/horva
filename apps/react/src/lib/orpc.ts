@@ -12,10 +12,10 @@ let createLink: (() => ClientLink<ClientContext>) | null = null;
 let cached: { client: OrpcClient; orpc: OrpcUtils } | null = null;
 
 /**
- * Sets how the app talks to the backend: HTTP in the browser, a MessagePort
- * in Electron. Call it once before the first render. The link is created on
- * the first API call, so a wrapper can delay its handshake until its gate
- * is open.
+ * Sets how the app talks to the backend: HTTP in the browser, the pipe to
+ * the backend sidecar in the desktop app. Call it once before the first
+ * render. The link is created on the first API call, so a wrapper can
+ * delay its handshake until its gate is open.
  */
 export function setOrpcLink(factory: () => ClientLink<ClientContext>): void {
   createLink = factory;

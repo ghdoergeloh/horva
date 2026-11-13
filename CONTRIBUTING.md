@@ -26,7 +26,7 @@ This guide covers how to set up the project, the workflow we follow, and the con
 - **Request a feature** — open an issue outlining the use case. Smaller, focused requests are easier to discuss.
 - **Fix an issue** — look at issues labeled [`good first issue`](https://github.com/ghdoergeloh/horva/labels/good%20first%20issue) or [`help wanted`](https://github.com/ghdoergeloh/horva/labels/help%20wanted).
 - **Improve documentation** — fix typos, clarify steps, add examples, or extend the specs under [`docs/`](./docs).
-- **Add a translation** — the Electron app uses `i18next`; adding a locale is a great first contribution.
+- **Add a translation** — the React app uses `i18next`; adding a locale is a great first contribution.
 - **Design / UX feedback** — screenshots, mockups, or written critiques are all useful.
 
 If you're planning something non-trivial, please open an issue first so we can align on scope before you invest time.
@@ -51,12 +51,12 @@ pnpm db:migrate
 pnpm dev
 ```
 
-See the [README](./README.md#development-setup) for the full walkthrough, including how to run individual apps (`api`, `react`, `electron`, `cli`).
+See the [README](./README.md#development-setup) for the full walkthrough, including how to run individual apps (`api`, `react`, `tauri`, `cli`).
 
 ### Repo layout
 
 ```
-apps/        # api, cli, electron, react
+apps/        # api, cli, react, tauri
 packages/    # contract, auth, core, db, ui, transactional
 tooling/     # shared TS / Tailwind / Vitest configs
 docs/        # feature specs and design docs
@@ -66,7 +66,7 @@ The **contract** package (`packages/contract`) is the source of truth for the AP
 
 1. Define the route in `packages/contract/src/index.ts`.
 2. Implement the handler in `packages/core/src/handlers/<section>.ts`.
-3. Wire it into `apps/api/src/router.ts` (and the Electron IPC bridge).
+3. Wire it into `apps/api/src/router.ts` and `apps/tauri/src/backend/router.ts`.
 4. Consume it from `apps/react` with full type inference.
 
 ## Workflow
@@ -100,7 +100,7 @@ pnpm -F @horva/db typecheck
 - **Imports are auto-sorted** by Oxfmt (`.oxfmtrc.json`): types → React → third-party → `@horva/*` → local (`~/`, `../`, `./`). Don't fight the sort.
 - **Tailwind classes** are sorted automatically inside `cn()` and `cva()`.
 - **Linting:** Oxlint with one root config (`.oxlintrc.json`), including type-aware rules. The React rules apply through an `overrides` entry: add new React workspaces to its `files` list.
-- **Imports inside `apps/react`:** `#/` → `src/` (subpath imports in its `package.json`), so the code resolves the same way when `apps/electron` bundles it.
+- **Imports inside `apps/react`:** `#/` → `src/` (subpath imports in its `package.json`), so the code resolves the same way when `apps/tauri` bundles it.
 - **Dependency versions** live in `pnpm-workspace.yaml` catalogs. New deps should use `catalog:` references where appropriate.
 - **No mocks at the DB boundary.** Integration tests hit real PostgreSQL via Docker Compose.
 - **Comments** should explain _why_, not _what_. Most code doesn't need them.
@@ -124,7 +124,7 @@ Examples:
 
 ```
 feat(api): add task labels endpoint
-fix(electron): use local timezone in PlanButton date picker
+fix(tauri): use local timezone in PlanButton date picker
 docs: clarify database setup in README
 chore(deps): bump drizzle-orm to 0.40.0
 ```
@@ -179,9 +179,9 @@ Releases get their version from the Conventional Commits on `main`. Nobody picks
 
 **How it works**
 
-1. Every merge into `main` runs [release-please](https://github.com/googleapis/release-please). It opens or updates one release PR with the title `chore(main): release <version>`. That PR carries the next version (in `package.json`, `apps/electron/package.json` and `.release-please-manifest.json`) and the `CHANGELOG.md` entries for everything merged since the last release. A merge into `main` never releases on its own.
+1. Every merge into `main` runs [release-please](https://github.com/googleapis/release-please). It opens or updates one release PR with the title `chore(main): release <version>`. That PR carries the next version (in `package.json`, `apps/tauri/package.json` and `.release-please-manifest.json`) and the `CHANGELOG.md` entries for everything merged since the last release. A merge into `main` never releases on its own.
 2. Merging the release PR creates the tag and a draft GitHub Release with the changelog.
-3. Then the Electron installers for macOS (`.dmg`), Windows (`.exe` via NSIS) and Linux (`.AppImage`) are built and attached, and the release is published. The release stays a draft until the installers can be downloaded.
+3. Then the Tauri installers for macOS (`.dmg`), Windows (`.exe` via NSIS) and Linux (`.AppImage`) are built and attached, and the release is published. The release stays a draft until the installers can be downloaded.
 
 **Which commit bumps what** (while the version is below `1.0.0`):
 
@@ -203,7 +203,7 @@ To go to `1.0.0` (or any other version), add the footer `Release-As: 1.0.0` to a
 - The release PR is opened with the `GITHUB_TOKEN`, so no checks run on it by themselves. It only changes version numbers and `CHANGELOG.md`.
 - release-please needs the repository setting "Allow GitHub Actions to create and approve pull requests" (Settings, Actions, General).
 - If the installer build fails, the release stays a draft. Re-run the failed jobs of the _Release Please_ run.
-- A release can also be built by hand: push a `v*` tag, or run the _Release Electron App_ workflow with an existing tag as input.
+- A release can also be built by hand: push a `v*` tag, or run the _Release Desktop App_ workflow with an existing tag as input.
 - Contributors do not need to create tags or change version numbers.
 
 ## License

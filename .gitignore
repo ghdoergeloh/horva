@@ -24,9 +24,10 @@ storybook-static
 out/
 next-env.d.ts
 
-# electron
-apps/electron/out/
-apps/electron/dist-electron/
+# tauri
+apps/tauri/src-tauri/target/
+apps/tauri/src-tauri/gen/
+apps/tauri/src-tauri/binaries/
 
 # nitro
 .nitro/
@@ -41,8 +42,6 @@ apps/expo/android
 
 # production
 build
-# Resources of electron-builder (icons), not a build output.
-!apps/electron/build/
 
 # misc
 .DS_Store

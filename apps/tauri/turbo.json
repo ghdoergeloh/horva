@@ -1,0 +1,17 @@
+{
+  "extends": ["//"],
+  "tasks": {
+    "build": {
+      "dependsOn": ["^build"],
+      "outputs": ["dist/**"]
+    },
+    "dev": {
+      "cache": false,
+      "persistent": true
+    },
+    // The Playwright tests start the built webview and backend from dist/.
+    "test:e2e": {
+      "dependsOn": ["^topo", "build"]
+    }
+  }
+}

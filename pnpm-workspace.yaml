@@ -9,8 +9,6 @@ allowBuilds:
   "@tailwindcss/oxide": true
   better-sqlite3: false
   bufferutil: false
-  electron: true
-  electron-winstaller: false
   esbuild: true
   prisma: false
   protobufjs: false
@@ -26,7 +24,6 @@ catalog:
   "@dnd-kit/sortable": ^10.0.0
   "@dnd-kit/utilities": ^3.2.2
   "@electric-sql/pglite": ^0.5.14
-  "@electron-toolkit/utils": ^4.0.0
   "@fontsource-variable/geist": ^5.3.0
   "@fontsource-variable/geist-mono": ^5.3.0
   "@hono/node-server": ^2.1.6
@@ -48,6 +45,9 @@ catalog:
   "@tanstack/react-query": ^5.105.2
   "@tanstack/react-router": ^1.170.46
   "@tanstack/router-plugin": ^1.168.48
+  "@tauri-apps/api": ^2.12.4
+  "@tauri-apps/cli": ^2.12.4
+  "@tauri-apps/plugin-opener": ^2.7.2
   "@testing-library/jest-dom": ^7.0.1
   "@testing-library/react": ^16.3.3
   "@turbo/gen": ^2.11.10
@@ -70,9 +70,6 @@ catalog:
   dotenv-cli: ^11.1.0
   drizzle-kit: ^0.31.11
   drizzle-orm: ^0.45.4
-  electron: ^44.5.1
-  electron-builder: ^26.18.0
-  electron-vite: ^5.0.0
   esbuild: ^0.28.2
   eslint-plugin-sonarjs: ^4.2.2
   eslint-plugin-turbo: ^2.11.10

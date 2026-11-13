@@ -1,0 +1,15 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "default",
+  "description": "What the main window may call: the backend pipe and opening https links in the browser.",
+  "windows": ["main"],
+  "permissions": [
+    "core:default",
+    "allow-backend-connect",
+    "allow-backend-send",
+    {
+      "identifier": "opener:allow-open-url",
+      "allow": [{ "url": "https://*" }]
+    }
+  ]
+}

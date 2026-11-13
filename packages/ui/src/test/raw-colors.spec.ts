@@ -5,11 +5,7 @@ import { describe, expect, it } from "vitest";
 const repoRoot = resolve(import.meta.dirname, "../../../..");
 
 /** Source folders whose code must use the semantic tokens only. */
-const roots = [
-  "packages/ui/src",
-  "apps/react/src",
-  "apps/electron/src/renderer/src",
-];
+const roots = ["packages/ui/src", "apps/react/src", "apps/tauri/src/webview"];
 
 /**
  * Files that may contain raw colors, with the reason. The color pickers

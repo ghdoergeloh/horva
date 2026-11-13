@@ -1,6 +1,6 @@
 # 0002: Electron talks to core over a MessagePort
 
-Status: accepted (2026-09-30)
+Status: superseded by `0004` (2026-11-13), accepted (2026-09-30)
 
 ## Context
 

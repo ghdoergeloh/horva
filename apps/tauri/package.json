@@ -1,0 +1,53 @@
+{
+  "name": "@horva/tauri-app",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "vite build && vite build --config vite.backend.config.ts",
+    "build:backend": "vite build --config vite.backend.config.ts",
+    "clean": "git clean -xdf .cache .turbo dist node_modules src-tauri/target src-tauri/binaries",
+    "dev": "tauri dev",
+    "dev:webview": "vite",
+    "pack": "tauri build",
+    "prepare:sidecar": "node scripts/prepare-sidecar.mjs",
+    "tauri": "tauri",
+    "test:e2e": "playwright test",
+    "test:unit": "vitest run",
+    "test:unit:coverage": "vitest run --coverage",
+    "typecheck": "tsc --noEmit -p tsconfig.backend.json && tsc --noEmit -p tsconfig.webview.json"
+  },
+  "dependencies": {
+    "@horva/react": "workspace:*",
+    "@orpc/client": "catalog:",
+    "@orpc/contract": "catalog:",
+    "@orpc/server": "catalog:",
+    "@tauri-apps/api": "catalog:",
+    "@tauri-apps/plugin-opener": "catalog:",
+    "dotenv": "catalog:",
+    "i18next": "catalog:",
+    "react-i18next": "catalog:",
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "@horva/contract": "workspace:*",
+    "@horva/core": "workspace:*",
+    "@horva/db": "workspace:*",
+    "@horva/tsconfig": "workspace:*",
+    "@horva/ui": "workspace:*",
+    "@horva/vitest": "workspace:*",
+    "@playwright/test": "catalog:",
+    "@tailwindcss/vite": "catalog:",
+    "@tanstack/react-router": "catalog:",
+    "@tauri-apps/cli": "catalog:",
+    "@types/node": "catalog:",
+    "@types/react": "catalog:react19",
+    "@types/react-dom": "catalog:react19",
+    "@vitejs/plugin-react": "catalog:",
+    "react": "catalog:react19",
+    "react-dom": "catalog:react19",
+    "typescript": "catalog:",
+    "vite": "catalog:",
+    "vitest": "catalog:"
+  }
+}

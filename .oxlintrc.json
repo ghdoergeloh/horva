@@ -18,7 +18,6 @@
     "**/*.mjs",
     "**/routeTree.gen.ts",
     "**/out/**",
-    "**/dist-electron/**",
     "**/coverage/**",
     "turbo/**"
   ],
@@ -222,7 +221,7 @@
     },
     {
       "files": [
-        "apps/electron/**/*.{ts,tsx}",
+        "apps/tauri/src/**/*.{ts,tsx}",
         "apps/react/**/*.{ts,tsx}",
         "packages/ui/**/*.{ts,tsx}"
       ],

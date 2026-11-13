@@ -3,11 +3,11 @@
 > A self-hosted, developer-friendly time tracking app — desktop, web, and CLI, all backed by the same typed API.
 
 [![CI/CD Pipeline](https://github.com/ghdoergeloh/horva/actions/workflows/ci.yml/badge.svg)](https://github.com/ghdoergeloh/horva/actions/workflows/ci.yml)
-[![Release Electron App](https://github.com/ghdoergeloh/horva/actions/workflows/release.yml/badge.svg)](https://github.com/ghdoergeloh/horva/actions/workflows/release.yml)
+[![Release Desktop App](https://github.com/ghdoergeloh/horva/actions/workflows/release.yml/badge.svg)](https://github.com/ghdoergeloh/horva/actions/workflows/release.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](./CONTRIBUTING.md)
 
-Horva is a time tracking suite built around the idea that your day is a sequence of **slots** that can optionally be attached to **tasks**, which belong to **projects** and can carry **labels**. It ships as a cross‑platform Electron desktop app, a web frontend, a REST/oRPC API, and a CLI — all sharing a single end‑to‑end typed contract.
+Horva is a time tracking suite built around the idea that your day is a sequence of **slots** that can optionally be attached to **tasks**, which belong to **projects** and can carry **labels**. It ships as a cross‑platform desktop app (Tauri), a web frontend, a REST/oRPC API, and a CLI — all sharing a single end‑to‑end typed contract.
 
 ---
 
@@ -68,6 +68,7 @@ The desktop app bundles its own renderer; no separate web server is required for
 - **Node.js** `^24.21.0`
 - **pnpm** `^12.5.1`
 - **Docker** + Docker Compose (for PostgreSQL and Mailpit)
+- For the desktop app: **Rust** (stable, via [rustup](https://rustup.rs)) and the [Tauri prerequisites](https://v2.tauri.app/start/prerequisites/) of your system (WebKitGTK on Linux, Xcode command line tools on macOS, WebView2 on Windows)
 
 ### 1. Clone and install
 
@@ -98,7 +99,7 @@ pnpm dev                              # Run everything (Turbo)
 pnpm -F @horva/api dev                # API only
 pnpm -F @horva/react dev              # React app in the browser only (port 5173)
 pnpm storybook                        # The UI components on http://localhost:6006
-pnpm -F @horva/electron-app dev       # Electron desktop app only
+pnpm -F @horva/tauri-app dev          # Tauri desktop app only (port 5174)
 pnpm -F @horva/cli dev                # CLI only
 ```
 
@@ -117,7 +118,7 @@ pnpm lint:fix             # Oxlint with --fix
 pnpm format               # Oxfmt check
 pnpm format:fix           # Oxfmt write
 pnpm test:unit            # Vitest (test:unit:coverage with coverage)
-pnpm test:e2e             # Playwright: the web app and the Electron app
+pnpm test:e2e             # Playwright: the web app and the desktop webview with its sidecar
 pnpm knip                 # Unused files, dependencies, exports
 pnpm depcruise            # Circular imports and package boundaries
 
@@ -127,10 +128,11 @@ pnpm db:migrate           # Apply the migrations
 pnpm db:push              # Push the schema without a migration (experiments only)
 pnpm db:studio            # Open Drizzle Studio
 
-# Electron desktop app
-pnpm -F @horva/electron-app dev       # Dev mode
-pnpm -F @horva/electron-app build     # Build main, preload and renderer (with the React app)
-pnpm -F @horva/electron-app run pack  # Package a distributable (.dmg / .exe / .AppImage)
+# Tauri desktop app
+pnpm -F @horva/tauri-app dev          # Dev mode (Vite for the webview, cargo for the shell)
+pnpm -F @horva/tauri-app build        # Build the webview and the backend sidecar into dist/
+pnpm -F @horva/tauri-app run pack     # Package a distributable (.dmg / .exe / .AppImage)
+cd apps/tauri/src-tauri && cargo test # Tests of the Rust shell
 
 # Scaffold a new package
 pnpm turbo gen init
@@ -146,8 +148,8 @@ See [`AGENTS.md`](./AGENTS.md) for the repository rules and [`docs/`](./docs) fo
 │   ├── api          # Hono + oRPC API + better-auth; serves the built React app (port 3000)
 │   ├── cli          # Commander-based CLI (invokes @horva/core against a local DB, runs migrations)
 │   ├── e2e          # Playwright tests of the web app: flows, axe on every screen, smoke screenshots
-│   ├── electron     # Electron desktop app: wraps apps/react (electron-vite + electron-builder)
-│   └── react        # React app (Vite); runs in the browser and inside Electron
+│   ├── react        # React app (Vite); runs in the browser and inside the desktop app
+│   └── tauri        # Tauri desktop app: Rust shell, apps/react as webview, Node.js sidecar with @horva/core
 ├── packages
 │   ├── auth         # better-auth (email/password) w/ Drizzle adapter
 │   ├── contract     # Shared oRPC + Zod API contract
@@ -162,17 +164,29 @@ See [`AGENTS.md`](./AGENTS.md) for the repository rules and [`docs/`](./docs) fo
 
 ## Architecture
 
-The **contract** package is the hub: `packages/contract` defines the API shape → `@horva/core/handlers` implements it → `apps/api` mounts the handlers over HTTP, and the Electron main process mounts the same handlers over IPC. Any consumer (the React app, third-party integrations) gets full end-to-end type safety.
+The **contract** package is the hub: `packages/contract` defines the API shape → `@horva/core/handlers` implements it → `apps/api` mounts the handlers over HTTP, and the backend sidecar of the desktop app mounts the same handlers over stdin and stdout. Any consumer (the React app, third-party integrations) gets full end-to-end type safety.
 
-### React app and Electron
+### React app and the desktop app
 
-`apps/react` is the whole user interface. It runs on its own in the browser and talks to `apps/api` over HTTP. `apps/electron` wraps it: its renderer imports `@horva/react` and passes in the three parts that differ.
+`apps/react` is the whole user interface. It runs on its own in the browser and talks to `apps/api` over HTTP. `apps/tauri` wraps it: its webview imports `@horva/react` and passes in the three parts that differ.
 
-|                              | Browser (`apps/react/src/main.tsx`) | Electron (`apps/electron/src/renderer/src/main.tsx`) |
-| ---------------------------- | ----------------------------------- | ---------------------------------------------------- |
-| Backend link (`setOrpcLink`) | HTTP to `/api` on the same origin   | MessagePort to the main process                      |
-| Gate before the app          | Login (better-auth)                 | Setup wizard (local database)                        |
-| Router history               | Browser history                     | Hash history                                         |
+|                              | Browser (`apps/react/src/main.tsx`) | Desktop (`apps/tauri/src/webview/main.tsx`)         |
+| ---------------------------- | ----------------------------------- | --------------------------------------------------- |
+| Backend link (`setOrpcLink`) | HTTP to `/api` on the same origin   | Lines through the Rust shell to the Node.js sidecar |
+| Gate before the app          | Login (better-auth)                 | Setup wizard (local database)                       |
+| Router history               | Browser history                     | Hash history                                        |
+
+### Desktop app
+
+```mermaid
+flowchart LR
+  Webview -->|invoke / Channel| Shell[Rust shell]
+  Shell -->|stdin / stdout lines| Sidecar[Node.js sidecar]
+  Sidecar -->|invokes| Core
+  Core -->|uses| Database
+```
+
+The shell only passes lines on; see [`docs/decisions/0004-*`](./docs/decisions/0004-tauri-shell-with-a-node-sidecar.md) for why the backend stays in Node.js.
 
 ### React app in the browser
 
@@ -229,7 +243,8 @@ names what is wrong.
 | Screens use `@horva/ui` only       | `apps/react/src/test/ui-only.spec.ts`           |
 | Stories: axe and screenshots       | `packages/ui/src/test/stories.browser.test.tsx` |
 | Screens: axe, width, screenshots   | `apps/e2e/tests/screens.e2e.ts`                 |
-| Electron: first launch             | `apps/electron/e2e/setup-wizard.spec.ts`        |
+| Desktop: first launch              | `apps/tauri/e2e/setup-wizard.spec.ts`           |
+| Desktop: Rust shell                | `cargo test` in `apps/tauri/src-tauri`          |
 | Secrets, workflow security         | CI (gitleaks, actionlint, zizmor)               |
 
 - **Database:** `createTestDatabase()` from `@horva/db/testing` gives each
@@ -271,10 +286,10 @@ verify their email address and password reset is on.
 - **Monorepo**: pnpm workspaces + Turborepo
 - **API**: [Hono](https://hono.dev/) + [oRPC](https://orpc.unnoq.com/)
 - **Web**: React 19, Vite, TanStack Router, TanStack Query, Tailwind CSS 4
-- **Desktop**: Electron 44 + electron-vite + electron-builder
+- **Desktop**: Tauri 2 (Rust shell, system webview) with a Node.js sidecar
 - **Database**: PostgreSQL + [Drizzle ORM](https://orm.drizzle.team/)
 - **Auth**: [better-auth](https://www.better-auth.com/) with Drizzle adapter
-- **Testing**: Vitest (with PGlite), Storybook story tests in Chromium, Playwright (web and Electron), axe
+- **Testing**: Vitest (with PGlite), Storybook story tests in Chromium, Playwright (web and desktop webview), axe, cargo test
 
 ## Contributing
 

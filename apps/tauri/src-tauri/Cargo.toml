@@ -1,0 +1,26 @@
+[package]
+name = "horva"
+version = "0.0.1"
+description = "Horva time tracking"
+edition = "2021"
+publish = false
+
+[lib]
+# The name of the library differs from the binary, which Windows needs.
+name = "horva_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = [] }
+tauri-plugin-opener = "2"
+tauri-plugin-shell = "2"
+
+[profile.release]
+codegen-units = 1
+lto = true
+opt-level = "s"
+panic = "abort"
+strip = true

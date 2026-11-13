@@ -82,7 +82,7 @@ For non‑Vite bundlers, depend on `@tailwindcss/postcss` instead and reuse `@ho
 
 ### 2. Bundler plugin
 
-Vite (`vite.config.ts` or `electron.vite.config.ts` renderer block):
+Vite (`vite.config.ts`; in `apps/tauri` the webview config, not `vite.backend.config.ts`):
 
 ```ts
 import tailwindcss from "@tailwindcss/vite";
@@ -92,7 +92,7 @@ export default defineConfig({
 });
 ```
 
-For Electron specifically: only the **renderer** block runs Tailwind. Main and preload must not. Two Tailwind passes lead to silently missing utilities.
+For the desktop app specifically: only the **webview** build runs Tailwind. The backend sidecar build must not. Two Tailwind passes lead to silently missing utilities.
 
 ### 3. Entry CSS
 
@@ -106,7 +106,7 @@ Every renderer's entry CSS file (e.g. `apps/react/src/styles/globals.css`):
 
 The `@source` directive is **mandatory** in Tailwind v4. Without it the bundler doesn't scan `@horva/ui`, and classes that appear only in shared components silently disappear from production. Point it at the **real path** of `packages/ui/src`, not at the symlink in `node_modules`: Vite does not watch files under `node_modules`, so with the symlink path a new class in a component shows up only after a restart of the dev server.
 
-Reference implementation: `apps/react/src/styles/globals.css`. `apps/electron` imports it as `@horva/react/styles.css`.
+Reference implementation: `apps/react/src/styles/globals.css`. `apps/tauri` imports it as `@horva/react/styles.css`.
 
 ### 4. Mount the theme on `<html>`
 
@@ -163,7 +163,7 @@ Then add every new combination of text and background to `packages/ui/src/test/c
 
 **"Dark mode doesn't switch"** — `<html>` doesn't have `class="dark"`. Either no toggle is wired up, or the toggle runs after first paint. Check `document.documentElement.classList`. If the boot block isn't there, components will style correctly _after_ the user toggles, but flash on every reload.
 
-**"Build emits Tailwind warnings, components look unstyled"** — two Tailwind passes (e.g. Tailwind plugin enabled in both Electron main and renderer). Remove from main/preload.
+**"Build emits Tailwind warnings, components look unstyled"** — two Tailwind passes (e.g. Tailwind plugin enabled in both the webview and the sidecar build). Remove it from the sidecar build.
 
 **"Custom token I added doesn't work as `bg-<name>`"** — missing the `@theme inline` mapping (step 3 above).
 

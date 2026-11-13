@@ -84,17 +84,17 @@ const sections = (hidden: boolean) =>
     .sort();
 
 describe("release versions", () => {
-  it("keeps the manifest, the root package and the Electron app on one version", () => {
+  it("keeps the manifest, the root package and the desktop app on one version", () => {
     expect(manifest["."]).toMatch(/^\d+\.\d+\.\d+$/);
     expect(version("package.json")).toBe(manifest["."]);
-    // electron-builder names the installers after this version.
-    expect(version("apps/electron/package.json")).toBe(manifest["."]);
+    // tauri.conf.json takes the version of the installers from here.
+    expect(version("apps/tauri/package.json")).toBe(manifest["."]);
   });
 
-  it("lets release-please bump the Electron app version", () => {
+  it("lets release-please bump the desktop app version", () => {
     expect(config.packages["."]?.["extra-files"]).toContainEqual({
       type: "json",
-      path: "apps/electron/package.json",
+      path: "apps/tauri/package.json",
       jsonpath: "$.version",
     });
   });

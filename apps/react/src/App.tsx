@@ -21,7 +21,7 @@ interface AppProps {
   router: AppRouter;
   /**
    * Gate rendered before the router: the login wall in the browser, the
-   * setup wizard in Electron.
+   * setup wizard in the desktop app.
    */
   gate: (children: ReactNode) => ReactNode;
 }

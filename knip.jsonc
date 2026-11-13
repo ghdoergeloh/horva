@@ -32,6 +32,12 @@
       "drizzle": false,
       "entry": ["drizzle.config.ts"],
     },
+    "apps/tauri": {
+      // Started by the Tauri shell (src-tauri/tauri.conf.json, resources).
+      "entry": ["src/backend/index.ts"],
+      // Part of the Rust toolchain, which the desktop app needs anyway.
+      "ignoreBinaries": ["rustc"],
+    },
     "tooling/tailwind": {
       // Referenced by name in postcss-config.js's `plugins` object, not imported.
       "ignoreDependencies": ["@tailwindcss/postcss"],

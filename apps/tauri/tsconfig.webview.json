@@ -1,0 +1,12 @@
+{
+  "extends": "@horva/tsconfig/base.json",
+  "compilerOptions": {
+    "composite": true,
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "jsx": "react-jsx",
+    "types": ["vite/client"],
+    "tsBuildInfoFile": "${configDir}/.cache/tsbuildinfo.webview.json"
+  },
+  "include": ["src/webview/**/*", "src/shared/**/*"],
+  "exclude": ["src/webview/brand-assets.spec.ts"]
+}

@@ -8,8 +8,8 @@ export const queryClient = new QueryClient();
 
 /**
  * Create the TanStack router. Callers inject the history implementation:
- * browser history for the web app, hash history for Electron (which loads
- * the app from a file and has no server for route handling).
+ * browser history for the web app, hash history for the desktop app
+ * (which loads the app from its bundle and has no server for routes).
  */
 export function createAppRouter(history: RouterHistory) {
   return createRouter({

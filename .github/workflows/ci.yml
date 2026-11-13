@@ -182,10 +182,14 @@ jobs:
             apps/e2e/test-results
           retention-days: 7
 
-  # The Electron app, built and started under a virtual display.
-  electron:
-    name: Electron end-to-end tests
+  # The desktop app: the Rust shell (format, Clippy, tests) and the webview
+  # with the backend sidecar in Chromium.
+  tauri:
+    name: Tauri shell and end-to-end tests
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/tauri/src-tauri
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -193,11 +197,35 @@ jobs:
 
       - uses: ./tooling/github/setup
 
-      - name: Install the virtual display
-        run: sudo apt-get update && sudo apt-get install --yes xvfb
+      - name: Install the libraries of the Tauri shell (WebKitGTK)
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes libwebkit2gtk-4.1-dev libxdo-dev libssl-dev libayatana-appindicator3-dev librsvg2-dev
 
-      - name: Playwright (Electron)
-        run: xvfb-run --auto-servernum -- pnpm turbo run test:e2e --filter=@horva/electron-app
+      - name: Rust toolchain
+        run: rustup toolchain install stable --profile minimal --component clippy,rustfmt
+
+      # build.rs needs the sidecar binary and the backend bundle.
+      - name: Prepare the sidecar
+        working-directory: apps/tauri
+        run: pnpm run prepare:sidecar && pnpm run build:backend
+
+      - name: Rust format
+        run: cargo fmt --check
+
+      - name: Clippy
+        run: cargo clippy --locked --all-targets -- -D warnings
+
+      - name: Rust tests
+        run: cargo test --locked
+
+      - name: Install Chromium for Playwright
+        working-directory: apps/tauri
+        run: pnpm exec playwright install --with-deps chromium
+
+      - name: Playwright (webview and sidecar)
+        working-directory: .
+        run: pnpm turbo run test:e2e --filter=@horva/tauri-app
 
   # Builds the image, so a broken Dockerfile is found before the merge.
   image:

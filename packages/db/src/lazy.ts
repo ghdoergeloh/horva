@@ -4,7 +4,7 @@ import { createDatabase } from "./client.js";
 /**
  * A connection that opens its pool on the first query, with the URL that
  * `getUrl` returns at that moment. For apps that learn the URL after they
- * start: the CLI after `horva init`, Electron after its setup wizard.
+ * start: the CLI after `horva init`, the desktop app after its setup wizard.
  * `close()` ends the pool; the next query opens a new one.
  */
 export function createLazyDatabase(
