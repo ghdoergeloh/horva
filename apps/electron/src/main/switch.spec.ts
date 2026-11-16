@@ -12,6 +12,10 @@ import { label, user } from "@horva/db/schema";
 
 import { inspectTarget, reconnectDatabase, switchDatabase } from "./switch";
 
+// Each test opens PGlite folders; on a busy CI runner with coverage that
+// takes far longer than the default 5 seconds.
+vi.setConfig({ testTimeout: 60_000 });
+
 let dir: string;
 let current: DatabaseConnection;
 const opened: DatabaseConnection[] = [];
