@@ -70,7 +70,7 @@ catalog:
   dotenv-cli: ^11.1.0
   drizzle-kit: ^0.31.11
   drizzle-orm: ^0.45.4
-  electron: ^44.5.1
+  electron: ^45.2.3
   electron-builder: ^26.18.0
   electron-vite: ^5.0.0
   esbuild: ^0.28.2
