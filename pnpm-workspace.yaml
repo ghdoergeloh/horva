@@ -72,7 +72,7 @@ catalog:
   drizzle-orm: ^0.45.4
   electron: ^44.5.1
   electron-builder: ^26.18.0
-  electron-vite: ^5.0.0
+  electron-vite: ^6.0.0
   esbuild: ^0.28.2
   eslint-plugin-sonarjs: ^4.2.2
   eslint-plugin-turbo: ^2.11.10
