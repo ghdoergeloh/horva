@@ -8,14 +8,19 @@
     "subtitle": "Let's get you set up. This takes about 30 seconds.",
     "nameLabel": "Your name",
     "namePlaceholder": "How should we address you?",
+    "storageLabel": "Where should your data live?",
+    "storageLocal": "On this device",
+    "storageLocalHint": "In {{folder}}. You need no database server.",
+    "storageServer": "On a PostgreSQL server",
+    "storageServerHint": "For example your own server or a Docker container.",
     "databaseUrlLabel": "PostgreSQL connection URL",
-    "databaseUrlHint": "Where your data is stored. Defaults to a local Docker instance.",
+    "databaseUrlHint": "The connection URL of your server.",
     "submit": "Get started",
     "submitting": "Setting up…"
   },
   "bootError": {
-    "title": "Can't connect to the database",
-    "subtitle": "Horva couldn't reach your PostgreSQL instance. Make sure it's running and reachable, then try again.",
+    "title": "Can't open the database",
+    "subtitle": "Horva couldn't open the database. Check the message below, fix the cause, then try again.",
     "retry": "Retry",
     "retrying": "Retrying…"
   },

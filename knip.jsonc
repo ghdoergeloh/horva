@@ -22,6 +22,11 @@
       // node_modules at runtime; no source file imports them directly.
       "ignoreDependencies": ["pg", "@electric-sql/pglite"],
     },
+    "apps/electron": {
+      // External in electron.vite.config.ts, so the bundled @horva/db loads
+      // it (and its WASM files) from node_modules at runtime.
+      "ignoreDependencies": ["@electric-sql/pglite"],
+    },
     "packages/auth": {
       // Loaded by the better-auth CLI (`pnpm -F @horva/auth generate`).
       "entry": ["src/cli-config.ts"],

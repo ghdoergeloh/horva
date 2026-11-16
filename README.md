@@ -17,6 +17,7 @@ Horva is a time tracking suite built around the idea that your day is a sequence
 - [Downloads](#downloads)
 - [Screenshots](#screenshots)
 - [Quick start (users)](#quick-start-users)
+- [Moving the data](#moving-the-data)
 - [Development setup](#development-setup)
 - [Project structure](#project-structure)
 - [Architecture](#architecture)
@@ -34,7 +35,7 @@ Horva is a time tracking suite built around the idea that your day is a sequence
 - **Web frontend** — React 19 + TanStack Router/Query SPA backed by the same API.
 - **CLI** — scriptable access to your data, works both locally and against a remote API.
 - **End-to-end typed** — a shared oRPC contract means the API, web app, and CLI can't drift out of sync.
-- **Self-hosted by default** — bring your own PostgreSQL; no third-party services required.
+- **Self-hosted by default** — the desktop app keeps its data in a local folder, or uses your own PostgreSQL; no third-party services required.
 
 ## Downloads
 
@@ -56,10 +57,35 @@ Prefer to build from source? See [Development setup](#development-setup).
 
 1. Download the desktop app for your platform from the [Releases page](https://github.com/ghdoergeloh/horva/releases/latest).
 2. Install and launch Horva.
-3. On first launch, point the app at your PostgreSQL instance (or use the built-in local database if available on your platform build).
+3. On first launch, choose where your data lives: on this device (a built-in PostgreSQL in the app's data folder, no server needed) or on your own PostgreSQL server. The wizard shows the folder. To move existing data, see [Moving the data](#moving-the-data).
 4. Start tracking — create a project, add tasks, and open a slot.
 
 The desktop app bundles its own renderer; no separate web server is required for local-only usage.
+
+### Moving the data
+
+`pnpm db:copy <from> <to>` copies all data between a PostgreSQL server and
+the local folder, in both directions. It needs a checkout of this
+repository (see [Development setup](#development-setup)). Each side is a
+`postgres://` URL or a folder path. The target must be new or empty.
+
+From a server to the local folder of the desktop app on macOS:
+
+1. Quit Horva. Only one program may open the local folder at a time.
+   While the app runs, the CLI and `db:copy` stop with an error.
+2. Copy the data:
+   ```bash
+   pnpm db:copy postgresql://postgres:postgres@localhost:5432/horva \
+     "$HOME/Library/Application Support/Horva/data"
+   ```
+3. In `~/.config/horva/config.json`, set `databaseUrl` to the file URL of
+   the folder, e.g.
+   `file:///Users/<you>/Library/Application%20Support/Horva/data`.
+   Keep `userId` as it is.
+4. Start Horva.
+
+Back to a server: quit Horva, run `pnpm db:copy` with the folder first and
+the server URL second, and set `databaseUrl` back to the server URL.
 
 ## Development setup
 

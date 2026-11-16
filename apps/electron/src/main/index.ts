@@ -5,10 +5,17 @@ import { app, BrowserWindow, ipcMain, shell } from "electron";
 
 import { seed } from "@horva/core";
 import { readConfig } from "@horva/core/config";
+import { pgliteUrl } from "@horva/db/client";
 
 import { connection, db } from "./db.js";
 import { registerOrpcHandler } from "./orpc/handler.js";
-import { markReady, registerSetupHandlers, setBootError } from "./setup.js";
+import { prepareDatabase } from "./prepare.js";
+import {
+  errorMessage,
+  markReady,
+  registerSetupHandlers,
+  setBootError,
+} from "./setup.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -52,9 +59,13 @@ void app.whenReady().then(async () => {
   // the normal flow; otherwise the renderer shows the wizard on first
   // paint and drives the bootstrap via setup:* IPC.
   registerOrpcHandler(ipcMain, db);
+  const prepare = (url: string) => prepareDatabase(connection, url);
   registerSetupHandlers(ipcMain, {
     db,
     disconnect: () => connection.close(),
+    // The built-in database: a PGlite folder next to the app's other data.
+    localDatabaseUrl: pgliteUrl(path.join(app.getPath("userData"), "data")),
+    prepare,
     async onReady() {
       // Called by setup:complete after the user confirms. By this point
       // DATABASE_URL is set, the user row is ensured. Seed the rest of the
@@ -71,10 +82,11 @@ void app.whenReady().then(async () => {
     // an error screen with retry instead of the app failing to appear.
     process.env["DATABASE_URL"] = cfg.databaseUrl;
     try {
+      await prepare(cfg.databaseUrl);
       await seed(db);
       markReady();
     } catch (err) {
-      setBootError(err instanceof Error ? err.message : String(err));
+      setBootError(errorMessage(err));
     }
   }
 
@@ -83,6 +95,24 @@ void app.whenReady().then(async () => {
   app.on("activate", () => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow();
   });
+});
+
+// Close the database before the app ends, so PGlite writes everything to
+// its folder and frees the lock file. This must happen in before-quit:
+// after will-quit, Electron runs no more timers.
+let closed = false;
+app.on("before-quit", (event) => {
+  if (closed) return;
+  event.preventDefault();
+  void connection
+    .close()
+    .catch((err: unknown) => {
+      console.error("Closing the database failed", err);
+    })
+    .finally(() => {
+      closed = true;
+      app.quit();
+    });
 });
 
 app.on("window-all-closed", () => {

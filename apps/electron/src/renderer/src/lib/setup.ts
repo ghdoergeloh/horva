@@ -5,7 +5,7 @@
 interface SetupStatus {
   ready: boolean;
   error: string | null;
-  defaults: { databaseUrl: string };
+  defaults: { databaseUrl: string; localDatabaseUrl: string };
 }
 
 interface CompleteSetupInput {

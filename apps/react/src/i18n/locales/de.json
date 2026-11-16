@@ -8,14 +8,19 @@
     "subtitle": "Einrichtung in 30 Sekunden.",
     "nameLabel": "Dein Name",
     "namePlaceholder": "Wie sollen wir dich nennen?",
+    "storageLabel": "Wo sollen deine Daten liegen?",
+    "storageLocal": "Auf diesem Gerät",
+    "storageLocalHint": "In {{folder}}. Du brauchst keinen Datenbank-Server.",
+    "storageServer": "Auf einem PostgreSQL-Server",
+    "storageServerHint": "Zum Beispiel ein eigener Server oder ein Docker-Container.",
     "databaseUrlLabel": "PostgreSQL-Verbindungs-URL",
-    "databaseUrlHint": "Wo deine Daten gespeichert werden. Voreingestellt ist eine lokale Docker-Instanz.",
+    "databaseUrlHint": "Die Verbindungs-URL deines Servers.",
     "submit": "Loslegen",
     "submitting": "Einrichten…"
   },
   "bootError": {
-    "title": "Verbindung zur Datenbank fehlgeschlagen",
-    "subtitle": "Horva konnte die PostgreSQL-Instanz nicht erreichen. Stell sicher, dass sie läuft und erreichbar ist, und versuch es dann erneut.",
+    "title": "Datenbank nicht erreichbar",
+    "subtitle": "Horva konnte die Datenbank nicht öffnen. Prüf die Meldung unten, behebe die Ursache und versuch es dann erneut.",
     "retry": "Erneut versuchen",
     "retrying": "Versuche erneut…"
   },

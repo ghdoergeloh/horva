@@ -4,16 +4,20 @@ import { useTranslation } from "react-i18next";
 
 import { Button } from "@horva/ui/Button";
 import { Loader } from "@horva/ui/Logo";
+import { Radio, RadioGroup } from "@horva/ui/RadioGroup";
 import { TextField } from "@horva/ui/TextField";
 
+import type { Storage } from "../lib/storage.js";
 import { ipcErrorMessage } from "../lib/ipc-error.js";
 import { setupBridge } from "../lib/setup.js";
+import { folderOf, initialStorage } from "../lib/storage.js";
 
 type GateState =
   | { kind: "loading" }
   | {
       kind: "needs-setup";
       defaultDatabaseUrl: string;
+      localDatabaseUrl: string;
     }
   | { kind: "error"; message: string }
   | { kind: "ready" };
@@ -38,6 +42,7 @@ export function SetupGate({ children }: SetupGateProps) {
           setState({
             kind: "needs-setup",
             defaultDatabaseUrl: status.defaults.databaseUrl,
+            localDatabaseUrl: status.defaults.localDatabaseUrl,
           });
         }
       })
@@ -79,6 +84,7 @@ export function SetupGate({ children }: SetupGateProps) {
     return (
       <SetupWizard
         defaultDatabaseUrl={state.defaultDatabaseUrl}
+        localDatabaseUrl={state.localDatabaseUrl}
         onDone={() => setState({ kind: "ready" })}
       />
     );
@@ -137,26 +143,33 @@ function SetupError({ message, onRetry }: SetupErrorProps) {
 
 interface SetupWizardProps {
   defaultDatabaseUrl: string;
+  localDatabaseUrl: string;
   onDone: () => void;
 }
 
-function SetupWizard({ defaultDatabaseUrl, onDone }: SetupWizardProps) {
+function SetupWizard({
+  defaultDatabaseUrl,
+  localDatabaseUrl,
+  onDone,
+}: SetupWizardProps) {
   const { t } = useTranslation();
   const [name, setName] = useState("");
-  const [databaseUrl, setDatabaseUrl] = useState(defaultDatabaseUrl);
+  const [initial] = useState(() =>
+    initialStorage(defaultDatabaseUrl, localDatabaseUrl),
+  );
+  const [storage, setStorage] = useState<Storage>(initial.storage);
+  const [serverUrl, setServerUrl] = useState(initial.serverUrl);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const canSubmit = name.trim().length > 0 && databaseUrl.trim().length > 0;
+  const databaseUrl = storage === "local" ? initial.localUrl : serverUrl.trim();
+  const canSubmit = name.trim().length > 0 && databaseUrl.length > 0;
 
   async function handleSubmit() {
     setSubmitting(true);
     setError(null);
     try {
-      await setupBridge.complete({
-        name: name.trim(),
-        databaseUrl: databaseUrl.trim(),
-      });
+      await setupBridge.complete({ name: name.trim(), databaseUrl });
       onDone();
     } catch (err) {
       setError(ipcErrorMessage(err));
@@ -183,14 +196,33 @@ function SetupWizard({ defaultDatabaseUrl, onDone }: SetupWizardProps) {
             placeholder={t("setup.namePlaceholder")}
             className="w-full"
           />
-          <TextField
-            label={t("setup.databaseUrlLabel")}
-            description={t("setup.databaseUrlHint")}
-            value={databaseUrl}
-            onChange={setDatabaseUrl}
-            placeholder="postgresql://…"
-            className="w-full"
-          />
+          <RadioGroup
+            label={t("setup.storageLabel")}
+            value={storage}
+            onChange={(value) => setStorage(value as Storage)}
+          >
+            <Radio
+              value="local"
+              description={t("setup.storageLocalHint", {
+                folder: folderOf(initial.localUrl),
+              })}
+            >
+              {t("setup.storageLocal")}
+            </Radio>
+            <Radio value="server" description={t("setup.storageServerHint")}>
+              {t("setup.storageServer")}
+            </Radio>
+          </RadioGroup>
+          {storage === "server" && (
+            <TextField
+              label={t("setup.databaseUrlLabel")}
+              description={t("setup.databaseUrlHint")}
+              value={serverUrl}
+              onChange={setServerUrl}
+              placeholder="postgresql://user:password@host:5432/horva"
+              className="w-full"
+            />
+          )}
         </div>
 
         {error && (
