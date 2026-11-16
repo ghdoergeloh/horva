@@ -189,6 +189,17 @@ describe("copyDatabase", () => {
     await expectSameData(source.db, target.db);
   });
 
+  it("accepts a migration recorded twice", async () => {
+    const source = await database();
+    const target = await database();
+    await source.db.execute(sql`
+      insert into drizzle.__drizzle_migrations (hash, created_at)
+      select hash, created_at from drizzle.__drizzle_migrations
+      order by id limit 1`);
+
+    await copyDatabase(source.db, target.db);
+  });
+
   it("reads the source in one read-only snapshot", async () => {
     const source = await database();
     const target = await database();

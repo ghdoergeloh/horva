@@ -1,3 +1,5 @@
+import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
 import { PGlite } from "@electric-sql/pglite";
 import { readMigrationFiles } from "drizzle-orm/migrator";
 import { drizzle } from "drizzle-orm/pglite";
@@ -5,8 +7,9 @@ import { afterEach, describe, expect, it } from "vitest";
 
 import type { Database } from "./client";
 import { sql } from "./index";
-import { migrateDatabase, migrationsFolder } from "./migrate";
+import { MISDATED, migrateDatabase, migrationsFolder } from "./migrate";
 import * as schema from "./schema";
+import { project } from "./schema";
 import { createTestDatabase } from "./testing";
 
 const files = readMigrationFiles({ migrationsFolder: migrationsFolder() });
@@ -70,6 +73,13 @@ describe("migrateDatabase", () => {
       sql`alter table task rename column scheduled_at to scheduled_date`,
     );
     await db.execute(sql`alter table task drop column recurrence_rule`);
+    const [p] = await db
+      .insert(project)
+      .values({ name: "P" })
+      .returning({ id: project.id });
+    await db.execute(
+      sql`insert into task (name, project_id, scheduled_date) values ('T', ${p?.id}, '2026-01-05 00:00')`,
+    );
 
     await migrateDatabase({ db });
 
@@ -78,6 +88,31 @@ describe("migrateDatabase", () => {
       expect.arrayContaining(["scheduled_at", "recurrence_rule"]),
     );
     expect(await taskColumns(db)).not.toContain("scheduled_date");
+    // 0002 moves tasks planned at midnight to 10:00.
+    const result = (await db.execute(
+      sql`select scheduled_at::text as at from task`,
+    )) as { rows: { at: string }[] };
+    expect(result.rows).toEqual([{ at: "2026-01-05 10:00:00" }]);
+  });
+
+  it("refuses a 0002 that is only half in place", async () => {
+    const db = await migrated();
+    await forget(db, RECURRING);
+    await db.execute(sql`alter table task drop column recurrence_rule`);
+
+    await expect(migrateDatabase({ db })).rejects.toThrow(
+      /0002_recurring_activities is only partly applied/,
+    );
+    expect(await recorded(db)).not.toContain(files[RECURRING]?.hash);
+  });
+
+  it("records a skipped migration once when two runs meet", async () => {
+    const db = await migrated();
+    await forget(db, RECURRING);
+
+    await Promise.all([migrateDatabase({ db }), migrateDatabase({ db })]);
+
+    expect(await recorded(db)).toEqual(allHashes);
   });
 
   it("migrates a database that stopped at 0001", async () => {
@@ -108,5 +143,21 @@ describe("migrateDatabase", () => {
     await expect(migrateDatabase({ db })).rejects.toThrow(
       /0004_task_priority was skipped/,
     );
+  });
+});
+
+describe("migration journal", () => {
+  // drizzle skips a migration dated before the last one a database has.
+  it("dates each migration after the one before, except the known ones", () => {
+    const { entries } = JSON.parse(
+      readFileSync(resolve(migrationsFolder(), "meta/_journal.json"), "utf8"),
+    ) as { entries: { tag: string; when: number }[] };
+    let latest = 0;
+    const misdated: string[] = [];
+    for (const entry of entries) {
+      if (entry.when <= latest) misdated.push(entry.tag);
+      latest = Math.max(latest, entry.when);
+    }
+    expect(misdated).toEqual(Object.keys(MISDATED));
   });
 });

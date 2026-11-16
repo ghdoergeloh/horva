@@ -41,15 +41,42 @@ async function hasColumn(
   return found.length > 0;
 }
 
+/** How much of a migration a database has. */
+type MigrationState = "missing" | "applied" | "partial";
+
 /**
  * Migrations dated before an older one in the journal. drizzle applies only
  * migrations newer than the last one it recorded, so it skips these on a
- * database that was migrated before they came. Each entry tells whether
- * the changes of its migration are still missing.
+ * database that was migrated before they came. Each entry tells how much of
+ * its migration the database has.
+ *
+ * A database that has the changes of 0002 without its journal entry got
+ * them from `drizzle-kit push` or by hand. 0002 is then only recorded: its
+ * data change (tasks at midnight move to 10:00) is not run again.
  */
-const MISDATED: Record<string, (db: Executor) => Promise<boolean>> = {
-  "0002_recurring_activities": (db) => hasColumn(db, "task", "scheduled_date"),
+export const MISDATED: Record<
+  string,
+  (db: Executor) => Promise<MigrationState>
+> = {
+  "0002_recurring_activities": async (db) => {
+    const renamed = await hasColumn(db, "task", "scheduled_at");
+    const added = await hasColumn(db, "task", "recurrence_rule");
+    if (renamed && added) return "applied";
+    if (!renamed && !added) return "missing";
+    return "partial";
+  },
 };
+
+/** Serializes the repair of two runs on the same database. */
+const REPAIR_LOCK = 7_310_002;
+
+async function isRecorded(db: Executor, hash: string): Promise<boolean> {
+  const found = await rows(
+    db,
+    sql`select 1 from drizzle.__drizzle_migrations where hash = ${hash}`,
+  );
+  return found.length > 0;
+}
 
 /**
  * Finds the migrations drizzle skipped (not recorded, but dated before the
@@ -79,15 +106,25 @@ async function repairSkippedMigrations(db: Database): Promise<void> {
   for (const [i, file] of files.entries()) {
     if (recorded.has(file.hash) || file.folderMillis > last) continue;
     const tag = entries[i]?.tag ?? String(i);
-    const missing = MISDATED[tag];
-    if (!missing) {
+    const state = MISDATED[tag];
+    if (!state) {
       throw new Error(
         `Migration ${tag} was skipped: it is dated before a migration ` +
           "the database already has. Add a repair for it to MISDATED.",
       );
     }
     await db.transaction(async (tx) => {
-      if (await missing(tx)) {
+      // Another run may have repaired it meanwhile.
+      await tx.execute(sql`select pg_advisory_xact_lock(${REPAIR_LOCK})`);
+      if (await isRecorded(tx, file.hash)) return;
+      const found = await state(tx);
+      if (found === "partial") {
+        throw new Error(
+          `Migration ${tag} is only partly applied. Complete or undo its ` +
+            "changes by hand, then migrate again.",
+        );
+      }
+      if (found === "missing") {
         for (const statement of file.sql) await tx.execute(sql.raw(statement));
       }
       await tx.execute(
