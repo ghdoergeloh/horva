@@ -35,19 +35,19 @@ describe("inspectDatabase", () => {
       hasSchema: false,
       migrations: "none",
       foreignTables: [],
-      rows: 0,
+      empty: true,
     });
   });
 
-  it("counts the rows of a migrated database", async () => {
+  it("tells an empty migrated database from one with data", async () => {
     const { db } = await migrated();
     expect(await inspectDatabase(db)).toMatchObject({
       hasSchema: true,
       migrations: "latest",
-      rows: 0,
+      empty: true,
     });
-    await db.insert(label).values([{ name: "a" }, { name: "b" }]);
-    expect(await inspectDatabase(db)).toMatchObject({ rows: 2 });
+    await db.insert(label).values({ name: "a" });
+    expect(await inspectDatabase(db)).toMatchObject({ empty: false });
   });
 
   it("tells an older migration from a different one", async () => {

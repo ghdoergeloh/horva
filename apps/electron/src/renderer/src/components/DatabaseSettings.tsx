@@ -24,17 +24,47 @@ export function DatabaseSettings() {
     url: string;
     localDatabaseUrl: string;
   } | null>(null);
+  const [error, setError] = useState<string | null>(null);
   useEffect(() => {
-    void databaseBridge.status().then(setStatus);
+    databaseBridge
+      .status()
+      .then(setStatus)
+      .catch((err: unknown) => setError(ipcErrorMessage(err)));
   }, []);
   const [storage, setStorage] = useState<Storage>("server");
   const [otherUrl, setOtherUrl] = useState("");
   const [checked, setChecked] = useState<Checked>(null);
   const [copy, setCopy] = useState(true);
   const [busy, setBusy] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
-  if (!status) return null;
+  const header = (
+    <div>
+      <h2 className="text-heading text-foreground">
+        {t("databaseSettings.title")}
+      </h2>
+      <p className="text-muted-foreground mt-0.5 text-sm">
+        {t("databaseSettings.description")}
+      </p>
+    </div>
+  );
+  const alert = error && (
+    <p
+      role="alert"
+      className="border-destructive text-destructive rounded-md border p-3 text-sm break-words whitespace-pre-line"
+    >
+      {error}
+    </p>
+  );
+
+  if (!status) {
+    // Shown only when the status cannot be read; loading is quick.
+    return alert ? (
+      <section className="border-border bg-card space-y-4 rounded-lg border p-6 shadow-sm">
+        {header}
+        {alert}
+      </section>
+    ) : null;
+  }
   const usesLocal = status.url === status.localDatabaseUrl;
   // The app's own folder is no choice while it is in use.
   const choice = usesLocal ? "server" : storage;
@@ -66,21 +96,19 @@ export function DatabaseSettings() {
 
   const switchNow = () =>
     run(async () => {
-      await databaseBridge.switch({ url, copy: copy && !!checked?.empty });
+      if (!checked) return;
+      // The database that was checked, whatever the fields show now.
+      await databaseBridge.switch({
+        url: checked.url,
+        copy: copy && checked.empty,
+      });
       // A fresh start of the window: every screen loads the new data.
       window.location.reload();
     });
 
   return (
     <section className="border-border bg-card space-y-4 rounded-lg border p-6 shadow-sm">
-      <div>
-        <h2 className="text-heading text-foreground">
-          {t("databaseSettings.title")}
-        </h2>
-        <p className="text-muted-foreground mt-0.5 text-sm">
-          {t("databaseSettings.description")}
-        </p>
-      </div>
+      {header}
 
       <div>
         <p className="text-body-strong text-foreground">
@@ -145,14 +173,7 @@ export function DatabaseSettings() {
         </div>
       )}
 
-      {error && (
-        <p
-          role="alert"
-          className="border-destructive text-destructive rounded-md border p-3 text-sm break-words whitespace-pre-line"
-        >
-          {error}
-        </p>
-      )}
+      {alert}
 
       <div className="flex flex-wrap items-center gap-3">
         {checked ? (

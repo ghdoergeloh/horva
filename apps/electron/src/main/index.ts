@@ -16,7 +16,7 @@ import {
   registerSetupHandlers,
   setBootError,
 } from "./setup.js";
-import { registerDatabaseHandlers } from "./switch.js";
+import { reconnectDatabase, registerDatabaseHandlers } from "./switch.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -70,18 +70,17 @@ void app.whenReady().then(async () => {
     currentUrl: () => process.env["DATABASE_URL"] ?? "",
     localDatabaseUrl,
     // Closes the database in use and opens the new one, as on a start.
-    async reconnect(url) {
-      await connection.close().catch(() => undefined);
-      process.env["DATABASE_URL"] = url;
-      try {
-        await prepare(url);
-        await seed(db);
-        markReady();
-      } catch (err) {
-        setBootError(errorMessage(err));
-        throw err;
-      }
-    },
+    reconnect: (url) =>
+      reconnectDatabase(connection, url, async () => {
+        try {
+          await prepare(url);
+          await seed(db);
+          markReady();
+        } catch (err) {
+          setBootError(errorMessage(err));
+          throw err;
+        }
+      }),
   });
   registerSetupHandlers(ipcMain, {
     db,

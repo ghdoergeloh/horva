@@ -38,6 +38,16 @@ export function pgliteUrl(dataDir: string): string {
   return pathToFileURL(dataDir).href;
 }
 
+/**
+ * Throws unless `url` is one that {@link createDatabase} opens: a
+ * PostgreSQL URL or the `file:` URL of a folder.
+ */
+export function checkDatabaseUrl(url: string): void {
+  if (!/^(postgres(ql)?:\/\/|file:\/\/\/)/.test(url)) {
+    throw new Error("Database URL must be a postgres:// or file:/// URL");
+  }
+}
+
 /** The URL without its password, for output. */
 export function shownUrl(url: string): string {
   if (isPgliteUrl(url)) return url;

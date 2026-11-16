@@ -13,6 +13,7 @@ import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
 import type { DatabaseConnection } from "./client";
 import {
+  checkDatabaseUrl,
   createDatabase,
   DatabaseLockedError,
   isPgliteUrl,
@@ -42,6 +43,15 @@ function openAt(dataDir: string): DatabaseConnection {
 const ada = { id: "u1", name: "Ada Example", email: "ada@example.test" };
 
 describe("database URLs", () => {
+  it("accepts PostgreSQL and file URLs only", () => {
+    expect(() => checkDatabaseUrl("postgres://h/horva")).not.toThrow();
+    expect(() => checkDatabaseUrl("postgresql://h/horva")).not.toThrow();
+    expect(() => checkDatabaseUrl("file:///data/horva")).not.toThrow();
+    expect(() => checkDatabaseUrl("mysql://h/horva")).toThrow(
+      "Database URL must be a postgres:// or file:/// URL",
+    );
+  });
+
   it("tells file URLs from PostgreSQL URLs", () => {
     expect(isPgliteUrl(pgliteUrl("/tmp/horva"))).toBe(true);
     expect(isPgliteUrl("postgresql://localhost/horva")).toBe(false);

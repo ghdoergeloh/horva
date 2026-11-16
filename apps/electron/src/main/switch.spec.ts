@@ -10,12 +10,15 @@ import { createDatabase, pgliteUrl } from "@horva/db/client";
 import { migrateDatabase } from "@horva/db/migrate";
 import { label, user } from "@horva/db/schema";
 
-import { inspectTarget, switchDatabase } from "./switch";
+import { inspectTarget, reconnectDatabase, switchDatabase } from "./switch";
 
 let dir: string;
 let current: DatabaseConnection;
 const opened: DatabaseConnection[] = [];
-const saved = process.env["XDG_CONFIG_HOME"];
+const saved = {
+  XDG_CONFIG_HOME: process.env["XDG_CONFIG_HOME"],
+  DATABASE_URL: process.env["DATABASE_URL"],
+};
 
 const USER_ID = "u-robin";
 
@@ -34,8 +37,10 @@ beforeEach(async () => {
 afterEach(async () => {
   await Promise.all(opened.splice(0).map((c) => c.close()));
   rmSync(dir, { recursive: true, force: true });
-  if (saved === undefined) delete process.env["XDG_CONFIG_HOME"];
-  else process.env["XDG_CONFIG_HOME"] = saved;
+  for (const [key, value] of Object.entries(saved)) {
+    if (value === undefined) delete process.env[key];
+    else process.env[key] = value;
+  }
 });
 
 function folder(name: string): string {
@@ -218,5 +223,36 @@ describe("switchDatabase", () => {
     ).rejects.toThrow();
     expect(d.reconnect).not.toHaveBeenCalled();
     expect(readConfig()?.databaseUrl).toBe(folder("current"));
+  });
+
+  it("goes back to the database in use when the app cannot start", async () => {
+    const { readConfig } = await import("@horva/core/config");
+    const d = deps();
+    d.reconnect.mockRejectedValueOnce(new Error("no start"));
+    await expect(
+      switchDatabase({ url: folder("new"), copy: true }, d),
+    ).rejects.toThrow("no start");
+    expect(d.reconnect.mock.calls).toEqual([
+      [folder("new")],
+      [folder("current")],
+    ]);
+    expect(readConfig()?.databaseUrl).toBe(folder("current"));
+  });
+});
+
+describe("reconnectDatabase", () => {
+  it("sets the new URL before the old database closes", async () => {
+    process.env["DATABASE_URL"] = "postgresql://old/horva";
+    const seen: string[] = [];
+    const close = vi.fn(() => {
+      seen.push(`close: ${process.env["DATABASE_URL"]}`);
+      return Promise.resolve();
+    });
+    const start = vi.fn(() => {
+      seen.push("start");
+      return Promise.resolve();
+    });
+    await reconnectDatabase({ close }, "postgresql://new/horva", start);
+    expect(seen).toEqual(["close: postgresql://new/horva", "start"]);
   });
 });

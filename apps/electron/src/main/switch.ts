@@ -3,15 +3,18 @@ import type { IpcMain } from "electron";
 import type { Database, DatabaseConnection } from "@horva/db/client";
 import { readConfig, updateConfig } from "@horva/core/config";
 import { eq } from "@horva/db";
-import { createDatabase, isPgliteUrl, shownUrl } from "@horva/db/client";
+import {
+  checkDatabaseUrl,
+  createDatabase,
+  isPgliteUrl,
+  shownUrl,
+} from "@horva/db/client";
 import { copyDatabase } from "@horva/db/copy";
 import { inspectDatabase } from "@horva/db/inspect";
 import { migrateDatabase } from "@horva/db/migrate";
 import { user } from "@horva/db/schema";
 
 import { errorMessage } from "./setup.js";
-
-const DATABASE_URL_PATTERN = /^(postgres(ql)?:\/\/|file:\/\/\/)/;
 
 /** What the settings show about the database in use. */
 interface DatabaseStatus {
@@ -44,11 +47,11 @@ export interface SwitchDeps {
 
 async function withConnection<T>(
   url: string,
-  use: (connection: DatabaseConnection) => Promise<T>,
+  run: (connection: DatabaseConnection) => Promise<T>,
 ): Promise<T> {
   const connection = createDatabase(url, { maxConnections: 1 });
   try {
-    return await use(connection);
+    return await run(connection);
   } finally {
     await connection.close().catch(() => undefined);
   }
@@ -87,13 +90,11 @@ async function check(
       "The database is on an older version of Horva. Run `horva migrate` for it first.",
     );
   }
-  return { empty: state.rows === 0, migrate: state.migrations !== "latest" };
+  return { empty: state.empty, migrate: state.migrations !== "latest" };
 }
 
 function checkUrl(url: string, currentUrl: string): void {
-  if (!DATABASE_URL_PATTERN.test(url)) {
-    throw new Error("Database URL must be a postgres:// or file:/// URL");
-  }
+  checkDatabaseUrl(url);
   if (url === currentUrl) {
     throw new Error("Horva already uses this database.");
   }
@@ -113,8 +114,8 @@ export async function inspectTarget(
  * Lets the app use the database at `url` from now on. With `copy`, the data
  * of the database in use goes into the target first; the target must be
  * empty. The database in use keeps its data either way. config.json gets
- * the new URL only after the target is ready, so a failed switch changes
- * nothing.
+ * the new URL only after the target is ready. When the app cannot start
+ * with the target, it goes back to the database in use.
  */
 export async function switchDatabase(
   { url, copy }: SwitchInput,
@@ -147,7 +148,29 @@ export async function switchDatabase(
   });
 
   updateConfig({ databaseUrl: url });
-  await reconnect(url);
+  try {
+    await reconnect(url);
+  } catch (err) {
+    updateConfig({ databaseUrl: currentUrl });
+    // If this fails too, the app shows its start error with a retry.
+    await reconnect(currentUrl).catch(() => undefined);
+    throw err;
+  }
+}
+
+/**
+ * Points the lazy `connection` of the app to `url` and starts the app with
+ * it. The URL changes before the old database closes: a query that comes
+ * in meanwhile must open the new database, not the old one again.
+ */
+export async function reconnectDatabase(
+  connection: Pick<DatabaseConnection, "close">,
+  url: string,
+  start: () => Promise<void>,
+): Promise<void> {
+  process.env["DATABASE_URL"] = url;
+  await connection.close().catch(() => undefined);
+  await start();
 }
 
 /** The IPC channels of the database section in the settings. */

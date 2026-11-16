@@ -17,12 +17,12 @@ export interface DatabaseInspection {
   migrations: "none" | "latest" | "behind" | "other";
   /** Tables in the `public` schema that are not Horva's. */
   foreignTables: string[];
-  /** All rows in the tables of Horva. */
-  rows: number;
+  /** No table of Horva holds a row. */
+  empty: boolean;
 }
 
 /** The hashes of the migrations of this version, oldest first. */
-export function latestMigrationHashes(): string[] {
+function latestMigrationHashes(): string[] {
   return readMigrationFiles({ migrationsFolder: migrationsFolder() }).map(
     (migration) => migration.hash,
   );
@@ -55,13 +55,16 @@ export async function inspectDatabase(
   const tables = await publicTables(db);
   const present = tables.filter((table) => ours.has(table));
 
-  let rows = 0;
+  let empty = true;
   for (const table of present) {
-    const [count] = await queryRows<{ count: number }>(
+    const [row] = await queryRows(
       db,
-      sql`select count(*)::int as count from ${sql.identifier(table)}`,
+      sql`select 1 from ${sql.identifier(table)} limit 1`,
     );
-    rows += count?.count ?? 0;
+    if (row) {
+      empty = false;
+      break;
+    }
   }
 
   const applied = await appliedMigrations(db);
@@ -77,6 +80,6 @@ export async function inspectDatabase(
     hasSchema: present.length > 0,
     migrations,
     foreignTables: tables.filter((table) => !ours.has(table)),
-    rows,
+    empty,
   };
 }
