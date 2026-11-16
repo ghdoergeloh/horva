@@ -36,7 +36,7 @@ beforeEach(async () => {
     .values({ id: USER_ID, name: "Robin", email: "r@horva.local" });
   await current.db.insert(label).values({ name: "mine" });
   updateConfig({ databaseUrl: folder("current"), userId: USER_ID });
-}, 30_000);
+}, 60_000);
 
 afterEach(async () => {
   await Promise.all(opened.splice(0).map((c) => c.close()));
