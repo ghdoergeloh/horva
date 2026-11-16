@@ -12,6 +12,7 @@ import type {
   TimeFormat,
 } from "#/contexts/SettingsContext.js";
 import { MocoSettings } from "#/components/MocoSettings.js";
+import { useAppSlots } from "#/contexts/AppSlotsContext.js";
 import { useSettings } from "#/contexts/SettingsContext.js";
 import i18n, { setLanguage } from "#/i18n/index.js";
 
@@ -72,6 +73,7 @@ function Segmented<T extends string>({
 function Settings() {
   const { t } = useTranslation();
   const { timeFormat, setTimeFormat, theme, setTheme } = useSettings();
+  const slots = useAppSlots();
 
   return (
     <div className="mx-auto max-w-2xl space-y-6">
@@ -134,6 +136,7 @@ function Settings() {
       </section>
 
       <MocoSettings />
+      {slots.settings}
     </div>
   );
 }

@@ -39,6 +39,24 @@ export function pgliteUrl(dataDir: string): string {
 }
 
 /**
+ * Throws unless `url` is one that {@link createDatabase} opens: a
+ * PostgreSQL URL or the `file:` URL of a folder.
+ */
+export function checkDatabaseUrl(url: string): void {
+  if (!/^(postgres(ql)?:\/\/|file:\/\/\/)/.test(url)) {
+    throw new Error("Database URL must be a postgres:// or file:/// URL");
+  }
+}
+
+/** The URL without its password, for output. */
+export function shownUrl(url: string): string {
+  if (isPgliteUrl(url)) return url;
+  const parsed = new URL(url);
+  if (parsed.password) parsed.password = "***";
+  return parsed.toString();
+}
+
+/**
  * Opens the database at `url`:
  *
  * - `postgres://` or `postgresql://`: a connection pool. The pool connects

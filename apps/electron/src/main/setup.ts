@@ -5,9 +5,9 @@ import type { Database } from "@horva/db/client";
 import { seed } from "@horva/core";
 import { readConfig, updateConfig } from "@horva/core/config";
 import { eq } from "@horva/db";
+import { checkDatabaseUrl } from "@horva/db/client";
 import { user } from "@horva/db/schema";
 
-const DATABASE_URL_PATTERN = /^(postgres(ql)?:\/\/|file:\/\/\/)/;
 const LOCAL_USER_EMAIL_SUFFIX = "@horva.local";
 
 interface SetupStatus {
@@ -56,7 +56,9 @@ export function markReady(): void {
   bootError = null;
 }
 
+/** The app cannot use its database; the renderer shows `message`. */
 export function setBootError(message: string): void {
+  isReady = false;
   bootError = message;
 }
 
@@ -117,9 +119,7 @@ export function registerSetupHandlers(
     async (_e, input: CompleteSetupInput): Promise<void> => {
       const trimmedName = input.name.trim();
       if (!trimmedName) throw new Error("Display name is required");
-      if (!DATABASE_URL_PATTERN.test(input.databaseUrl)) {
-        throw new Error("Database URL must be a postgres:// or file:/// URL");
-      }
+      checkDatabaseUrl(input.databaseUrl);
 
       // An earlier try with a wrong URL may have opened a pool. Close it, so
       // the first query below connects to this URL. A database that failed

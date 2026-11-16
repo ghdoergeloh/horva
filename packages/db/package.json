@@ -8,6 +8,8 @@
     "./client": "./src/client.ts",
     "./lazy": "./src/lazy.ts",
     "./schema": "./src/schema/index.ts",
+    "./inspect": "./src/inspect.ts",
+    "./copy": "./src/copy.ts",
     "./migrate": "./src/migrate.ts",
     "./testing": "./src/testing.ts"
   },

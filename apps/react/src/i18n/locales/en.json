@@ -24,6 +24,24 @@
     "retry": "Retry",
     "retrying": "Retrying…"
   },
+  "databaseSettings": {
+    "title": "Database",
+    "description": "Where Horva keeps your data. You can switch at any time.",
+    "current": "In use",
+    "target": "New database",
+    "localHint": "The app's folder: {{folder}}.",
+    "other": "Another database",
+    "otherHint": "A PostgreSQL server or another folder.",
+    "urlLabel": "Connection URL",
+    "urlHint": "postgresql://… for a server, file:///… for a folder.",
+    "check": "Check",
+    "empty": "The database is empty.",
+    "hasData": "The database already holds data. Horva then shows that data. Your current data stays in the old database.",
+    "copy": "Take my data along",
+    "copyHint": "Copies all projects, tasks and times. The old database keeps them too.",
+    "switch": "Switch",
+    "cancel": "Cancel"
+  },
   "auth": {
     "signInTitle": "Sign in",
     "signInSubtitle": "Welcome back.",

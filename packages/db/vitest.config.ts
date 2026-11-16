@@ -6,8 +6,9 @@ export default mergeConfig(
   viteConfig,
   defineConfig({
     test: {
-      // Migrating PGlite takes seconds on a busy machine.
-      testTimeout: 30_000,
+      // Migrating a PGlite folder takes up to half a minute on a CI runner
+      // that runs the tests of several packages at once.
+      testTimeout: 60_000,
       coverage: {
         // Fixed floors below the measured values. Raise them by hand. They
         // hold without TEST_DATABASE_URL, where postgres.spec.ts is skipped.

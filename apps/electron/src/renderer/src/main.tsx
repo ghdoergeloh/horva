@@ -9,6 +9,7 @@ import {
   setOrpcLink,
 } from "@horva/react";
 
+import { DatabaseSettings } from "./components/DatabaseSettings.js";
 import { SetupGate } from "./components/SetupGate.js";
 import { createMessagePortLink } from "./lib/messagePortLink.js";
 
@@ -31,6 +32,7 @@ createRoot(root).render(
     <App
       router={router}
       gate={(children) => <SetupGate>{children}</SetupGate>}
+      slots={{ settings: <DatabaseSettings /> }}
     />
   </StrictMode>,
 );

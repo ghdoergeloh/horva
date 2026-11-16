@@ -45,7 +45,7 @@ function tablesInInsertOrder(): PgTable[] {
  * The rows of a raw query. Both drivers (node-postgres and PGlite) return
  * them as `rows`; the driver-independent `Database` type does not know that.
  */
-async function queryRows<T>(
+export async function queryRows<T>(
   db: Pick<Database, "execute">,
   query: SQL,
 ): Promise<T[]> {
