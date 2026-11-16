@@ -1,13 +1,12 @@
 import { existsSync } from "node:fs";
 import { isAbsolute, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import { readMigrationFiles } from "drizzle-orm/migrator";
 
 import type { DatabaseConnection } from "./client.js";
-import { createDatabase, isPgliteUrl, pgliteUrl } from "./client.js";
-import { appTableNames, copyDatabase, migrationHashes } from "./copy.js";
-import { sql } from "./index.js";
-import { migrateDatabase, migrationsFolder } from "./migrate.js";
+import { createDatabase, isPgliteUrl, pgliteUrl, shownUrl } from "./client.js";
+import { copyDatabase } from "./copy.js";
+import { inspectDatabase } from "./inspect.js";
+import { migrateDatabase } from "./migrate.js";
 
 /** A URL as given, or a folder path (relative to `base`) as a `file:` URL. */
 export function toDatabaseUrl(input: string, base: string): string {
@@ -15,22 +14,6 @@ export function toDatabaseUrl(input: string, base: string): string {
     return input;
   }
   return pgliteUrl(isAbsolute(input) ? input : resolve(base, input));
-}
-
-/** The URL without its password, for output. */
-export function shownUrl(url: string): string {
-  if (isPgliteUrl(url)) return url;
-  const parsed = new URL(url);
-  if (parsed.password) parsed.password = "***";
-  return parsed.toString();
-}
-
-async function publicTables(connection: DatabaseConnection): Promise<string[]> {
-  const result = (await connection.db.execute(
-    sql`select table_name from information_schema.tables
-        where table_schema = 'public'`,
-  )) as { rows: { table_name: string }[] };
-  return result.rows.map((row) => row.table_name);
 }
 
 /**
@@ -41,21 +24,19 @@ async function checkBeforeMigration(
   source: DatabaseConnection,
   target: DatabaseConnection,
 ): Promise<void> {
-  const latest = readMigrationFiles({ migrationsFolder: migrationsFolder() })
-    .map((migration) => migration.hash)
-    .join();
-  const applied = await migrationHashes(source.db).catch(() => []);
-  if (applied.join() !== latest) {
+  const [from, to] = await Promise.all([
+    inspectDatabase(source.db),
+    inspectDatabase(target.db),
+  ]);
+  if (from.migrations !== "latest") {
     throw new Error(
       "The source database is not on the latest migration. " +
         "Start the app with it once, or run `pnpm db:migrate`, then try again.",
     );
   }
-  const ours = new Set(appTableNames());
-  const foreign = (await publicTables(target)).filter((t) => !ours.has(t));
-  if (foreign.length > 0) {
+  if (to.foreignTables.length > 0) {
     throw new Error(
-      `The target database has tables of another app (${foreign.join(", ")}).`,
+      `The target database has tables of another app (${to.foreignTables.join(", ")}).`,
     );
   }
 }

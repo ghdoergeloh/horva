@@ -38,6 +38,14 @@ export function pgliteUrl(dataDir: string): string {
   return pathToFileURL(dataDir).href;
 }
 
+/** The URL without its password, for output. */
+export function shownUrl(url: string): string {
+  if (isPgliteUrl(url)) return url;
+  const parsed = new URL(url);
+  if (parsed.password) parsed.password = "***";
+  return parsed.toString();
+}
+
 /**
  * Opens the database at `url`:
  *

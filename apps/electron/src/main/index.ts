@@ -16,6 +16,7 @@ import {
   registerSetupHandlers,
   setBootError,
 } from "./setup.js";
+import { registerDatabaseHandlers } from "./switch.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -60,11 +61,32 @@ void app.whenReady().then(async () => {
   // paint and drives the bootstrap via setup:* IPC.
   registerOrpcHandler(ipcMain, db);
   const prepare = (url: string) => prepareDatabase(connection, url);
+  // The built-in database: a PGlite folder next to the app's other data.
+  const localDatabaseUrl = pgliteUrl(
+    path.join(app.getPath("userData"), "data"),
+  );
+  registerDatabaseHandlers(ipcMain, {
+    db,
+    currentUrl: () => process.env["DATABASE_URL"] ?? "",
+    localDatabaseUrl,
+    // Closes the database in use and opens the new one, as on a start.
+    async reconnect(url) {
+      await connection.close().catch(() => undefined);
+      process.env["DATABASE_URL"] = url;
+      try {
+        await prepare(url);
+        await seed(db);
+        markReady();
+      } catch (err) {
+        setBootError(errorMessage(err));
+        throw err;
+      }
+    },
+  });
   registerSetupHandlers(ipcMain, {
     db,
     disconnect: () => connection.close(),
-    // The built-in database: a PGlite folder next to the app's other data.
-    localDatabaseUrl: pgliteUrl(path.join(app.getPath("userData"), "data")),
+    localDatabaseUrl,
     prepare,
     async onReady() {
       // Called by setup:complete after the user confirms. By this point

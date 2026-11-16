@@ -25,6 +25,26 @@ const setup = {
 
 contextBridge.exposeInMainWorld("setup", setup);
 
+// The database section of the settings: check a database and switch to it.
+interface SwitchInput {
+  url: string;
+  copy: boolean;
+}
+
+const database = {
+  status: (): Promise<{ url: string; localDatabaseUrl: string }> =>
+    ipcRenderer.invoke("database:status") as Promise<{
+      url: string;
+      localDatabaseUrl: string;
+    }>,
+  inspect: (url: string): Promise<{ empty: boolean }> =>
+    ipcRenderer.invoke("database:inspect", url) as Promise<{ empty: boolean }>,
+  switch: (input: SwitchInput): Promise<void> =>
+    ipcRenderer.invoke("database:switch", input) as Promise<void>,
+};
+
+contextBridge.exposeInMainWorld("database", database);
+
 // Forward MessagePort handshake from renderer to main for oRPC transport.
 // The renderer creates a MessageChannel and posts "orpc:init" with one port
 // to the window; we relay that port over ipcRenderer so the main process

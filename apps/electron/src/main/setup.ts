@@ -56,7 +56,9 @@ export function markReady(): void {
   bootError = null;
 }
 
+/** The app cannot use its database; the renderer shows `message`. */
 export function setBootError(message: string): void {
+  isReady = false;
   bootError = message;
 }
 

@@ -24,6 +24,24 @@
     "retry": "Erneut versuchen",
     "retrying": "Versuche erneut…"
   },
+  "databaseSettings": {
+    "title": "Datenbank",
+    "description": "Wo Horva deine Daten speichert. Du kannst jederzeit wechseln.",
+    "current": "Im Moment",
+    "target": "Neue Datenbank",
+    "localHint": "Der Ordner der App: {{folder}}.",
+    "other": "Eine andere Datenbank",
+    "otherHint": "Ein PostgreSQL-Server oder ein anderer Ordner.",
+    "urlLabel": "Verbindungs-URL",
+    "urlHint": "postgresql://… für einen Server, file:///… für einen Ordner.",
+    "check": "Prüfen",
+    "empty": "Die Datenbank ist leer.",
+    "hasData": "Die Datenbank enthält schon Daten. Horva zeigt dann diese Daten. Deine jetzigen Daten bleiben in der bisherigen Datenbank.",
+    "copy": "Meine Daten mitnehmen",
+    "copyHint": "Kopiert alle Projekte, Aufgaben und Zeiten. Die bisherige Datenbank behält sie auch.",
+    "switch": "Wechseln",
+    "cancel": "Abbrechen"
+  },
   "auth": {
     "signInTitle": "Anmelden",
     "signInSubtitle": "Willkommen zurück.",

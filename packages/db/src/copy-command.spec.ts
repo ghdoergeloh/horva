@@ -4,7 +4,8 @@ import { join } from "node:path";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
 import { createDatabase, pgliteUrl } from "./client";
-import { runCopy, shownUrl, toDatabaseUrl } from "./copy-command";
+import { shownUrl } from "./client";
+import { runCopy, toDatabaseUrl } from "./copy-command";
 import { sql } from "./index";
 import { migrateDatabase } from "./migrate";
 import { label } from "./schema";

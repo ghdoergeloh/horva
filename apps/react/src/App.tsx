@@ -4,7 +4,9 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { RouterProvider } from "@tanstack/react-router";
 import { I18nProvider } from "react-aria-components";
 
+import type { AppSlots } from "#/contexts/AppSlotsContext.js";
 import type { AppRouter } from "#/router.js";
+import { AppSlotsProvider } from "#/contexts/AppSlotsContext.js";
 import i18n from "#/i18n/index.js";
 import { ensureValidLocalTimeZone } from "#/lib/timeZone.js";
 import { queryClient } from "#/router.js";
@@ -24,9 +26,11 @@ interface AppProps {
    * setup wizard in Electron.
    */
   gate: (children: ReactNode) => ReactNode;
+  /** Parts only this host adds, see {@link AppSlots}. */
+  slots?: AppSlots;
 }
 
-export function App({ router, gate }: AppProps) {
+export function App({ router, gate, slots = {} }: AppProps) {
   const [locale, setLocale] = useState(
     LOCALE_MAP[i18n.language] ?? i18n.language,
   );
@@ -46,7 +50,9 @@ export function App({ router, gate }: AppProps) {
 
   return (
     <I18nProvider locale={locale}>
-      <QueryClientProvider client={queryClient}>{gated}</QueryClientProvider>
+      <QueryClientProvider client={queryClient}>
+        <AppSlotsProvider value={slots}>{gated}</AppSlotsProvider>
+      </QueryClientProvider>
     </I18nProvider>
   );
 }
