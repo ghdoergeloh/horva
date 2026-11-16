@@ -126,6 +126,7 @@ pnpm db:generate          # Generate a migration from the schema
 pnpm db:migrate           # Apply the migrations
 pnpm db:push              # Push the schema without a migration (experiments only)
 pnpm db:studio            # Open Drizzle Studio
+pnpm db:copy <from> <to>  # Copy all data, e.g. PostgreSQL → PGlite folder and back
 
 # Electron desktop app
 pnpm -F @horva/electron-app dev       # Dev mode

@@ -13,6 +13,7 @@
   },
   "scripts": {
     "clean": "git clean -xdf .cache .turbo dist node_modules",
+    "copy": "tsx scripts/copy-database.ts",
     "generate": "pnpm with-env drizzle-kit generate",
     "migrate": "pnpm with-env drizzle-kit migrate",
     "push": "pnpm with-env drizzle-kit push",
@@ -23,16 +24,17 @@
     "with-env": "dotenv -e ../../.env --"
   },
   "dependencies": {
+    "@electric-sql/pglite": "catalog:",
     "drizzle-orm": "catalog:",
     "pg": "catalog:"
   },
   "devDependencies": {
-    "@electric-sql/pglite": "catalog:",
     "@horva/tsconfig": "workspace:*",
     "@horva/vitest": "workspace:*",
     "@types/node": "catalog:",
     "@types/pg": "catalog:",
     "drizzle-kit": "catalog:",
+    "tsx": "catalog:",
     "typescript": "catalog:",
     "vitest": "catalog:"
   }

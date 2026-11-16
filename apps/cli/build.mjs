@@ -7,6 +7,8 @@ const watchMode = process.argv.includes("--watch");
 // Bundle workspace packages (@horva/*) inline; keep third-party deps external
 // so they are resolved from node_modules at runtime.
 const thirdPartyExternal = [
+  // Loads its WASM files next to its own module.
+  "@electric-sql/pglite",
   "@inquirer/prompts",
   "chalk",
   "commander",

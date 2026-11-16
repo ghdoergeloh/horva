@@ -31,7 +31,11 @@ const Raw = z.object({
     .enum(["development", "test", "production"])
     .default("development"),
   API_PORT: z.coerce.number().int().positive().default(3000),
-  DATABASE_URL: z.string().min(1),
+  // The API serves many users at once; an embedded PGlite (`file:` URL)
+  // has one connection and fits the desktop app only.
+  DATABASE_URL: z
+    .string()
+    .regex(/^postgres(ql)?:\/\//, "must be a postgres:// URL"),
   BETTER_AUTH_SECRET: z.string().min(32),
   BETTER_AUTH_URL: z.url(),
   TRUSTED_ORIGINS: origins,

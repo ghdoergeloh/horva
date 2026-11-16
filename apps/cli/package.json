@@ -19,6 +19,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@electric-sql/pglite": "catalog:",
     "@horva/core": "workspace:*",
     "@horva/db": "workspace:*",
     "@inquirer/prompts": "catalog:",

@@ -29,6 +29,15 @@ describe("loadEnv", () => {
     ).toThrow(/DATABASE_URL[\s\S]*BETTER_AUTH_SECRET[\s\S]*BETTER_AUTH_URL/);
   });
 
+  it("accepts only a PostgreSQL server as database", () => {
+    expect(() =>
+      loadEnv({ ...minimal, DATABASE_URL: "file:///var/horva/data" }),
+    ).toThrow(/DATABASE_URL/);
+    expect(
+      loadEnv({ ...minimal, DATABASE_URL: "postgres://db/app" }).databaseUrl,
+    ).toBe("postgres://db/app");
+  });
+
   it("splits the trusted origins and checks each one", () => {
     expect(
       loadEnv({
