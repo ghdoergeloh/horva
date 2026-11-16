@@ -21,7 +21,7 @@ catalog:
   "@axe-core/playwright": ^4.14.0
   "@commitlint/cli": ^21.2.4
   "@commitlint/config-conventional": ^21.2.4
-  "@commitlint/load": ^21.2.3
+  "@commitlint/load": ^21.2.4
   "@dnd-kit/core": ^6.3.1
   "@dnd-kit/sortable": ^10.0.0
   "@dnd-kit/utilities": ^3.2.2
@@ -39,12 +39,12 @@ catalog:
   # Exact: Playwright and the Vitest browser tests share one Chromium build.
   "@playwright/test": 1.64.0
   # Exact versions: `email dev` requires @react-email/ui to match react-email.
-  "@react-email/ui": 6.11.6
+  "@react-email/ui": 6.11.8
   "@storybook/addon-a11y": ^10.6.5
   "@storybook/addon-docs": ^10.6.5
   "@storybook/react-vite": ^10.6.5
-  "@tailwindcss/postcss": ^4.3.3
-  "@tailwindcss/vite": ^4.3.3
+  "@tailwindcss/postcss": ^4.3.5
+  "@tailwindcss/vite": ^4.3.5
   "@tanstack/react-query": ^5.105.2
   "@tanstack/react-router": ^1.170.46
   "@tanstack/router-plugin": ^1.168.48
@@ -63,7 +63,7 @@ catalog:
   axe-core: ^4.13.0
   better-auth: ^1.7.15
   chalk: ^6.0.1
-  commander: ^15.0.0
+  commander: ^15.1.0
   culori: ^4.0.2
   dependency-cruiser: ^18.7.1
   dotenv: ^18.0.9
@@ -84,7 +84,7 @@ catalog:
   lint-staged: ^17.6.0
   lucide-react: ^1.66.0
   nodemailer: ^10.3.1
-  oxfmt: ^0.75.0
+  oxfmt: ^0.77.0
   oxlint: ^1.90.0
   oxlint-tsgolint: ^7.0.2005
   pg: ^8.23.1
@@ -92,7 +92,7 @@ catalog:
   playwright: 1.64.0
   react-aria: ^3.53.1
   react-aria-components: ^1.22.1
-  react-email: 6.11.6
+  react-email: 6.11.8
   react-i18next: ^17.1.11
   rrule: ^2.8.1
   sherif: ^1.13.0
