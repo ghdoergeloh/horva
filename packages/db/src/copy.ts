@@ -96,10 +96,17 @@ export async function copyDatabase(
         migrationHashes(read),
         migrationHashes(target),
       ]);
-      if (sourceMigrations.join() !== targetMigrations.join()) {
+      // A repaired migration is recorded later than its place, and a
+      // migration may be recorded twice: compare the sets.
+      const sourceSet = new Set(sourceMigrations);
+      const targetSet = new Set(targetMigrations);
+      if (
+        sourceSet.size !== targetSet.size ||
+        [...sourceSet].some((hash) => !targetSet.has(hash))
+      ) {
         throw new Error(
           "The databases are not on the same migration " +
-            `(source: ${sourceMigrations.length}, target: ${targetMigrations.length}). ` +
+            `(source: ${sourceSet.size}, target: ${targetSet.size}). ` +
             "Migrate both to the latest version first.",
         );
       }

@@ -11,7 +11,7 @@ export interface DatabaseInspection {
   hasSchema: boolean;
   /**
    * The applied migrations compared with the ones of this version:
-   * `none` (no journal), `latest`, `behind` (an older version of them) or
+   * `none` (no journal), `latest`, `behind` (some of them are missing) or
    * `other` (migrations this version does not know).
    */
   migrations: "none" | "latest" | "behind" | "other";
@@ -71,9 +71,13 @@ export async function inspectDatabase(
   const latest = latestMigrationHashes();
   let migrations: DatabaseInspection["migrations"] = "none";
   if (applied !== null && applied.length > 0) {
-    const isPrefix = applied.every((hash, i) => hash === latest[i]);
-    if (!isPrefix) migrations = "other";
-    else migrations = applied.length === latest.length ? "latest" : "behind";
+    // A repaired migration is recorded later than its place: compare the
+    // sets, not the order.
+    const known = new Set(latest);
+    const done = new Set(applied);
+    if (applied.some((hash) => !known.has(hash))) migrations = "other";
+    else
+      migrations = latest.every((hash) => done.has(hash)) ? "latest" : "behind";
   }
 
   return {

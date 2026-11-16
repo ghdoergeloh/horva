@@ -63,6 +63,20 @@ describe("inspectDatabase", () => {
     expect(await inspectDatabase(db)).toMatchObject({ migrations: "other" });
   });
 
+  it("takes the same migrations in another order as the latest", async () => {
+    const { db } = await migrated();
+    // A repaired migration comes last in the journal.
+    await db.execute(sql`
+      with first as (
+        delete from drizzle.__drizzle_migrations
+        where id = (select min(id) from drizzle.__drizzle_migrations)
+        returning hash, created_at
+      )
+      insert into drizzle.__drizzle_migrations (hash, created_at)
+      select hash, created_at from first`);
+    expect(await inspectDatabase(db)).toMatchObject({ migrations: "latest" });
+  });
+
   it("finds Horva tables without a migration journal", async () => {
     const { db } = await migrated();
     await db.execute(sql`drop schema drizzle cascade`);
