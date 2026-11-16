@@ -17,7 +17,7 @@
     "clean": "git clean -xdf .cache .turbo dist node_modules",
     "copy": "tsx scripts/copy-database.ts",
     "generate": "pnpm with-env drizzle-kit generate",
-    "migrate": "pnpm with-env drizzle-kit migrate",
+    "migrate": "pnpm with-env tsx scripts/migrate-database.ts",
     "push": "pnpm with-env drizzle-kit push",
     "studio": "pnpm with-env drizzle-kit studio",
     "test:unit": "vitest run",

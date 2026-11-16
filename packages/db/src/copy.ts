@@ -96,7 +96,12 @@ export async function copyDatabase(
         migrationHashes(read),
         migrationHashes(target),
       ]);
-      if (sourceMigrations.join() !== targetMigrations.join()) {
+      // A repaired migration is recorded later than its place: compare
+      // the sets, not the order.
+      if (
+        [...sourceMigrations].sort().join() !==
+        [...targetMigrations].sort().join()
+      ) {
         throw new Error(
           "The databases are not on the same migration " +
             `(source: ${sourceMigrations.length}, target: ${targetMigrations.length}). ` +

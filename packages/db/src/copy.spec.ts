@@ -171,6 +171,24 @@ describe("copyDatabase", () => {
     );
   });
 
+  it("accepts the same migrations in another order", async () => {
+    const source = await database();
+    const target = await database();
+    // A repaired migration comes last in the journal.
+    await source.db.execute(sql`
+      with first as (
+        delete from drizzle.__drizzle_migrations
+        where id = (select min(id) from drizzle.__drizzle_migrations)
+        returning hash, created_at
+      )
+      insert into drizzle.__drizzle_migrations (hash, created_at)
+      select hash, created_at from first`);
+    await fill(source.db);
+
+    await copyDatabase(source.db, target.db);
+    await expectSameData(source.db, target.db);
+  });
+
   it("reads the source in one read-only snapshot", async () => {
     const source = await database();
     const target = await database();
