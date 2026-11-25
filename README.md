@@ -298,7 +298,7 @@ verify their email address and password reset is on.
 - **Monorepo**: pnpm workspaces + Turborepo
 - **API**: [Hono](https://hono.dev/) + [oRPC](https://orpc.unnoq.com/)
 - **Web**: React 19, Vite, TanStack Router, TanStack Query, Tailwind CSS 4
-- **Desktop**: Electron 44 + electron-vite + electron-builder
+- **Desktop**: Electron + electron-vite + electron-builder
 - **Database**: PostgreSQL + [Drizzle ORM](https://orm.drizzle.team/)
 - **Auth**: [better-auth](https://www.better-auth.com/) with Drizzle adapter
 - **Testing**: Vitest (with PGlite), Storybook story tests in Chromium, Playwright (web and Electron), axe

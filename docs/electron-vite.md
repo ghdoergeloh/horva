@@ -279,6 +279,8 @@ If a workspace package (e.g. `@horva/db` which uses `pg`) triggers a CJS/ESM con
 
 ### `electron.vite.config.ts`
 
+> Since electron-vite 6, `externalizeDepsPlugin` is deprecated. Use the `build.externalizeDeps` option (`build: { externalizeDeps: { exclude: [...] } }`) in `main` and `preload`, as `apps/electron/electron.vite.config.ts` does.
+
 ```ts
 import path from "node:path";
 import tailwindcss from "@tailwindcss/vite";
@@ -610,4 +612,4 @@ apps/electron/
 
 **Reasoning:** The electron-vite + monorepo combination has multiple non-obvious interaction points — the ESM preload `.mjs` requirement, the sandbox/contextIsolation pairing, the dependency externalization strategy for workspace packages, the mandatory `createHashHistory` for TanStack Router, and the `DATABASE_URL` runtime-vs-build-time split. These are exactly the kinds of footguns that trip up fresh implementations and that a skill can reliably steer around.
 
-**Suggested skill scope:** A skill covering `apps/electron/` scaffolding in this specific monorepo — the exact file structure, the `electron.vite.config.ts` template with correct `externalizeDepsPlugin` usage, the preload/contextBridge/IPC handler pattern, the TanStack Router hash history setup, the split tsconfig approach, and the `DATABASE_URL` runtime loading pattern. Should trigger when the user asks to add/modify Electron functionality or IPC channels.
+**Suggested skill scope:** A skill covering `apps/electron/` scaffolding in this specific monorepo — the exact file structure, the `electron.vite.config.ts` template with correct `build.externalizeDeps` usage, the preload/contextBridge/IPC handler pattern, the TanStack Router hash history setup, the split tsconfig approach, and the `DATABASE_URL` runtime loading pattern. Should trigger when the user asks to add/modify Electron functionality or IPC channels.
