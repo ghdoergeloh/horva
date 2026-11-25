@@ -32,8 +32,8 @@ updates:
       - dependency-name: "@types/node"
         update-types:
           - "version-update:semver-major"
-      # TypeScript 7 is a new native compiler. Test all tools with it
-      # before the upgrade.
+      # A TypeScript major can drop the compiler API that tools use
+      # (dependency-cruiser, the checks in tooling/quality). Upgrade by hand.
       - dependency-name: "typescript"
         update-types:
           - "version-update:semver-major"

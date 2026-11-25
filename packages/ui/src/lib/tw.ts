@@ -1,10 +1,14 @@
-import { extendTailwindMerge } from "tailwind-merge";
-import { createTV } from "tailwind-variants";
+import type { TWMergeConfig } from "tailwind-variants/config";
+import { createTV, extendTailwindMerge } from "tailwind-variants/config";
 
 /**
- * The text styles of `tooling/tailwind/theme.css`. Without them,
- * tailwind-merge takes `text-body` for a text color and drops the real
- * color class next to it.
+ * The text styles of `tooling/tailwind/theme.css`. Without them, the
+ * merger takes `text-body` for a text color and drops the real color class
+ * next to it. Custom merge configs need the `tailwind-variants/config` entry.
+ *
+ * The built-in rules of tailwind-variants let a font size remove an earlier
+ * `leading-*`. In Tailwind 4 `leading-*` wins in any order, so both stay.
+ * Only the `text-sm/6` form sets the line height and still replaces it.
  */
 const twMergeConfig = {
   extend: {
@@ -24,9 +28,12 @@ const twMergeConfig = {
       ],
     },
   },
-};
+  override: {
+    conflictingClassGroups: { "font-size": [] },
+  },
+} satisfies TWMergeConfig;
 
-/** tailwind-merge that knows the theme's text styles. */
+/** twMerge that knows the theme's text styles. */
 export const twMerge = extendTailwindMerge(twMergeConfig);
 
 /** tailwind-variants that knows the theme's text styles. */

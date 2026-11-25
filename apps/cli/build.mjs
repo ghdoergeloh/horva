@@ -21,7 +21,7 @@ const options = {
   entryPoints: ["src/index.ts"],
   bundle: true,
   platform: "node",
-  target: "node24",
+  target: "node26",
   format: "esm",
   outfile: "dist/index.js",
   external: thirdPartyExternal,

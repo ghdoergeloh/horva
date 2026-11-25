@@ -91,8 +91,8 @@ the server URL second, and set `databaseUrl` back to the server URL.
 
 ### Prerequisites
 
-- **Node.js** `^24.21.0`
-- **pnpm** `^12.5.1`
+- **Node.js** `^26.13.0`
+- **pnpm** `^12.23.0`
 - **Docker** + Docker Compose (for PostgreSQL and Mailpit)
 
 ### 1. Clone and install

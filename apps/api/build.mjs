@@ -10,7 +10,7 @@ await build({
   outfile: "dist/index.js",
   bundle: true,
   platform: "node",
-  target: "node24",
+  target: "node26",
   format: "esm",
   jsx: "automatic",
   sourcemap: true,
