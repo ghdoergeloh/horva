@@ -9,6 +9,7 @@ import {
 } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
+import { PGlite } from "@electric-sql/pglite";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
 import type { DatabaseConnection } from "./client";
@@ -119,5 +120,20 @@ describe("createDatabase with a file URL (PGlite)", () => {
     expect(() => openAt(dataDir)).toThrow(
       new RegExp(`process ${process.ppid}[\\s\\S]*${dataDir}\\.lock`),
     );
+  });
+});
+
+describe("PGlite version", () => {
+  // Local databases (the desktop app, file: URLs) are PGlite folders made
+  // with PostgreSQL 18. A PGlite with another PostgreSQL major cannot open
+  // them ("PGlite failed to initialize properly"). Changing this number
+  // needs a migration of existing folders first.
+  it("runs PostgreSQL 18, the version of existing local databases", async () => {
+    const pglite = new PGlite();
+    const result = await pglite.query<{ major: number }>(
+      "select current_setting('server_version_num')::int / 10000 as major",
+    );
+    await pglite.close();
+    expect(result.rows[0]?.major).toBe(18);
   });
 });
