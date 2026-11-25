@@ -14,10 +14,10 @@ import {
   DisclosureStateContext,
   Heading,
 } from "react-aria-components";
-import { tv } from "tailwind-variants";
 
 import { composeTailwindRenderProps } from "@repo/ui";
 
+import { tv } from "../lib/tw";
 import { Button } from "./Button";
 
 const disclosure = tv({

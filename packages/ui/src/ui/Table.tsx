@@ -24,10 +24,10 @@ import {
   ResizableTableContainer,
   useTableOptions,
 } from "react-aria-components";
-import { twMerge, tv } from "tailwind-variants";
 
 import { composeTailwindRenderProps, focusRing } from "@repo/ui";
 
+import { twMerge, tv } from "../lib/tw";
 import { Checkbox } from "./Checkbox";
 
 interface TableProps extends Omit<AriaTableProps, "className"> {

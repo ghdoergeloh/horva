@@ -15,10 +15,10 @@ import {
   TagList,
   Text,
 } from "react-aria-components";
-import { twMerge, tv } from "tailwind-variants";
 
 import { focusRing } from "@repo/ui";
 
+import { twMerge, tv } from "../lib/tw";
 import { Description, Label } from "./Field";
 
 const colors = {

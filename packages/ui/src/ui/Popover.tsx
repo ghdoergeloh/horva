@@ -7,7 +7,8 @@ import {
   composeRenderProps,
   OverlayArrow,
 } from "react-aria-components";
-import { tv } from "tailwind-variants";
+
+import { tv } from "../lib/tw";
 
 export interface PopoverProps extends Omit<AriaPopoverProps, "children"> {
   showArrow?: boolean;

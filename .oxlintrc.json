@@ -427,6 +427,36 @@
       "rules": {
         "typescript/no-empty-object-type": "off"
       }
+    },
+    {
+      "files": [
+        "packages/ui/src/**/*.{ts,tsx}",
+        "apps/react/src/**/*.{ts,tsx}"
+      ],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "paths": [
+              {
+                "name": "process",
+                "importNames": ["env"],
+                "message": "Use `import { env } from '~/env'` instead to ensure validated types."
+              },
+              {
+                "name": "tailwind-variants",
+                "message": "Import tv and twMerge from packages/ui/src/lib/tw.ts; it has the merge rules for Tailwind 4."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "files": ["packages/ui/src/lib/tw.ts"],
+      "rules": {
+        "no-restricted-imports": "off"
+      }
     }
   ]
 }

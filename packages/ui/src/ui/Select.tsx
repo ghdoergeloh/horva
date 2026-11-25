@@ -13,11 +13,11 @@ import {
   ListBox,
   SelectValue,
 } from "react-aria-components";
-import { tv } from "tailwind-variants";
 
 import { composeTailwindRenderProps, focusRing } from "@repo/ui";
 
 import type { DropdownSectionProps } from "./ListBox";
+import { tv } from "../lib/tw";
 import { Description, FieldError, Label } from "./Field";
 import { DropdownItem, DropdownSection } from "./ListBox";
 import { Popover } from "./Popover";

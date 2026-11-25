@@ -11,10 +11,10 @@ import {
   CheckboxField,
   composeRenderProps,
 } from "react-aria-components";
-import { tv } from "tailwind-variants";
 
 import { focusRing } from "@repo/ui";
 
+import { tv } from "../lib/tw";
 import { Description, FieldError } from "./Field";
 
 const checkboxStyles = tv({
