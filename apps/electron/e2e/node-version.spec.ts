@@ -2,6 +2,7 @@ import { mkdtemp, readFile, rm } from "node:fs/promises";
 import { createRequire } from "node:module";
 import { tmpdir } from "node:os";
 import path from "node:path";
+import type { ElectronApplication } from "@playwright/test";
 import { _electron as electron, expect, test } from "@playwright/test";
 
 // Needs a build first, see setup-wizard.spec.ts.
@@ -24,15 +25,16 @@ async function typesMajor(): Promise<number> {
 test("type-checks against the Node.js major inside Electron", async () => {
   const configDir = await mkdtemp(path.join(tmpdir(), "horva-e2e-config-"));
   const userDataDir = await mkdtemp(path.join(tmpdir(), "horva-e2e-userdata-"));
-  const app = await electron.launch({
-    args: [MAIN_ENTRY, `--user-data-dir=${userDataDir}`, "--no-sandbox"],
-    env: { ...process.env, XDG_CONFIG_HOME: configDir },
-  });
+  let app: ElectronApplication | undefined;
   try {
+    app = await electron.launch({
+      args: [MAIN_ENTRY, `--user-data-dir=${userDataDir}`, "--no-sandbox"],
+      env: { ...process.env, XDG_CONFIG_HOME: configDir },
+    });
     const nodeVersion = await app.evaluate(() => process.versions.node);
     expect(Number(nodeVersion.split(".")[0])).toBe(await typesMajor());
   } finally {
-    await app.close();
+    await app?.close();
     await rm(configDir, { recursive: true, force: true });
     await rm(userDataDir, { recursive: true, force: true });
   }
