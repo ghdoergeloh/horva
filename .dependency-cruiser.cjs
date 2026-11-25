@@ -48,17 +48,34 @@ module.exports = {
       from: { path: "^packages/ui/" },
       to: { path: "^packages/(auth|core|db|transactional)/" },
     },
+    {
+      name: "tailwind-variants-only-in-tw",
+      severity: "error",
+      comment:
+        "Import tv and twMerge from packages/ui/src/lib/tw.ts. It has the merge " +
+        "rules for Tailwind 4; every other entry of tailwind-variants drops a " +
+        "leading-* next to a later font size. tailwind-merge does not know the " +
+        "text styles of the theme.",
+      from: {
+        path: "^(packages/ui|apps/react)/src/",
+        pathNot: "^packages/ui/src/lib/tw\\.ts$",
+      },
+      to: {
+        path: "(^|/)node_modules/tailwind-(merge|variants)/|^tailwind-(merge|variants)(/|$)",
+      },
+    },
   ],
   options: {
     doNotFollow: {
       path: "node_modules",
     },
     exclude: {
+      // Paths of the workspace only: dependencies in node_modules (which
+      // often live in a dist/ folder) must stay visible to the rules.
       path: [
-        "node_modules",
         "\\.(test|spec)\\.[jt]sx?$",
         "(^|/)out/",
-        "(^|/)dist/",
+        "^(apps|packages|tooling)/[^/]+/dist/",
         "(^|/)coverage/",
         "(^|/)storybook-static/",
         "routeTree\\.gen\\.ts$",
