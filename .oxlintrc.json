@@ -429,22 +429,14 @@
       }
     },
     {
-      "files": [
-        "packages/ui/src/**/*.{ts,tsx}",
-        "apps/react/src/**/*.{ts,tsx}"
-      ],
+      "files": ["packages/ui/src/**/*.{ts,tsx}"],
       "rules": {
         "no-restricted-imports": [
           "error",
           {
-            "paths": [
+            "patterns": [
               {
-                "name": "process",
-                "importNames": ["env"],
-                "message": "Use `import { env } from '~/env'` instead to ensure validated types."
-              },
-              {
-                "name": "tailwind-variants",
+                "group": ["tailwind-variants", "tailwind-variants/*"],
                 "message": "Import tv and twMerge from packages/ui/src/lib/tw.ts; it has the merge rules for Tailwind 4."
               }
             ]

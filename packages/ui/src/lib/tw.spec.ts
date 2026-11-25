@@ -24,4 +24,9 @@ describe("tv", () => {
     });
     expect(styles({ small: true })).toBe("leading-6 text-sm");
   });
+
+  it("keeps a line height of the base next to a font size of the caller", () => {
+    const styles = tv({ base: "leading-6" });
+    expect(styles({ class: "text-sm" })).toBe("leading-6 text-sm");
+  });
 });
