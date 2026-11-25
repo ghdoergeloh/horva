@@ -3,7 +3,7 @@ import { and, eq, inArray, isNull, ne, notInArray, sql } from "@horva/db";
 import { slot, task, taskLabel } from "@horva/db/schema";
 
 import type { CreateTask, UpdateTask } from "../schemas/index";
-import { rruleFromString } from "../utils/rrule";
+import { nextOccurrence } from "../utils/rrule";
 import { getDefaultProject } from "./project.service";
 import { stopSlot } from "./slot.service";
 
@@ -204,9 +204,7 @@ export async function markTaskDone(db: Database, id: number) {
   if (existing.taskType === "activity") {
     if (existing.recurrenceRule) {
       // Advance to the next occurrence from now (skips any missed ones)
-      const rule = rruleFromString(existing.recurrenceRule);
-      const next = rule.after(new Date(), false);
-      updates.scheduledAt = next ?? null;
+      updates.scheduledAt = nextOccurrence(existing.recurrenceRule, new Date());
     } else {
       // No recurrence: clear the date so the activity leaves the day plan
       updates.scheduledAt = null;

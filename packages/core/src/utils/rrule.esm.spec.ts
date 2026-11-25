@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 
-import { rruleFromString } from "./rrule.js";
+import { nextOccurrence } from "./rrule.js";
 
 // Simulates a bundler that loads the ESM build of rrule: named exports and
 // no default export.
@@ -10,12 +10,13 @@ vi.mock("rrule", async (importOriginal) => {
   return { ...exports, default: undefined };
 });
 
-describe("rruleFromString with the ESM build of rrule", () => {
+describe("nextOccurrence with the ESM build of rrule", () => {
   it("parses a rule", () => {
-    const rule = rruleFromString(
+    const next = nextOccurrence(
       "DTSTART:20260601T110000Z\nRRULE:FREQ=DAILY;COUNT=3",
+      new Date("2026-06-01T12:00:00Z"),
     );
 
-    expect(rule.all()).toHaveLength(3);
+    expect(next?.toISOString()).toBe("2026-06-02T11:00:00.000Z");
   });
 });
