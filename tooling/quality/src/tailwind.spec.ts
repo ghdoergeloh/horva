@@ -24,7 +24,7 @@ import { root } from "./scripts";
  * it that way. This test runs it on a small copy of the folder layout,
  * with the installed packages of packages/ui linked in, so that every import
  * resolves the same way as in the repository. dependency-cruiser skips test
- * files; in packages/ui/src the oxlint rule covers them.
+ * files; in packages/ui/src and apps/react/src the oxlint rule covers them.
  */
 
 const files: Record<string, string> = {

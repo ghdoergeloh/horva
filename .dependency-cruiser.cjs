@@ -74,10 +74,7 @@ module.exports = {
       // often live in a dist/ folder) must stay visible to the rules.
       path: [
         "\\.(test|spec)\\.[jt]sx?$",
-        "(^|/)out/",
-        "^(apps|packages|tooling)/[^/]+/dist/",
-        "(^|/)coverage/",
-        "(^|/)storybook-static/",
+        "^(apps|packages|tooling)/[^/]+/(out|dist|coverage|storybook-static)/",
         "routeTree\\.gen\\.ts$",
       ],
     },
