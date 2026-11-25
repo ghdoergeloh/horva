@@ -211,7 +211,7 @@ export const OtherRowsLocked: Story = {
       await expect(button).toBeDisabled();
     await expect(
       canvas.getByRole("button", {
-        name: "Slot von 12:02 bis 13:05 eintragen",
+        name: "Slot eintragen von 12:02 bis 13:05",
       }),
     ).toBeDisabled();
   },
@@ -367,7 +367,7 @@ export const KeyboardEscapeNewSlot: Story = {
     await waitFor(() =>
       expect(
         within(canvasElement).getByRole("button", {
-          name: "Slot von 12:02 bis 13:05 eintragen",
+          name: "Slot eintragen von 12:02 bis 13:05",
         }),
       ).toHaveFocus(),
     );
@@ -527,7 +527,7 @@ export const AddSlotInGap: Story = {
     clearAllMocks();
     await userEvent.click(
       within(canvasElement).getByRole("button", {
-        name: "Slot von 12:02 bis 13:05 eintragen",
+        name: "Slot eintragen von 12:02 bis 13:05",
       }),
     );
     await expect(args.onAddSlot).toHaveBeenCalledWith(lunch);

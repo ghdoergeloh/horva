@@ -223,7 +223,7 @@
       "actions": "Aktionen",
       "gap": "Lücke",
       "addSlot": "Slot eintragen",
-      "addSlotIn": "Slot von {{from}} bis {{to}} eintragen",
+      "addSlotIn": "Slot eintragen von {{from}} bis {{to}}",
       "edit": "Slot {{from}}–{{to}} bearbeiten",
       "empty": "Keine Slots an diesem Tag.",
       "start": "Start",

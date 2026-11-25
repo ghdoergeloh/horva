@@ -21,92 +21,91 @@ catalog:
   "@axe-core/playwright": ^4.14.0
   "@commitlint/cli": ^21.2.4
   "@commitlint/config-conventional": ^21.2.4
-  "@commitlint/load": ^21.2.3
+  "@commitlint/load": ^21.2.4
   "@dnd-kit/core": ^6.3.1
   "@dnd-kit/sortable": ^10.0.0
   "@dnd-kit/utilities": ^3.2.2
-  "@electric-sql/pglite": ^0.5.14
+  "@electric-sql/pglite": ^0.6.0
   "@electron-toolkit/utils": ^4.0.0
   "@fontsource-variable/geist": ^5.3.0
   "@fontsource-variable/geist-mono": ^5.3.0
-  "@hono/node-server": ^2.1.6
-  "@inquirer/prompts": ^8.7.5
+  "@hono/node-server": ^2.1.11
+  "@inquirer/prompts": ^8.8.1
   "@internationalized/date": ^3.12.4
-  "@orpc/client": ^1.16.1
-  "@orpc/contract": ^1.16.1
-  "@orpc/server": ^1.16.1
-  "@orpc/tanstack-query": ^1.16.1
+  "@orpc/client": ^1.16.5
+  "@orpc/contract": ^1.16.5
+  "@orpc/server": ^1.16.5
+  "@orpc/tanstack-query": ^1.16.5
   # Exact: Playwright and the Vitest browser tests share one Chromium build.
-  "@playwright/test": 1.64.0
+  "@playwright/test": 1.65.1
   # Exact versions: `email dev` requires @react-email/ui to match react-email.
-  "@react-email/ui": 6.11.6
-  "@storybook/addon-a11y": ^10.6.5
-  "@storybook/addon-docs": ^10.6.5
-  "@storybook/react-vite": ^10.6.5
-  "@tailwindcss/postcss": ^4.3.3
-  "@tailwindcss/vite": ^4.3.3
-  "@tanstack/react-query": ^5.105.2
+  "@react-email/ui": 6.11.16
+  "@storybook/addon-a11y": ^10.6.8
+  "@storybook/addon-docs": ^10.6.8
+  "@storybook/react-vite": ^10.6.8
+  "@tailwindcss/postcss": ^4.3.5
+  "@tailwindcss/vite": ^4.3.5
+  "@tanstack/react-query": ^5.108.4
   "@tanstack/react-router": ^1.170.46
-  "@tanstack/router-plugin": ^1.168.48
-  "@testing-library/jest-dom": ^7.0.1
+  "@tanstack/router-plugin": ^1.169.0
+  "@testing-library/jest-dom": ^8.0.0
   "@testing-library/react": ^16.3.3
-  "@turbo/gen": ^2.11.10
+  "@turbo/gen": ^2.11.13
   "@types/culori": ^4.0.1
-  "@types/node": ^24.19.2
+  "@types/node": ^26.6.6
   "@types/nodemailer": ^8.0.2
   "@types/pg": ^8.23.1
-  "@vitejs/plugin-react": ^6.2.1
-  "@vitest/browser-playwright": ^5.1.0
-  "@vitest/coverage-istanbul": ^5.1.0
-  "@vitest/coverage-v8": ^5.1.0
-  auth: ^1.7.15
-  axe-core: ^4.13.0
-  better-auth: ^1.7.15
+  "@vitejs/plugin-react": ^6.3.0
+  "@vitest/browser-playwright": ^5.1.1
+  "@vitest/coverage-istanbul": ^5.1.1
+  "@vitest/coverage-v8": ^5.1.1
+  auth: ^1.7.27
+  axe-core: ^4.14.1
+  better-auth: ^1.7.27
   chalk: ^6.0.1
-  commander: ^15.0.0
+  commander: ^15.1.0
   culori: ^4.0.2
-  dependency-cruiser: ^18.7.1
-  dotenv: ^18.0.9
+  dependency-cruiser: ^18.9.0
+  dotenv: ^18.0.10
   dotenv-cli: ^11.1.0
   drizzle-kit: ^0.31.11
   drizzle-orm: ^0.45.4
-  electron: ^44.5.1
+  electron: ^45.4.1
   electron-builder: ^26.18.0
-  electron-vite: ^5.0.0
+  electron-vite: ^6.0.0
   esbuild: ^0.28.2
   eslint-plugin-sonarjs: ^4.2.2
-  eslint-plugin-turbo: ^2.11.10
-  hono: ^4.13.16
+  eslint-plugin-turbo: ^2.11.13
+  hono: ^4.13.21
   husky: ^9.1.7
-  i18next: ^26.7.1
-  jsdom: ^30.1.3
-  knip: ^6.44.1
-  lint-staged: ^17.6.0
-  lucide-react: ^1.66.0
-  nodemailer: ^10.3.1
-  oxfmt: ^0.75.0
-  oxlint: ^1.90.0
-  oxlint-tsgolint: ^7.0.2005
+  i18next: ^27.2.6
+  jsdom: ^31.0.1
+  knip: ^6.48.0
+  lint-staged: ^17.6.2
+  lucide-react: ^1.79.0
+  nodemailer: ^10.6.1
+  oxfmt: ^0.80.0
+  oxlint: ^1.95.0
+  oxlint-tsgolint: ^7.0.2008
   pg: ^8.23.1
   # Exact: Playwright and the Vitest browser tests share one Chromium build.
-  playwright: 1.64.0
+  playwright: 1.65.1
   react-aria: ^3.53.1
   react-aria-components: ^1.22.1
-  react-email: 6.11.6
-  react-i18next: ^17.1.11
+  react-email: 6.11.16
+  react-i18next: ^18.0.3
   rrule: ^2.8.1
   sherif: ^1.13.0
-  storybook: ^10.6.5
-  tailwind-merge: ^3.7.0
-  tailwind-variants: ^3.3.1
-  tailwindcss: ^4.3.3
+  storybook: ^10.6.8
+  tailwind-variants: ^4.0.2
+  tailwindcss: ^4.3.5
   tailwindcss-animate: ^1.0.7
   tailwindcss-react-aria-components: ^2.2.0
   tsx: ^4.23.15
-  turbo: ^2.11.10
-  typescript: ^6.0.3
-  vite: ^8.3.5
-  vitest: ^5.1.0
+  turbo: ^2.11.13
+  typescript: ^7.0.2
+  vite: ^8.3.8
+  vitest: ^5.1.1
   zod: ^4.6.7
 
 catalogs:
@@ -125,3 +124,18 @@ overrides:
   # Transitive peers would otherwise pull in the latest major as well.
   "@types/node": "catalog:"
   lightningcss: ^1.33.0
+
+# dependency-cruiser needs the TypeScript compiler API, which TypeScript 7.0
+# does not have (it supports 7.1 again). It gets TypeScript 6 of its own so it
+# still sees type-only imports. Remove this once TypeScript 7.1 is out.
+packageExtensions:
+  dependency-cruiser:
+    dependencies:
+      typescript: ^6.0.3
+
+# Dependencies may not install agent skills into the repository.
+permissions:
+  "@tanstack/react-router":
+    skills: false
+  "@tanstack/router-plugin":
+    skills: false

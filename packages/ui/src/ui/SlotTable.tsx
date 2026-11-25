@@ -93,7 +93,7 @@ const defaultLabels: SlotTableLabels = {
   noTask: "Ohne Aufgabe",
   gap: "Lücke",
   addSlot: "Slot eintragen",
-  addSlotIn: (from, to) => `Slot von ${from} bis ${to} eintragen`,
+  addSlotIn: (from, to) => `Slot eintragen von ${from} bis ${to}`,
   edit: (from, to) => `Slot ${from}–${to} bearbeiten`,
   empty: "Keine Slots an diesem Tag.",
   start: "Start",

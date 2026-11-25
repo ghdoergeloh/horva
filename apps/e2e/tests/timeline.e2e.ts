@@ -284,7 +284,7 @@ test("a new slot fills a gap", async ({ page }) => {
 
   await expect(row(page, /^10:00 11:00 1:00 Lücke/)).toBeVisible();
   await page
-    .getByRole("button", { name: "Slot von 10:00 bis 11:00 eintragen" })
+    .getByRole("button", { name: "Slot eintragen von 10:00 bis 11:00" })
     .click();
   await expect(page.locator("tr[data-editing]")).toBeVisible();
   await page.keyboard.press("Enter");
