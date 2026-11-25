@@ -1,5 +1,4 @@
 import path from "node:path";
-import { fileURLToPath } from "node:url";
 import { is } from "@electron-toolkit/utils";
 import { app, BrowserWindow, ipcMain, shell } from "electron";
 
@@ -18,19 +17,17 @@ import {
 } from "./setup.js";
 import { reconnectDatabase, registerDatabaseHandlers } from "./switch.js";
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-
 function createWindow(): void {
   const icon =
     process.platform === "darwin"
-      ? path.join(__dirname, "../../build/icon.icns")
-      : path.join(__dirname, "../../build/icon.png");
+      ? path.join(import.meta.dirname, "../../build/icon.icns")
+      : path.join(import.meta.dirname, "../../build/icon.png");
   const win = new BrowserWindow({
     width: 1280,
     height: 800,
     icon,
     webPreferences: {
-      preload: path.join(__dirname, "../preload/index.mjs"),
+      preload: path.join(import.meta.dirname, "../preload/index.mjs"),
       // sandbox: false is required because the preload script imports Node.js modules
       // (@horva/core, @horva/db) via contextBridge. Enabling sandbox would prevent preload
       // from accessing Node.js APIs. Risk: a renderer XSS would have Node.js access.
@@ -50,7 +47,7 @@ function createWindow(): void {
   if (is.dev && rendererUrl) {
     void win.loadURL(rendererUrl);
   } else {
-    void win.loadFile(path.join(__dirname, "../renderer/index.html"));
+    void win.loadFile(path.join(import.meta.dirname, "../renderer/index.html"));
   }
 }
 
