@@ -18,6 +18,7 @@ import {
   createDatabase,
   DatabaseLockedError,
   isPgliteUrl,
+  PGLITE_POSTGRES_MAJOR,
   pgliteUrl,
 } from "./client";
 import { migrateDatabase } from "./migrate";
@@ -129,11 +130,21 @@ describe("PGlite version", () => {
   // them ("PGlite failed to initialize properly"). Changing this number
   // needs a migration of existing folders first.
   it("runs PostgreSQL 18, the version of existing local databases", async () => {
+    expect(PGLITE_POSTGRES_MAJOR).toBe(18);
     const pglite = new PGlite();
     const result = await pglite.query<{ major: number }>(
       "select current_setting('server_version_num')::int / 10000 as major",
     );
     await pglite.close();
-    expect(result.rows[0]?.major).toBe(18);
+    expect(result.rows[0]?.major).toBe(PGLITE_POSTGRES_MAJOR);
+  });
+
+  it("names the version when a folder holds another PostgreSQL major", () => {
+    const dataDir = join(dir, "db");
+    mkdirSync(dataDir);
+    writeFileSync(join(dataDir, "PG_VERSION"), "19\n");
+    expect(() => openAt(dataDir)).toThrow(
+      `The folder ${dataDir} holds a PostgreSQL 19 database. This version of horva opens PostgreSQL 18 databases only.`,
+    );
   });
 });

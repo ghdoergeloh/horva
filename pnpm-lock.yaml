@@ -205,7 +205,7 @@ catalogs:
       specifier: ^3.2.2
       version: 3.2.2
     '@electric-sql/pglite':
-      specifier: ~0.5.8
+      specifier: ~0.5.17
       version: 0.5.17
     '@electron-toolkit/utils':
       specifier: ^4.0.0

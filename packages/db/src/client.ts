@@ -1,4 +1,5 @@
-import { existsSync, readdirSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync } from "node:fs";
+import { join } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import type { PgDatabase, PgQueryResultHKT } from "drizzle-orm/pg-core";
 import { PGlite } from "@electric-sql/pglite";
@@ -89,16 +90,31 @@ export function createDatabase(
 }
 
 /**
+ * The PostgreSQL major of the installed PGlite. PGlite opens only data
+ * folders of the same major; a new one needs a migration of the folders.
+ */
+export const PGLITE_POSTGRES_MAJOR = 18;
+
+/**
  * PGlite creates a database in any folder, also next to other files. A
- * folder must be missing, empty or already hold a database.
+ * folder must be missing, empty or already hold a database of
+ * {@link PGLITE_POSTGRES_MAJOR}.
  */
 function checkDataDir(dataDir: string): void {
   if (!existsSync(dataDir)) return;
   const entries = readdirSync(dataDir);
-  if (entries.length > 0 && !entries.includes("PG_VERSION")) {
+  if (entries.length === 0) return;
+  if (!entries.includes("PG_VERSION")) {
     throw new Error(
       `The folder ${dataDir} is not empty and holds no database. ` +
         "Choose a new or empty folder.",
+    );
+  }
+  const major = readFileSync(join(dataDir, "PG_VERSION"), "utf8").trim();
+  if (major !== String(PGLITE_POSTGRES_MAJOR)) {
+    throw new Error(
+      `The folder ${dataDir} holds a PostgreSQL ${major} database. ` +
+        `This version of horva opens PostgreSQL ${PGLITE_POSTGRES_MAJOR} databases only.`,
     );
   }
 }
