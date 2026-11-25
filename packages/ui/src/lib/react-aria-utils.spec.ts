@@ -13,6 +13,11 @@ describe("composeTailwindRenderProps", () => {
     expect(resolve(className, {})).toBe("text-sm p-4");
   });
 
+  it("keeps a line height of the defaults next to a font size of the caller", () => {
+    const className = composeTailwindRenderProps("text-sm", "leading-6");
+    expect(resolve(className, {})).toBe("leading-6 text-sm");
+  });
+
   it("resolves a class function with the render props", () => {
     const className = composeTailwindRenderProps<{ isDisabled: boolean }>(
       ({ isDisabled }) => (isDisabled ? "opacity-50" : ""),

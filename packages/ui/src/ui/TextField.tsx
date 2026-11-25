@@ -5,10 +5,10 @@ import type {
   ValidationResult,
 } from "react-aria-components";
 import { TextField as AriaTextField } from "react-aria-components";
-import { tv } from "tailwind-variants";
 
 import { composeTailwindRenderProps, focusRing } from "@repo/ui";
 
+import { tv } from "../lib/tw";
 import {
   Description,
   fieldBorderStyles,

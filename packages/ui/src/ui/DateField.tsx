@@ -11,10 +11,10 @@ import {
   DateInput as AriaDateInput,
   DateSegment,
 } from "react-aria-components";
-import { tv } from "tailwind-variants";
 
 import { composeTailwindRenderProps } from "@repo/ui";
 
+import { tv } from "../lib/tw";
 import { Description, FieldError, fieldGroupStyles, Label } from "./Field";
 
 export interface DateFieldProps<

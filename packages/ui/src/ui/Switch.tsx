@@ -3,10 +3,10 @@
 import type { ReactNode } from "react";
 import type { SwitchFieldProps, ValidationResult } from "react-aria-components";
 import { SwitchButton, SwitchField } from "react-aria-components";
-import { tv } from "tailwind-variants";
 
 import { composeTailwindRenderProps, focusRing } from "@repo/ui";
 
+import { tv } from "../lib/tw";
 import { Description, FieldError } from "./Field";
 
 export interface SwitchProps extends Omit<SwitchFieldProps, "children"> {

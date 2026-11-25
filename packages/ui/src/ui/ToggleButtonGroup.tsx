@@ -5,7 +5,8 @@ import {
   composeRenderProps,
   ToggleButtonGroup as RACToggleButtonGroup,
 } from "react-aria-components";
-import { tv } from "tailwind-variants";
+
+import { tv } from "../lib/tw";
 
 const styles = tv({
   base: "flex gap-1",

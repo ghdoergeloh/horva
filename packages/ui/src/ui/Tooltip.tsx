@@ -7,7 +7,8 @@ import {
   composeRenderProps,
   OverlayArrow,
 } from "react-aria-components";
-import { tv } from "tailwind-variants";
+
+import { tv } from "../lib/tw";
 
 export interface TooltipProps extends Omit<AriaTooltipProps, "children"> {
   children: React.ReactNode;

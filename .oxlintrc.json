@@ -427,6 +427,28 @@
       "rules": {
         "typescript/no-empty-object-type": "off"
       }
+    },
+    {
+      "files": ["packages/ui/src/**/*.{ts,tsx}"],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "patterns": [
+              {
+                "group": ["tailwind-variants", "tailwind-variants/*"],
+                "message": "Import tv and twMerge from packages/ui/src/lib/tw.ts; it has the merge rules for Tailwind 4."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "files": ["packages/ui/src/lib/tw.ts"],
+      "rules": {
+        "no-restricted-imports": "off"
+      }
     }
   ]
 }
