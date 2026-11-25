@@ -423,14 +423,10 @@
         "no-restricted-imports": [
           "error",
           {
-            "paths": [
+            "patterns": [
               {
-                "name": "tailwind-merge",
-                "message": "Import twMerge from packages/ui/src/lib/tw.ts; it knows the text styles of the theme."
-              },
-              {
-                "name": "tailwind-variants",
-                "message": "Import tv from packages/ui/src/lib/tw.ts; it knows the text styles of the theme."
+                "group": ["tailwind-variants", "tailwind-variants/*"],
+                "message": "Import tv and twMerge from packages/ui/src/lib/tw.ts; it knows the text styles of the theme and has the merge rules for Tailwind 4."
               }
             ]
           }
