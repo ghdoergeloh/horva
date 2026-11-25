@@ -9,6 +9,7 @@ import {
 } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
+import { PGlite } from "@electric-sql/pglite";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
 import type { DatabaseConnection } from "./client";
@@ -17,6 +18,7 @@ import {
   createDatabase,
   DatabaseLockedError,
   isPgliteUrl,
+  PGLITE_POSTGRES_MAJOR,
   pgliteUrl,
 } from "./client";
 import { migrateDatabase } from "./migrate";
@@ -118,6 +120,31 @@ describe("createDatabase with a file URL (PGlite)", () => {
     writeFileSync(`${dataDir}.lock`, String(process.ppid));
     expect(() => openAt(dataDir)).toThrow(
       new RegExp(`process ${process.ppid}[\\s\\S]*${dataDir}\\.lock`),
+    );
+  });
+});
+
+describe("PGlite version", () => {
+  // Local databases (the desktop app, file: URLs) are PGlite folders made
+  // with PostgreSQL 18. A PGlite with another PostgreSQL major cannot open
+  // them ("PGlite failed to initialize properly"). Changing this number
+  // needs a migration of existing folders first.
+  it("runs PostgreSQL 18, the version of existing local databases", async () => {
+    expect(PGLITE_POSTGRES_MAJOR).toBe(18);
+    const pglite = new PGlite();
+    const result = await pglite.query<{ major: number }>(
+      "select current_setting('server_version_num')::int / 10000 as major",
+    );
+    await pglite.close();
+    expect(result.rows[0]?.major).toBe(PGLITE_POSTGRES_MAJOR);
+  });
+
+  it("names the version when a folder holds another PostgreSQL major", () => {
+    const dataDir = join(dir, "db");
+    mkdirSync(dataDir);
+    writeFileSync(join(dataDir, "PG_VERSION"), "19\n");
+    expect(() => openAt(dataDir)).toThrow(
+      `The folder ${dataDir} holds a PostgreSQL 19 database. This version of horva opens PostgreSQL 18 databases only.`,
     );
   });
 });

@@ -37,6 +37,13 @@ updates:
       - dependency-name: "typescript"
         update-types:
           - "version-update:semver-major"
+      # A PGlite minor can bring a new PostgreSQL major, which cannot open
+      # the local databases of existing installs. Upgrade by hand, with a
+      # migration (see the PGlite version test in packages/db).
+      - dependency-name: "@electric-sql/pglite"
+        update-types:
+          - "version-update:semver-major"
+          - "version-update:semver-minor"
     labels:
       - "dependencies"
 
