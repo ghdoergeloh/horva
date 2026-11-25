@@ -425,7 +425,12 @@
           {
             "patterns": [
               {
-                "group": ["tailwind-variants", "tailwind-variants/*"],
+                "group": [
+                  "tailwind-merge",
+                  "tailwind-merge/*",
+                  "tailwind-variants",
+                  "tailwind-variants/*"
+                ],
                 "message": "Import tv and twMerge from packages/ui/src/lib/tw.ts; it knows the text styles of the theme and has the merge rules for Tailwind 4."
               }
             ]
