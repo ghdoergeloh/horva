@@ -10,7 +10,7 @@ import {
   Breadcrumb as AriaBreadcrumb,
   Breadcrumbs as AriaBreadcrumbs,
 } from "react-aria-components";
-import { twMerge } from "tailwind-merge";
+import { twMerge } from "tailwind-variants";
 
 import { composeTailwindRenderProps } from "@repo/ui";
 

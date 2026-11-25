@@ -15,8 +15,7 @@ import {
   TagList,
   Text,
 } from "react-aria-components";
-import { twMerge } from "tailwind-merge";
-import { tv } from "tailwind-variants";
+import { twMerge, tv } from "tailwind-variants";
 
 import { focusRing } from "@repo/ui";
 

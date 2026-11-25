@@ -21,7 +21,6 @@
     "react-aria": "catalog:",
     "react-aria-components": "catalog:",
     "react-dom": "catalog:react19",
-    "tailwind-merge": "catalog:",
     "tailwind-variants": "catalog:"
   },
   "devDependencies": {

@@ -81,7 +81,6 @@ catalog:
   react-email: 6.11.16
   sherif: ^1.13.0
   storybook: ^10.6.8
-  tailwind-merge: ^3.7.1
   tailwind-variants: ^4.0.2
   tailwindcss: ^4.3.5
   tailwindcss-animate: ^1.0.7
