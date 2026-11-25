@@ -117,7 +117,7 @@ services:
       - workspace:/workspace
       # Claude Code state (memory, settings, sessions, OAuth) survives rebuilds.
       - claude-state:/home/node/.claude
-      # pnpm global dir (corepack/pnpm binaries, global installs).
+      # pnpm global dir (global installs).
       - pnpm-home:/home/node/.local/share/pnpm
     working_dir: /workspace
     environment:

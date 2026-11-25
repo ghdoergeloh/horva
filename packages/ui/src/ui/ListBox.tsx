@@ -84,6 +84,10 @@ export const dropdownItemStyles = tv({
     isFocused: {
       true: "bg-primary text-primary-foreground forced-colors:bg-[Highlight] forced-colors:text-[HighlightText]",
     },
+    // An open submenu trigger; it only sets the compound variant below.
+    isOpen: {
+      true: "",
+    },
   },
   compoundVariants: [
     {

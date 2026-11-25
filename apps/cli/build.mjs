@@ -12,7 +12,7 @@ await build({
   outfile: "dist/index.js",
   bundle: true,
   platform: "node",
-  target: "node24",
+  target: "node26",
   format: "esm",
   jsx: "automatic",
   // Optional native driver that `pg` loads only when it is installed.
