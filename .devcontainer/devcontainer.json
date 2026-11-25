@@ -45,6 +45,7 @@
         "bradlc.vscode-tailwindcss",
         "ms-azuretools.vscode-docker",
         "redhat.vscode-yaml",
+        "TypeScriptTeam.native-preview",
         "vitest.explorer"
       ],
       "settings": {
@@ -74,8 +75,9 @@
         "editor.codeActionsOnSave": {
           "source.fixAll.oxc": "explicit"
         },
-        "typescript.tsdk": "node_modules/typescript/lib",
-        "typescript.enablePromptUseWorkspaceTsdk": true,
+        // TypeScript 7 ships no tsserver. The TypeScript 7 extension brings
+        // the native language server.
+        "typescript.experimental.useTsgo": true,
         // Tailwind v4 + the cva/cn helpers used across packages/ui
         "tailwindCSS.experimental.classRegex": [
           ["cva\\(([^)]*)\\)", "[\"'`]([^\"'`]*).*?[\"'`]"],

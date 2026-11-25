@@ -24,8 +24,7 @@ import {
   ResizableTableContainer,
   useTableOptions,
 } from "react-aria-components";
-import { twMerge } from "tailwind-merge";
-import { tv } from "tailwind-variants";
+import { twMerge, tv } from "tailwind-variants";
 
 import { composeTailwindRenderProps, focusRing } from "@repo/ui";
 

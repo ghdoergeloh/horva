@@ -7,8 +7,8 @@ Playwright.
 
 ## Prerequisites
 
-- Node.js 24 (see `.nvmrc`, `engines` in `package.json`)
-- pnpm 12 (`corepack enable` picks the version from `packageManager`)
+- Node.js 26 (see `.nvmrc`, `engines` in `package.json`)
+- pnpm 12 (the version in `packageManager`, for example `npm install --global pnpm@12.23.0`)
 - Docker with Docker Compose (PostgreSQL and Mailpit)
 
 ## Using this template

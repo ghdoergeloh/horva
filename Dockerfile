@@ -18,16 +18,20 @@
 #
 #   docker build --secret id=ca,src=/path/to/ca.pem -t app .
 
-# Node.js 24 on Debian bookworm, pinned by digest. Dependabot updates it.
-FROM node:24-slim@sha256:d6aa754f16b3197301076f047b5def2f02ea1dbbc2ca920407d46d7ec7f87b20 AS node-base
+# Node.js 26 on Debian trixie, pinned by digest. Dependabot updates it.
+FROM node:26-slim@sha256:abe7e5a82b61a8ef67b315b85497c9e65173387ccf2f4a029248184b8e020be5 AS node-base
 
 FROM node-base AS base
 ENV PNPM_HOME=/pnpm \
     PATH=/pnpm:$PATH \
     CI=true \
     TURBO_TELEMETRY_DISABLED=1
-# corepack installs the pnpm version from "packageManager" in package.json.
-RUN corepack enable
+# Node.js 26 ships without corepack. npm installs the pnpm version from
+# "packageManager" in package.json.
+RUN --mount=type=secret,id=ca \
+    --mount=type=bind,source=package.json,target=/tmp/package.json \
+    if [ -f /run/secrets/ca ]; then export NODE_EXTRA_CA_CERTS=/run/secrets/ca; fi; \
+    npm install --global "$(node -p "require('/tmp/package.json').packageManager")"
 
 # Reduce the monorepo to the apps in the image and their workspace
 # dependencies. json/ holds only the package manifests, so the install layer

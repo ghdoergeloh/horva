@@ -167,7 +167,7 @@ forwarding works. Credentials and general config stay in the root `.env`.
 | ------------------------ | ---------------------------------------------------------------- |
 | `devcontainer.json`      | VS Code wiring, lifecycle commands, forwarded ports              |
 | `compose.yml`            | workspace + firewall sidecar + postgres + mailpit, hardening     |
-| `Dockerfile`             | workspace image: Node 24, pnpm 11, Claude Code — unprivileged    |
+| `Dockerfile`             | workspace image: Node 26, pnpm 12, Claude Code — unprivileged    |
 | `firewall.Dockerfile`    | minimal Alpine sidecar holding the only `NET_ADMIN` in the stack |
 | `firewall-entrypoint.sh` | applies the rules, signals readiness, holds the namespace open   |
 | `init-firewall.sh`       | the egress rules + self-verification (fails closed)              |

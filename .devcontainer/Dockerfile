@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 # Workspace image for the monorepo template dev container.
-# Node.js 24 (matches package.json engines) + pnpm 11 via corepack + Claude Code CLI.
+# Node.js 26 (matches package.json engines) + pnpm 12 + Claude Code CLI.
 #
 # Runs on a REMOTE Docker host: /workspace is a named volume (not a host bind
 # mount), populated by a `git clone` on first create. See compose.yml.
@@ -13,7 +13,7 @@
 # BuildKit is required for the --mount=type=cache build mounts below (default in
 # modern Docker / Compose v2). The caches live outside the image, so layers stay
 # small while apt / npm downloads are reused across rebuilds.
-FROM node:24-trixie
+FROM node:26-trixie
 
 # The official node image already ships an unprivileged `node` user (uid/gid 1000),
 # which lines up with the typical first host user for clean volume ownership.
@@ -76,16 +76,13 @@ RUN chmod 0755 /usr/local/bin/bootstrap-workspace.sh \
 
 USER ${USERNAME}
 
-# pnpm via corepack, pinned to the version from package.json (packageManager).
-# COREPACK_ENABLE_DOWNLOAD_PROMPT=0 keeps the non-interactive postCreateCommand from
-# blocking on corepack's download prompt; `corepack prepare` bakes pnpm into the
-# image so no runtime fetch is needed.
-ARG PNPM_VERSION=12.5.1
-ENV COREPACK_ENABLE_DOWNLOAD_PROMPT=0 \
-    PNPM_HOME=/home/${USERNAME}/.local/share/pnpm \
+# pnpm, pinned to the version from package.json (packageManager). Node.js 26
+# ships without corepack, so npm installs it into ~/.local; baking it into the
+# image means no runtime fetch is needed.
+ARG PNPM_VERSION=12.23.0
+ENV PNPM_HOME=/home/${USERNAME}/.local/share/pnpm \
     PATH="/home/node/.local/bin:/home/node/.local/share/pnpm:${PATH}"
-RUN corepack enable --install-directory /home/${USERNAME}/.local/bin \
-    && corepack prepare pnpm@${PNPM_VERSION} --activate
+RUN npm install --global --prefix /home/${USERNAME}/.local pnpm@${PNPM_VERSION}
 
 # Claude Code via the native installer, as the dev user: it lands in
 # ~/.local/share/claude with a ~/.local/bin/claude symlink, so `claude update` works

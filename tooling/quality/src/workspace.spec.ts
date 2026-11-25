@@ -1,6 +1,7 @@
-import { existsSync, globSync, readFileSync } from "node:fs";
+import { execFileSync } from "node:child_process";
+import { existsSync, globSync, readFileSync, statSync } from "node:fs";
+import { createRequire } from "node:module";
 import path from "node:path";
-import ts from "typescript";
 import { describe, expect, it } from "vitest";
 
 import { root, vitestCommands } from "./scripts";
@@ -47,31 +48,56 @@ function readPackage(dir: string): PackageJson {
   ) as PackageJson;
 }
 
-/** Reads a tsconfig; throws when it cannot be read at all. */
-function parseTsconfig(tsconfig: string): ts.ParsedCommandLine {
-  const parsed = ts.getParsedCommandLineOfConfigFile(
-    tsconfig,
-    {},
-    {
-      ...ts.sys,
-      onUnRecoverableConfigFileDiagnostic: (diagnostic) => {
-        throw new Error(
-          ts.flattenDiagnosticMessageText(diagnostic.messageText, "\n"),
-        );
-      },
-    },
+/** The `tsc` binary of the installed TypeScript. */
+const tscBin = path.join(
+  path.dirname(
+    createRequire(import.meta.url).resolve("typescript/package.json"),
+  ),
+  "bin",
+  "tsc",
+);
+
+interface ShownConfig {
+  files?: string[];
+  references?: { path: string }[];
+}
+
+/**
+ * Reads a tsconfig the way `tsc` resolves it (`extends`, `include`,
+ * `exclude`). TypeScript 7 has no stable JavaScript API for this, so the
+ * check asks `tsc --showConfig`. Paths come back relative to the tsconfig.
+ */
+function parseTsconfig(tsconfig: string): ShownConfig {
+  const output = execFileSync(
+    process.execPath,
+    [tscBin, "--showConfig", "-p", tsconfig],
+    { cwd: path.dirname(tsconfig), encoding: "utf8" },
   );
-  if (!parsed) throw new Error(`Cannot read ${tsconfig}`);
-  return parsed;
+  return JSON.parse(output) as ShownConfig;
+}
+
+/** Absolute paths of the files a tsconfig lists itself. */
+function filesOf(tsconfig: string, config: ShownConfig): string[] {
+  return (config.files ?? []).map((file) =>
+    path.resolve(path.dirname(tsconfig), file),
+  );
+}
+
+/** A project reference points at a tsconfig or at its directory. */
+function resolveReference(tsconfig: string, reference: string): string {
+  const target = path.resolve(path.dirname(tsconfig), reference);
+  return statSync(target).isDirectory()
+    ? path.join(target, "tsconfig.json")
+    : target;
 }
 
 /** The files of a tsconfig and of all projects it references. */
 function filesWithReferences(tsconfig: string): string[] {
-  const parsed = parseTsconfig(tsconfig);
-  const references = (parsed.projectReferences ?? []).flatMap((reference) =>
-    filesWithReferences(ts.resolveProjectReferencePath(reference)),
+  const config = parseTsconfig(tsconfig);
+  const references = (config.references ?? []).flatMap((reference) =>
+    filesWithReferences(resolveReference(tsconfig, reference.path)),
   );
-  return [...parsed.fileNames, ...references];
+  return [...filesOf(tsconfig, config), ...references];
 }
 
 /** The tsconfig one `tsc` command reads, relative to `dir`. */
@@ -98,7 +124,7 @@ function filesOfTsc(command: string, dir: string): string[] {
   const tsconfig = path.join(root, dir, tsconfigOfTsc(command));
   if (words.includes("-b") || words.includes("--build"))
     return filesWithReferences(tsconfig);
-  return parseTsconfig(tsconfig).fileNames;
+  return filesOf(tsconfig, parseTsconfig(tsconfig));
 }
 
 /** The `tsc` commands of a typecheck script. */
