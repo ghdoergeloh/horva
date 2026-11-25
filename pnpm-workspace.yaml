@@ -109,6 +109,9 @@ catalog:
   zod: ^4.6.7
 
 catalogs:
+  # The Node.js major inside Electron.
+  electron:
+    "@types/node": ^24.19.2
   react19:
     "@types/react": ^19.3.0
     "@types/react-dom": ^19.3.0
@@ -117,13 +120,24 @@ catalogs:
 
 linkWorkspacePackages: true
 
-# Tailwind pins an exact lightningcss version that differs from the one Vite
-# uses. One shared version avoids two copies of the native binary.
 overrides:
   # One @types/node for the whole graph, on the Node.js major from .nvmrc.
   # Transitive peers would otherwise pull in the latest major as well.
   "@types/node": "catalog:"
+  # The Electron app runs on the Node.js inside Electron, not on the one from
+  # .nvmrc. apps/electron/e2e/node-version.spec.ts keeps the two in step.
+  "@horva/electron-app>@types/node": "catalog:electron"
+  "electron>@types/node": "catalog:electron"
+  # Tailwind pins an exact lightningcss version that differs from the one Vite
+  # uses. One shared version avoids two copies of the native binary.
   lightningcss: ^1.33.0
+
+# vite and vitest in apps/electron get the @types/node of the Electron app.
+# Keep these ranges on the `electron` catalog.
+peerDependencyRules:
+  allowedVersions:
+    "vite>@types/node": ^24.19.2
+    "vitest>@types/node": ^24.19.2
 
 # dependency-cruiser needs the TypeScript compiler API, which TypeScript 7.0
 # does not have (it supports 7.1 again). It gets TypeScript 6 of its own so it
